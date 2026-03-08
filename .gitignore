@@ -39,3 +39,7 @@ tmp
 *.png
 *.wav
 *.webp
+
+
+*.err
+*.out
