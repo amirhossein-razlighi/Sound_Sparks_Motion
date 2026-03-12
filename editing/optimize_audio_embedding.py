@@ -1,0 +1,1073 @@
+#!/usr/bin/env python3
+"""
+Optimize audio latent for targeted video motion edits.
+
+This script performs gradient-based optimization over the audio latent that
+conditions LTX retake generation, while freezing all LTX model weights.
+
+High-level flow
+---------------
+1) Build a target motion signal from a target video (provided directly or
+   generated once via TI2V from first frame + target prompt).
+2) Encode source video/audio once and cache source video latent.
+3) Optimize a low-dimensional parameter vector that perturbs audio latent.
+4) For each optimization step, run Retake and score generated video with a
+    differentiable RAFT optical-flow objective against target motion.
+5) Save the best latent + rendered videos.
+
+Notes
+-----
+- Optimization uses true backpropagation through the generated video frames,
+    the frozen RAFT flow network, and into latent coefficients.
+- Only the initial audio latent is changed. All LTX modules stay frozen.
+- Objective uses frozen RAFT optical flow from torchvision.
+
+Example
+-------
+python editing/optimize_audio_embedding.py \
+  --src-video /path/to/source.mp4 \
+  --edit-prompt "A dog is in the scene." \
+  --target-prompt "The dog jumps energetically." \
+  --output-dir ./audio_latent_opt \
+    --iterations 10 \
+    --lr 0.05
+"""
+from __future__ import annotations
+
+import argparse
+import csv
+import logging
+import os
+import sys
+import tempfile
+from pathlib import Path
+from typing import Iterator
+
+import av
+import numpy as np
+import torch
+import torch.nn.functional as F
+import torchaudio
+
+# ---------------------------------------------------------------------------
+# Make sure editing/ is on sys.path (for running without install)
+# ---------------------------------------------------------------------------
+_HERE = Path(__file__).resolve().parent
+if str(_HERE) not in sys.path:
+    sys.path.insert(0, str(_HERE))
+
+# LTX-2 imports
+from ltx_core.components.guiders import MultiModalGuiderParams
+from ltx_core.loader import LTXV_LORA_COMFY_RENAMING_MAP, LoraPathStrengthAndSDOps
+from ltx_core.model.video_vae import TilingConfig, get_video_chunks_number
+from ltx_core.quantization import QuantizationPolicy
+from ltx_core.types import Audio, VideoPixelShape
+import ltx_pipelines.retake as _retake_module
+import ltx_pipelines.ti2vid_one_stage as _ti2vid_module
+from ltx_pipelines.retake import RetakePipeline
+from ltx_pipelines.ti2vid_one_stage import TI2VidOneStagePipeline
+from ltx_pipelines.utils.args import ImageConditioningInput
+from ltx_pipelines.utils.constants import detect_params
+from ltx_pipelines.utils.media_io import (
+    _prepare_audio_stream,
+    _write_audio,
+    decode_audio_from_file,
+    encode_video,
+    get_videostream_metadata,
+    load_video_conditioning,
+)
+
+log = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# Defaults (cluster-friendly, can be overridden via CLI)
+# ---------------------------------------------------------------------------
+_CKPT_ROOT = "/project/def-amahdavi/amirrz/LTX-2/checkpoints"
+DEFAULT_CHECKPOINT = f"{_CKPT_ROOT}/ltx-2.3-22b-dev.safetensors"
+DEFAULT_GEMMA_ROOT = "/project/def-amahdavi/amirrz/HF/models/gemma-3-12b-it-qat-q4_0-unquantized/"
+
+
+# ---------------------------------------------------------------------------
+# Generic helpers
+# ---------------------------------------------------------------------------
+
+def align_waveform_length(waveform: torch.Tensor, n_target: int) -> torch.Tensor:
+    n = waveform.shape[-1]
+    if n >= n_target:
+        return waveform[..., :n_target]
+    pad = torch.zeros(*waveform.shape[:-1], n_target - n, device=waveform.device, dtype=waveform.dtype)
+    return torch.cat([waveform, pad], dim=-1)
+
+
+def compute_target_shape(
+    video_path: str,
+    height_override: int | None,
+    width_override: int | None,
+    num_frames_override: int | None,
+    frame_rate_override: float | None,
+) -> tuple[int, int, int, float]:
+    """Determine (height, width, num_frames, fps) from source video or overrides.
+
+    Single-stage pipeline requires H/W multiples of 32 and num_frames = 8k + 1.
+    """
+    fps_src, n_frames_src, w_src, h_src = get_videostream_metadata(video_path)
+
+    fps = frame_rate_override if frame_rate_override is not None else fps_src
+    n_fr = num_frames_override if num_frames_override is not None else n_frames_src
+    height = height_override if height_override is not None else h_src
+    width = width_override if width_override is not None else w_src
+
+    height = max(32, (height // 32) * 32)
+    width = max(32, (width // 32) * 32)
+
+    if (n_fr - 1) % 8 != 0:
+        n_fr = ((n_fr - 1) // 8) * 8 + 1
+    n_fr = max(9, n_fr)
+
+    return height, width, n_fr, float(fps)
+
+
+def extract_first_frame_png(video_path: str, out_path: str) -> None:
+    src = av.open(video_path)
+    try:
+        vs = next(s for s in src.streams if s.type == "video")
+        for frame in src.decode(vs):
+            frame.to_image().save(out_path, format="PNG")
+            return
+    finally:
+        src.close()
+    raise RuntimeError(f"No video frame found in {video_path!r}")
+
+
+def save_audio_wav(waveform: torch.Tensor, sr: int, path: str) -> None:
+    torchaudio.save(path, waveform.detach().cpu().float(), sr, backend="soundfile")
+
+
+def write_temp_video_with_audio(
+    src_video_path: str,
+    target_frames: int,
+    target_height: int,
+    target_width: int,
+    fps: float,
+    waveform: torch.Tensor,
+    sr: int,
+    output_path: str,
+) -> None:
+    """Write MP4 with resized source video frames and supplied audio waveform."""
+    src = av.open(src_video_path)
+    dst = av.open(output_path, mode="w")
+
+    try:
+        vs_in = next(s for s in src.streams if s.type == "video")
+        vs_out = dst.add_stream("libx264", rate=int(round(fps)))
+        vs_out.width = target_width
+        vs_out.height = target_height
+        vs_out.pix_fmt = "yuv420p"
+        vs_out.options = {"crf": "18", "preset": "veryfast"}
+
+        w = waveform.detach().cpu().float()
+        if w.shape[0] == 1:
+            w = w.expand(2, -1).contiguous()
+        elif w.shape[0] > 2:
+            w = w[:2].contiguous()
+        as_out = _prepare_audio_stream(dst, sr)
+
+        from fractions import Fraction as _Fraction
+
+        time_base = _Fraction(1, int(round(fps)))
+        frame_idx = 0
+        last_frame = None
+
+        for av_frame in src.decode(vs_in):
+            if frame_idx >= target_frames:
+                break
+            out = av_frame.reformat(width=target_width, height=target_height, format="yuv420p")
+            out.pts = frame_idx
+            out.time_base = time_base
+            for pkt in vs_out.encode(out):
+                dst.mux(pkt)
+            last_frame = out
+            frame_idx += 1
+
+        while last_frame is not None and frame_idx < target_frames:
+            pad = av.VideoFrame(width=target_width, height=target_height, format="yuv420p")
+            pad.pts = frame_idx
+            pad.time_base = time_base
+            for i in range(len(last_frame.planes)):
+                np.copyto(
+                    np.frombuffer(pad.planes[i], dtype=np.uint8).reshape(last_frame.planes[i].shape),
+                    np.frombuffer(last_frame.planes[i], dtype=np.uint8).reshape(last_frame.planes[i].shape),
+                )
+            for pkt in vs_out.encode(pad):
+                dst.mux(pkt)
+            frame_idx += 1
+
+        for pkt in vs_out.encode():
+            dst.mux(pkt)
+
+        _write_audio(dst, as_out, Audio(waveform=w, sampling_rate=sr))
+    finally:
+        src.close()
+        dst.close()
+
+
+# ---------------------------------------------------------------------------
+# Video / optical flow objective (RAFT)
+# ---------------------------------------------------------------------------
+
+def decode_video_frames_rgb(
+    video_path: str,
+    max_frames: int | None,
+    frame_stride: int,
+    resize_to: tuple[int, int] | None,
+) -> list[np.ndarray]:
+    """Decode RGB frames from a video file as uint8 HxWx3 arrays."""
+    out: list[np.ndarray] = []
+    src = av.open(video_path)
+    try:
+        vs = next(s for s in src.streams if s.type == "video")
+        frame_idx = 0
+        for frame in src.decode(vs):
+            if frame_idx % frame_stride != 0:
+                frame_idx += 1
+                continue
+            arr = np.asarray(frame.to_image().convert("RGB"), dtype=np.uint8)
+            out.append(arr)
+            frame_idx += 1
+            if max_frames is not None and len(out) >= max_frames:
+                break
+    finally:
+        src.close()
+    return out
+
+
+def flatten_video_chunks(
+    video_iter: Iterator[torch.Tensor],
+    max_frames: int | None,
+    frame_stride: int,
+    resize_to: tuple[int, int] | None,
+) -> torch.Tensor:
+    """Collect generated frames into a float tensor [F, 3, H, W] in [0, 1].
+
+    This function keeps gradients if input chunks are floating tensors.
+    """
+    frames: list[torch.Tensor] = []
+    seen = 0
+    for chunk in video_iter:
+        # Expected by default decode patch: [F, 3, H, W] float in [0,1].
+        # Fallback for uint8 [F, H, W, 3] if no patch was applied.
+        if chunk.dim() != 4:
+            raise RuntimeError(f"Unexpected decoded chunk shape: {tuple(chunk.shape)}")
+
+        if chunk.shape[1] == 3:
+            frame_tensor = chunk
+        elif chunk.shape[-1] == 3:
+            frame_tensor = chunk.permute(0, 3, 1, 2)
+        else:
+            raise RuntimeError(f"Cannot infer channel axis from chunk shape: {tuple(chunk.shape)}")
+
+        if frame_tensor.dtype == torch.uint8:
+            frame_tensor = frame_tensor.float() / 255.0
+        else:
+            frame_tensor = frame_tensor.float().clamp(0.0, 1.0)
+
+        for frame in frame_tensor:
+            if seen % frame_stride != 0:
+                seen += 1
+                continue
+            frames.append(frame)
+            seen += 1
+            if max_frames is not None and len(frames) >= max_frames:
+                stacked = torch.stack(frames, dim=0)
+                if resize_to is not None:
+                    stacked = F.interpolate(
+                        stacked,
+                        size=(resize_to[1], resize_to[0]),
+                        mode="bilinear",
+                        align_corners=False,
+                    )
+                return stacked
+
+    if len(frames) == 0:
+        return torch.empty(0, 3, 0, 0)
+
+    stacked = torch.stack(frames, dim=0)
+    if resize_to is not None:
+        stacked = F.interpolate(
+            stacked,
+            size=(resize_to[1], resize_to[0]),
+            mode="bilinear",
+            align_corners=False,
+        )
+    return stacked
+
+
+def load_raft_components(device: torch.device, model_name: str):
+    """Load frozen RAFT model and input transforms from torchvision."""
+    try:
+        from torchvision.models.optical_flow import (  # type: ignore
+            Raft_Large_Weights,
+            Raft_Small_Weights,
+            raft_large,
+            raft_small,
+        )
+    except Exception as exc:  # noqa: BLE001
+        raise RuntimeError(
+            "torchvision optical flow (RAFT) is required. Install torchvision with optical-flow support."
+        ) from exc
+
+    if model_name == "raft_small":
+        weights = Raft_Small_Weights.DEFAULT
+        raft = raft_small(weights=weights, progress=True)
+    else:
+        weights = Raft_Large_Weights.DEFAULT
+        raft = raft_large(weights=weights, progress=True)
+
+    raft = raft.to(device).eval()
+    for p in raft.parameters():
+        p.requires_grad_(False)
+
+    return raft, weights.transforms()
+
+
+def frames_rgb_uint8_to_chw_float(frames_rgb: list[np.ndarray], device: torch.device) -> torch.Tensor:
+    if len(frames_rgb) == 0:
+        return torch.empty(0, 3, 0, 0, device=device)
+    arr = np.stack(frames_rgb, axis=0)
+    t = torch.from_numpy(arr).to(device=device, dtype=torch.float32) / 255.0
+    return t.permute(0, 3, 1, 2).contiguous()
+
+
+def compute_raft_flows(
+    frames_chw: torch.Tensor,
+    raft_model: torch.nn.Module,
+    raft_transforms,
+) -> torch.Tensor:
+    """Compute consecutive-frame optical flow with RAFT.
+
+    Input: frames_chw [F,3,H,W] in [0,1]
+    Output: flow [F-1,2,H,W]
+    """
+    if frames_chw.shape[0] < 2:
+        return torch.empty(0, 2, frames_chw.shape[-2], frames_chw.shape[-1], device=frames_chw.device)
+
+    prev = frames_chw[:-1]
+    nxt = frames_chw[1:]
+    prev_in, nxt_in = raft_transforms(prev, nxt)
+    preds = raft_model(prev_in, nxt_in)
+    return preds[-1]
+
+
+def flow_objective_torch(
+    gen_frames_chw: torch.Tensor,
+    target_flows: torch.Tensor,
+    raft_model: torch.nn.Module,
+    raft_transforms,
+    flow_weight: float,
+    mag_curve_weight: float,
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    """Differentiable objective: RAFT flow field + flow magnitude curve."""
+    gen_flows = compute_raft_flows(gen_frames_chw, raft_model, raft_transforms)
+    if gen_flows.shape[0] == 0 or target_flows.shape[0] == 0:
+        inf = torch.tensor(float("inf"), device=gen_frames_chw.device)
+        return inf, inf, inf
+
+    n = min(gen_flows.shape[0], target_flows.shape[0])
+    gen = gen_flows[:n]
+    tgt = target_flows[:n]
+
+    if gen.shape[-2:] != tgt.shape[-2:]:
+        scale_x = tgt.shape[-1] / gen.shape[-1]
+        scale_y = tgt.shape[-2] / gen.shape[-2]
+        gen = F.interpolate(gen, size=tgt.shape[-2:], mode="bilinear", align_corners=False)
+        gen[:, 0] = gen[:, 0] * scale_x
+        gen[:, 1] = gen[:, 1] * scale_y
+
+    flow_mse = F.mse_loss(gen, tgt)
+
+    gen_mag = torch.linalg.norm(gen, dim=1).mean(dim=(1, 2))
+    tgt_mag = torch.linalg.norm(tgt, dim=1).mean(dim=(1, 2))
+    mag_curve_mse = F.mse_loss(gen_mag, tgt_mag)
+
+    total = flow_weight * flow_mse + mag_curve_weight * mag_curve_mse
+    return total, flow_mse, mag_curve_mse
+
+
+# ---------------------------------------------------------------------------
+# LTX setup / rendering helpers
+# ---------------------------------------------------------------------------
+
+def _parse_loras(raw_loras: list[list[str]]) -> list[LoraPathStrengthAndSDOps]:
+    out: list[LoraPathStrengthAndSDOps] = []
+    for entry in raw_loras:
+        lora_path = str(Path(entry[0]).expanduser().resolve())
+        strength = float(entry[1]) if len(entry) > 1 else 1.0
+        out.append(LoraPathStrengthAndSDOps(lora_path, strength, LTXV_LORA_COMFY_RENAMING_MAP))
+    return out
+
+
+def maybe_generate_target_video(
+    args: argparse.Namespace,
+    device: torch.device,
+    height: int,
+    width: int,
+    num_frames: int,
+    frame_rate: float,
+    video_guider_params: MultiModalGuiderParams,
+    audio_guider_params: MultiModalGuiderParams,
+    quant_policy: QuantizationPolicy | None,
+    loras: list[LoraPathStrengthAndSDOps],
+    output_dir: Path,
+) -> Path:
+    if args.target_video is not None:
+        path = Path(args.target_video).expanduser().resolve()
+        if not path.exists():
+            raise FileNotFoundError(f"--target-video not found: {path}")
+        return path
+
+    if not args.target_prompt:
+        raise ValueError("Provide either --target-video or --target-prompt.")
+
+    target_path = output_dir / "target_motion_video.mp4"
+    if target_path.exists() and not args.regenerate_target:
+        log.info("Using existing generated target video: %s", target_path)
+        return target_path
+
+    with tempfile.TemporaryDirectory(prefix="ltx_target_gt_") as tmp_dir:
+        first_frame_png = os.path.join(tmp_dir, "first_frame.png")
+        extract_first_frame_png(args.src_video, first_frame_png)
+
+        images = [ImageConditioningInput(path=first_frame_png, frame_idx=0, strength=1.0)]
+
+        pipeline = TI2VidOneStagePipeline(
+            checkpoint_path=args.checkpoint_path,
+            gemma_root=args.gemma_root,
+            loras=tuple(loras),
+            device=device,
+            quantization=quant_policy,
+        )
+
+        orig_decode = _ti2vid_module.vae_decode_video
+
+        def _tiled_decode(latent, decoder, tiling_config=None, generator=None):
+            return orig_decode(latent, decoder, TilingConfig.default(), generator)
+
+        _ti2vid_module.vae_decode_video = _tiled_decode
+        try:
+            video_iter, audio = pipeline(
+                prompt=args.target_prompt,
+                negative_prompt=args.negative_prompt,
+                seed=args.seed,
+                height=height,
+                width=width,
+                num_frames=num_frames,
+                frame_rate=frame_rate,
+                num_inference_steps=args.num_inference_steps,
+                video_guider_params=video_guider_params,
+                audio_guider_params=audio_guider_params,
+                images=images,
+                enhance_prompt=args.enhance_prompt,
+            )
+        finally:
+            _ti2vid_module.vae_decode_video = orig_decode
+
+        n_chunks = get_video_chunks_number(num_frames, TilingConfig.default())
+        encode_video(
+            video=video_iter,
+            fps=int(round(frame_rate)),
+            audio=audio,
+            output_path=str(target_path),
+            video_chunks_number=n_chunks,
+        )
+
+    log.info("Generated target-motion video -> %s", target_path)
+    return target_path
+
+
+def build_cached_source_latents(
+    pipeline: RetakePipeline,
+    src_video: str,
+    height: int,
+    width: int,
+    num_frames: int,
+    audio_sr: int,
+    device: torch.device,
+) -> tuple[torch.Tensor, torch.Tensor, int]:
+    """Encode source video/audio once and return (video_latent, audio_latent, sr)."""
+    tiling = TilingConfig.default()
+
+    # Video latent (cached to avoid repeated VAE encode)
+    video_encoder = pipeline.model_ledger.video_encoder()
+    pixel_video = load_video_conditioning(
+        video_path=src_video,
+        height=height,
+        width=width,
+        frame_cap=num_frames,
+        dtype=torch.bfloat16,
+        device=device,
+    )
+    with torch.inference_mode():
+        video_latent = video_encoder.tiled_encode(pixel_video, tiling).to(device)
+
+    del video_encoder, pixel_video
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
+    # Audio latent (base point for optimization)
+    src_fps, _, _, _ = get_videostream_metadata(src_video)
+    duration = float(num_frames) / float(src_fps)
+    audio_in = decode_audio_from_file(src_video, device, max_duration=duration)
+    if audio_in is None:
+        raise RuntimeError(f"Source video has no audio stream: {src_video}")
+
+    waveform = audio_in.waveform.squeeze(0).float()
+    if audio_in.sampling_rate != audio_sr:
+        waveform = torchaudio.functional.resample(waveform, orig_freq=audio_in.sampling_rate, new_freq=audio_sr)
+        waveform_sr = audio_sr
+    else:
+        waveform_sr = audio_in.sampling_rate
+
+    n_audio_samples = int(duration * waveform_sr)
+    waveform = align_waveform_length(waveform, n_audio_samples)
+
+    output_shape = VideoPixelShape(batch=1, frames=num_frames, width=width, height=height, fps=src_fps)
+
+    audio_encoder = pipeline.model_ledger.audio_encoder()
+    base_audio_latent = _retake_module._encode_audio_for_retake(
+        audio_encoder=audio_encoder,
+        waveform=waveform,
+        waveform_sr=waveform_sr,
+        output_shape=output_shape,
+        dtype=torch.bfloat16,
+    ).to(device)
+
+    del audio_encoder
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
+    return video_latent, base_audio_latent, waveform_sr
+
+
+def render_with_injected_audio_latent(
+    pipeline: RetakePipeline,
+    src_video: str,
+    injected_audio_latent: torch.Tensor,
+    cached_video_latent: torch.Tensor,
+    retake_kwargs: dict,
+    max_frames: int,
+    frame_stride: int,
+    resize_to: tuple[int, int],
+) -> torch.Tensor:
+    """Run Retake with forced audio latent and return frames [F,3,H,W] in [0,1].
+
+    This path patches video decode to keep float outputs so gradients can flow.
+    """
+    orig_video_encode = _retake_module._encode_video_for_retake
+    orig_audio_encode = _retake_module._encode_audio_for_retake
+    orig_video_decode = _retake_module.vae_decode_video
+
+    def _cached_video_encode(video_encoder, video_path, output_shape, dtype, device):  # noqa: ARG001
+        return cached_video_latent
+
+    def _forced_audio_encode(audio_encoder, waveform, waveform_sr, output_shape, dtype):  # noqa: ARG001
+        return injected_audio_latent
+
+    def _float_decode_video(latent, video_decoder, tiling_config=None, generator=None):
+        def _to_frames(frames_bcfhw: torch.Tensor) -> torch.Tensor:
+            # Keep float range [0,1] and preserve autograd graph.
+            return ((frames_bcfhw[0] + 1.0) / 2.0).clamp(0.0, 1.0).permute(1, 0, 2, 3).contiguous()
+
+        if tiling_config is not None:
+            for frames in video_decoder.tiled_decode(latent, tiling_config, generator=generator):
+                yield _to_frames(frames)
+        else:
+            yield _to_frames(video_decoder(latent, generator=generator))
+
+    _retake_module._encode_video_for_retake = _cached_video_encode
+    _retake_module._encode_audio_for_retake = _forced_audio_encode
+    _retake_module.vae_decode_video = _float_decode_video
+    try:
+        video_iter, _ = pipeline(video_path=src_video, **retake_kwargs)
+        return flatten_video_chunks(
+            video_iter=video_iter,
+            max_frames=max_frames,
+            frame_stride=frame_stride,
+            resize_to=resize_to,
+        )
+    finally:
+        _retake_module._encode_video_for_retake = orig_video_encode
+        _retake_module._encode_audio_for_retake = orig_audio_encode
+        _retake_module.vae_decode_video = orig_video_decode
+
+
+def render_and_save_video_with_latent(
+    pipeline: RetakePipeline,
+    src_video: str,
+    injected_audio_latent: torch.Tensor,
+    cached_video_latent: torch.Tensor,
+    retake_kwargs: dict,
+    output_path: Path,
+    fps: float,
+    num_frames: int,
+    audio_sr: int,
+) -> None:
+    """Render a full video with injected latent and save as MP4.
+
+    The original source audio is muxed back in to simplify visual comparison.
+    """
+    orig_video_encode = _retake_module._encode_video_for_retake
+    orig_audio_encode = _retake_module._encode_audio_for_retake
+
+    def _cached_video_encode(video_encoder, video_path, output_shape, dtype, device):  # noqa: ARG001
+        return cached_video_latent
+
+    def _forced_audio_encode(audio_encoder, waveform, waveform_sr, output_shape, dtype):  # noqa: ARG001
+        return injected_audio_latent
+
+    _retake_module._encode_video_for_retake = _cached_video_encode
+    _retake_module._encode_audio_for_retake = _forced_audio_encode
+    try:
+        video_iter, _ = pipeline(video_path=src_video, **retake_kwargs)
+
+        src_audio = decode_audio_from_file(src_video, pipeline.device, max_duration=num_frames / fps)
+        if src_audio is None:
+            out_audio = None
+        else:
+            wave = src_audio.waveform.squeeze(0).float()
+            if src_audio.sampling_rate != audio_sr:
+                wave = torchaudio.functional.resample(wave, orig_freq=src_audio.sampling_rate, new_freq=audio_sr)
+            wave = align_waveform_length(wave, int((num_frames / fps) * audio_sr))
+            if wave.shape[0] == 1:
+                wave = wave.expand(2, -1).contiguous()
+            elif wave.shape[0] > 2:
+                wave = wave[:2].contiguous()
+            out_audio = Audio(waveform=wave.cpu(), sampling_rate=audio_sr)
+
+        encode_video(
+            video=video_iter,
+            fps=int(round(fps)),
+            audio=out_audio,
+            output_path=str(output_path),
+            video_chunks_number=get_video_chunks_number(num_frames, TilingConfig.default()),
+        )
+    finally:
+        _retake_module._encode_video_for_retake = orig_video_encode
+        _retake_module._encode_audio_for_retake = orig_audio_encode
+
+
+# ---------------------------------------------------------------------------
+# Optimization
+# ---------------------------------------------------------------------------
+
+def optimize_audio_latent(args: argparse.Namespace) -> None:
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s  %(levelname)-8s %(message)s", datefmt="%H:%M:%S")
+
+    output_dir = Path(args.output_dir).expanduser().resolve()
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    loras = _parse_loras(args.loras)
+    if loras:
+        log.info("LoRAs: %s", [(l.path, l.strength) for l in loras])
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    if args.quantization == "fp8-cast":
+        quant_policy = QuantizationPolicy.fp8_cast()
+    elif args.quantization == "fp8-scaled-mm":
+        quant_policy = QuantizationPolicy.fp8_scaled_mm()
+    else:
+        quant_policy = None
+
+    height, width, num_frames, frame_rate = compute_target_shape(
+        args.src_video,
+        args.height,
+        args.width,
+        args.num_frames,
+        args.frame_rate,
+    )
+    duration = num_frames / frame_rate
+
+    # Build a normalized retake input video so metadata matches cached latent
+    # dimensions and model constraints (H/W multiples of 32, frames=8k+1).
+    src_audio_for_input = decode_audio_from_file(args.src_video, device, max_duration=duration)
+    if src_audio_for_input is None:
+        raise RuntimeError(f"Source video has no audio stream: {args.src_video}")
+
+    src_wave = src_audio_for_input.waveform.squeeze(0).float()
+    if src_audio_for_input.sampling_rate != args.audio_sr:
+        src_wave = torchaudio.functional.resample(
+            src_wave,
+            orig_freq=src_audio_for_input.sampling_rate,
+            new_freq=args.audio_sr,
+        )
+    src_wave = align_waveform_length(src_wave, int(duration * args.audio_sr))
+
+    retake_input_video = output_dir / "retake_input_prepared.mp4"
+    write_temp_video_with_audio(
+        src_video_path=args.src_video,
+        target_frames=num_frames,
+        target_height=height,
+        target_width=width,
+        fps=frame_rate,
+        waveform=src_wave,
+        sr=args.audio_sr,
+        output_path=str(retake_input_video),
+    )
+    log.info("Prepared retake input video -> %s", retake_input_video)
+
+    params = detect_params(args.checkpoint_path)
+    video_guider_params = MultiModalGuiderParams(
+        cfg_scale=args.cfg_scale if args.cfg_scale is not None else params.video_guider_params.cfg_scale,
+        stg_scale=params.video_guider_params.stg_scale,
+        stg_blocks=params.video_guider_params.stg_blocks,
+        rescale_scale=params.video_guider_params.rescale_scale,
+        modality_scale=args.a2v_scale if args.a2v_scale is not None else params.video_guider_params.modality_scale,
+    )
+    audio_guider_params = MultiModalGuiderParams(
+        cfg_scale=args.audio_cfg_scale if args.audio_cfg_scale is not None else params.audio_guider_params.cfg_scale,
+        stg_scale=params.audio_guider_params.stg_scale,
+        stg_blocks=params.audio_guider_params.stg_blocks,
+        rescale_scale=params.audio_guider_params.rescale_scale,
+    )
+
+    # 1) Target-motion source
+    target_video_path = maybe_generate_target_video(
+        args=args,
+        device=device,
+        height=height,
+        width=width,
+        num_frames=num_frames,
+        frame_rate=frame_rate,
+        video_guider_params=video_guider_params,
+        audio_guider_params=audio_guider_params,
+        quant_policy=quant_policy,
+        loras=loras,
+        output_dir=output_dir,
+    )
+
+    resize_to = (args.flow_width, args.flow_height)
+    target_frames_rgb = decode_video_frames_rgb(
+        video_path=str(target_video_path),
+        max_frames=args.max_eval_frames,
+        frame_stride=args.frame_stride,
+        resize_to=None,
+    )
+
+    target_frames = frames_rgb_uint8_to_chw_float(target_frames_rgb, device=device)
+    if target_frames.shape[0] == 0:
+        raise RuntimeError("Target frames are empty. Increase --max-eval-frames or check target video.")
+    if resize_to is not None:
+        target_frames = F.interpolate(
+            target_frames,
+            size=(resize_to[1], resize_to[0]),
+            mode="bilinear",
+            align_corners=False,
+        )
+
+    raft_model, raft_transforms = load_raft_components(device=device, model_name=args.raft_model)
+    with torch.no_grad():
+        target_flows = compute_raft_flows(target_frames, raft_model, raft_transforms).detach()
+    if target_flows.shape[0] == 0:
+        raise RuntimeError("Target RAFT flow is empty. Need at least 2 target frames.")
+
+    log.info("Target video: %s", target_video_path)
+    log.info("Target flow fields: %d", target_flows.shape[0])
+
+    # 2) Build Retake pipeline and cache source latents
+    pipeline = RetakePipeline(
+        checkpoint_path=args.checkpoint_path,
+        gemma_root=args.gemma_root,
+        loras=tuple(loras),
+        device=device,
+        quantization=quant_policy,
+    )
+
+    cached_video_latent, base_audio_latent, waveform_sr = build_cached_source_latents(
+        pipeline=pipeline,
+        src_video=str(retake_input_video),
+        height=height,
+        width=width,
+        num_frames=num_frames,
+        audio_sr=args.audio_sr,
+        device=device,
+    )
+
+    log.info("Cached video latent shape: %s", tuple(cached_video_latent.shape))
+    log.info("Base audio latent shape: %s", tuple(base_audio_latent.shape))
+
+    retake_kwargs = dict(
+        prompt=args.edit_prompt,
+        start_time=args.retake_start_frames / frame_rate,
+        end_time=duration,
+        seed=args.seed,
+        negative_prompt=args.negative_prompt,
+        num_inference_steps=args.num_inference_steps,
+        video_guider_params=video_guider_params,
+        audio_guider_params=audio_guider_params,
+        regenerate_video=True,
+        regenerate_audio=False,
+        enhance_prompt=args.enhance_prompt,
+        tiling_config=TilingConfig.default(),
+    )
+
+    # 3) Directly optimise the audio latent in the full latent space
+    audio_latent = torch.nn.Parameter(base_audio_latent.detach().float())
+    optimizer = torch.optim.Adam([audio_latent], lr=args.lr)
+
+    csv_path = output_dir / "optimization_log.csv"
+    with csv_path.open("w", newline="") as f_csv:
+        writer = csv.writer(f_csv)
+        writer.writerow([
+            "iter",
+            "total_loss",
+            "flow_mse",
+            "mag_curve_mse",
+            "latent_reg",
+            "grad_norm",
+            "is_best",
+        ])
+
+        best = {
+            "loss": float("inf"),
+            "latent": audio_latent.detach().clone(),
+            "flow_mse": float("inf"),
+            "mag_mse": float("inf"),
+        }
+
+        for it in range(1, args.iterations + 1):
+            optimizer.zero_grad(set_to_none=True)
+
+            injected_latent = audio_latent.to(dtype=base_audio_latent.dtype)
+            gen_frames = render_with_injected_audio_latent(
+                pipeline=pipeline,
+                src_video=str(retake_input_video),
+                injected_audio_latent=injected_latent,
+                cached_video_latent=cached_video_latent,
+                retake_kwargs=retake_kwargs,
+                max_frames=args.max_eval_frames,
+                frame_stride=args.frame_stride,
+                resize_to=resize_to,
+            )
+            if gen_frames.shape[0] < 2:
+                raise RuntimeError("Generated video has fewer than 2 frames; cannot compute flow objective.")
+
+            flow_total, flow_mse_t, mag_mse_t = flow_objective_torch(
+                gen_frames_chw=gen_frames,
+                target_flows=target_flows,
+                raft_model=raft_model,
+                raft_transforms=raft_transforms,
+                flow_weight=args.flow_weight,
+                mag_curve_weight=args.mag_curve_weight,
+            )
+            latent_reg_t = args.latent_reg_weight * torch.mean(
+                (audio_latent - base_audio_latent.float()) ** 2
+            )
+            total_t = flow_total + latent_reg_t
+            total_t.backward()
+
+            grad_norm = float(audio_latent.grad.norm().item()) if audio_latent.grad is not None else 0.0
+            if args.grad_clip > 0:
+                torch.nn.utils.clip_grad_norm_([audio_latent], max_norm=args.grad_clip)
+            optimizer.step()
+
+            total = float(total_t.detach().item())
+            flow_mse = float(flow_mse_t.detach().item())
+            mag_mse = float(mag_mse_t.detach().item())
+            latent_reg = float(latent_reg_t.detach().item())
+
+            is_best = total < best["loss"]
+            writer.writerow([it, total, flow_mse, mag_mse, latent_reg, grad_norm, int(is_best)])
+            f_csv.flush()
+
+            if is_best:
+                best["loss"] = total
+                best["latent"] = audio_latent.detach().clone()
+                best["flow_mse"] = flow_mse
+                best["mag_mse"] = mag_mse
+
+            log.info(
+                "iter=%d total=%.6f flow=%.6f mag=%.6f reg=%.6f grad=%.6f best=%.6f",
+                it,
+                total,
+                flow_mse,
+                mag_mse,
+                latent_reg,
+                grad_norm,
+                best["loss"],
+            )
+
+    best_latent = best["latent"].to(dtype=base_audio_latent.dtype)
+
+    torch.save(
+        {
+            "best_loss": best["loss"],
+            "best_flow_mse": best["flow_mse"],
+            "best_mag_mse": best["mag_mse"],
+        },
+        output_dir / "best_latent_params.pt",
+    )
+
+    # Save optimized and baseline audio latents for later experiments
+    torch.save(base_audio_latent.detach().cpu(), output_dir / "base_audio_latent.pt")
+    torch.save(best_latent.detach().cpu(), output_dir / "best_audio_latent.pt")
+
+    # Save final videos
+    best_video_path = output_dir / "best_optimized_video.mp4"
+    render_and_save_video_with_latent(
+        pipeline=pipeline,
+        src_video=str(retake_input_video),
+        injected_audio_latent=best_latent,
+        cached_video_latent=cached_video_latent,
+        retake_kwargs=retake_kwargs,
+        output_path=best_video_path,
+        fps=frame_rate,
+        num_frames=num_frames,
+        audio_sr=waveform_sr,
+    )
+
+    baseline_video_path = output_dir / "baseline_unoptimized_video.mp4"
+    render_and_save_video_with_latent(
+        pipeline=pipeline,
+        src_video=str(retake_input_video),
+        injected_audio_latent=base_audio_latent,
+        cached_video_latent=cached_video_latent,
+        retake_kwargs=retake_kwargs,
+        output_path=baseline_video_path,
+        fps=frame_rate,
+        num_frames=num_frames,
+        audio_sr=waveform_sr,
+    )
+
+    if args.transfer_prompt:
+        transfer_kwargs = dict(retake_kwargs)
+        transfer_kwargs["prompt"] = args.transfer_prompt
+        transfer_video_path = output_dir / "transfer_prompt_with_best_latent.mp4"
+        render_and_save_video_with_latent(
+            pipeline=pipeline,
+            src_video=str(retake_input_video),
+            injected_audio_latent=best_latent,
+            cached_video_latent=cached_video_latent,
+            retake_kwargs=transfer_kwargs,
+            output_path=transfer_video_path,
+            fps=frame_rate,
+            num_frames=num_frames,
+            audio_sr=waveform_sr,
+        )
+
+    # For convenience: save source audio track used for muxing
+    src_audio = decode_audio_from_file(args.src_video, device, max_duration=duration)
+    if src_audio is not None:
+        wave = src_audio.waveform.squeeze(0).float()
+        if src_audio.sampling_rate != args.audio_sr:
+            wave = torchaudio.functional.resample(wave, orig_freq=src_audio.sampling_rate, new_freq=args.audio_sr)
+        wave = align_waveform_length(wave, int(duration * args.audio_sr))
+        save_audio_wav(wave, args.audio_sr, str(output_dir / "source_audio_used.wav"))
+
+    log.info("Done. Best total loss: %.6f", best["loss"])
+    log.info("Saved outputs in: %s", output_dir)
+
+
+# ---------------------------------------------------------------------------
+# CLI
+# ---------------------------------------------------------------------------
+
+def build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+
+    # Core I/O
+    p.add_argument("--src-video", required=True, help="Source video used for retake and latent optimization.")
+    p.add_argument("--edit-prompt", required=True, help="Prompt used during optimization retake generation.")
+    p.add_argument("--output-dir", required=True, help="Directory where outputs/logs are written.")
+
+    # Target motion source: either provide video or generate via TI2V prompt
+    p.add_argument("--target-video", default=None, help="Optional existing target-motion video.")
+    p.add_argument(
+        "--target-prompt",
+        default=None,
+        help=(
+            "If --target-video is not provided, generate target video once with TI2V using "
+            "this prompt and source first frame."
+        ),
+    )
+    p.add_argument(
+        "--regenerate-target",
+        action="store_true",
+        help="Regenerate target-motion video even if output_dir/target_motion_video.mp4 already exists.",
+    )
+
+    # Optional transfer test
+    p.add_argument(
+        "--transfer-prompt",
+        default=None,
+        help="Optional prompt to test whether optimized latent transfers its motion style.",
+    )
+
+    # Objective settings
+    p.add_argument("--flow-weight", type=float, default=1.0, help="Weight for dense flow field MSE.")
+    p.add_argument("--mag-curve-weight", type=float, default=0.25, help="Weight for mean flow-magnitude curve MSE.")
+    p.add_argument("--latent-reg-weight", type=float, default=0.02, help="Weight for latent drift regularization.")
+    p.add_argument("--flow-width", type=int, default=384, help="Flow objective width (frames are resized to this).")
+    p.add_argument("--flow-height", type=int, default=224, help="Flow objective height (frames are resized to this).")
+    p.add_argument("--max-eval-frames", type=int, default=33, help="Max frames used in objective computation.")
+    p.add_argument("--frame-stride", type=int, default=1, help="Use every N-th frame when computing objective.")
+
+    # Optimization settings (gradient-based Adam)
+    p.add_argument("--iterations", type=int, default=8, help="Number of optimization iterations.")
+    p.add_argument("--lr", type=float, default=0.05, help="Adam learning rate for latent coefficients.")
+    p.add_argument("--grad-clip", type=float, default=1.0, help="Clip alpha gradient norm (<=0 disables clip).")
+    p.add_argument(
+        "--raft-model",
+        type=str,
+        default="raft_large",
+        choices=["raft_large", "raft_small"],
+        help="Frozen RAFT backbone used in the flow objective.",
+    )
+
+    # Prompt / diffusion controls
+    p.add_argument("--negative-prompt", default="", help="Negative prompt used in generation.")
+    p.add_argument("--enhance-prompt", action="store_true", help="Enable Gemma prompt enhancement.")
+    p.add_argument("--num-inference-steps", type=int, default=40, help="Denoising steps.")
+    p.add_argument("--seed", type=int, default=42, help="Sampling seed for generation calls.")
+    p.add_argument("--retake-start-frames", type=int, default=1, help="Frames to keep fixed at start.")
+
+    # Shape
+    p.add_argument("--height", type=int, default=None, help="Override output height (multiple of 32).")
+    p.add_argument("--width", type=int, default=None, help="Override output width (multiple of 32).")
+    p.add_argument("--num-frames", type=int, default=None, help="Override frame count (8k+1).")
+    p.add_argument("--frame-rate", type=float, default=None, help="Override frame rate.")
+
+    # Audio
+    p.add_argument("--audio-sr", type=int, default=44100, help="Target audio sample rate.")
+
+    # Model
+    p.add_argument("--checkpoint-path", default=DEFAULT_CHECKPOINT)
+    p.add_argument("--gemma-root", default=DEFAULT_GEMMA_ROOT)
+    p.add_argument("--quantization", default=None, choices=["fp8-cast", "fp8-scaled-mm"])
+    p.add_argument(
+        "--lora",
+        dest="loras",
+        nargs="+",
+        metavar=("PATH", "STRENGTH"),
+        action="append",
+        default=[],
+        help="LoRA path and optional strength. Can be passed multiple times.",
+    )
+
+    # Guidance
+    p.add_argument("--cfg-scale", type=float, default=None, help="Video CFG scale (auto if omitted).")
+    p.add_argument("--audio-cfg-scale", type=float, default=None, help="Audio CFG scale (auto if omitted).")
+    p.add_argument("--a2v-scale", type=float, default=None, help="Audio-to-video modality scale (auto if omitted).")
+
+    return p
+
+
+def main() -> None:
+    args = build_parser().parse_args()
+    optimize_audio_latent(args)
+
+
+if __name__ == "__main__":
+    main()

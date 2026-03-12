@@ -37,6 +37,29 @@ editing/
 
 ## Quick Start
 
+### Audio-Latent Motion Optimization (new)
+Optimize only the audio latent (all LTX weights frozen) so generated video motion
+matches a target motion pattern via optical-flow loss.
+
+```bash
+python editing/optimize_audio_embedding.py \
+  --src-video /path/to/source.mp4 \
+  --edit-prompt "A dog in the scene" \
+  --target-prompt "The dog jumps energetically" \
+  --output-dir ./audio_latent_opt \
+  --iterations 8 \
+  --lr 0.05
+```
+
+If you already have a target video, replace `--target-prompt ...` with
+`--target-video /path/to/target_motion.mp4`.
+
+Useful output files:
+- `best_optimized_video.mp4`: best video found during optimization
+- `baseline_unoptimized_video.mp4`: same setup with original audio latent
+- `optimization_log.csv`: per-candidate losses
+- `best_latent_params.pt` and `best_audio_latent.pt`: saved optimized latent state
+
 ### 1. List available perturbations
 ```bash
 source .venv/bin/activate
