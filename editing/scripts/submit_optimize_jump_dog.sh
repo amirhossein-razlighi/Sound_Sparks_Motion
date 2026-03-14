@@ -15,13 +15,15 @@
 
 #SBATCH --job-name=ltx_opt_jump_dog
 #SBATCH --account=def-amahdavi
-#SBATCH --gpus-per-node=h100:1
+#SBATCH --gpus-per-node=h100:2
 #SBATCH --mem=64G
-#SBATCH --time=04:00:00
+#SBATCH --time=02:00:00
 #SBATCH --output=%x_%j.out
 #SBATCH --error=%x_%j.err
 
 set -euo pipefail
+
+nvidia-smi
 
 # ---------------------------------------------------------------------------
 # Settings
@@ -38,9 +40,12 @@ TARGET_PROMPT="${TARGET_PROMPT:-The dog jumps up and down}"
 
 SEED="${SEED:-42}"
 NUM_INFERENCE_STEPS="${NUM_INFERENCE_STEPS:-20}"
-RETAKE_START_FRAMES="${RETAKE_START_FRAMES:-10}"
+TI2V_NUM_INFERENCE_STEPS="${TI2V_NUM_INFERENCE_STEPS:-20}"
+RETAKE_NUM_INFERENCE_STEPS="${RETAKE_NUM_INFERENCE_STEPS:-30}"
+FINAL_RETAKE_NUM_INFERENCE_STEPS="${FINAL_RETAKE_NUM_INFERENCE_STEPS:-30}"
+RETAKE_START_FRAMES="${RETAKE_START_FRAMES:-30}"
 
-ITERATIONS="${ITERATIONS:-4}"
+ITERATIONS="${ITERATIONS:-10}"
 LR="${LR:-0.05}"
 FLOW_WEIGHT="${FLOW_WEIGHT:-1.0}"
 MAG_CURVE_WEIGHT="${MAG_CURVE_WEIGHT:-0.25}"
@@ -71,8 +76,32 @@ QUANTIZATION="${QUANTIZATION:-}"
 TI2V_QUANTIZATION="${TI2V_QUANTIZATION:-}"
 RETAKE_QUANTIZATION="${RETAKE_QUANTIZATION:-}"
 
+# Multi-GPU gradient mode (FSDP sharded transformer)
+MULTI_GPU="${MULTI_GPU:-1}"
+NPROC_PER_NODE="${NPROC_PER_NODE:-}"
+
+# Infer visible GPUs from SLURM/CUDA mask when possible.
+VISIBLE_GPU_COUNT=""
+if [[ -n "${CUDA_VISIBLE_DEVICES:-}" ]]; then
+    IFS=',' read -r -a _VISIBLE_GPU_ARRAY <<< "${CUDA_VISIBLE_DEVICES}"
+    VISIBLE_GPU_COUNT="${#_VISIBLE_GPU_ARRAY[@]}"
+else
+    VISIBLE_GPU_COUNT="$(nvidia-smi -L | wc -l | tr -d ' ')"
+fi
+
+if [[ -z "${NPROC_PER_NODE}" ]]; then
+    NPROC_PER_NODE="${VISIBLE_GPU_COUNT}"
+fi
+
+if [[ "${MULTI_GPU}" == "1" ]] && [[ "${NPROC_PER_NODE}" -gt "${VISIBLE_GPU_COUNT}" ]]; then
+    echo "ERROR: NPROC_PER_NODE=${NPROC_PER_NODE} but only ${VISIBLE_GPU_COUNT} GPUs are visible." >&2
+    echo "       CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-<unset>}" >&2
+    echo "       Set NPROC_PER_NODE<=${VISIBLE_GPU_COUNT} or request more GPUs in Slurm." >&2
+    exit 1
+fi
+
 # Optional target video (if set, TARGET_PROMPT is ignored)
-TARGET_VIDEO="${TARGET_VIDEO:-}"
+TARGET_VIDEO="${TARGET_VIDEO:-/home/amirrz/my_codes/LTX-2/results/editing_results_jump_optimize/target_motion_video.mp4}"
 
 # ---------------------------------------------------------------------------
 # Validation
@@ -116,7 +145,13 @@ echo "  RAFT model          : ${RAFT_MODEL}"
 echo "  RAFT weights path   : ${RAFT_WEIGHTS_PATH}"
 echo "  Iterations          : ${ITERATIONS}"
 echo "  LR                  : ${LR}"
+echo "  TI2V steps          : ${TI2V_NUM_INFERENCE_STEPS}"
+echo "  Retake steps        : ${RETAKE_NUM_INFERENCE_STEPS}"
+echo "  Final retake steps  : ${FINAL_RETAKE_NUM_INFERENCE_STEPS}"
 echo "  Output dir          : ${OUTPUT_DIR}"
+echo "  Multi GPU           : ${MULTI_GPU}"
+echo "  NPROC per node      : ${NPROC_PER_NODE}"
+echo "  Visible GPUs        : ${VISIBLE_GPU_COUNT}"
 echo "========================================================"
 
 # ---------------------------------------------------------------------------
@@ -163,30 +198,57 @@ fi
 # ---------------------------------------------------------------------------
 # Run
 # ---------------------------------------------------------------------------
-python "${REPO_ROOT}/editing/optimize_audio_embedding.py" \
-    --src-video              "${SRC_VIDEO}" \
-    --edit-prompt            "${EDIT_PROMPT}" \
-    "${TARGET_ARG_NAME}"      "${TARGET_ARG_VALUE}" \
-    --output-dir             "${OUTPUT_DIR}" \
-    --checkpoint-path        "${CKPT_ROOT}/ltx-2.3-22b-dev.safetensors" \
-    --gemma-root             "${GEMMA_ROOT}" \
-    --seed                   "${SEED}" \
-    --num-inference-steps    "${NUM_INFERENCE_STEPS}" \
-    --retake-start-frames    "${RETAKE_START_FRAMES}" \
-    --iterations             "${ITERATIONS}" \
-    --lr                     "${LR}" \
-    --flow-weight            "${FLOW_WEIGHT}" \
-    --mag-curve-weight       "${MAG_CURVE_WEIGHT}" \
-    --latent-reg-weight      "${LATENT_REG_WEIGHT}" \
-    --max-eval-frames        "${MAX_EVAL_FRAMES}" \
-    --frame-stride           "${FRAME_STRIDE}" \
-    --flow-width             "${FLOW_WIDTH}" \
-    --flow-height            "${FLOW_HEIGHT}" \
-    --raft-model             "${RAFT_MODEL}" \
-    --raft-weights-path      "${RAFT_WEIGHTS_PATH}" \
-    ${SHAPE_ARGS} \
-    ${GUIDE_ARGS} \
-    ${STAGE_QUANT_ARGS} \
-    ${QUANT_ARG}
+COMMON_ARGS=(
+    --src-video "${SRC_VIDEO}"
+    --edit-prompt "${EDIT_PROMPT}"
+    "${TARGET_ARG_NAME}" "${TARGET_ARG_VALUE}"
+    --output-dir "${OUTPUT_DIR}"
+    --checkpoint-path "${CKPT_ROOT}/ltx-2.3-22b-dev.safetensors"
+    --gemma-root "${GEMMA_ROOT}"
+    --seed "${SEED}"
+    --num-inference-steps "${NUM_INFERENCE_STEPS}"
+    --ti2v-num-inference-steps "${TI2V_NUM_INFERENCE_STEPS}"
+    --retake-num-inference-steps "${RETAKE_NUM_INFERENCE_STEPS}"
+    --final-retake-num-inference-steps "${FINAL_RETAKE_NUM_INFERENCE_STEPS}"
+    --retake-start-frames "${RETAKE_START_FRAMES}"
+    --iterations "${ITERATIONS}"
+    --lr "${LR}"
+    --flow-weight "${FLOW_WEIGHT}"
+    --mag-curve-weight "${MAG_CURVE_WEIGHT}"
+    --latent-reg-weight "${LATENT_REG_WEIGHT}"
+    --max-eval-frames "${MAX_EVAL_FRAMES}"
+    --frame-stride "${FRAME_STRIDE}"
+    --flow-width "${FLOW_WIDTH}"
+    --flow-height "${FLOW_HEIGHT}"
+    --raft-model "${RAFT_MODEL}"
+    --raft-weights-path "${RAFT_WEIGHTS_PATH}"
+)
+
+if [[ -n "${SHAPE_ARGS}" ]]; then
+    # shellcheck disable=SC2206
+    COMMON_ARGS+=( ${SHAPE_ARGS} )
+fi
+if [[ -n "${GUIDE_ARGS}" ]]; then
+    # shellcheck disable=SC2206
+    COMMON_ARGS+=( ${GUIDE_ARGS} )
+fi
+if [[ -n "${STAGE_QUANT_ARGS}" ]]; then
+    # shellcheck disable=SC2206
+    COMMON_ARGS+=( ${STAGE_QUANT_ARGS} )
+fi
+if [[ -n "${QUANT_ARG}" ]]; then
+    # shellcheck disable=SC2206
+    COMMON_ARGS+=( ${QUANT_ARG} )
+fi
+
+if [[ "${MULTI_GPU}" == "1" ]]; then
+    torchrun --standalone --nproc_per_node "${NPROC_PER_NODE}" \
+        "${REPO_ROOT}/editing/optimize_audio_embedding.py" \
+        --distributed-shard-transformer \
+        --no-save-final-videos \
+        "${COMMON_ARGS[@]}"
+else
+    python "${REPO_ROOT}/editing/optimize_audio_embedding.py" "${COMMON_ARGS[@]}"
+fi
 
 echo "Finished with exit code $?"
