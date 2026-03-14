@@ -2,6 +2,10 @@
 # =============================================================================
 # SLURM job: optimize audio latent for the jumping-dog experiment.
 #
+# Default profile is intentionally conservative for 2xH100 allocations because
+# the current 2-rank FSDP init path can OOM during parameter flatten/sharding
+# before optimization begins.
+#
 # Usage:
 #   sbatch editing/scripts/submit_optimize_jump_dog.sh /path/to/source.mp4
 #
@@ -15,9 +19,9 @@
 
 #SBATCH --job-name=ltx_opt_jump_dog
 #SBATCH --account=def-amahdavi
-#SBATCH --gpus-per-node=h100:2
-#SBATCH --mem=64G
-#SBATCH --time=02:00:00
+#SBATCH --gpus-per-node=h100:1
+#SBATCH --mem=32G
+#SBATCH --time=00:30:00
 #SBATCH --output=%x_%j.out
 #SBATCH --error=%x_%j.err
 
@@ -39,30 +43,32 @@ EDIT_PROMPT="${EDIT_PROMPT:-A dog in the scene}"
 TARGET_PROMPT="${TARGET_PROMPT:-The dog jumps up and down}"
 
 SEED="${SEED:-42}"
-NUM_INFERENCE_STEPS="${NUM_INFERENCE_STEPS:-20}"
-TI2V_NUM_INFERENCE_STEPS="${TI2V_NUM_INFERENCE_STEPS:-20}"
-RETAKE_NUM_INFERENCE_STEPS="${RETAKE_NUM_INFERENCE_STEPS:-30}"
-FINAL_RETAKE_NUM_INFERENCE_STEPS="${FINAL_RETAKE_NUM_INFERENCE_STEPS:-30}"
-RETAKE_START_FRAMES="${RETAKE_START_FRAMES:-30}"
+NUM_INFERENCE_STEPS="${NUM_INFERENCE_STEPS:-16}"
+TI2V_NUM_INFERENCE_STEPS="${TI2V_NUM_INFERENCE_STEPS:-16}"
+RETAKE_NUM_INFERENCE_STEPS="${RETAKE_NUM_INFERENCE_STEPS:-20}"
+FINAL_RETAKE_NUM_INFERENCE_STEPS="${FINAL_RETAKE_NUM_INFERENCE_STEPS:-20}"
+RETAKE_START_FRAMES="${RETAKE_START_FRAMES:-5}"
 
-ITERATIONS="${ITERATIONS:-10}"
-LR="${LR:-0.05}"
+ITERATIONS="${ITERATIONS:-6}"
+LR="${LR:-0.03}"
+AUD_OPT_LAST_STEPS="${AUD_OPT_LAST_STEPS:-6}"
+FINAL_AUD_OPT_LAST_STEPS="${FINAL_AUD_OPT_LAST_STEPS:-0}"
 FLOW_WEIGHT="${FLOW_WEIGHT:-1.0}"
 MAG_CURVE_WEIGHT="${MAG_CURVE_WEIGHT:-0.25}"
 LATENT_REG_WEIGHT="${LATENT_REG_WEIGHT:-0.02}"
-MAX_EVAL_FRAMES="${MAX_EVAL_FRAMES:-17}"
-FRAME_STRIDE="${FRAME_STRIDE:-2}"
-FLOW_WIDTH="${FLOW_WIDTH:-256}"
-FLOW_HEIGHT="${FLOW_HEIGHT:-144}"
+MAX_EVAL_FRAMES="${MAX_EVAL_FRAMES:-9}"
+FRAME_STRIDE="${FRAME_STRIDE:-3}"
+FLOW_WIDTH="${FLOW_WIDTH:-224}"
+FLOW_HEIGHT="${FLOW_HEIGHT:-128}"
 
 # Keep this file available on shared storage or $HOME so compute nodes can read it.
 RAFT_MODEL="${RAFT_MODEL:-raft_small}"
 RAFT_WEIGHTS_PATH="${RAFT_WEIGHTS_PATH:-}"
 
 # Optional shape overrides (leave empty to auto-detect from source video)
-HEIGHT="${HEIGHT:-}"
-WIDTH="${WIDTH:-}"
-NUM_FRAMES="${NUM_FRAMES:-}"
+HEIGHT="${HEIGHT:-224}"
+WIDTH="${WIDTH:-224}"
+NUM_FRAMES="${NUM_FRAMES:-129}"
 FRAME_RATE="${FRAME_RATE:-}"
 
 # Optional guidance overrides (leave empty for auto-detect)
@@ -77,8 +83,12 @@ TI2V_QUANTIZATION="${TI2V_QUANTIZATION:-}"
 RETAKE_QUANTIZATION="${RETAKE_QUANTIZATION:-}"
 
 # Multi-GPU gradient mode (FSDP sharded transformer)
-MULTI_GPU="${MULTI_GPU:-1}"
+# Default disabled for 2xH100 because current FSDP init OOMs before training.
+MULTI_GPU="${MULTI_GPU:-0}"
 NPROC_PER_NODE="${NPROC_PER_NODE:-}"
+
+# Final render is enabled by default so optimized/baseline videos are saved.
+SAVE_FINAL_VIDEOS="${SAVE_FINAL_VIDEOS:-1}"
 
 # Infer visible GPUs from SLURM/CUDA mask when possible.
 VISIBLE_GPU_COUNT=""
@@ -91,6 +101,12 @@ fi
 
 if [[ -z "${NPROC_PER_NODE}" ]]; then
     NPROC_PER_NODE="${VISIBLE_GPU_COUNT}"
+fi
+
+# FSDP init can transiently peak above steady-state memory; default to fp8
+# Retake weights in multi-GPU mode unless explicitly overridden.
+if [[ "${MULTI_GPU}" == "1" ]] && [[ -z "${RETAKE_QUANTIZATION}" ]]; then
+    RETAKE_QUANTIZATION="fp8-cast"
 fi
 
 if [[ "${MULTI_GPU}" == "1" ]] && [[ "${NPROC_PER_NODE}" -gt "${VISIBLE_GPU_COUNT}" ]]; then
@@ -145,11 +161,16 @@ echo "  RAFT model          : ${RAFT_MODEL}"
 echo "  RAFT weights path   : ${RAFT_WEIGHTS_PATH}"
 echo "  Iterations          : ${ITERATIONS}"
 echo "  LR                  : ${LR}"
+echo "  Audio opt last steps: ${AUD_OPT_LAST_STEPS}"
+if [[ -n "${FINAL_AUD_OPT_LAST_STEPS}" ]]; then
+    echo "  Final audio last st.: ${FINAL_AUD_OPT_LAST_STEPS}"
+fi
 echo "  TI2V steps          : ${TI2V_NUM_INFERENCE_STEPS}"
 echo "  Retake steps        : ${RETAKE_NUM_INFERENCE_STEPS}"
 echo "  Final retake steps  : ${FINAL_RETAKE_NUM_INFERENCE_STEPS}"
 echo "  Output dir          : ${OUTPUT_DIR}"
 echo "  Multi GPU           : ${MULTI_GPU}"
+echo "  Save final videos   : ${SAVE_FINAL_VIDEOS}"
 echo "  NPROC per node      : ${NPROC_PER_NODE}"
 echo "  Visible GPUs        : ${VISIBLE_GPU_COUNT}"
 echo "========================================================"
@@ -162,7 +183,7 @@ source "${REPO_ROOT}/.venv/bin/activate"
 
 # Keep torch cache explicit for reproducible offline loading.
 export TORCH_HOME="${TORCH_HOME:-/home/amirrz/.cache/torch}"
-export PYTORCH_ALLOC_CONF=expandable_segments:True
+export PYTORCH_ALLOC_CONF="${PYTORCH_ALLOC_CONF:-expandable_segments:True,garbage_collection_threshold:0.8}"
 
 # ---------------------------------------------------------------------------
 # Build optional arguments
@@ -213,6 +234,7 @@ COMMON_ARGS=(
     --retake-start-frames "${RETAKE_START_FRAMES}"
     --iterations "${ITERATIONS}"
     --lr "${LR}"
+    --audio-opt-last-steps "${AUD_OPT_LAST_STEPS}"
     --flow-weight "${FLOW_WEIGHT}"
     --mag-curve-weight "${MAG_CURVE_WEIGHT}"
     --latent-reg-weight "${LATENT_REG_WEIGHT}"
@@ -223,6 +245,10 @@ COMMON_ARGS=(
     --raft-model "${RAFT_MODEL}"
     --raft-weights-path "${RAFT_WEIGHTS_PATH}"
 )
+
+if [[ -n "${FINAL_AUD_OPT_LAST_STEPS}" ]]; then
+    COMMON_ARGS+=( --final-audio-opt-last-steps "${FINAL_AUD_OPT_LAST_STEPS}" )
+fi
 
 if [[ -n "${SHAPE_ARGS}" ]]; then
     # shellcheck disable=SC2206
@@ -241,11 +267,14 @@ if [[ -n "${QUANT_ARG}" ]]; then
     COMMON_ARGS+=( ${QUANT_ARG} )
 fi
 
+if [[ "${SAVE_FINAL_VIDEOS}" != "1" ]]; then
+    COMMON_ARGS+=( --no-save-final-videos )
+fi
+
 if [[ "${MULTI_GPU}" == "1" ]]; then
     torchrun --standalone --nproc_per_node "${NPROC_PER_NODE}" \
         "${REPO_ROOT}/editing/optimize_audio_embedding.py" \
         --distributed-shard-transformer \
-        --no-save-final-videos \
         "${COMMON_ARGS[@]}"
 else
     python "${REPO_ROOT}/editing/optimize_audio_embedding.py" "${COMMON_ARGS[@]}"

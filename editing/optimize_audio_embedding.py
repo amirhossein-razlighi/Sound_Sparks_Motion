@@ -41,12 +41,14 @@ import logging
 import os
 import sys
 import tempfile
+from dataclasses import replace
 from pathlib import Path
 from typing import Iterator
 
 import av
 import numpy as np
 import torch
+import torch.distributed as dist
 import torch.nn.functional as F
 import torchaudio
 
@@ -65,6 +67,7 @@ from ltx_core.quantization import QuantizationPolicy
 from ltx_core.types import Audio, VideoPixelShape
 import ltx_pipelines.retake as _retake_module
 import ltx_pipelines.ti2vid_one_stage as _ti2vid_module
+import ltx_pipelines.utils.samplers as _samplers_module
 from ltx_pipelines.retake import RetakePipeline
 from ltx_pipelines.ti2vid_one_stage import TI2VidOneStagePipeline
 from ltx_pipelines.utils.args import ImageConditioningInput
@@ -79,6 +82,69 @@ from ltx_pipelines.utils.media_io import (
 )
 
 log = logging.getLogger(__name__)
+
+
+def _is_distributed() -> bool:
+    return dist.is_available() and dist.is_initialized()
+
+
+def _barrier() -> None:
+    if _is_distributed():
+        dist.barrier()
+
+
+def _rank0_print(msg: str) -> None:
+    if not _is_distributed() or dist.get_rank() == 0:
+        print(msg)
+
+
+def init_distributed_and_device() -> tuple[int, int, torch.device]:
+    """Initialize distributed process group from env vars when present.
+
+    Supports torchrun/srun launches where RANK/WORLD_SIZE/LOCAL_RANK are set.
+    """
+    use_dist = (
+        dist.is_available()
+        and "RANK" in os.environ
+        and "WORLD_SIZE" in os.environ
+        and int(os.environ.get("WORLD_SIZE", "1")) > 1
+    )
+
+    rank = 0
+    world_size = 1
+    local_rank = 0
+    if use_dist:
+        rank = int(os.environ["RANK"])
+        world_size = int(os.environ["WORLD_SIZE"])
+        local_rank = int(os.environ.get("LOCAL_RANK", rank))
+
+        visible_gpu_count = torch.cuda.device_count() if torch.cuda.is_available() else 0
+        if visible_gpu_count <= 0:
+            raise RuntimeError(
+                "Distributed launch requested but no CUDA devices are visible. "
+                f"RANK={rank} WORLD_SIZE={world_size} LOCAL_RANK={local_rank}."
+            )
+        if local_rank < 0 or local_rank >= visible_gpu_count:
+            raise RuntimeError(
+                "Invalid LOCAL_RANK to visible GPU mapping. "
+                f"RANK={rank} WORLD_SIZE={world_size} LOCAL_RANK={local_rank} visible_gpus={visible_gpu_count} "
+                f"CUDA_VISIBLE_DEVICES={os.environ.get('CUDA_VISIBLE_DEVICES', '<unset>')}. "
+                "Set torchrun --nproc_per_node to the number of visible GPUs in the allocation."
+            )
+
+        # Set device before NCCL init so collectives use the correct mapping.
+        torch.cuda.set_device(local_rank)
+        dist.init_process_group(backend="nccl", device_id=local_rank)
+
+    if torch.cuda.is_available():
+        if use_dist:
+            device = torch.device(f"cuda:{local_rank}")
+        else:
+            device = torch.device("cuda")
+    else:
+        device = torch.device("cpu")
+
+    return rank, world_size, device
 
 # ---------------------------------------------------------------------------
 # Defaults (cluster-friendly, can be overridden via CLI)
@@ -195,10 +261,12 @@ def write_temp_video_with_audio(
             pad.pts = frame_idx
             pad.time_base = time_base
             for i in range(len(last_frame.planes)):
-                np.copyto(
-                    np.frombuffer(pad.planes[i], dtype=np.uint8).reshape(last_frame.planes[i].shape),
-                    np.frombuffer(last_frame.planes[i], dtype=np.uint8).reshape(last_frame.planes[i].shape),
-                )
+                # PyAV VideoPlane does not expose .shape in all versions.
+                # Copy raw plane bytes directly using memoryview.
+                src_plane = memoryview(last_frame.planes[i])
+                dst_plane = memoryview(pad.planes[i])
+                n = min(len(src_plane), len(dst_plane))
+                dst_plane[:n] = src_plane[:n]
             for pkt in vs_out.encode(pad):
                 dst.mux(pkt)
             frame_idx += 1
@@ -592,6 +660,7 @@ def render_with_injected_audio_latent(
     max_frames: int,
     frame_stride: int,
     resize_to: tuple[int, int],
+    audio_opt_last_steps: int,
 ) -> torch.Tensor:
     """Run Retake with forced audio latent and return frames [F,3,H,W] in [0,1].
 
@@ -603,6 +672,50 @@ def render_with_injected_audio_latent(
     orig_video_encoder_getter = pipeline.model_ledger.video_encoder
     orig_audio_encoder_getter = pipeline.model_ledger.audio_encoder
     orig_audio_decode = _retake_module.vae_decode_audio
+    orig_euler_loop = _retake_module.euler_denoising_loop
+
+    def _late_step_grad_euler_loop(sigmas, video_state, audio_state, stepper, denoise_fn):
+        total_steps = max(int(sigmas.shape[0]) - 1, 0)
+        if audio_opt_last_steps <= 0 or audio_opt_last_steps >= total_steps:
+            return orig_euler_loop(sigmas, video_state, audio_state, stepper, denoise_fn)
+
+        grad_start_step = total_steps - audio_opt_last_steps
+        for step_idx in range(total_steps):
+            if step_idx < grad_start_step:
+                # Truncate graph in early denoising and keep gradients only for late steps.
+                with torch.no_grad():
+                    denoised_video, denoised_audio = denoise_fn(video_state, audio_state, sigmas, step_idx)
+                    denoised_video = _samplers_module.post_process_latent(
+                        denoised_video,
+                        video_state.denoise_mask,
+                        video_state.clean_latent,
+                    )
+                    denoised_audio = _samplers_module.post_process_latent(
+                        denoised_audio,
+                        audio_state.denoise_mask,
+                        audio_state.clean_latent,
+                    )
+                    next_video = stepper.step(video_state.latent, denoised_video, sigmas, step_idx).detach()
+                    next_audio = stepper.step(audio_state.latent, denoised_audio, sigmas, step_idx).detach()
+            else:
+                denoised_video, denoised_audio = denoise_fn(video_state, audio_state, sigmas, step_idx)
+                denoised_video = _samplers_module.post_process_latent(
+                    denoised_video,
+                    video_state.denoise_mask,
+                    video_state.clean_latent,
+                )
+                denoised_audio = _samplers_module.post_process_latent(
+                    denoised_audio,
+                    audio_state.denoise_mask,
+                    audio_state.clean_latent,
+                )
+                next_video = stepper.step(video_state.latent, denoised_video, sigmas, step_idx)
+                next_audio = stepper.step(audio_state.latent, denoised_audio, sigmas, step_idx)
+
+            video_state = replace(video_state, latent=next_video)
+            audio_state = replace(audio_state, latent=next_audio)
+
+        return (video_state, audio_state)
 
     def _cached_video_encode(video_encoder, video_path, output_shape, dtype, device):  # noqa: ARG001
         return cached_video_latent
@@ -626,6 +739,7 @@ def render_with_injected_audio_latent(
     _retake_module.vae_decode_video = _float_decode_video
     pipeline.model_ledger.video_encoder = lambda: None
     pipeline.model_ledger.audio_encoder = lambda: None
+    _retake_module.euler_denoising_loop = _late_step_grad_euler_loop
     # Detach audio latent before decode: severs the shared transformer
     # checkpoint nodes from the audio (discarded) path, so that when the
     # decoded_audio tensor goes out of scope its graph doesn't free nodes
@@ -649,6 +763,7 @@ def render_with_injected_audio_latent(
         pipeline.model_ledger.video_encoder = orig_video_encoder_getter
         pipeline.model_ledger.audio_encoder = orig_audio_encoder_getter
         _retake_module.vae_decode_audio = orig_audio_decode
+        _retake_module.euler_denoising_loop = orig_euler_loop
 
 
 def render_and_save_video_with_latent(
@@ -661,6 +776,7 @@ def render_and_save_video_with_latent(
     fps: float,
     num_frames: int,
     audio_sr: int,
+    audio_opt_last_steps: int,
 ) -> None:
     """Render a full video with injected latent and save as MP4.
 
@@ -668,6 +784,49 @@ def render_and_save_video_with_latent(
     """
     orig_video_encode = _retake_module._encode_video_for_retake
     orig_audio_encode = _retake_module._encode_audio_for_retake
+    orig_euler_loop = _retake_module.euler_denoising_loop
+
+    def _late_step_grad_euler_loop(sigmas, video_state, audio_state, stepper, denoise_fn):
+        total_steps = max(int(sigmas.shape[0]) - 1, 0)
+        if audio_opt_last_steps <= 0 or audio_opt_last_steps >= total_steps:
+            return orig_euler_loop(sigmas, video_state, audio_state, stepper, denoise_fn)
+
+        grad_start_step = total_steps - audio_opt_last_steps
+        for step_idx in range(total_steps):
+            if step_idx < grad_start_step:
+                with torch.no_grad():
+                    denoised_video, denoised_audio = denoise_fn(video_state, audio_state, sigmas, step_idx)
+                    denoised_video = _samplers_module.post_process_latent(
+                        denoised_video,
+                        video_state.denoise_mask,
+                        video_state.clean_latent,
+                    )
+                    denoised_audio = _samplers_module.post_process_latent(
+                        denoised_audio,
+                        audio_state.denoise_mask,
+                        audio_state.clean_latent,
+                    )
+                    next_video = stepper.step(video_state.latent, denoised_video, sigmas, step_idx).detach()
+                    next_audio = stepper.step(audio_state.latent, denoised_audio, sigmas, step_idx).detach()
+            else:
+                denoised_video, denoised_audio = denoise_fn(video_state, audio_state, sigmas, step_idx)
+                denoised_video = _samplers_module.post_process_latent(
+                    denoised_video,
+                    video_state.denoise_mask,
+                    video_state.clean_latent,
+                )
+                denoised_audio = _samplers_module.post_process_latent(
+                    denoised_audio,
+                    audio_state.denoise_mask,
+                    audio_state.clean_latent,
+                )
+                next_video = stepper.step(video_state.latent, denoised_video, sigmas, step_idx)
+                next_audio = stepper.step(audio_state.latent, denoised_audio, sigmas, step_idx)
+
+            video_state = replace(video_state, latent=next_video)
+            audio_state = replace(audio_state, latent=next_audio)
+
+        return (video_state, audio_state)
 
     def _cached_video_encode(video_encoder, video_path, output_shape, dtype, device):  # noqa: ARG001
         return cached_video_latent
@@ -677,6 +836,7 @@ def render_and_save_video_with_latent(
 
     _retake_module._encode_video_for_retake = _cached_video_encode
     _retake_module._encode_audio_for_retake = _forced_audio_encode
+    _retake_module.euler_denoising_loop = _late_step_grad_euler_loop
     try:
         video_iter, _ = pipeline(video_path=src_video, **retake_kwargs)
 
@@ -704,6 +864,7 @@ def render_and_save_video_with_latent(
     finally:
         _retake_module._encode_video_for_retake = orig_video_encode
         _retake_module._encode_audio_for_retake = orig_audio_encode
+        _retake_module.euler_denoising_loop = orig_euler_loop
 
 
 # ---------------------------------------------------------------------------
@@ -713,14 +874,29 @@ def render_and_save_video_with_latent(
 def optimize_audio_latent(args: argparse.Namespace) -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s  %(levelname)-8s %(message)s", datefmt="%H:%M:%S")
 
+    rank, world_size, device = init_distributed_and_device()
+    is_main = rank == 0
+    if not is_main:
+        logging.getLogger().setLevel(logging.WARNING)
+
+    if world_size > 1 and not args.distributed_shard_transformer:
+        raise ValueError(
+            "Multi-process launch detected but --distributed-shard-transformer is disabled. "
+            "Enable --distributed-shard-transformer for true multi-GPU gradient optimization."
+        )
+    if args.audio_opt_last_steps < 0:
+        raise ValueError("--audio-opt-last-steps must be >= 0")
+    if args.final_audio_opt_last_steps is not None and args.final_audio_opt_last_steps < 0:
+        raise ValueError("--final-audio-opt-last-steps must be >= 0")
+
     output_dir = Path(args.output_dir).expanduser().resolve()
-    output_dir.mkdir(parents=True, exist_ok=True)
+    if is_main:
+        output_dir.mkdir(parents=True, exist_ok=True)
+    _barrier()
 
     loras = _parse_loras(args.loras)
     if loras:
         log.info("LoRAs: %s", [(l.path, l.strength) for l in loras])
-
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     def _resolve_quantization_policy(name: str | None) -> QuantizationPolicy | None:
         if name == "fp8-cast":
@@ -769,17 +945,19 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
     src_wave = align_waveform_length(src_wave, int(duration * args.audio_sr))
 
     retake_input_video = output_dir / "retake_input_prepared.mp4"
-    write_temp_video_with_audio(
-        src_video_path=args.src_video,
-        target_frames=num_frames,
-        target_height=height,
-        target_width=width,
-        fps=frame_rate,
-        waveform=src_wave,
-        sr=args.audio_sr,
-        output_path=str(retake_input_video),
-    )
-    log.info("Prepared retake input video -> %s", retake_input_video)
+    if is_main:
+        write_temp_video_with_audio(
+            src_video_path=args.src_video,
+            target_frames=num_frames,
+            target_height=height,
+            target_width=width,
+            fps=frame_rate,
+            waveform=src_wave,
+            sr=args.audio_sr,
+            output_path=str(retake_input_video),
+        )
+        log.info("Prepared retake input video -> %s", retake_input_video)
+    _barrier()
 
     # Free temporary preprocessing tensors before loading large model weights.
     del src_audio_for_input, src_wave
@@ -822,19 +1000,28 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
         )
 
     # 1) Target-motion source
-    target_video_path = maybe_generate_target_video(
-        args=args,
-        device=device,
-        height=height,
-        width=width,
-        num_frames=num_frames,
-        frame_rate=frame_rate,
-        video_guider_params=video_guider_params,
-        audio_guider_params=audio_guider_params,
-        quant_policy=ti2v_quant_policy,
-        loras=loras,
-        output_dir=output_dir,
-    )
+    if args.target_video is not None:
+        target_video_path = Path(args.target_video).expanduser().resolve()
+    else:
+        target_video_path = output_dir / "target_motion_video.mp4"
+
+    if is_main:
+        target_video_path = maybe_generate_target_video(
+            args=args,
+            device=device,
+            height=height,
+            width=width,
+            num_frames=num_frames,
+            frame_rate=frame_rate,
+            video_guider_params=video_guider_params,
+            audio_guider_params=audio_guider_params,
+            quant_policy=ti2v_quant_policy,
+            loras=loras,
+            output_dir=output_dir,
+        )
+    _barrier()
+    if not target_video_path.exists():
+        raise FileNotFoundError(f"Target-motion video not found after preparation: {target_video_path}")
 
     resize_to = (args.flow_width, args.flow_height)
     target_frames_rgb = decode_video_frames_rgb(
@@ -878,6 +1065,48 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
         gradient_checkpointing=args.gradient_checkpointing,
     )
 
+    if world_size > 1 and args.distributed_shard_transformer:
+        from torch.distributed.fsdp import FullyShardedDataParallel as FSDP
+
+        cached_transformer = pipeline.model_ledger.transformer()
+        param_dtypes_before = {
+            p.dtype
+            for p in cached_transformer.parameters()
+            if torch.is_floating_point(p)
+        }
+        if len(param_dtypes_before) > 1:
+            # FSDP flatten requires uniform floating dtype across managed params.
+            # Some quantized/checkpoint-loaded paths may leave a subset in fp32.
+            target_dtype = pipeline.dtype
+            if is_main:
+                log.warning(
+                    "Transformer has mixed floating dtypes before FSDP (%s). Casting to %s for uniform flatten.",
+                    sorted(str(d) for d in param_dtypes_before),
+                    target_dtype,
+                )
+            cached_transformer = cached_transformer.to(dtype=target_dtype)
+
+        velocity_model = getattr(cached_transformer, "velocity_model", None)
+        if args.gradient_checkpointing and velocity_model is not None and hasattr(velocity_model, "set_gradient_checkpointing"):
+            velocity_model.set_gradient_checkpointing(True)
+        cached_transformer.requires_grad_(False)
+        try:
+            sharded_transformer = FSDP(
+                cached_transformer,
+                use_orig_params=True,
+                device_id=torch.cuda.current_device() if torch.cuda.is_available() else None,
+                limit_all_gathers=True,
+            )
+        except torch.OutOfMemoryError as exc:
+            raise RuntimeError(
+                "FSDP init OOM while sharding transformer. This is a peak-memory issue during flatten/shard. "
+                "Use lower-memory transformer weights for Retake (recommended: --retake-quantization fp8-cast), "
+                "reduce num_frames/resolution, or increase number of GPUs."
+            ) from exc
+        pipeline.model_ledger.transformer = lambda: sharded_transformer
+        if is_main:
+            log.info("Using FSDP-sharded Retake transformer across %d ranks", world_size)
+
     cached_video_latent, base_audio_latent, waveform_sr = build_cached_source_latents(
         pipeline=pipeline,
         src_video=str(retake_input_video),
@@ -906,23 +1135,31 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
         tiling_config=TilingConfig.default(),
     )
 
+    if args.audio_opt_last_steps > 0:
+        log.info(
+            "Late-step audio optimization enabled: gradients kept only for last %d/%d denoising steps",
+            args.audio_opt_last_steps,
+            retake_kwargs["num_inference_steps"],
+        )
+
     # 3) Directly optimise the audio latent in the full latent space
     base_audio_latent_fp32 = base_audio_latent.float().detach()
     audio_latent = torch.nn.Parameter(base_audio_latent_fp32.clone())
     optimizer = torch.optim.Adam([audio_latent], lr=args.lr)
 
     csv_path = output_dir / "optimization_log.csv"
-    with csv_path.open("w", newline="") as f_csv:
+    with (csv_path.open("w", newline="") if is_main else open(os.devnull, "w", newline="")) as f_csv:
         writer = csv.writer(f_csv)
-        writer.writerow([
-            "iter",
-            "total_loss",
-            "flow_mse",
-            "mag_curve_mse",
-            "latent_reg",
-            "grad_norm",
-            "is_best",
-        ])
+        if is_main:
+            writer.writerow([
+                "iter",
+                "total_loss",
+                "flow_mse",
+                "mag_curve_mse",
+                "latent_reg",
+                "grad_norm",
+                "is_best",
+            ])
 
         best = {
             "loss": float("inf"),
@@ -944,6 +1181,7 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
                 max_frames=args.max_eval_frames,
                 frame_stride=args.frame_stride,
                 resize_to=resize_to,
+                audio_opt_last_steps=args.audio_opt_last_steps,
             )
             if gen_frames.shape[0] < 2:
                 raise RuntimeError("Generated video has fewer than 2 frames; cannot compute flow objective.")
@@ -960,6 +1198,10 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
             total_t = flow_total + latent_reg_t
             total_t.backward()
 
+            if world_size > 1 and audio_latent.grad is not None:
+                dist.all_reduce(audio_latent.grad, op=dist.ReduceOp.SUM)
+                audio_latent.grad.div_(world_size)
+
             grad_norm = float(audio_latent.grad.norm().item()) if audio_latent.grad is not None else 0.0
             if args.grad_clip > 0:
                 torch.nn.utils.clip_grad_norm_([audio_latent], max_norm=args.grad_clip)
@@ -971,8 +1213,9 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
             latent_reg = float(latent_reg_t.detach().item())
 
             is_best = total < best["loss"]
-            writer.writerow([it, total, flow_mse, mag_mse, latent_reg, grad_norm, int(is_best)])
-            f_csv.flush()
+            if is_main:
+                writer.writerow([it, total, flow_mse, mag_mse, latent_reg, grad_norm, int(is_best)])
+                f_csv.flush()
 
             if is_best:
                 best["loss"] = total
@@ -993,78 +1236,94 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
 
     best_latent = best["latent"].to(dtype=base_audio_latent.dtype)
 
-    torch.save(
-        {
-            "best_loss": best["loss"],
-            "best_flow_mse": best["flow_mse"],
-            "best_mag_mse": best["mag_mse"],
-        },
-        output_dir / "best_latent_params.pt",
-    )
+    if is_main:
+        torch.save(
+            {
+                "best_loss": best["loss"],
+                "best_flow_mse": best["flow_mse"],
+                "best_mag_mse": best["mag_mse"],
+                "world_size": world_size,
+            },
+            output_dir / "best_latent_params.pt",
+        )
 
-    # Save optimized and baseline audio latents for later experiments
-    torch.save(base_audio_latent.detach().cpu(), output_dir / "base_audio_latent.pt")
-    torch.save(best_latent.detach().cpu(), output_dir / "best_audio_latent.pt")
+        # Save optimized and baseline audio latents for later experiments
+        torch.save(base_audio_latent.detach().cpu(), output_dir / "base_audio_latent.pt")
+        torch.save(best_latent.detach().cpu(), output_dir / "best_audio_latent.pt")
 
     # Save final videos (can use a higher step budget than optimization)
     final_retake_kwargs = dict(retake_kwargs)
     if args.final_retake_num_inference_steps is not None:
         final_retake_kwargs["num_inference_steps"] = args.final_retake_num_inference_steps
-
-    # Save final videos
-    best_video_path = output_dir / "best_optimized_video.mp4"
-    render_and_save_video_with_latent(
-        pipeline=pipeline,
-        src_video=str(retake_input_video),
-        injected_audio_latent=best_latent,
-        cached_video_latent=cached_video_latent,
-        retake_kwargs=final_retake_kwargs,
-        output_path=best_video_path,
-        fps=frame_rate,
-        num_frames=num_frames,
-        audio_sr=waveform_sr,
+    final_audio_opt_last_steps = (
+        args.final_audio_opt_last_steps if args.final_audio_opt_last_steps is not None else args.audio_opt_last_steps
     )
 
-    baseline_video_path = output_dir / "baseline_unoptimized_video.mp4"
-    render_and_save_video_with_latent(
-        pipeline=pipeline,
-        src_video=str(retake_input_video),
-        injected_audio_latent=base_audio_latent,
-        cached_video_latent=cached_video_latent,
-        retake_kwargs=final_retake_kwargs,
-        output_path=baseline_video_path,
-        fps=frame_rate,
-        num_frames=num_frames,
-        audio_sr=waveform_sr,
-    )
-
-    if args.transfer_prompt:
-        transfer_kwargs = dict(final_retake_kwargs)
-        transfer_kwargs["prompt"] = args.transfer_prompt
-        transfer_video_path = output_dir / "transfer_prompt_with_best_latent.mp4"
+    if is_main and args.save_final_videos and world_size == 1:
+        # Save final videos
+        best_video_path = output_dir / "best_optimized_video.mp4"
         render_and_save_video_with_latent(
             pipeline=pipeline,
             src_video=str(retake_input_video),
             injected_audio_latent=best_latent,
             cached_video_latent=cached_video_latent,
-            retake_kwargs=transfer_kwargs,
-            output_path=transfer_video_path,
+            retake_kwargs=final_retake_kwargs,
+            output_path=best_video_path,
             fps=frame_rate,
             num_frames=num_frames,
             audio_sr=waveform_sr,
+            audio_opt_last_steps=final_audio_opt_last_steps,
         )
 
-    # For convenience: save source audio track used for muxing
-    src_audio = decode_audio_from_file(args.src_video, device, max_duration=duration)
-    if src_audio is not None:
-        wave = src_audio.waveform.squeeze(0).float()
-        if src_audio.sampling_rate != args.audio_sr:
-            wave = torchaudio.functional.resample(wave, orig_freq=src_audio.sampling_rate, new_freq=args.audio_sr)
-        wave = align_waveform_length(wave, int(duration * args.audio_sr))
-        save_audio_wav(wave, args.audio_sr, str(output_dir / "source_audio_used.wav"))
+        baseline_video_path = output_dir / "baseline_unoptimized_video.mp4"
+        render_and_save_video_with_latent(
+            pipeline=pipeline,
+            src_video=str(retake_input_video),
+            injected_audio_latent=base_audio_latent,
+            cached_video_latent=cached_video_latent,
+            retake_kwargs=final_retake_kwargs,
+            output_path=baseline_video_path,
+            fps=frame_rate,
+            num_frames=num_frames,
+            audio_sr=waveform_sr,
+            audio_opt_last_steps=final_audio_opt_last_steps,
+        )
 
-    log.info("Done. Best total loss: %.6f", best["loss"])
-    log.info("Saved outputs in: %s", output_dir)
+        if args.transfer_prompt:
+            transfer_kwargs = dict(final_retake_kwargs)
+            transfer_kwargs["prompt"] = args.transfer_prompt
+            transfer_video_path = output_dir / "transfer_prompt_with_best_latent.mp4"
+            render_and_save_video_with_latent(
+                pipeline=pipeline,
+                src_video=str(retake_input_video),
+                injected_audio_latent=best_latent,
+                cached_video_latent=cached_video_latent,
+                retake_kwargs=transfer_kwargs,
+                output_path=transfer_video_path,
+                fps=frame_rate,
+                num_frames=num_frames,
+                audio_sr=waveform_sr,
+                audio_opt_last_steps=final_audio_opt_last_steps,
+            )
+    elif is_main and args.save_final_videos and world_size > 1:
+        log.warning("Skipping final video rendering in distributed mode. Re-run single-GPU with saved best latent to render.")
+
+    # For convenience: save source audio track used for muxing
+    if is_main:
+        src_audio = decode_audio_from_file(args.src_video, device, max_duration=duration)
+        if src_audio is not None:
+            wave = src_audio.waveform.squeeze(0).float()
+            if src_audio.sampling_rate != args.audio_sr:
+                wave = torchaudio.functional.resample(wave, orig_freq=src_audio.sampling_rate, new_freq=args.audio_sr)
+            wave = align_waveform_length(wave, int(duration * args.audio_sr))
+            save_audio_wav(wave, args.audio_sr, str(output_dir / "source_audio_used.wav"))
+
+        log.info("Done. Best total loss: %.6f", best["loss"])
+        log.info("Saved outputs in: %s", output_dir)
+
+    _barrier()
+    if _is_distributed():
+        dist.destroy_process_group()
 
 
 # ---------------------------------------------------------------------------
@@ -1118,6 +1377,38 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--iterations", type=int, default=8, help="Number of optimization iterations.")
     p.add_argument("--lr", type=float, default=0.05, help="Adam learning rate for latent coefficients.")
     p.add_argument("--grad-clip", type=float, default=1.0, help="Clip alpha gradient norm (<=0 disables clip).")
+    p.add_argument(
+        "--audio-opt-last-steps",
+        type=int,
+        default=0,
+        help=(
+            "Keep gradients only through the final K denoising steps during optimization "
+            "(0 = full-step gradients)."
+        ),
+    )
+    p.add_argument(
+        "--final-audio-opt-last-steps",
+        type=int,
+        default=None,
+        help=(
+            "Optional override for final render videos. If omitted, uses --audio-opt-last-steps."
+        ),
+    )
+    p.add_argument(
+        "--distributed-shard-transformer",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help=(
+            "Enable FSDP transformer sharding for multi-GPU gradient optimization. "
+            "Launch with torchrun/srun for this mode."
+        ),
+    )
+    p.add_argument(
+        "--save-final-videos",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Render final videos at the end (auto-disabled when distributed).",
+    )
     p.add_argument(
         "--raft-model",
         type=str,
