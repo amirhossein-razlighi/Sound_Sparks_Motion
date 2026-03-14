@@ -405,8 +405,9 @@ def flow_objective_torch(
         scale_x = tgt.shape[-1] / gen.shape[-1]
         scale_y = tgt.shape[-2] / gen.shape[-2]
         gen = F.interpolate(gen, size=tgt.shape[-2:], mode="bilinear", align_corners=False)
-        gen[:, 0] = gen[:, 0] * scale_x
-        gen[:, 1] = gen[:, 1] * scale_y
+        # Out-of-place scaling to avoid version-counter invalidation on a grad-tracked tensor.
+        scale = torch.tensor([scale_x, scale_y], device=gen.device, dtype=gen.dtype).view(1, 2, 1, 1)
+        gen = gen * scale
 
     flow_mse = F.mse_loss(gen, tgt)
 
@@ -488,7 +489,7 @@ def maybe_generate_target_video(
                 width=width,
                 num_frames=num_frames,
                 frame_rate=frame_rate,
-                num_inference_steps=args.num_inference_steps,
+                num_inference_steps=args.ti2v_num_inference_steps,
                 video_guider_params=video_guider_params,
                 audio_guider_params=audio_guider_params,
                 images=images,
@@ -564,13 +565,16 @@ def build_cached_source_latents(
     output_shape = VideoPixelShape(batch=1, frames=num_frames, width=width, height=height, fps=src_fps)
 
     audio_encoder = pipeline.model_ledger.audio_encoder()
-    base_audio_latent = _retake_module._encode_audio_for_retake(
-        audio_encoder=audio_encoder,
-        waveform=waveform,
-        waveform_sr=waveform_sr,
-        output_shape=output_shape,
-        dtype=torch.bfloat16,
-    ).to(device)
+    with torch.inference_mode():
+        base_audio_latent = _retake_module._encode_audio_for_retake(
+            audio_encoder=audio_encoder,
+            waveform=waveform,
+            waveform_sr=waveform_sr,
+            output_shape=output_shape,
+            dtype=torch.bfloat16,
+        ).to(device)
+    # Keep this as a graph-free anchor across optimization iterations.
+    base_audio_latent = base_audio_latent.detach()
 
     del audio_encoder
     if torch.cuda.is_available():
@@ -596,6 +600,9 @@ def render_with_injected_audio_latent(
     orig_video_encode = _retake_module._encode_video_for_retake
     orig_audio_encode = _retake_module._encode_audio_for_retake
     orig_video_decode = _retake_module.vae_decode_video
+    orig_video_encoder_getter = pipeline.model_ledger.video_encoder
+    orig_audio_encoder_getter = pipeline.model_ledger.audio_encoder
+    orig_audio_decode = _retake_module.vae_decode_audio
 
     def _cached_video_encode(video_encoder, video_path, output_shape, dtype, device):  # noqa: ARG001
         return cached_video_latent
@@ -617,6 +624,16 @@ def render_with_injected_audio_latent(
     _retake_module._encode_video_for_retake = _cached_video_encode
     _retake_module._encode_audio_for_retake = _forced_audio_encode
     _retake_module.vae_decode_video = _float_decode_video
+    pipeline.model_ledger.video_encoder = lambda: None
+    pipeline.model_ledger.audio_encoder = lambda: None
+    # Detach audio latent before decode: severs the shared transformer
+    # checkpoint nodes from the audio (discarded) path, so that when the
+    # decoded_audio tensor goes out of scope its graph doesn't free nodes
+    # that the video gradient path still needs.
+    def _detached_audio_decode(latent, audio_decoder, vocoder):
+        with torch.no_grad():
+            return orig_audio_decode(latent.detach(), audio_decoder, vocoder)
+    _retake_module.vae_decode_audio = _detached_audio_decode
     try:
         video_iter, _ = pipeline(video_path=src_video, **retake_kwargs)
         return flatten_video_chunks(
@@ -629,6 +646,9 @@ def render_with_injected_audio_latent(
         _retake_module._encode_video_for_retake = orig_video_encode
         _retake_module._encode_audio_for_retake = orig_audio_encode
         _retake_module.vae_decode_video = orig_video_decode
+        pipeline.model_ledger.video_encoder = orig_video_encoder_getter
+        pipeline.model_ledger.audio_encoder = orig_audio_encoder_getter
+        _retake_module.vae_decode_audio = orig_audio_decode
 
 
 def render_and_save_video_with_latent(
@@ -769,19 +789,37 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
         torch.cuda.synchronize()
 
     params = detect_params(args.checkpoint_path)
-    video_guider_params = MultiModalGuiderParams(
-        cfg_scale=args.cfg_scale if args.cfg_scale is not None else params.video_guider_params.cfg_scale,
-        stg_scale=params.video_guider_params.stg_scale,
-        stg_blocks=params.video_guider_params.stg_blocks,
-        rescale_scale=params.video_guider_params.rescale_scale,
-        modality_scale=args.a2v_scale if args.a2v_scale is not None else params.video_guider_params.modality_scale,
-    )
-    audio_guider_params = MultiModalGuiderParams(
-        cfg_scale=args.audio_cfg_scale if args.audio_cfg_scale is not None else params.audio_guider_params.cfg_scale,
-        stg_scale=params.audio_guider_params.stg_scale,
-        stg_blocks=params.audio_guider_params.stg_blocks,
-        rescale_scale=params.audio_guider_params.rescale_scale,
-    )
+    if args.low_memory_guidance:
+        # Memory-safe guidance: keep only the conditioned pass unless user explicitly
+        # requests a different CFG value. This avoids up to 3 extra transformer
+        # forwards per denoising step (uncond/STG/modality-isolated paths).
+        video_guider_params = MultiModalGuiderParams(
+            cfg_scale=args.cfg_scale if args.cfg_scale is not None else 1.0,
+            stg_scale=0.0,
+            stg_blocks=params.video_guider_params.stg_blocks,
+            rescale_scale=0.0,
+            modality_scale=args.a2v_scale if args.a2v_scale is not None else 1.0,
+        )
+        audio_guider_params = MultiModalGuiderParams(
+            cfg_scale=args.audio_cfg_scale if args.audio_cfg_scale is not None else 1.0,
+            stg_scale=0.0,
+            stg_blocks=params.audio_guider_params.stg_blocks,
+            rescale_scale=0.0,
+        )
+    else:
+        video_guider_params = MultiModalGuiderParams(
+            cfg_scale=args.cfg_scale if args.cfg_scale is not None else params.video_guider_params.cfg_scale,
+            stg_scale=params.video_guider_params.stg_scale,
+            stg_blocks=params.video_guider_params.stg_blocks,
+            rescale_scale=params.video_guider_params.rescale_scale,
+            modality_scale=args.a2v_scale if args.a2v_scale is not None else params.video_guider_params.modality_scale,
+        )
+        audio_guider_params = MultiModalGuiderParams(
+            cfg_scale=args.audio_cfg_scale if args.audio_cfg_scale is not None else params.audio_guider_params.cfg_scale,
+            stg_scale=params.audio_guider_params.stg_scale,
+            stg_blocks=params.audio_guider_params.stg_blocks,
+            rescale_scale=params.audio_guider_params.rescale_scale,
+        )
 
     # 1) Target-motion source
     target_video_path = maybe_generate_target_video(
@@ -837,6 +875,7 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
         loras=tuple(loras),
         device=device,
         quantization=retake_quant_policy,
+        gradient_checkpointing=args.gradient_checkpointing,
     )
 
     cached_video_latent, base_audio_latent, waveform_sr = build_cached_source_latents(
@@ -858,7 +897,7 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
         end_time=duration,
         seed=args.seed,
         negative_prompt=args.negative_prompt,
-        num_inference_steps=args.num_inference_steps,
+        num_inference_steps=args.retake_num_inference_steps,
         video_guider_params=video_guider_params,
         audio_guider_params=audio_guider_params,
         regenerate_video=True,
@@ -868,7 +907,8 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
     )
 
     # 3) Directly optimise the audio latent in the full latent space
-    audio_latent = torch.nn.Parameter(base_audio_latent.detach().float())
+    base_audio_latent_fp32 = base_audio_latent.float().detach()
+    audio_latent = torch.nn.Parameter(base_audio_latent_fp32.clone())
     optimizer = torch.optim.Adam([audio_latent], lr=args.lr)
 
     csv_path = output_dir / "optimization_log.csv"
@@ -916,9 +956,7 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
                 flow_weight=args.flow_weight,
                 mag_curve_weight=args.mag_curve_weight,
             )
-            latent_reg_t = args.latent_reg_weight * torch.mean(
-                (audio_latent - base_audio_latent.float()) ** 2
-            )
+            latent_reg_t = args.latent_reg_weight * torch.mean((audio_latent - base_audio_latent_fp32) ** 2)
             total_t = flow_total + latent_reg_t
             total_t.backward()
 
@@ -968,6 +1006,11 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
     torch.save(base_audio_latent.detach().cpu(), output_dir / "base_audio_latent.pt")
     torch.save(best_latent.detach().cpu(), output_dir / "best_audio_latent.pt")
 
+    # Save final videos (can use a higher step budget than optimization)
+    final_retake_kwargs = dict(retake_kwargs)
+    if args.final_retake_num_inference_steps is not None:
+        final_retake_kwargs["num_inference_steps"] = args.final_retake_num_inference_steps
+
     # Save final videos
     best_video_path = output_dir / "best_optimized_video.mp4"
     render_and_save_video_with_latent(
@@ -975,7 +1018,7 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
         src_video=str(retake_input_video),
         injected_audio_latent=best_latent,
         cached_video_latent=cached_video_latent,
-        retake_kwargs=retake_kwargs,
+        retake_kwargs=final_retake_kwargs,
         output_path=best_video_path,
         fps=frame_rate,
         num_frames=num_frames,
@@ -988,7 +1031,7 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
         src_video=str(retake_input_video),
         injected_audio_latent=base_audio_latent,
         cached_video_latent=cached_video_latent,
-        retake_kwargs=retake_kwargs,
+        retake_kwargs=final_retake_kwargs,
         output_path=baseline_video_path,
         fps=frame_rate,
         num_frames=num_frames,
@@ -996,7 +1039,7 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
     )
 
     if args.transfer_prompt:
-        transfer_kwargs = dict(retake_kwargs)
+        transfer_kwargs = dict(final_retake_kwargs)
         transfer_kwargs["prompt"] = args.transfer_prompt
         transfer_video_path = output_dir / "transfer_prompt_with_best_latent.mp4"
         render_and_save_video_with_latent(
@@ -1096,6 +1139,27 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--negative-prompt", default="", help="Negative prompt used in generation.")
     p.add_argument("--enhance-prompt", action="store_true", help="Enable Gemma prompt enhancement.")
     p.add_argument("--num-inference-steps", type=int, default=40, help="Denoising steps.")
+    p.add_argument(
+        "--ti2v-num-inference-steps",
+        type=int,
+        default=None,
+        help="Optional denoising steps override for TI2V target generation stage.",
+    )
+    p.add_argument(
+        "--retake-num-inference-steps",
+        type=int,
+        default=None,
+        help="Optional denoising steps override for Retake optimization stage.",
+    )
+    p.add_argument(
+        "--final-retake-num-inference-steps",
+        type=int,
+        default=None,
+        help=(
+            "Optional denoising steps used only for final output renders "
+            "(best/baseline/transfer). If omitted, uses retake optimization steps."
+        ),
+    )
     p.add_argument("--seed", type=int, default=42, help="Sampling seed for generation calls.")
     p.add_argument("--retake-start-frames", type=int, default=1, help="Frames to keep fixed at start.")
 
@@ -1138,12 +1202,31 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--cfg-scale", type=float, default=None, help="Video CFG scale (auto if omitted).")
     p.add_argument("--audio-cfg-scale", type=float, default=None, help="Audio CFG scale (auto if omitted).")
     p.add_argument("--a2v-scale", type=float, default=None, help="Audio-to-video modality scale (auto if omitted).")
+    p.add_argument(
+        "--low-memory-guidance",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help=(
+            "Use memory-safe guider settings (cfg=1, stg=0, rescale=0 by default) "
+            "to avoid extra transformer passes during latent optimization."
+        ),
+    )
+    p.add_argument(
+        "--gradient-checkpointing",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Enable activation checkpointing in Retake transformer to reduce VRAM during latent optimization.",
+    )
 
     return p
 
 
 def main() -> None:
     args = build_parser().parse_args()
+    if args.ti2v_num_inference_steps is None:
+        args.ti2v_num_inference_steps = args.num_inference_steps
+    if args.retake_num_inference_steps is None:
+        args.retake_num_inference_steps = args.num_inference_steps
     optimize_audio_latent(args)
 
 
