@@ -289,6 +289,7 @@ def decode_video_frames_rgb(
     max_frames: int | None,
     frame_stride: int,
     resize_to: tuple[int, int] | None,
+    sample_start: int = 0,
 ) -> list[np.ndarray]:
     """Decode RGB frames from a video file as uint8 HxWx3 arrays."""
     out: list[np.ndarray] = []
@@ -296,12 +297,18 @@ def decode_video_frames_rgb(
     try:
         vs = next(s for s in src.streams if s.type == "video")
         frame_idx = 0
+        sampled_idx = 0
         for frame in src.decode(vs):
             if frame_idx % frame_stride != 0:
                 frame_idx += 1
                 continue
+            if sampled_idx < sample_start:
+                sampled_idx += 1
+                frame_idx += 1
+                continue
             arr = np.asarray(frame.to_image().convert("RGB"), dtype=np.uint8)
             out.append(arr)
+            sampled_idx += 1
             frame_idx += 1
             if max_frames is not None and len(out) >= max_frames:
                 break
@@ -316,6 +323,7 @@ def decode_video_mask_frames(
     frame_stride: int,
     resize_to: tuple[int, int] | None,
     threshold: float,
+    sample_start: int = 0,
 ) -> list[np.ndarray]:
     """Decode a binary mask video as float HxW arrays in {0,1}."""
     out: list[np.ndarray] = []
@@ -323,8 +331,13 @@ def decode_video_mask_frames(
     try:
         vs = next(s for s in src.streams if s.type == "video")
         frame_idx = 0
+        sampled_idx = 0
         for frame in src.decode(vs):
             if frame_idx % frame_stride != 0:
+                frame_idx += 1
+                continue
+            if sampled_idx < sample_start:
+                sampled_idx += 1
                 frame_idx += 1
                 continue
 
@@ -335,6 +348,7 @@ def decode_video_mask_frames(
                     F.interpolate(arr_t, size=(resize_to[1], resize_to[0]), mode="nearest")[0, 0].numpy()
                 )
             out.append((arr >= threshold).astype(np.float32, copy=False))
+            sampled_idx += 1
             frame_idx += 1
             if max_frames is not None and len(out) >= max_frames:
                 break
@@ -348,6 +362,7 @@ def flatten_video_chunks(
     max_frames: int | None,
     frame_stride: int,
     resize_to: tuple[int, int] | None,
+    sample_start: int = 0,
 ) -> torch.Tensor:
     """Collect generated frames into a float tensor [F, 3, H, W] in [0, 1].
 
@@ -355,6 +370,7 @@ def flatten_video_chunks(
     """
     frames: list[torch.Tensor] = []
     seen = 0
+    sampled_seen = 0
     for chunk in video_iter:
         # Expected by default decode patch: [F, 3, H, W] float in [0,1].
         # Fallback for uint8 [F, H, W, 3] if no patch was applied.
@@ -377,7 +393,12 @@ def flatten_video_chunks(
             if seen % frame_stride != 0:
                 seen += 1
                 continue
+            if sampled_seen < sample_start:
+                sampled_seen += 1
+                seen += 1
+                continue
             frames.append(frame)
+            sampled_seen += 1
             seen += 1
             if max_frames is not None and len(frames) >= max_frames:
                 stacked = torch.stack(frames, dim=0)
@@ -534,6 +555,9 @@ def flow_objective_torch(
         tgt_mag = torch.linalg.norm(tgt, dim=1).mean(dim=(1, 2))
         mag_curve_mse = F.mse_loss(gen_mag, tgt_mag)
     else:
+        if float(flow_masks.sum().item()) <= 0.0:
+            inf = torch.tensor(float("inf"), device=gen_frames_chw.device)
+            return inf, inf, inf
         weight_sum = flow_masks.sum().clamp_min(1.0)
         flow_mse = ((gen - tgt).pow(2) * flow_masks).sum() / (weight_sum * gen.shape[1])
 
@@ -560,6 +584,43 @@ def _parse_loras(raw_loras: list[list[str]]) -> list[LoraPathStrengthAndSDOps]:
         strength = float(entry[1]) if len(entry) > 1 else 1.0
         out.append(LoraPathStrengthAndSDOps(lora_path, strength, LTXV_LORA_COMFY_RENAMING_MAP))
     return out
+
+
+def build_guiders_for_mode(
+    args: argparse.Namespace,
+    params,
+    use_low_memory_guidance: bool,
+) -> tuple[MultiModalGuiderParams, MultiModalGuiderParams]:
+    if use_low_memory_guidance:
+        video_guider_params = MultiModalGuiderParams(
+            cfg_scale=args.cfg_scale if args.cfg_scale is not None else 1.0,
+            stg_scale=0.0,
+            stg_blocks=params.video_guider_params.stg_blocks,
+            rescale_scale=0.0,
+            modality_scale=args.a2v_scale if args.a2v_scale is not None else 1.0,
+        )
+        audio_guider_params = MultiModalGuiderParams(
+            cfg_scale=args.audio_cfg_scale if args.audio_cfg_scale is not None else 1.0,
+            stg_scale=0.0,
+            stg_blocks=params.audio_guider_params.stg_blocks,
+            rescale_scale=0.0,
+        )
+    else:
+        video_guider_params = MultiModalGuiderParams(
+            cfg_scale=args.cfg_scale if args.cfg_scale is not None else params.video_guider_params.cfg_scale,
+            stg_scale=params.video_guider_params.stg_scale,
+            stg_blocks=params.video_guider_params.stg_blocks,
+            rescale_scale=params.video_guider_params.rescale_scale,
+            modality_scale=args.a2v_scale if args.a2v_scale is not None else params.video_guider_params.modality_scale,
+        )
+        audio_guider_params = MultiModalGuiderParams(
+            cfg_scale=args.audio_cfg_scale if args.audio_cfg_scale is not None else params.audio_guider_params.cfg_scale,
+            stg_scale=params.audio_guider_params.stg_scale,
+            stg_blocks=params.audio_guider_params.stg_blocks,
+            rescale_scale=params.audio_guider_params.rescale_scale,
+        )
+
+    return video_guider_params, audio_guider_params
 
 
 @torch.inference_mode()
@@ -723,6 +784,7 @@ def render_with_injected_audio_latent(
     frame_stride: int,
     resize_to: tuple[int, int],
     audio_opt_last_steps: int,
+    eval_sample_start: int,
 ) -> torch.Tensor:
     """Run Retake with forced audio latent and return frames [F,3,H,W] in [0,1].
 
@@ -817,6 +879,7 @@ def render_with_injected_audio_latent(
             max_frames=max_frames,
             frame_stride=frame_stride,
             resize_to=resize_to,
+            sample_start=eval_sample_start,
         )
     finally:
         _retake_module._encode_video_for_retake = orig_video_encode
@@ -929,6 +992,75 @@ def render_and_save_video_with_latent(
         _retake_module.euler_denoising_loop = orig_euler_loop
 
 
+def prepare_target_motion_video(args: argparse.Namespace) -> None:
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s  %(levelname)-8s %(message)s", datefmt="%H:%M:%S")
+
+    rank, _, device = init_distributed_and_device()
+    is_main = rank == 0
+    if not is_main:
+        logging.getLogger().setLevel(logging.WARNING)
+
+    output_dir = Path(args.output_dir).expanduser().resolve()
+    if is_main:
+        output_dir.mkdir(parents=True, exist_ok=True)
+    _barrier()
+
+    loras = _parse_loras(args.loras)
+
+    def _resolve_quantization_policy(name: str | None) -> QuantizationPolicy | None:
+        if name == "fp8-cast":
+            return QuantizationPolicy.fp8_cast()
+        if name == "fp8-scaled-mm":
+            try:
+                return QuantizationPolicy.fp8_scaled_mm()
+            except ImportError:
+                log.warning(
+                    "fp8-scaled-mm requested but tensorrt_llm is unavailable; falling back to fp8-cast."
+                )
+                return QuantizationPolicy.fp8_cast()
+        return None
+
+    ti2v_quant_name = args.ti2v_quantization if args.ti2v_quantization is not None else args.quantization
+    ti2v_quant_policy = _resolve_quantization_policy(ti2v_quant_name)
+
+    # Always generate target videos at original resolution to prevent crop mismatch
+    # vs Retake squeezed geometries.
+    orig_height, orig_width, num_frames, frame_rate = compute_target_shape(
+        args.src_video,
+        None,
+        None,
+        args.num_frames,
+        args.frame_rate,
+    )
+
+    params = detect_params(args.checkpoint_path)
+    video_guider_params, audio_guider_params = build_guiders_for_mode(
+        args=args,
+        params=params,
+        use_low_memory_guidance=args.ti2v_low_memory_guidance,
+    )
+
+    if is_main:
+        target_video_path = maybe_generate_target_video(
+            args=args,
+            device=device,
+            height=orig_height,
+            width=orig_width,
+            num_frames=num_frames,
+            frame_rate=frame_rate,
+            video_guider_params=video_guider_params,
+            audio_guider_params=audio_guider_params,
+            quant_policy=ti2v_quant_policy,
+            loras=loras,
+            output_dir=output_dir,
+        )
+        log.info("Prepared target motion video: %s", target_video_path)
+
+    _barrier()
+    if _is_distributed():
+        dist.destroy_process_group()
+
+
 # ---------------------------------------------------------------------------
 # Optimization
 # ---------------------------------------------------------------------------
@@ -1029,37 +1161,13 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
         torch.cuda.synchronize()
 
     params = detect_params(args.checkpoint_path)
-    if args.low_memory_guidance:
-        # Memory-safe guidance: keep only the conditioned pass unless user explicitly
-        # requests a different CFG value. This avoids up to 3 extra transformer
-        # forwards per denoising step (uncond/STG/modality-isolated paths).
-        video_guider_params = MultiModalGuiderParams(
-            cfg_scale=args.cfg_scale if args.cfg_scale is not None else 1.0,
-            stg_scale=0.0,
-            stg_blocks=params.video_guider_params.stg_blocks,
-            rescale_scale=0.0,
-            modality_scale=args.a2v_scale if args.a2v_scale is not None else 1.0,
-        )
-        audio_guider_params = MultiModalGuiderParams(
-            cfg_scale=args.audio_cfg_scale if args.audio_cfg_scale is not None else 1.0,
-            stg_scale=0.0,
-            stg_blocks=params.audio_guider_params.stg_blocks,
-            rescale_scale=0.0,
-        )
-    else:
-        video_guider_params = MultiModalGuiderParams(
-            cfg_scale=args.cfg_scale if args.cfg_scale is not None else params.video_guider_params.cfg_scale,
-            stg_scale=params.video_guider_params.stg_scale,
-            stg_blocks=params.video_guider_params.stg_blocks,
-            rescale_scale=params.video_guider_params.rescale_scale,
-            modality_scale=args.a2v_scale if args.a2v_scale is not None else params.video_guider_params.modality_scale,
-        )
-        audio_guider_params = MultiModalGuiderParams(
-            cfg_scale=args.audio_cfg_scale if args.audio_cfg_scale is not None else params.audio_guider_params.cfg_scale,
-            stg_scale=params.audio_guider_params.stg_scale,
-            stg_blocks=params.audio_guider_params.stg_blocks,
-            rescale_scale=params.audio_guider_params.rescale_scale,
-        )
+    # Memory-safe guidance is useful for Retake optimization, but TI2V target
+    # generation usually needs full guidance quality.
+    video_guider_params, audio_guider_params = build_guiders_for_mode(
+        args=args,
+        params=params,
+        use_low_memory_guidance=args.low_memory_guidance,
+    )
 
     # 1) Target-motion source
     if args.target_video is not None:
@@ -1068,11 +1176,19 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
         target_video_path = output_dir / "target_motion_video.mp4"
 
     if is_main:
+        # Always generate target videos at original resolution to prevent crop mismatch
+        orig_height, orig_width, _, _ = compute_target_shape(
+            args.src_video,
+            None,
+            None,
+            args.num_frames,
+            args.frame_rate,
+        )
         target_video_path = maybe_generate_target_video(
             args=args,
             device=device,
-            height=height,
-            width=width,
+            height=orig_height,
+            width=orig_width,
             num_frames=num_frames,
             frame_rate=frame_rate,
             video_guider_params=video_guider_params,
@@ -1086,11 +1202,56 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
         raise FileNotFoundError(f"Target-motion video not found after preparation: {target_video_path}")
 
     resize_to = (args.flow_width, args.flow_height)
+
+    eval_sample_start = max(0, int(args.eval_start_frame // max(args.frame_stride, 1)))
+
+    # If ROI mask is provided and no explicit eval start is requested, choose
+    # the sampled temporal window with maximal mask coverage.
+    if args.roi_mask_video is not None and args.eval_start_frame < 0:
+        roi_mask_path_for_search = Path(args.roi_mask_video).expanduser().resolve()
+        if not roi_mask_path_for_search.exists():
+            raise FileNotFoundError(f"--roi-mask-video not found: {roi_mask_path_for_search}")
+        search_masks = decode_video_mask_frames(
+            video_path=str(roi_mask_path_for_search),
+            max_frames=None,
+            frame_stride=args.frame_stride,
+            resize_to=resize_to,
+            threshold=args.roi_mask_threshold,
+            sample_start=0,
+        )
+        if len(search_masks) > 0:
+            coverage = np.array([float(m.mean()) for m in search_masks], dtype=np.float32)
+            window = args.max_eval_frames if args.max_eval_frames is not None else len(coverage)
+            window = max(1, min(window, len(coverage)))
+            window_sums = np.convolve(coverage, np.ones(window, dtype=np.float32), mode="valid")
+            eval_sample_start = int(np.argmax(window_sums)) if len(window_sums) > 0 else 0
+            log.info(
+                "Auto-selected eval sampled-window start=%d (frame~%d) from ROI coverage.",
+                eval_sample_start,
+                eval_sample_start * args.frame_stride,
+            )
+
+    # Clamp eval start so generated Retake frames still provide at least 2
+    # sampled frames (needed for optical flow). Target videos can be longer than
+    # generated clips, so ROI-driven starts may otherwise overshoot generation.
+    sampled_total_generated = ((num_frames - 1) // max(args.frame_stride, 1)) + 1
+    max_eval_start_for_flow = max(0, sampled_total_generated - 2)
+    if eval_sample_start > max_eval_start_for_flow:
+        log.warning(
+            "Eval sampled-window start=%d exceeds generated clip capacity (%d sampled frames). "
+            "Clamping to %d.",
+            eval_sample_start,
+            sampled_total_generated,
+            max_eval_start_for_flow,
+        )
+        eval_sample_start = max_eval_start_for_flow
+
     target_frames_rgb = decode_video_frames_rgb(
         video_path=str(target_video_path),
         max_frames=args.max_eval_frames,
         frame_stride=args.frame_stride,
         resize_to=None,
+        sample_start=eval_sample_start,
     )
     roi_frame_masks = None
     if args.roi_mask_video is not None:
@@ -1103,14 +1264,26 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
             frame_stride=args.frame_stride,
             resize_to=resize_to,
             threshold=args.roi_mask_threshold,
+            sample_start=eval_sample_start,
         )
         roi_frame_masks = mask_frames_to_nchw_float(roi_mask_frames, device=device)
         if roi_frame_masks.shape[0] < 2:
             raise RuntimeError("ROI mask video must provide at least 2 usable frames.")
+        roi_coverage = float(roi_frame_masks.mean().item())
+        if roi_coverage <= 0.0:
+            raise RuntimeError(
+                "ROI mask video has zero active pixels after decoding/thresholding. "
+                "Lower --roi-mask-threshold, regenerate masks, or verify object prompt/tracking."
+            )
+        if roi_coverage < 1e-3:
+            log.warning(
+                "ROI mask coverage is extremely low (%.4f%%). Loss signal may be weak.",
+                roi_coverage * 100.0,
+            )
         log.info(
             "Loaded ROI masks from %s with %.2f%% average coverage",
             roi_mask_path,
-            float(roi_frame_masks.mean().item() * 100.0),
+            roi_coverage * 100.0,
         )
 
     target_frames = frames_rgb_uint8_to_chw_float(target_frames_rgb, device=device)
@@ -1264,6 +1437,7 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
                 frame_stride=args.frame_stride,
                 resize_to=resize_to,
                 audio_opt_last_steps=args.audio_opt_last_steps,
+                eval_sample_start=eval_sample_start,
             )
             if gen_frames.shape[0] < 2:
                 raise RuntimeError("Generated video has fewer than 2 frames; cannot compute flow objective.")
@@ -1338,18 +1512,85 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
     final_retake_kwargs = dict(retake_kwargs)
     if args.final_retake_num_inference_steps is not None:
         final_retake_kwargs["num_inference_steps"] = args.final_retake_num_inference_steps
+    
+    # Rebuild guiders to ensure we use max quality for final renders
+    # (i.e. not memory-safe forced cfg=1.0) if optimization used lower quality.
+    final_video_guiders, final_audio_guiders = build_guiders_for_mode(
+        args=args,
+        params=params,
+        use_low_memory_guidance=False,
+    )
+    final_retake_kwargs["video_guider_params"] = final_video_guiders
+    final_retake_kwargs["audio_guider_params"] = final_audio_guiders
+
     final_audio_opt_last_steps = (
         args.final_audio_opt_last_steps if args.final_audio_opt_last_steps is not None else args.audio_opt_last_steps
     )
 
     if is_main and args.save_final_videos and world_size == 1:
+        # Check if we need to upscale back to original dimensions for final render
+        orig_height, orig_width, _, _ = compute_target_shape(
+            args.src_video,
+            height_override=None,
+            width_override=None,
+            num_frames_override=args.num_frames,
+            frame_rate_override=args.frame_rate,
+        )
+
+        final_height = height
+        final_width = width
+        final_retake_input_video = retake_input_video
+        final_cached_video_latent = cached_video_latent
+
+        if orig_height != height or orig_width != width:
+            log.info("Restoring original source dimensions (%dx%d) for final video renders...", orig_width, orig_height)
+            final_height, final_width = orig_height, orig_width
+            final_retake_input_video = output_dir / "retake_input_prepared_hires.mp4"
+
+            # Re-read audio briefly to mux
+            src_audio_for_input = decode_audio_from_file(args.src_video, torch.device("cpu"), max_duration=duration)
+            if src_audio_for_input is not None:
+                src_wave = src_audio_for_input.waveform.squeeze(0).float()
+                if src_audio_for_input.sampling_rate != args.audio_sr:
+                    import torchaudio
+                    src_wave = torchaudio.functional.resample(
+                        src_wave,
+                        orig_freq=src_audio_for_input.sampling_rate,
+                        new_freq=args.audio_sr,
+                    )
+                src_wave = align_waveform_length(src_wave, int(duration * args.audio_sr))
+            else:
+                src_wave = None
+
+            write_temp_video_with_audio(
+                src_video_path=args.src_video,
+                target_frames=num_frames,
+                target_height=final_height,
+                target_width=final_width,
+                fps=frame_rate,
+                waveform=src_wave,
+                sr=args.audio_sr,
+                output_path=str(final_retake_input_video),
+            )
+            final_cached_video_latent, _, _ = build_cached_source_latents(
+                pipeline=pipeline,
+                src_video=str(final_retake_input_video),
+                height=final_height,
+                width=final_width,
+                num_frames=num_frames,
+                audio_sr=args.audio_sr,
+                device=device,
+            )
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+
         # Save final videos
         best_video_path = output_dir / "best_optimized_video.mp4"
         render_and_save_video_with_latent(
             pipeline=pipeline,
-            src_video=str(retake_input_video),
+            src_video=str(final_retake_input_video),
             injected_audio_latent=best_latent,
-            cached_video_latent=cached_video_latent,
+            cached_video_latent=final_cached_video_latent,
             retake_kwargs=final_retake_kwargs,
             output_path=best_video_path,
             fps=frame_rate,
@@ -1361,9 +1602,9 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
         baseline_video_path = output_dir / "baseline_unoptimized_video.mp4"
         render_and_save_video_with_latent(
             pipeline=pipeline,
-            src_video=str(retake_input_video),
+            src_video=str(final_retake_input_video),
             injected_audio_latent=base_audio_latent,
-            cached_video_latent=cached_video_latent,
+            cached_video_latent=final_cached_video_latent,
             retake_kwargs=final_retake_kwargs,
             output_path=baseline_video_path,
             fps=frame_rate,
@@ -1378,9 +1619,9 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
             transfer_video_path = output_dir / "transfer_prompt_with_best_latent.mp4"
             render_and_save_video_with_latent(
                 pipeline=pipeline,
-                src_video=str(retake_input_video),
+                src_video=str(final_retake_input_video),
                 injected_audio_latent=best_latent,
-                cached_video_latent=cached_video_latent,
+                cached_video_latent=final_cached_video_latent,
                 retake_kwargs=transfer_kwargs,
                 output_path=transfer_video_path,
                 fps=frame_rate,
@@ -1439,6 +1680,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Regenerate target-motion video even if output_dir/target_motion_video.mp4 already exists.",
     )
+    p.add_argument(
+        "--prepare-target-only",
+        action="store_true",
+        help="Generate or reuse the target-motion video and exit without optimization.",
+    )
 
     # Optional transfer test
     p.add_argument(
@@ -1455,6 +1701,15 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--flow-height", type=int, default=224, help="Flow objective height (frames are resized to this).")
     p.add_argument("--max-eval-frames", type=int, default=33, help="Max frames used in objective computation.")
     p.add_argument("--frame-stride", type=int, default=1, help="Use every N-th frame when computing objective.")
+    p.add_argument(
+        "--eval-start-frame",
+        type=int,
+        default=-1,
+        help=(
+            "Start frame for objective sampling in original frame units. "
+            "Set <0 to auto-select based on ROI mask coverage when --roi-mask-video is used."
+        ),
+    )
     p.add_argument(
         "--roi-mask-video",
         type=str,
@@ -1601,6 +1856,15 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     p.add_argument(
+        "--ti2v-low-memory-guidance",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help=(
+            "Use memory-safe guidance for TI2V target generation as well. Disabled by default "
+            "because it can noticeably degrade target-video quality."
+        ),
+    )
+    p.add_argument(
         "--gradient-checkpointing",
         action=argparse.BooleanOptionalAction,
         default=True,
@@ -1616,6 +1880,9 @@ def main() -> None:
         args.ti2v_num_inference_steps = args.num_inference_steps
     if args.retake_num_inference_steps is None:
         args.retake_num_inference_steps = args.num_inference_steps
+    if args.prepare_target_only:
+        prepare_target_motion_video(args)
+        return
     optimize_audio_latent(args)
 
 

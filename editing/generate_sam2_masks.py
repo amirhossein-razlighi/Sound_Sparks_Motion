@@ -136,6 +136,29 @@ def build_detector(device: torch.device):
     return model, categories
 
 
+def resolve_sam2_config_name(config_arg: str) -> tuple[str, str]:
+    """Resolve user config input to a SAM2/Hydra config name.
+
+    SAM2 build API expects Hydra config names such as
+    "configs/sam2.1/sam2.1_hiera_s.yaml", not arbitrary absolute paths.
+    """
+    raw = config_arg.strip()
+    path_like = Path(raw).expanduser()
+
+    # If this is an existing file path, map it to the corresponding Hydra config name.
+    if path_like.exists():
+        resolved = path_like.resolve()
+        resolved_posix = str(resolved).replace("\\", "/")
+        if "/configs/" in resolved_posix:
+            suffix = resolved_posix.split("/configs/", 1)[1]
+            return f"configs/{suffix}", str(resolved)
+        # Fallback: use file basename (works for sam2_hiera_*.yaml packaged configs).
+        return resolved.name, str(resolved)
+
+    # Otherwise assume user already provided a valid Hydra config name.
+    return raw, raw
+
+
 def build_sam2_predictor(config_path: str, checkpoint_path: str, device: torch.device):
     try:
         from sam2.build_sam import build_sam2
@@ -263,11 +286,16 @@ def main() -> None:
 
     src_video = str(Path(args.src_video).expanduser().resolve())
     target_video = str(Path(args.target_video).expanduser().resolve())
-    sam2_cfg = str(Path(args.sam2_config).expanduser().resolve())
+    sam2_cfg_name, sam2_cfg_resolved = resolve_sam2_config_name(args.sam2_config)
     sam2_ckpt = str(Path(args.sam2_checkpoint).expanduser().resolve())
 
-    if not Path(sam2_cfg).exists():
-        raise FileNotFoundError(f"SAM2 config not found: {sam2_cfg}")
+    # If a path was provided and resolved, verify existence; otherwise this is
+    # a Hydra config name and SAM2/Hydra will validate it during build.
+    if "/" in args.sam2_config or args.sam2_config.endswith(".yaml"):
+        p = Path(args.sam2_config).expanduser()
+        if p.is_absolute() or p.exists():
+            if not p.exists():
+                raise FileNotFoundError(f"SAM2 config not found: {p}")
     if not Path(sam2_ckpt).exists():
         raise FileNotFoundError(f"SAM2 checkpoint not found: {sam2_ckpt}")
 
@@ -277,7 +305,7 @@ def main() -> None:
     name_tag = _slugify(args.name_tag if args.name_tag is not None else auto_tag)
 
     detector, categories = build_detector(device)
-    predictor = build_sam2_predictor(sam2_cfg, sam2_ckpt, device)
+    predictor = build_sam2_predictor(sam2_cfg_name, sam2_ckpt, device)
 
     src_masks, src_meta = segment_video(
         video_path=src_video,
@@ -314,7 +342,9 @@ def main() -> None:
         "object_prompt": args.object_prompt,
         "source_video": src_video,
         "target_video": target_video,
-        "sam2_config": sam2_cfg,
+        "sam2_config_input": args.sam2_config,
+        "sam2_config_resolved": sam2_cfg_resolved,
+        "sam2_config_for_build": sam2_cfg_name,
         "sam2_checkpoint": sam2_ckpt,
         "device": str(device),
         "frame_stride": args.frame_stride,

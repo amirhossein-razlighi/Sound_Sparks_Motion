@@ -21,7 +21,7 @@
 #SBATCH --account=def-amahdavi
 #SBATCH --gpus-per-node=h100:1
 #SBATCH --mem=32G
-#SBATCH --time=00:30:00
+#SBATCH --time=02:00:00
 #SBATCH --output=%x_%j.out
 #SBATCH --error=%x_%j.err
 
@@ -43,47 +43,52 @@ EDIT_PROMPT="${EDIT_PROMPT:-A dog in the scene}"
 TARGET_PROMPT="${TARGET_PROMPT:-The dog jumps up and down}"
 
 SEED="${SEED:-42}"
-NUM_INFERENCE_STEPS="${NUM_INFERENCE_STEPS:-16}"
-TI2V_NUM_INFERENCE_STEPS="${TI2V_NUM_INFERENCE_STEPS:-16}"
-RETAKE_NUM_INFERENCE_STEPS="${RETAKE_NUM_INFERENCE_STEPS:-20}"
-FINAL_RETAKE_NUM_INFERENCE_STEPS="${FINAL_RETAKE_NUM_INFERENCE_STEPS:-20}"
+NUM_INFERENCE_STEPS="${NUM_INFERENCE_STEPS:-30}"
+TI2V_NUM_INFERENCE_STEPS="${TI2V_NUM_INFERENCE_STEPS:-30}"
+RETAKE_NUM_INFERENCE_STEPS="${RETAKE_NUM_INFERENCE_STEPS:-30}"
+FINAL_RETAKE_NUM_INFERENCE_STEPS="${FINAL_RETAKE_NUM_INFERENCE_STEPS:-30}"
 RETAKE_START_FRAMES="${RETAKE_START_FRAMES:-5}"
 
-ITERATIONS="${ITERATIONS:-6}"
-LR="${LR:-0.03}"
+ITERATIONS="${ITERATIONS:-20}"
+LR="${LR:-0.01}"
 AUD_OPT_LAST_STEPS="${AUD_OPT_LAST_STEPS:-6}"
 FINAL_AUD_OPT_LAST_STEPS="${FINAL_AUD_OPT_LAST_STEPS:-0}"
 FLOW_WEIGHT="${FLOW_WEIGHT:-1.0}"
 MAG_CURVE_WEIGHT="${MAG_CURVE_WEIGHT:-0.25}"
 LATENT_REG_WEIGHT="${LATENT_REG_WEIGHT:-0.02}"
-MAX_EVAL_FRAMES="${MAX_EVAL_FRAMES:-9}"
+MAX_EVAL_FRAMES="${MAX_EVAL_FRAMES:-17}"
 FRAME_STRIDE="${FRAME_STRIDE:-3}"
 FLOW_WIDTH="${FLOW_WIDTH:-224}"
 FLOW_HEIGHT="${FLOW_HEIGHT:-128}"
 ROI_MASK_VIDEO="${ROI_MASK_VIDEO:-}"
-ROI_MASK_THRESHOLD="${ROI_MASK_THRESHOLD:-0.5}"
+ROI_MASK_THRESHOLD="${ROI_MASK_THRESHOLD:-0.3}"
+EVAL_START_FRAME="${EVAL_START_FRAME:--1}"
 GENERATE_SAM2_MASKS="${GENERATE_SAM2_MASKS:-1}"
 OBJECT_PROMPT="${OBJECT_PROMPT:-dog}"
-SAM2_CONFIG="${SAM2_CONFIG:-/home/amirrz/my_codes/LTX-2/sam2/sam2/configs/sam2.1/sam2.1_hiera_s.yaml}"
-SAM2_CHECKPOINT="${SAM2_CHECKPOINT:-/project/def-amahdavi/amirrz/SAM-2/checkpoints/sam2.1_hiera_small.pt}"
+SAM2_CONFIG="${SAM2_CONFIG:-configs/sam2.1/sam2.1_hiera_l.yaml}"
+SAM2_CHECKPOINT="${SAM2_CHECKPOINT:-/project/def-amahdavi/amirrz/SAM-2/checkpoints/sam2.1_hiera_large.pt}"
 SAM2_DEVICE="${SAM2_DEVICE:-cuda}"
 SAM2_DET_SCORE_THRESHOLD="${SAM2_DET_SCORE_THRESHOLD:-0.35}"
 SAM2_MASK_NAME_TAG="${SAM2_MASK_NAME_TAG:-}"
+SAM2_FRAME_STRIDE="${SAM2_FRAME_STRIDE:-1}"
+
 
 # Keep this file available on shared storage or $HOME so compute nodes can read it.
 RAFT_MODEL="${RAFT_MODEL:-raft_small}"
 RAFT_WEIGHTS_PATH="${RAFT_WEIGHTS_PATH:-}"
 
 # Optional shape overrides (leave empty to auto-detect from source video)
-HEIGHT="${HEIGHT:-256}"
-WIDTH="${WIDTH:-256}"
-NUM_FRAMES="${NUM_FRAMES:-90}"
+HEIGHT="${HEIGHT:-}"
+WIDTH="${WIDTH:-}"
+NUM_FRAMES="${NUM_FRAMES:-}"
 FRAME_RATE="${FRAME_RATE:-}"
 
 # Optional guidance overrides (leave empty for auto-detect)
 CFG_SCALE="${CFG_SCALE:-}"
 AUDIO_CFG_SCALE="${AUDIO_CFG_SCALE:-}"
 A2V_SCALE="${A2V_SCALE:-}"
+LOW_MEMORY_GUIDANCE="${LOW_MEMORY_GUIDANCE:-1}"
+TI2V_LOW_MEMORY_GUIDANCE="${TI2V_LOW_MEMORY_GUIDANCE:-0}"
 
 # Optional: fp8-cast | fp8-scaled-mm | (empty = none)
 # Keep TI2V unquantized by default to avoid fp8 load-time OOM spikes.
@@ -126,7 +131,7 @@ if [[ "${MULTI_GPU}" == "1" ]] && [[ "${NPROC_PER_NODE}" -gt "${VISIBLE_GPU_COUN
 fi
 
 # Optional target video (if set, TARGET_PROMPT is ignored)
-TARGET_VIDEO="${TARGET_VIDEO:-/home/amirrz/my_codes/LTX-2/results/editing_results_jump_optimize/target_motion_video.mp4}"
+TARGET_VIDEO="${TARGET_VIDEO:-}"
 
 # ---------------------------------------------------------------------------
 # Validation
@@ -152,12 +157,12 @@ if [[ ! -f "${RAFT_WEIGHTS_PATH}" ]]; then
 fi
 
 if [[ "${GENERATE_SAM2_MASKS}" == "1" ]]; then
-    if [[ -z "${TARGET_VIDEO}" ]]; then
-        echo "ERROR: GENERATE_SAM2_MASKS=1 requires TARGET_VIDEO to be set to an existing file." >&2
+    if [[ -n "${TARGET_VIDEO}" ]] && [[ ! -f "${TARGET_VIDEO}" ]]; then
+        echo "ERROR: TARGET_VIDEO not found for SAM2 mask generation: ${TARGET_VIDEO}" >&2
         exit 1
     fi
-    if [[ ! -f "${TARGET_VIDEO}" ]]; then
-        echo "ERROR: TARGET_VIDEO not found for SAM2 mask generation: ${TARGET_VIDEO}" >&2
+    if [[ -z "${TARGET_VIDEO}" ]] && [[ -z "${TARGET_PROMPT}" ]]; then
+        echo "ERROR: GENERATE_SAM2_MASKS=1 requires either TARGET_VIDEO or TARGET_PROMPT." >&2
         exit 1
     fi
     if [[ -z "${SAM2_CONFIG}" || -z "${SAM2_CHECKPOINT}" ]]; then
@@ -193,6 +198,7 @@ fi
 echo "  Iterations          : ${ITERATIONS}"
 echo "  LR                  : ${LR}"
 echo "  Audio opt last steps: ${AUD_OPT_LAST_STEPS}"
+echo "  Eval start frame    : ${EVAL_START_FRAME}"
 if [[ -n "${FINAL_AUD_OPT_LAST_STEPS}" ]]; then
     echo "  Final audio last st.: ${FINAL_AUD_OPT_LAST_STEPS}"
 fi
@@ -216,11 +222,76 @@ source "${REPO_ROOT}/.venv/bin/activate"
 export TORCH_HOME="${TORCH_HOME:-/home/amirrz/.cache/torch}"
 export PYTORCH_ALLOC_CONF="${PYTORCH_ALLOC_CONF:-expandable_segments:True,garbage_collection_threshold:0.8}"
 
+if [[ "${GENERATE_SAM2_MASKS}" == "1" ]] && [[ -z "${TARGET_VIDEO}" ]]; then
+    echo "Preparing target video from TARGET_PROMPT before SAM2 mask generation"
+
+    PREPARE_TARGET_ARGS=(
+        --prepare-target-only
+        --src-video "${SRC_VIDEO}"
+        --edit-prompt "${EDIT_PROMPT}"
+        --target-prompt "${TARGET_PROMPT}"
+        --output-dir "${OUTPUT_DIR}"
+        --checkpoint-path "${CKPT_ROOT}/ltx-2.3-22b-dev.safetensors"
+        --gemma-root "${GEMMA_ROOT}"
+        --seed "${SEED}"
+        --num-inference-steps "${NUM_INFERENCE_STEPS}"
+        --ti2v-num-inference-steps "${TI2V_NUM_INFERENCE_STEPS}"
+        --raft-model "${RAFT_MODEL}"
+        --raft-weights-path "${RAFT_WEIGHTS_PATH}"
+    )
+
+    if [[ -n "${HEIGHT}" ]]; then
+        PREPARE_TARGET_ARGS+=( --height "${HEIGHT}" )
+    fi
+    if [[ -n "${WIDTH}" ]]; then
+        PREPARE_TARGET_ARGS+=( --width "${WIDTH}" )
+    fi
+    if [[ -n "${NUM_FRAMES}" ]]; then
+        PREPARE_TARGET_ARGS+=( --num-frames "${NUM_FRAMES}" )
+    fi
+    if [[ -n "${FRAME_RATE}" ]]; then
+        PREPARE_TARGET_ARGS+=( --frame-rate "${FRAME_RATE}" )
+    fi
+    if [[ -n "${CFG_SCALE}" ]]; then
+        PREPARE_TARGET_ARGS+=( --cfg-scale "${CFG_SCALE}" )
+    fi
+    if [[ -n "${AUDIO_CFG_SCALE}" ]]; then
+        PREPARE_TARGET_ARGS+=( --audio-cfg-scale "${AUDIO_CFG_SCALE}" )
+    fi
+    if [[ -n "${A2V_SCALE}" ]]; then
+        PREPARE_TARGET_ARGS+=( --a2v-scale "${A2V_SCALE}" )
+    fi
+    if [[ -n "${QUANTIZATION}" ]]; then
+        PREPARE_TARGET_ARGS+=( --quantization "${QUANTIZATION}" )
+    fi
+    if [[ -n "${TI2V_QUANTIZATION}" ]]; then
+        PREPARE_TARGET_ARGS+=( --ti2v-quantization "${TI2V_QUANTIZATION}" )
+    fi
+    if [[ "${LOW_MEMORY_GUIDANCE}" == "1" ]]; then
+        PREPARE_TARGET_ARGS+=( --low-memory-guidance )
+    else
+        PREPARE_TARGET_ARGS+=( --no-low-memory-guidance )
+    fi
+    if [[ "${TI2V_LOW_MEMORY_GUIDANCE}" == "1" ]]; then
+        PREPARE_TARGET_ARGS+=( --ti2v-low-memory-guidance )
+    else
+        PREPARE_TARGET_ARGS+=( --no-ti2v-low-memory-guidance )
+    fi
+
+    python "${REPO_ROOT}/editing/optimize_audio_embedding.py" "${PREPARE_TARGET_ARGS[@]}"
+
+    TARGET_VIDEO="${OUTPUT_DIR}/target_motion_video.mp4"
+    if [[ ! -f "${TARGET_VIDEO}" ]]; then
+        echo "ERROR: Expected generated target video not found: ${TARGET_VIDEO}" >&2
+        exit 1
+    fi
+fi
+
 if [[ "${GENERATE_SAM2_MASKS}" == "1" ]]; then
     if [[ -z "${SAM2_MASK_NAME_TAG}" ]]; then
         _target_stem="$(basename "${TARGET_VIDEO%.*}")"
         _src_stem="$(basename "${SRC_VIDEO%.*}")"
-        SAM2_MASK_NAME_TAG="$(printf "%s" "${OBJECT_PROMPT}_${_src_stem}_to_${_target_stem}_fs${FRAME_STRIDE}" | tr -cs '[:alnum:]' '_' | sed 's/^_//;s/_$//' | tr '[:upper:]' '[:lower:]')"
+        SAM2_MASK_NAME_TAG="$(printf "%s" "${OBJECT_PROMPT}_${_src_stem}_to_${_target_stem}_fs${SAM2_FRAME_STRIDE}" | tr -cs '[:alnum:]' '_' | sed 's/^_//;s/_$//' | tr '[:upper:]' '[:lower:]')"
     fi
 
     _sam2_stdout="$(python "${REPO_ROOT}/editing/generate_sam2_masks.py" \
@@ -231,7 +302,7 @@ if [[ "${GENERATE_SAM2_MASKS}" == "1" ]]; then
         --sam2-checkpoint "${SAM2_CHECKPOINT}" \
         --name-tag "${SAM2_MASK_NAME_TAG}" \
         --output-dir "${OUTPUT_DIR}" \
-        --frame-stride "${FRAME_STRIDE}" \
+        --frame-stride "${SAM2_FRAME_STRIDE}" \
         --det-score-threshold "${SAM2_DET_SCORE_THRESHOLD}" \
         --device "${SAM2_DEVICE}")"
 
@@ -305,11 +376,24 @@ COMMON_ARGS=(
     --latent-reg-weight "${LATENT_REG_WEIGHT}"
     --max-eval-frames "${MAX_EVAL_FRAMES}"
     --frame-stride "${FRAME_STRIDE}"
+    --eval-start-frame "${EVAL_START_FRAME}"
     --flow-width "${FLOW_WIDTH}"
     --flow-height "${FLOW_HEIGHT}"
     --raft-model "${RAFT_MODEL}"
     --raft-weights-path "${RAFT_WEIGHTS_PATH}"
 )
+
+if [[ "${LOW_MEMORY_GUIDANCE}" == "1" ]]; then
+    COMMON_ARGS+=( --low-memory-guidance )
+else
+    COMMON_ARGS+=( --no-low-memory-guidance )
+fi
+
+if [[ "${TI2V_LOW_MEMORY_GUIDANCE}" == "1" ]]; then
+    COMMON_ARGS+=( --ti2v-low-memory-guidance )
+else
+    COMMON_ARGS+=( --no-ti2v-low-memory-guidance )
+fi
 
 if [[ -n "${FINAL_AUD_OPT_LAST_STEPS}" ]]; then
     COMMON_ARGS+=( --final-audio-opt-last-steps "${FINAL_AUD_OPT_LAST_STEPS}" )
