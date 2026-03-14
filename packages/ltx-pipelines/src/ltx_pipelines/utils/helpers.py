@@ -68,22 +68,28 @@ def encode_prompts(
     Returns:
         List of EmbeddingsProcessorOutput, one per prompt.
     """
-    text_encoder = model_ledger.text_encoder()
-    if enhance_first_prompt:
-        prompts = list(prompts)
-        prompts[0] = generate_enhanced_prompt(text_encoder, prompts[0], enhance_prompt_image, seed=enhance_prompt_seed)
-    raw_outputs = [text_encoder.encode(p) for p in prompts]
-    torch.cuda.synchronize()
-    del text_encoder
-    cleanup_memory()
+    with torch.inference_mode():
+        text_encoder = model_ledger.text_encoder()
+        if enhance_first_prompt:
+            prompts = list(prompts)
+            prompts[0] = generate_enhanced_prompt(
+                text_encoder,
+                prompts[0],
+                enhance_prompt_image,
+                seed=enhance_prompt_seed,
+            )
+        raw_outputs = [text_encoder.encode(p) for p in prompts]
+        torch.cuda.synchronize()
+        del text_encoder
+        cleanup_memory()
 
-    embeddings_processor = model_ledger.gemma_embeddings_processor()
-    results: list[EmbeddingsProcessorOutput] = [
-        embeddings_processor.process_hidden_states(hs, mask) for hs, mask in raw_outputs
-    ]
-    del embeddings_processor
-    cleanup_memory()
-    return results
+        embeddings_processor = model_ledger.gemma_embeddings_processor()
+        results: list[EmbeddingsProcessorOutput] = [
+            embeddings_processor.process_hidden_states(hs, mask) for hs, mask in raw_outputs
+        ]
+        del embeddings_processor
+        cleanup_memory()
+        return results
 
 
 def combined_image_conditionings(

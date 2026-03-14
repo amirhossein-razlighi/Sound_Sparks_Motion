@@ -346,7 +346,7 @@ class LTXModel(torch.nn.Module):
 
         # Process transformer blocks
         for block in self.transformer_blocks:
-            if self._enable_gradient_checkpointing and self.training:
+            if self._enable_gradient_checkpointing:
                 # Use gradient checkpointing to save memory during training.
                 # With use_reentrant=False, we can pass dataclasses directly -
                 # PyTorch will track all tensor leaves in the computation graph.

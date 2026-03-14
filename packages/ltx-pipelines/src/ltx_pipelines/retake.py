@@ -177,9 +177,11 @@ class RetakePipeline:
         loras: list[LoraPathStrengthAndSDOps],
         device: torch.device = device,
         quantization: QuantizationPolicy | None = None,
+        gradient_checkpointing: bool = False,
     ):
         self.device = device
         self.dtype = torch.bfloat16
+        self.gradient_checkpointing = gradient_checkpointing
         self.model_ledger = ModelLedger(
             dtype=self.dtype,
             device=device,
@@ -334,6 +336,11 @@ class RetakePipeline:
             v_context_n, a_context_n = contexts[1].video_encoding, contexts[1].audio_encoding
 
         transformer = self.model_ledger.transformer()
+        if self.gradient_checkpointing:
+            velocity_model = getattr(transformer, "velocity_model", None)
+            if velocity_model is not None and hasattr(velocity_model, "set_gradient_checkpointing"):
+                velocity_model.set_gradient_checkpointing(True)
+        transformer.requires_grad_(False)
 
         sigmas = (
             torch.tensor(DISTILLED_SIGMA_VALUES) if distilled else LTX2Scheduler().execute(steps=num_inference_steps)

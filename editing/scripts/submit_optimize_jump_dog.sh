@@ -20,8 +20,8 @@
 #SBATCH --job-name=ltx_opt_jump_dog
 #SBATCH --account=def-amahdavi
 #SBATCH --gpus-per-node=h100:1
-#SBATCH --mem=32G
-#SBATCH --time=02:00:00
+#SBATCH --mem=48G
+#SBATCH --time=04:00:00
 #SBATCH --output=%x_%j.out
 #SBATCH --error=%x_%j.err
 
