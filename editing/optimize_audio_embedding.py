@@ -36,6 +36,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import gc
 import logging
 import os
 import sys
@@ -302,8 +303,16 @@ def flatten_video_chunks(
     return stacked
 
 
-def load_raft_components(device: torch.device, model_name: str):
-    """Load frozen RAFT model and input transforms from torchvision."""
+def load_raft_components(
+    device: torch.device,
+    model_name: str,
+    weights_path: str | None = None,
+):
+    """Load frozen RAFT model and input transforms from torchvision.
+
+    If ``weights_path`` is provided, the checkpoint is loaded from disk and no
+    network download is attempted.
+    """
     try:
         from torchvision.models.optical_flow import (  # type: ignore
             Raft_Large_Weights,
@@ -318,10 +327,26 @@ def load_raft_components(device: torch.device, model_name: str):
 
     if model_name == "raft_small":
         weights = Raft_Small_Weights.DEFAULT
-        raft = raft_small(weights=weights, progress=True)
+        if weights_path is None:
+            raft = raft_small(weights=weights, progress=True)
+        else:
+            raft = raft_small(weights=None, progress=False)
     else:
         weights = Raft_Large_Weights.DEFAULT
-        raft = raft_large(weights=weights, progress=True)
+        if weights_path is None:
+            raft = raft_large(weights=weights, progress=True)
+        else:
+            raft = raft_large(weights=None, progress=False)
+
+    if weights_path is not None:
+        ckpt_path = Path(weights_path).expanduser().resolve()
+        if not ckpt_path.exists():
+            raise FileNotFoundError(f"RAFT checkpoint not found: {ckpt_path}")
+        state = torch.load(str(ckpt_path), map_location="cpu")
+        if isinstance(state, dict) and "state_dict" in state and isinstance(state["state_dict"], dict):
+            state = state["state_dict"]
+        raft.load_state_dict(state)
+        log.info("Loaded RAFT weights from local file: %s", ckpt_path)
 
     raft = raft.to(device).eval()
     for p in raft.parameters():
@@ -406,6 +431,7 @@ def _parse_loras(raw_loras: list[list[str]]) -> list[LoraPathStrengthAndSDOps]:
     return out
 
 
+@torch.inference_mode()
 def maybe_generate_target_video(
     args: argparse.Namespace,
     device: torch.device,
@@ -479,6 +505,11 @@ def maybe_generate_target_video(
             output_path=str(target_path),
             video_chunks_number=n_chunks,
         )
+
+        del pipeline, video_iter, audio
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
 
     log.info("Generated target-motion video -> %s", target_path)
     return target_path
@@ -671,12 +702,25 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    if args.quantization == "fp8-cast":
-        quant_policy = QuantizationPolicy.fp8_cast()
-    elif args.quantization == "fp8-scaled-mm":
-        quant_policy = QuantizationPolicy.fp8_scaled_mm()
-    else:
-        quant_policy = None
+    def _resolve_quantization_policy(name: str | None) -> QuantizationPolicy | None:
+        if name == "fp8-cast":
+            return QuantizationPolicy.fp8_cast()
+        if name == "fp8-scaled-mm":
+            try:
+                return QuantizationPolicy.fp8_scaled_mm()
+            except ImportError:
+                log.warning(
+                    "fp8-scaled-mm requested but tensorrt_llm is unavailable; falling back to fp8-cast."
+                )
+                return QuantizationPolicy.fp8_cast()
+        return None
+
+    # Backward-compatible behavior: --quantization applies to both unless stage-specific
+    # overrides are provided.
+    ti2v_quant_name = args.ti2v_quantization if args.ti2v_quantization is not None else args.quantization
+    retake_quant_name = args.retake_quantization if args.retake_quantization is not None else args.quantization
+    ti2v_quant_policy = _resolve_quantization_policy(ti2v_quant_name)
+    retake_quant_policy = _resolve_quantization_policy(retake_quant_name)
 
     height, width, num_frames, frame_rate = compute_target_shape(
         args.src_video,
@@ -689,7 +733,9 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
 
     # Build a normalized retake input video so metadata matches cached latent
     # dimensions and model constraints (H/W multiples of 32, frames=8k+1).
-    src_audio_for_input = decode_audio_from_file(args.src_video, device, max_duration=duration)
+    # Keep early preprocessing on CPU to avoid fragmenting GPU memory before
+    # loading the very large TI2V transformer for target generation.
+    src_audio_for_input = decode_audio_from_file(args.src_video, torch.device("cpu"), max_duration=duration)
     if src_audio_for_input is None:
         raise RuntimeError(f"Source video has no audio stream: {args.src_video}")
 
@@ -714,6 +760,13 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
         output_path=str(retake_input_video),
     )
     log.info("Prepared retake input video -> %s", retake_input_video)
+
+    # Free temporary preprocessing tensors before loading large model weights.
+    del src_audio_for_input, src_wave
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+        torch.cuda.synchronize()
 
     params = detect_params(args.checkpoint_path)
     video_guider_params = MultiModalGuiderParams(
@@ -740,7 +793,7 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
         frame_rate=frame_rate,
         video_guider_params=video_guider_params,
         audio_guider_params=audio_guider_params,
-        quant_policy=quant_policy,
+        quant_policy=ti2v_quant_policy,
         loras=loras,
         output_dir=output_dir,
     )
@@ -764,7 +817,11 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
             align_corners=False,
         )
 
-    raft_model, raft_transforms = load_raft_components(device=device, model_name=args.raft_model)
+    raft_model, raft_transforms = load_raft_components(
+        device=device,
+        model_name=args.raft_model,
+        weights_path=args.raft_weights_path,
+    )
     with torch.no_grad():
         target_flows = compute_raft_flows(target_frames, raft_model, raft_transforms).detach()
     if target_flows.shape[0] == 0:
@@ -779,7 +836,7 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
         gemma_root=args.gemma_root,
         loras=tuple(loras),
         device=device,
-        quantization=quant_policy,
+        quantization=retake_quant_policy,
     )
 
     cached_video_latent, base_audio_latent, waveform_sr = build_cached_source_latents(
@@ -1025,6 +1082,15 @@ def build_parser() -> argparse.ArgumentParser:
         choices=["raft_large", "raft_small"],
         help="Frozen RAFT backbone used in the flow objective.",
     )
+    p.add_argument(
+        "--raft-weights-path",
+        type=str,
+        default=None,
+        help=(
+            "Optional local .pth checkpoint for RAFT (offline mode). If omitted, "
+            "torchvision uses its default weight download/cache behavior."
+        ),
+    )
 
     # Prompt / diffusion controls
     p.add_argument("--negative-prompt", default="", help="Negative prompt used in generation.")
@@ -1046,6 +1112,18 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--checkpoint-path", default=DEFAULT_CHECKPOINT)
     p.add_argument("--gemma-root", default=DEFAULT_GEMMA_ROOT)
     p.add_argument("--quantization", default=None, choices=["fp8-cast", "fp8-scaled-mm"])
+    p.add_argument(
+        "--ti2v-quantization",
+        default=None,
+        choices=["fp8-cast", "fp8-scaled-mm"],
+        help="Optional quantization override for target TI2V generation stage.",
+    )
+    p.add_argument(
+        "--retake-quantization",
+        default=None,
+        choices=["fp8-cast", "fp8-scaled-mm"],
+        help="Optional quantization override for Retake optimization stage.",
+    )
     p.add_argument(
         "--lora",
         dest="loras",
