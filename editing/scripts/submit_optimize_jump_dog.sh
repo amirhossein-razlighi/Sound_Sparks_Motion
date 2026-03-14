@@ -60,15 +60,24 @@ MAX_EVAL_FRAMES="${MAX_EVAL_FRAMES:-9}"
 FRAME_STRIDE="${FRAME_STRIDE:-3}"
 FLOW_WIDTH="${FLOW_WIDTH:-224}"
 FLOW_HEIGHT="${FLOW_HEIGHT:-128}"
+ROI_MASK_VIDEO="${ROI_MASK_VIDEO:-}"
+ROI_MASK_THRESHOLD="${ROI_MASK_THRESHOLD:-0.5}"
+GENERATE_SAM2_MASKS="${GENERATE_SAM2_MASKS:-1}"
+OBJECT_PROMPT="${OBJECT_PROMPT:-dog}"
+SAM2_CONFIG="${SAM2_CONFIG:-/home/amirrz/my_codes/LTX-2/sam2/sam2/configs/sam2.1/sam2.1_hiera_s.yaml}"
+SAM2_CHECKPOINT="${SAM2_CHECKPOINT:-/project/def-amahdavi/amirrz/SAM-2/checkpoints/sam2.1_hiera_small.pt}"
+SAM2_DEVICE="${SAM2_DEVICE:-cuda}"
+SAM2_DET_SCORE_THRESHOLD="${SAM2_DET_SCORE_THRESHOLD:-0.35}"
+SAM2_MASK_NAME_TAG="${SAM2_MASK_NAME_TAG:-}"
 
 # Keep this file available on shared storage or $HOME so compute nodes can read it.
 RAFT_MODEL="${RAFT_MODEL:-raft_small}"
 RAFT_WEIGHTS_PATH="${RAFT_WEIGHTS_PATH:-}"
 
 # Optional shape overrides (leave empty to auto-detect from source video)
-HEIGHT="${HEIGHT:-224}"
-WIDTH="${WIDTH:-224}"
-NUM_FRAMES="${NUM_FRAMES:-129}"
+HEIGHT="${HEIGHT:-256}"
+WIDTH="${WIDTH:-256}"
+NUM_FRAMES="${NUM_FRAMES:-90}"
 FRAME_RATE="${FRAME_RATE:-}"
 
 # Optional guidance overrides (leave empty for auto-detect)
@@ -142,6 +151,21 @@ if [[ ! -f "${RAFT_WEIGHTS_PATH}" ]]; then
     exit 1
 fi
 
+if [[ "${GENERATE_SAM2_MASKS}" == "1" ]]; then
+    if [[ -z "${TARGET_VIDEO}" ]]; then
+        echo "ERROR: GENERATE_SAM2_MASKS=1 requires TARGET_VIDEO to be set to an existing file." >&2
+        exit 1
+    fi
+    if [[ ! -f "${TARGET_VIDEO}" ]]; then
+        echo "ERROR: TARGET_VIDEO not found for SAM2 mask generation: ${TARGET_VIDEO}" >&2
+        exit 1
+    fi
+    if [[ -z "${SAM2_CONFIG}" || -z "${SAM2_CHECKPOINT}" ]]; then
+        echo "ERROR: GENERATE_SAM2_MASKS=1 requires SAM2_CONFIG and SAM2_CHECKPOINT." >&2
+        exit 1
+    fi
+fi
+
 if [[ -z "${TARGET_VIDEO}" ]]; then
     echo "WARNING: TARGET_VIDEO is not set; job will generate target video via TI2V,"
     echo "         which can increase peak VRAM and trigger OOM on 80GB GPUs." 
@@ -159,6 +183,13 @@ else
 fi
 echo "  RAFT model          : ${RAFT_MODEL}"
 echo "  RAFT weights path   : ${RAFT_WEIGHTS_PATH}"
+if [[ -n "${ROI_MASK_VIDEO}" ]]; then
+    echo "  ROI mask video      : ${ROI_MASK_VIDEO}"
+fi
+if [[ "${GENERATE_SAM2_MASKS}" == "1" ]]; then
+    echo "  SAM2 mask gen       : enabled"
+    echo "  SAM2 object prompt  : ${OBJECT_PROMPT}"
+fi
 echo "  Iterations          : ${ITERATIONS}"
 echo "  LR                  : ${LR}"
 echo "  Audio opt last steps: ${AUD_OPT_LAST_STEPS}"
@@ -184,6 +215,40 @@ source "${REPO_ROOT}/.venv/bin/activate"
 # Keep torch cache explicit for reproducible offline loading.
 export TORCH_HOME="${TORCH_HOME:-/home/amirrz/.cache/torch}"
 export PYTORCH_ALLOC_CONF="${PYTORCH_ALLOC_CONF:-expandable_segments:True,garbage_collection_threshold:0.8}"
+
+if [[ "${GENERATE_SAM2_MASKS}" == "1" ]]; then
+    if [[ -z "${SAM2_MASK_NAME_TAG}" ]]; then
+        _target_stem="$(basename "${TARGET_VIDEO%.*}")"
+        _src_stem="$(basename "${SRC_VIDEO%.*}")"
+        SAM2_MASK_NAME_TAG="$(printf "%s" "${OBJECT_PROMPT}_${_src_stem}_to_${_target_stem}_fs${FRAME_STRIDE}" | tr -cs '[:alnum:]' '_' | sed 's/^_//;s/_$//' | tr '[:upper:]' '[:lower:]')"
+    fi
+
+    _sam2_stdout="$(python "${REPO_ROOT}/editing/generate_sam2_masks.py" \
+        --src-video "${SRC_VIDEO}" \
+        --target-video "${TARGET_VIDEO}" \
+        --object-prompt "${OBJECT_PROMPT}" \
+        --sam2-config "${SAM2_CONFIG}" \
+        --sam2-checkpoint "${SAM2_CHECKPOINT}" \
+        --name-tag "${SAM2_MASK_NAME_TAG}" \
+        --output-dir "${OUTPUT_DIR}" \
+        --frame-stride "${FRAME_STRIDE}" \
+        --det-score-threshold "${SAM2_DET_SCORE_THRESHOLD}" \
+        --device "${SAM2_DEVICE}")"
+
+    echo "${_sam2_stdout}"
+
+    ROI_MASK_VIDEO="$(printf "%s\n" "${_sam2_stdout}" | awk -F= '/^TARGET_MASK_VIDEO=/{print $2}' | tail -n1)"
+    if [[ -z "${ROI_MASK_VIDEO}" ]]; then
+        echo "ERROR: Could not parse TARGET_MASK_VIDEO from SAM2 script output." >&2
+        exit 1
+    fi
+    if [[ ! -f "${ROI_MASK_VIDEO}" ]]; then
+        echo "ERROR: Parsed TARGET_MASK_VIDEO does not exist: ${ROI_MASK_VIDEO}" >&2
+        exit 1
+    fi
+
+    echo "Using ROI mask video: ${ROI_MASK_VIDEO}"
+fi
 
 # ---------------------------------------------------------------------------
 # Build optional arguments
@@ -265,6 +330,9 @@ fi
 if [[ -n "${QUANT_ARG}" ]]; then
     # shellcheck disable=SC2206
     COMMON_ARGS+=( ${QUANT_ARG} )
+fi
+if [[ -n "${ROI_MASK_VIDEO}" ]]; then
+    COMMON_ARGS+=( --roi-mask-video "${ROI_MASK_VIDEO}" --roi-mask-threshold "${ROI_MASK_THRESHOLD}" )
 fi
 
 if [[ "${SAVE_FINAL_VIDEOS}" != "1" ]]; then

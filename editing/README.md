@@ -54,6 +54,51 @@ python editing/optimize_audio_embedding.py \
 If you already have a target video, replace `--target-prompt ...` with
 `--target-video /path/to/target_motion.mp4`.
 
+If whole-frame motion loss is too noisy, you can restrict the objective to the
+edited object using a binary mask video aligned with the target video:
+
+```bash
+python editing/optimize_audio_embedding.py \
+  --src-video /path/to/source.mp4 \
+  --edit-prompt "A dog in the scene" \
+  --target-video /path/to/target_motion.mp4 \
+  --roi-mask-video /path/to/dog_mask_video.mp4 \
+  --output-dir ./audio_latent_opt
+```
+
+The mask video should have white pixels on the edited object and black elsewhere.
+This is a good place to use SAM2 or any external tracker/segmenter; the optimizer
+will then apply the RAFT flow and motion-magnitude losses only inside that region.
+
+### Auto-generate masks with SAM2
+
+You can generate both source and target mask videos directly with:
+
+```bash
+python editing/generate_sam2_masks.py \
+  --src-video /path/to/source.mp4 \
+  --target-video /path/to/target_motion.mp4 \
+  --object-prompt dog \
+  --sam2-config /path/to/sam2_config.yaml \
+  --sam2-checkpoint /path/to/sam2_checkpoint.pt \
+  --output-dir ./audio_latent_opt
+```
+
+This writes:
+- `src_mask_dog.mp4`
+- `target_mask_dog.mp4`
+
+The Slurm script can run this automatically before optimization and wire the
+generated target mask into `--roi-mask-video`:
+
+```bash
+export GENERATE_SAM2_MASKS=1
+export OBJECT_PROMPT=dog
+export SAM2_CONFIG=/path/to/sam2_config.yaml
+export SAM2_CHECKPOINT=/path/to/sam2_checkpoint.pt
+sbatch editing/scripts/submit_optimize_jump_dog.sh /path/to/source.mp4
+```
+
 Useful output files:
 - `best_optimized_video.mp4`: best video found during optimization
 - `baseline_unoptimized_video.mp4`: same setup with original audio latent

@@ -310,6 +310,39 @@ def decode_video_frames_rgb(
     return out
 
 
+def decode_video_mask_frames(
+    video_path: str,
+    max_frames: int | None,
+    frame_stride: int,
+    resize_to: tuple[int, int] | None,
+    threshold: float,
+) -> list[np.ndarray]:
+    """Decode a binary mask video as float HxW arrays in {0,1}."""
+    out: list[np.ndarray] = []
+    src = av.open(video_path)
+    try:
+        vs = next(s for s in src.streams if s.type == "video")
+        frame_idx = 0
+        for frame in src.decode(vs):
+            if frame_idx % frame_stride != 0:
+                frame_idx += 1
+                continue
+
+            arr = np.asarray(frame.to_image().convert("L"), dtype=np.float32) / 255.0
+            if resize_to is not None and (arr.shape[1], arr.shape[0]) != resize_to:
+                arr_t = torch.from_numpy(arr)[None, None]
+                arr = (
+                    F.interpolate(arr_t, size=(resize_to[1], resize_to[0]), mode="nearest")[0, 0].numpy()
+                )
+            out.append((arr >= threshold).astype(np.float32, copy=False))
+            frame_idx += 1
+            if max_frames is not None and len(out) >= max_frames:
+                break
+    finally:
+        src.close()
+    return out
+
+
 def flatten_video_chunks(
     video_iter: Iterator[torch.Tensor],
     max_frames: int | None,
@@ -431,6 +464,13 @@ def frames_rgb_uint8_to_chw_float(frames_rgb: list[np.ndarray], device: torch.de
     return t.permute(0, 3, 1, 2).contiguous()
 
 
+def mask_frames_to_nchw_float(mask_frames: list[np.ndarray], device: torch.device) -> torch.Tensor:
+    if len(mask_frames) == 0:
+        return torch.empty(0, 1, 0, 0, device=device)
+    arr = np.stack(mask_frames, axis=0)
+    return torch.from_numpy(arr).to(device=device, dtype=torch.float32).unsqueeze(1).contiguous()
+
+
 def compute_raft_flows(
     frames_chw: torch.Tensor,
     raft_model: torch.nn.Module,
@@ -458,6 +498,7 @@ def flow_objective_torch(
     raft_transforms,
     flow_weight: float,
     mag_curve_weight: float,
+    roi_frame_masks: torch.Tensor | None = None,
 ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
     """Differentiable objective: RAFT flow field + flow magnitude curve."""
     gen_flows = compute_raft_flows(gen_frames_chw, raft_model, raft_transforms)
@@ -466,6 +507,8 @@ def flow_objective_torch(
         return inf, inf, inf
 
     n = min(gen_flows.shape[0], target_flows.shape[0])
+    if roi_frame_masks is not None and roi_frame_masks.shape[0] >= 2:
+        n = min(n, roi_frame_masks.shape[0] - 1)
     gen = gen_flows[:n]
     tgt = target_flows[:n]
 
@@ -477,11 +520,30 @@ def flow_objective_torch(
         scale = torch.tensor([scale_x, scale_y], device=gen.device, dtype=gen.dtype).view(1, 2, 1, 1)
         gen = gen * scale
 
-    flow_mse = F.mse_loss(gen, tgt)
+    flow_masks = None
+    if roi_frame_masks is not None:
+        flow_masks = torch.maximum(roi_frame_masks[:n], roi_frame_masks[1 : n + 1])
+        if flow_masks.shape[-2:] != tgt.shape[-2:]:
+            flow_masks = F.interpolate(flow_masks, size=tgt.shape[-2:], mode="nearest")
+        flow_masks = flow_masks.clamp(0.0, 1.0)
 
-    gen_mag = torch.linalg.norm(gen, dim=1).mean(dim=(1, 2))
-    tgt_mag = torch.linalg.norm(tgt, dim=1).mean(dim=(1, 2))
-    mag_curve_mse = F.mse_loss(gen_mag, tgt_mag)
+    if flow_masks is None:
+        flow_mse = F.mse_loss(gen, tgt)
+
+        gen_mag = torch.linalg.norm(gen, dim=1).mean(dim=(1, 2))
+        tgt_mag = torch.linalg.norm(tgt, dim=1).mean(dim=(1, 2))
+        mag_curve_mse = F.mse_loss(gen_mag, tgt_mag)
+    else:
+        weight_sum = flow_masks.sum().clamp_min(1.0)
+        flow_mse = ((gen - tgt).pow(2) * flow_masks).sum() / (weight_sum * gen.shape[1])
+
+        mask_2d = flow_masks.squeeze(1)
+        mask_area = mask_2d.sum(dim=(1, 2)).clamp_min(1.0)
+        gen_mag_map = torch.linalg.norm(gen, dim=1)
+        tgt_mag_map = torch.linalg.norm(tgt, dim=1)
+        gen_mag = (gen_mag_map * mask_2d).sum(dim=(1, 2)) / mask_area
+        tgt_mag = (tgt_mag_map * mask_2d).sum(dim=(1, 2)) / mask_area
+        mag_curve_mse = F.mse_loss(gen_mag, tgt_mag)
 
     total = flow_weight * flow_mse + mag_curve_weight * mag_curve_mse
     return total, flow_mse, mag_curve_mse
@@ -1030,6 +1092,26 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
         frame_stride=args.frame_stride,
         resize_to=None,
     )
+    roi_frame_masks = None
+    if args.roi_mask_video is not None:
+        roi_mask_path = Path(args.roi_mask_video).expanduser().resolve()
+        if not roi_mask_path.exists():
+            raise FileNotFoundError(f"--roi-mask-video not found: {roi_mask_path}")
+        roi_mask_frames = decode_video_mask_frames(
+            video_path=str(roi_mask_path),
+            max_frames=args.max_eval_frames,
+            frame_stride=args.frame_stride,
+            resize_to=resize_to,
+            threshold=args.roi_mask_threshold,
+        )
+        roi_frame_masks = mask_frames_to_nchw_float(roi_mask_frames, device=device)
+        if roi_frame_masks.shape[0] < 2:
+            raise RuntimeError("ROI mask video must provide at least 2 usable frames.")
+        log.info(
+            "Loaded ROI masks from %s with %.2f%% average coverage",
+            roi_mask_path,
+            float(roi_frame_masks.mean().item() * 100.0),
+        )
 
     target_frames = frames_rgb_uint8_to_chw_float(target_frames_rgb, device=device)
     if target_frames.shape[0] == 0:
@@ -1193,6 +1275,7 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
                 raft_transforms=raft_transforms,
                 flow_weight=args.flow_weight,
                 mag_curve_weight=args.mag_curve_weight,
+                roi_frame_masks=roi_frame_masks,
             )
             latent_reg_t = args.latent_reg_weight * torch.mean((audio_latent - base_audio_latent_fp32) ** 2)
             total_t = flow_total + latent_reg_t
@@ -1372,6 +1455,21 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--flow-height", type=int, default=224, help="Flow objective height (frames are resized to this).")
     p.add_argument("--max-eval-frames", type=int, default=33, help="Max frames used in objective computation.")
     p.add_argument("--frame-stride", type=int, default=1, help="Use every N-th frame when computing objective.")
+    p.add_argument(
+        "--roi-mask-video",
+        type=str,
+        default=None,
+        help=(
+            "Optional binary mask video aligned with the target video. "
+            "When provided, RAFT loss is applied only inside the masked region."
+        ),
+    )
+    p.add_argument(
+        "--roi-mask-threshold",
+        type=float,
+        default=0.5,
+        help="Threshold used to binarize --roi-mask-video frames after grayscale conversion.",
+    )
 
     # Optimization settings (gradient-based Adam)
     p.add_argument("--iterations", type=int, default=8, help="Number of optimization iterations.")
