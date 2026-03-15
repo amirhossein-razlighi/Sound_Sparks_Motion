@@ -20,8 +20,8 @@
 #SBATCH --job-name=ltx_opt_jump_dog
 #SBATCH --account=def-amahdavi
 #SBATCH --gpus-per-node=h100:1
-#SBATCH --mem=48G
-#SBATCH --time=04:00:00
+#SBATCH --mem=64G
+#SBATCH --time=02:00:00
 #SBATCH --output=%x_%j.out
 #SBATCH --error=%x_%j.err
 
@@ -63,6 +63,7 @@ FLOW_HEIGHT="${FLOW_HEIGHT:-128}"
 ROI_MASK_VIDEO="${ROI_MASK_VIDEO:-}"
 ROI_MASK_THRESHOLD="${ROI_MASK_THRESHOLD:-0.3}"
 EVAL_START_FRAME="${EVAL_START_FRAME:--1}"
+LPIPS_WEIGHT="${LPIPS_WEIGHT:-0.05}"
 GENERATE_SAM2_MASKS="${GENERATE_SAM2_MASKS:-1}"
 OBJECT_PROMPT="${OBJECT_PROMPT:-dog}"
 SAM2_CONFIG="${SAM2_CONFIG:-configs/sam2.1/sam2.1_hiera_l.yaml}"
@@ -78,9 +79,11 @@ RAFT_MODEL="${RAFT_MODEL:-raft_small}"
 RAFT_WEIGHTS_PATH="${RAFT_WEIGHTS_PATH:-}"
 
 # Optional shape overrides (leave empty to auto-detect from source video)
-HEIGHT="${HEIGHT:-}"
-WIDTH="${WIDTH:-}"
-NUM_FRAMES="${NUM_FRAMES:-}"
+# NOTE: Directly backpropagating through LTX on full 1080p 145 frame videos will cause OOM.
+# Using lower shape defaults to ensure it fits in H100 GPU VRAM.
+HEIGHT="${HEIGHT:-320}"
+WIDTH="${WIDTH:-512}"
+NUM_FRAMES="${NUM_FRAMES:-35}"
 FRAME_RATE="${FRAME_RATE:-}"
 
 # Optional guidance overrides (leave empty for auto-detect)
@@ -131,7 +134,7 @@ if [[ "${MULTI_GPU}" == "1" ]] && [[ "${NPROC_PER_NODE}" -gt "${VISIBLE_GPU_COUN
 fi
 
 # Optional target video (if set, TARGET_PROMPT is ignored)
-TARGET_VIDEO="${TARGET_VIDEO:-}"
+TARGET_VIDEO="${TARGET_VIDEO:-/home/amirrz/my_codes/LTX-2/results/editing_results_jump_optimize/target_motion_video.mp4}"
 
 # ---------------------------------------------------------------------------
 # Validation
@@ -191,6 +194,7 @@ echo "  RAFT weights path   : ${RAFT_WEIGHTS_PATH}"
 if [[ -n "${ROI_MASK_VIDEO}" ]]; then
     echo "  ROI mask video      : ${ROI_MASK_VIDEO}"
 fi
+echo "  LPIPS weight        : ${LPIPS_WEIGHT}"
 if [[ "${GENERATE_SAM2_MASKS}" == "1" ]]; then
     echo "  SAM2 mask gen       : enabled"
     echo "  SAM2 object prompt  : ${OBJECT_PROMPT}"
@@ -374,6 +378,7 @@ COMMON_ARGS=(
     --flow-weight "${FLOW_WEIGHT}"
     --mag-curve-weight "${MAG_CURVE_WEIGHT}"
     --latent-reg-weight "${LATENT_REG_WEIGHT}"
+    --lpips-weight "${LPIPS_WEIGHT}"
     --max-eval-frames "${MAX_EVAL_FRAMES}"
     --frame-stride "${FRAME_STRIDE}"
     --eval-start-frame "${EVAL_START_FRAME}"

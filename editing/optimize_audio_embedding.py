@@ -1302,6 +1302,35 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
         model_name=args.raft_model,
         weights_path=args.raft_weights_path,
     )
+    
+    lpips_model = None
+    source_frames_lpips = None
+    if args.lpips_weight > 0.0:
+        import lpips
+        log.info("Loading LPIPS model...")
+        lpips_model = lpips.LPIPS(net="vgg").to(device)
+        for param in lpips_model.parameters():
+            param.requires_grad = False
+        lpips_model.eval()
+
+        source_frames_rgb = decode_video_frames_rgb(
+            video_path=str(retake_input_video),
+            max_frames=args.max_eval_frames,
+            frame_stride=args.frame_stride,
+            resize_to=None,
+            sample_start=eval_sample_start,
+        )
+        source_frames_t = frames_rgb_uint8_to_chw_float(source_frames_rgb, device=device)
+        if resize_to is not None:
+            source_frames_t = F.interpolate(
+                source_frames_t,
+                size=(resize_to[1], resize_to[0]),
+                mode="bilinear",
+                align_corners=False,
+            )
+        # Normalize to [-1, 1] for LPIPS
+        source_frames_lpips = source_frames_t * 2.0 - 1.0
+
     with torch.no_grad():
         target_flows = compute_raft_flows(target_frames, raft_model, raft_transforms).detach()
     if target_flows.shape[0] == 0:
@@ -1412,6 +1441,7 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
                 "flow_mse",
                 "mag_curve_mse",
                 "latent_reg",
+                "lpips",
                 "grad_norm",
                 "is_best",
             ])
@@ -1421,6 +1451,7 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
             "latent": audio_latent.detach().clone(),
             "flow_mse": float("inf"),
             "mag_mse": float("inf"),
+            "lpips": float("inf"),
         }
 
         for it in range(1, args.iterations + 1):
@@ -1451,8 +1482,20 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
                 mag_curve_weight=args.mag_curve_weight,
                 roi_frame_masks=roi_frame_masks,
             )
+            
+            lpips_loss_t = torch.tensor(0.0, device=device)
+            if args.lpips_weight > 0.0 and lpips_model is not None:
+                # Limit LPIPS computation to matched frames
+                n_frames = min(gen_frames.shape[0], source_frames_lpips.shape[0])
+                gen_lpips = gen_frames[:n_frames] * 2.0 - 1.0 # [0, 1] to [-1, 1]
+                src_lpips = source_frames_lpips[:n_frames]
+                
+                # lpips_model returns [N, 1, 1, 1]
+                lpips_loss_val = lpips_model(gen_lpips, src_lpips).mean()
+                lpips_loss_t = args.lpips_weight * lpips_loss_val
+
             latent_reg_t = args.latent_reg_weight * torch.mean((audio_latent - base_audio_latent_fp32) ** 2)
-            total_t = flow_total + latent_reg_t
+            total_t = flow_total + latent_reg_t + lpips_loss_t
             total_t.backward()
 
             if world_size > 1 and audio_latent.grad is not None:
@@ -1468,10 +1511,11 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
             flow_mse = float(flow_mse_t.detach().item())
             mag_mse = float(mag_mse_t.detach().item())
             latent_reg = float(latent_reg_t.detach().item())
+            lpips_val = float(lpips_loss_t.detach().item())
 
             is_best = total < best["loss"]
             if is_main:
-                writer.writerow([it, total, flow_mse, mag_mse, latent_reg, grad_norm, int(is_best)])
+                writer.writerow([it, total, flow_mse, mag_mse, latent_reg, lpips_val, grad_norm, int(is_best)])
                 f_csv.flush()
 
             if is_best:
@@ -1479,14 +1523,16 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
                 best["latent"] = audio_latent.detach().clone()
                 best["flow_mse"] = flow_mse
                 best["mag_mse"] = mag_mse
+                best["lpips"] = lpips_val
 
             log.info(
-                "iter=%d total=%.6f flow=%.6f mag=%.6f reg=%.6f grad=%.6f best=%.6f",
+                "iter=%d total=%.6f flow=%.6f mag=%.6f reg=%.6f lpips=%.6f grad=%.6f best=%.6f",
                 it,
                 total,
                 flow_mse,
                 mag_mse,
                 latent_reg,
+                lpips_val,
                 grad_norm,
                 best["loss"],
             )
@@ -1499,6 +1545,7 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
                 "best_loss": best["loss"],
                 "best_flow_mse": best["flow_mse"],
                 "best_mag_mse": best["mag_mse"],
+                "best_lpips": best.get("lpips", 0.0),
                 "world_size": world_size,
             },
             output_dir / "best_latent_params.pt",
@@ -1695,6 +1742,7 @@ def build_parser() -> argparse.ArgumentParser:
     # Objective settings
     p.add_argument("--flow-weight", type=float, default=1.0, help="Weight for dense flow field MSE.")
     p.add_argument("--mag-curve-weight", type=float, default=0.25, help="Weight for mean flow-magnitude curve MSE.")
+    p.add_argument("--lpips-weight", type=float, default=0.0, help="Weight for LPIPS perceptual loss against source frames.")
     p.add_argument("--latent-reg-weight", type=float, default=0.02, help="Weight for latent drift regularization.")
     p.add_argument("--flow-width", type=int, default=384, help="Flow objective width (frames are resized to this).")
     p.add_argument("--flow-height", type=int, default=224, help="Flow objective height (frames are resized to this).")
