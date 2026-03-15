@@ -1552,7 +1552,6 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
             if src_audio_for_input is not None:
                 src_wave = src_audio_for_input.waveform.squeeze(0).float()
                 if src_audio_for_input.sampling_rate != args.audio_sr:
-                    import torchaudio
                     src_wave = torchaudio.functional.resample(
                         src_wave,
                         orig_freq=src_audio_for_input.sampling_rate,
