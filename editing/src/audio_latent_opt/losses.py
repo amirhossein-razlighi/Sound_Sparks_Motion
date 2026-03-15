@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import torch
 
-from editing.optimize_audio_embedding import flow_objective_torch
+from .core import flow_objective_torch
 
 
 def compute_total_loss(
