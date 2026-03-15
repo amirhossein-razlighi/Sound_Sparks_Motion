@@ -37,10 +37,10 @@ CKPT_ROOT="${CKPT_ROOT:-/project/def-amahdavi/amirrz/LTX-2/checkpoints}"
 GEMMA_ROOT="${GEMMA_ROOT:-/project/def-amahdavi/amirrz/HF/models/gemma-3-12b-it-qat-q4_0-unquantized}"
 
 SRC_VIDEO="${SRC_VIDEO:-${1:-}}"
-OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/editing_results_guitar_optimize_fp8_quant}"
+OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/editing_results_guitar_smash_optimize}"
 
 EDIT_PROMPT="${EDIT_PROMPT:-A guitarist plays guitar on the stage}"
-TARGET_PROMPT="${TARGET_PROMPT:-The guitarist drops her guitar and leaves the scene, while the rest of the scene remains unchanged}"
+TARGET_PROMPT="${TARGET_PROMPT:-The guitarist aggressively smashes her guitar}"
 
 SEED="${SEED:-42}"
 NUM_INFERENCE_STEPS="${NUM_INFERENCE_STEPS:-30}"
@@ -49,21 +49,23 @@ RETAKE_NUM_INFERENCE_STEPS="${RETAKE_NUM_INFERENCE_STEPS:-30}"
 FINAL_RETAKE_NUM_INFERENCE_STEPS="${FINAL_RETAKE_NUM_INFERENCE_STEPS:-30}"
 RETAKE_START_FRAMES="${RETAKE_START_FRAMES:-5}"
 
-ITERATIONS="${ITERATIONS:-40}"
-LR="${LR:-0.005}"
+ITERATIONS="${ITERATIONS:-30}"
+LR="${LR:-0.015}"
 AUD_OPT_LAST_STEPS="${AUD_OPT_LAST_STEPS:-8}"
 FINAL_AUD_OPT_LAST_STEPS="${FINAL_AUD_OPT_LAST_STEPS:-0}"
 FLOW_WEIGHT="${FLOW_WEIGHT:-1.0}"
 MAG_CURVE_WEIGHT="${MAG_CURVE_WEIGHT:-0.25}"
 LATENT_REG_WEIGHT="${LATENT_REG_WEIGHT:-0.05}"
-MAX_EVAL_FRAMES="${MAX_EVAL_FRAMES:-17}"
-FRAME_STRIDE="${FRAME_STRIDE:-2}"
+MAX_EVAL_FRAMES="${MAX_EVAL_FRAMES:-33}"
+FRAME_STRIDE="${FRAME_STRIDE:-1}"
 FLOW_WIDTH="${FLOW_WIDTH:-512}"
 FLOW_HEIGHT="${FLOW_HEIGHT:-320}"
 ROI_MASK_VIDEO="${ROI_MASK_VIDEO:-}"
 ROI_MASK_THRESHOLD="${ROI_MASK_THRESHOLD:-0.3}"
 EVAL_START_FRAME="${EVAL_START_FRAME:--1}"
 LPIPS_WEIGHT="${LPIPS_WEIGHT:-0.1}"
+LPIPS_MAX_FRAMES="${LPIPS_MAX_FRAMES:-8}"
+GRAD_CLIP="${GRAD_CLIP:-0.5}"
 GENERATE_SAM2_MASKS="${GENERATE_SAM2_MASKS:-1}"
 OBJECT_PROMPT="${OBJECT_PROMPT:-person}"
 SAM2_CONFIG="${SAM2_CONFIG:-configs/sam2.1/sam2.1_hiera_l.yaml}"
@@ -83,7 +85,7 @@ RAFT_WEIGHTS_PATH="${RAFT_WEIGHTS_PATH:-}"
 # Using lower shape defaults to ensure it fits in H100 GPU VRAM.
 HEIGHT="${HEIGHT:-320}"
 WIDTH="${WIDTH:-512}"
-NUM_FRAMES="${NUM_FRAMES:-73}"
+NUM_FRAMES="${NUM_FRAMES:-33}"
 FRAME_RATE="${FRAME_RATE:-}"
 
 # Optional guidance overrides (leave empty for auto-detect)
@@ -95,7 +97,7 @@ TI2V_LOW_MEMORY_GUIDANCE="${TI2V_LOW_MEMORY_GUIDANCE:-0}"
 
 # Optional: fp8-cast | fp8-scaled-mm | (empty = none)
 # Keep TI2V unquantized by default to avoid fp8 load-time OOM spikes.
-QUANTIZATION="${QUANTIZATION:-fp8-cast}"
+QUANTIZATION="${QUANTIZATION:-}"
 TI2V_QUANTIZATION="${TI2V_QUANTIZATION:-}"
 RETAKE_QUANTIZATION="${RETAKE_QUANTIZATION:-}"
 
@@ -195,6 +197,8 @@ if [[ -n "${ROI_MASK_VIDEO}" ]]; then
     echo "  ROI mask video      : ${ROI_MASK_VIDEO}"
 fi
 echo "  LPIPS weight        : ${LPIPS_WEIGHT}"
+echo "  LPIPS max frames    : ${LPIPS_MAX_FRAMES}"
+echo "  Grad clip           : ${GRAD_CLIP}"
 if [[ "${GENERATE_SAM2_MASKS}" == "1" ]]; then
     echo "  SAM2 mask gen       : enabled"
     echo "  SAM2 object prompt  : ${OBJECT_PROMPT}"
@@ -379,6 +383,8 @@ COMMON_ARGS=(
     --mag-curve-weight "${MAG_CURVE_WEIGHT}"
     --latent-reg-weight "${LATENT_REG_WEIGHT}"
     --lpips-weight "${LPIPS_WEIGHT}"
+    --lpips-max-frames "${LPIPS_MAX_FRAMES}"
+    --grad-clip "${GRAD_CLIP}"
     --max-eval-frames "${MAX_EVAL_FRAMES}"
     --frame-stride "${FRAME_STRIDE}"
     --eval-start-frame "${EVAL_START_FRAME}"
