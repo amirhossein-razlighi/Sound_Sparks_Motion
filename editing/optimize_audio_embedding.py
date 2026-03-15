@@ -852,6 +852,9 @@ def render_with_injected_audio_latent(
             # Keep float range [0,1] and preserve autograd graph.
             return ((frames_bcfhw[0] + 1.0) / 2.0).clamp(0.0, 1.0).permute(1, 0, 2, 3).contiguous()
 
+        needed_latent_t = min(latent.shape[2], (max_frames // 8) + 2)
+        latent = latent[:, :, :needed_latent_t, :, :]
+
         if tiling_config is not None:
             for frames in video_decoder.tiled_decode(latent, tiling_config, generator=generator):
                 yield _to_frames(frames)
@@ -963,7 +966,8 @@ def render_and_save_video_with_latent(
     _retake_module._encode_audio_for_retake = _forced_audio_encode
     _retake_module.euler_denoising_loop = _late_step_grad_euler_loop
     try:
-        video_iter, _ = pipeline(video_path=src_video, **retake_kwargs)
+        with torch.no_grad():
+            video_iter, _ = pipeline(video_path=src_video, **retake_kwargs)
 
         src_audio = decode_audio_from_file(src_video, pipeline.device, max_duration=num_frames / fps)
         if src_audio is None:
@@ -979,13 +983,14 @@ def render_and_save_video_with_latent(
                 wave = wave[:2].contiguous()
             out_audio = Audio(waveform=wave.cpu(), sampling_rate=audio_sr)
 
-        encode_video(
-            video=video_iter,
-            fps=int(round(fps)),
-            audio=out_audio,
-            output_path=str(output_path),
-            video_chunks_number=get_video_chunks_number(num_frames, TilingConfig.default()),
-        )
+        with torch.no_grad():
+            encode_video(
+                video=video_iter,
+                fps=int(round(fps)),
+                audio=out_audio,
+                output_path=str(output_path),
+                video_chunks_number=get_video_chunks_number(num_frames, TilingConfig.default()),
+            )
     finally:
         _retake_module._encode_video_for_retake = orig_video_encode
         _retake_module._encode_audio_for_retake = orig_audio_encode
@@ -1507,6 +1512,17 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
                 n_frames = min(gen_frames.shape[0], source_frames_lpips.shape[0])
                 gen_lpips = gen_frames[:n_frames] * 2.0 - 1.0 # [0, 1] to [-1, 1]
                 src_lpips = source_frames_lpips[:n_frames]
+
+                if args.lpips_max_frames > 0 and n_frames > args.lpips_max_frames:
+                    # Uniformly subsample LPIPS frames to bound VRAM usage.
+                    idx = torch.linspace(
+                        0,
+                        n_frames - 1,
+                        steps=args.lpips_max_frames,
+                        device=gen_lpips.device,
+                    ).round().long()
+                    gen_lpips = gen_lpips.index_select(0, idx)
+                    src_lpips = src_lpips.index_select(0, idx)
                 
                 # lpips_model returns [N, 1, 1, 1]
                 lpips_loss_val = lpips_model(gen_lpips, src_lpips).mean()
@@ -1714,8 +1730,9 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
             vocoder = pipeline.model_ledger.vocoder().to(device)
             
             with torch.no_grad():
+                decoder_dtype = next(audio_decoder.parameters()).dtype if hasattr(audio_decoder, "parameters") else torch.float32
                 best_audio_decoded = vae_decode_audio(
-                    best_latent.to(device).to(audio_decoder.dtype),
+                    best_latent.to(device).to(decoder_dtype),
                     audio_decoder,
                     vocoder,
                 )
@@ -1726,7 +1743,7 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
                 )
                 
                 base_audio_decoded = vae_decode_audio(
-                    base_audio_latent.to(device).to(audio_decoder.dtype),
+                    base_audio_latent.to(device).to(decoder_dtype),
                     audio_decoder,
                     vocoder,
                 )
@@ -1797,6 +1814,12 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--flow-weight", type=float, default=1.0, help="Weight for dense flow field MSE.")
     p.add_argument("--mag-curve-weight", type=float, default=0.25, help="Weight for mean flow-magnitude curve MSE.")
     p.add_argument("--lpips-weight", type=float, default=0.1, help="Weight for LPIPS perceptual loss against source frames.")
+    p.add_argument(
+        "--lpips-max-frames",
+        type=int,
+        default=8,
+        help="Maximum frames used for LPIPS per iteration (<=0 disables cap).",
+    )
     p.add_argument("--resume", action="store_true", help="If best_audio_latent.pt exists in output dir, load it and skip the optimization loop.")
     p.add_argument("--latent-reg-weight", type=float, default=0.05, help="Weight for latent drift regularization.")
     p.add_argument("--flow-width", type=int, default=512, help="Flow objective width (frames are resized to this).")
