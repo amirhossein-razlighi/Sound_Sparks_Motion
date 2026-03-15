@@ -1454,7 +1454,25 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
             "lpips": float("inf"),
         }
 
-        for it in range(1, args.iterations + 1):
+        num_iters = args.iterations
+        best_latent_path = output_dir / "best_audio_latent.pt"
+        if args.resume and best_latent_path.exists():
+            log.info(f"Resuming from existing latent at {best_latent_path}, skipping optimization.")
+            loaded = torch.load(best_latent_path, map_location="cpu").to(device=audio_latent.device, dtype=audio_latent.dtype)
+            audio_latent.data.copy_(loaded)
+            best["latent"] = audio_latent.detach().clone()
+            num_iters = 0
+            
+            # Restore metrics if available
+            params_path = output_dir / "best_latent_params.pt"
+            if params_path.exists():
+                saved_params = torch.load(params_path, map_location="cpu")
+                best["loss"] = saved_params.get("best_loss", float("inf"))
+                best["flow_mse"] = saved_params.get("best_flow_mse", float("inf"))
+                best["mag_mse"] = saved_params.get("best_mag_mse", float("inf"))
+                best["lpips"] = saved_params.get("best_lpips", float("inf"))
+
+        for it in range(1, num_iters + 1):
             optimizer.zero_grad(set_to_none=True)
 
             injected_latent = audio_latent.to(dtype=base_audio_latent.dtype)
@@ -1688,6 +1706,42 @@ def optimize_audio_latent(args: argparse.Namespace) -> None:
             wave = align_waveform_length(wave, int(duration * args.audio_sr))
             save_audio_wav(wave, args.audio_sr, str(output_dir / "source_audio_used.wav"))
 
+        try:
+            from ltx_core.model.audio_vae import decode_audio as vae_decode_audio
+            log.info("Decoding optimized audio latents to .wav files...")
+            
+            audio_decoder = pipeline.model_ledger.audio_decoder().to(device)
+            vocoder = pipeline.model_ledger.vocoder().to(device)
+            
+            with torch.no_grad():
+                best_audio_decoded = vae_decode_audio(
+                    best_latent.to(device).to(audio_decoder.dtype),
+                    audio_decoder,
+                    vocoder,
+                )
+                save_audio_wav(
+                    best_audio_decoded.waveform.squeeze(0),
+                    best_audio_decoded.sampling_rate,
+                    str(output_dir / "best_optimized_audio.wav")
+                )
+                
+                base_audio_decoded = vae_decode_audio(
+                    base_audio_latent.to(device).to(audio_decoder.dtype),
+                    audio_decoder,
+                    vocoder,
+                )
+                save_audio_wav(
+                    base_audio_decoded.waveform.squeeze(0),
+                    base_audio_decoded.sampling_rate,
+                    str(output_dir / "baseline_unoptimized_audio.wav")
+                )
+            
+            del audio_decoder, vocoder
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+        except Exception as e:
+            log.warning("Could not decode and save audio latents: %s", e)
+
         log.info("Done. Best total loss: %.6f", best["loss"])
         log.info("Saved outputs in: %s", output_dir)
 
@@ -1742,10 +1796,11 @@ def build_parser() -> argparse.ArgumentParser:
     # Objective settings
     p.add_argument("--flow-weight", type=float, default=1.0, help="Weight for dense flow field MSE.")
     p.add_argument("--mag-curve-weight", type=float, default=0.25, help="Weight for mean flow-magnitude curve MSE.")
-    p.add_argument("--lpips-weight", type=float, default=0.0, help="Weight for LPIPS perceptual loss against source frames.")
-    p.add_argument("--latent-reg-weight", type=float, default=0.02, help="Weight for latent drift regularization.")
-    p.add_argument("--flow-width", type=int, default=384, help="Flow objective width (frames are resized to this).")
-    p.add_argument("--flow-height", type=int, default=224, help="Flow objective height (frames are resized to this).")
+    p.add_argument("--lpips-weight", type=float, default=0.1, help="Weight for LPIPS perceptual loss against source frames.")
+    p.add_argument("--resume", action="store_true", help="If best_audio_latent.pt exists in output dir, load it and skip the optimization loop.")
+    p.add_argument("--latent-reg-weight", type=float, default=0.05, help="Weight for latent drift regularization.")
+    p.add_argument("--flow-width", type=int, default=512, help="Flow objective width (frames are resized to this).")
+    p.add_argument("--flow-height", type=int, default=320, help="Flow objective height (frames are resized to this).")
     p.add_argument("--max-eval-frames", type=int, default=33, help="Max frames used in objective computation.")
     p.add_argument("--frame-stride", type=int, default=1, help="Use every N-th frame when computing objective.")
     p.add_argument(
@@ -1774,13 +1829,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     # Optimization settings (gradient-based Adam)
-    p.add_argument("--iterations", type=int, default=8, help="Number of optimization iterations.")
-    p.add_argument("--lr", type=float, default=0.05, help="Adam learning rate for latent coefficients.")
-    p.add_argument("--grad-clip", type=float, default=1.0, help="Clip alpha gradient norm (<=0 disables clip).")
+    p.add_argument("--iterations", type=int, default=30, help="Number of optimization iterations.")
+    p.add_argument("--lr", type=float, default=0.015, help="Adam learning rate for latent coefficients.")
+    p.add_argument("--grad-clip", type=float, default=0.5, help="Clip alpha gradient norm (<=0 disables clip).")
     p.add_argument(
         "--audio-opt-last-steps",
         type=int,
-        default=0,
+        default=6,
         help=(
             "Keep gradients only through the final K denoising steps during optimization "
             "(0 = full-step gradients)."

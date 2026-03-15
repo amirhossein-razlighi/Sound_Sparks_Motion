@@ -17,7 +17,7 @@
 #   export RAFT_WEIGHTS_PATH=/path/to/raft_large_C_T_SKHT_V2-ff5fadd5.pth
 # =============================================================================
 
-#SBATCH --job-name=ltx_opt_jump_dog
+#SBATCH --job-name=ltx_opt_audio
 #SBATCH --account=def-amahdavi
 #SBATCH --gpus-per-node=h100:1
 #SBATCH --mem=64G
@@ -37,10 +37,10 @@ CKPT_ROOT="${CKPT_ROOT:-/project/def-amahdavi/amirrz/LTX-2/checkpoints}"
 GEMMA_ROOT="${GEMMA_ROOT:-/project/def-amahdavi/amirrz/HF/models/gemma-3-12b-it-qat-q4_0-unquantized}"
 
 SRC_VIDEO="${SRC_VIDEO:-${1:-}}"
-OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/editing_results_jump_optimize}"
+OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/editing_results_guitar_optimize_fp8_quant}"
 
-EDIT_PROMPT="${EDIT_PROMPT:-A dog in the scene}"
-TARGET_PROMPT="${TARGET_PROMPT:-The dog jumps up and down}"
+EDIT_PROMPT="${EDIT_PROMPT:-A guitarist plays guitar on the stage}"
+TARGET_PROMPT="${TARGET_PROMPT:-The guitarist drops her guitar and leaves the scene, while the rest of the scene remains unchanged}"
 
 SEED="${SEED:-42}"
 NUM_INFERENCE_STEPS="${NUM_INFERENCE_STEPS:-30}"
@@ -49,23 +49,23 @@ RETAKE_NUM_INFERENCE_STEPS="${RETAKE_NUM_INFERENCE_STEPS:-30}"
 FINAL_RETAKE_NUM_INFERENCE_STEPS="${FINAL_RETAKE_NUM_INFERENCE_STEPS:-30}"
 RETAKE_START_FRAMES="${RETAKE_START_FRAMES:-5}"
 
-ITERATIONS="${ITERATIONS:-20}"
-LR="${LR:-0.01}"
-AUD_OPT_LAST_STEPS="${AUD_OPT_LAST_STEPS:-6}"
+ITERATIONS="${ITERATIONS:-40}"
+LR="${LR:-0.005}"
+AUD_OPT_LAST_STEPS="${AUD_OPT_LAST_STEPS:-8}"
 FINAL_AUD_OPT_LAST_STEPS="${FINAL_AUD_OPT_LAST_STEPS:-0}"
 FLOW_WEIGHT="${FLOW_WEIGHT:-1.0}"
 MAG_CURVE_WEIGHT="${MAG_CURVE_WEIGHT:-0.25}"
-LATENT_REG_WEIGHT="${LATENT_REG_WEIGHT:-0.02}"
+LATENT_REG_WEIGHT="${LATENT_REG_WEIGHT:-0.05}"
 MAX_EVAL_FRAMES="${MAX_EVAL_FRAMES:-17}"
-FRAME_STRIDE="${FRAME_STRIDE:-3}"
-FLOW_WIDTH="${FLOW_WIDTH:-224}"
-FLOW_HEIGHT="${FLOW_HEIGHT:-128}"
+FRAME_STRIDE="${FRAME_STRIDE:-2}"
+FLOW_WIDTH="${FLOW_WIDTH:-512}"
+FLOW_HEIGHT="${FLOW_HEIGHT:-320}"
 ROI_MASK_VIDEO="${ROI_MASK_VIDEO:-}"
 ROI_MASK_THRESHOLD="${ROI_MASK_THRESHOLD:-0.3}"
 EVAL_START_FRAME="${EVAL_START_FRAME:--1}"
-LPIPS_WEIGHT="${LPIPS_WEIGHT:-0.05}"
+LPIPS_WEIGHT="${LPIPS_WEIGHT:-0.1}"
 GENERATE_SAM2_MASKS="${GENERATE_SAM2_MASKS:-1}"
-OBJECT_PROMPT="${OBJECT_PROMPT:-dog}"
+OBJECT_PROMPT="${OBJECT_PROMPT:-person}"
 SAM2_CONFIG="${SAM2_CONFIG:-configs/sam2.1/sam2.1_hiera_l.yaml}"
 SAM2_CHECKPOINT="${SAM2_CHECKPOINT:-/project/def-amahdavi/amirrz/SAM-2/checkpoints/sam2.1_hiera_large.pt}"
 SAM2_DEVICE="${SAM2_DEVICE:-cuda}"
@@ -83,7 +83,7 @@ RAFT_WEIGHTS_PATH="${RAFT_WEIGHTS_PATH:-}"
 # Using lower shape defaults to ensure it fits in H100 GPU VRAM.
 HEIGHT="${HEIGHT:-320}"
 WIDTH="${WIDTH:-512}"
-NUM_FRAMES="${NUM_FRAMES:-35}"
+NUM_FRAMES="${NUM_FRAMES:-73}"
 FRAME_RATE="${FRAME_RATE:-}"
 
 # Optional guidance overrides (leave empty for auto-detect)
@@ -95,7 +95,7 @@ TI2V_LOW_MEMORY_GUIDANCE="${TI2V_LOW_MEMORY_GUIDANCE:-0}"
 
 # Optional: fp8-cast | fp8-scaled-mm | (empty = none)
 # Keep TI2V unquantized by default to avoid fp8 load-time OOM spikes.
-QUANTIZATION="${QUANTIZATION:-}"
+QUANTIZATION="${QUANTIZATION:-fp8-cast}"
 TI2V_QUANTIZATION="${TI2V_QUANTIZATION:-}"
 RETAKE_QUANTIZATION="${RETAKE_QUANTIZATION:-}"
 
@@ -134,7 +134,7 @@ if [[ "${MULTI_GPU}" == "1" ]] && [[ "${NPROC_PER_NODE}" -gt "${VISIBLE_GPU_COUN
 fi
 
 # Optional target video (if set, TARGET_PROMPT is ignored)
-TARGET_VIDEO="${TARGET_VIDEO:-/home/amirrz/my_codes/LTX-2/results/editing_results_jump_optimize/target_motion_video.mp4}"
+TARGET_VIDEO="${TARGET_VIDEO:-}"
 
 # ---------------------------------------------------------------------------
 # Validation
@@ -422,6 +422,10 @@ if [[ -n "${QUANT_ARG}" ]]; then
 fi
 if [[ -n "${ROI_MASK_VIDEO}" ]]; then
     COMMON_ARGS+=( --roi-mask-video "${ROI_MASK_VIDEO}" --roi-mask-threshold "${ROI_MASK_THRESHOLD}" )
+fi
+
+if [[ "${RESUME:-1}" == "1" ]]; then
+    COMMON_ARGS+=( --resume )
 fi
 
 if [[ "${SAVE_FINAL_VIDEOS}" != "1" ]]; then
