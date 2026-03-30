@@ -20,8 +20,8 @@
 #SBATCH --job-name=ltx_opt_audio
 #SBATCH --account=def-amahdavi
 #SBATCH --gpus-per-node=h100:1
-#SBATCH --mem=64G
-#SBATCH --time=02:00:00
+#SBATCH --mem=80G
+#SBATCH --time=03:00:00
 #SBATCH --output=%x_%j.out
 #SBATCH --error=%x_%j.err
 
@@ -96,8 +96,8 @@ LOW_MEMORY_GUIDANCE="${LOW_MEMORY_GUIDANCE:-1}"
 TI2V_LOW_MEMORY_GUIDANCE="${TI2V_LOW_MEMORY_GUIDANCE:-0}"
 
 # Optional: fp8-cast | fp8-scaled-mm | (empty = none)
-# Keep TI2V unquantized by default to avoid fp8 load-time OOM spikes.
-QUANTIZATION="${QUANTIZATION:-}"
+# fp8-cast is recommended for H200 80GB — LTX 22B at bf16 = ~44GB weights alone.
+QUANTIZATION="${QUANTIZATION:-fp8-cast}"
 TI2V_QUANTIZATION="${TI2V_QUANTIZATION:-}"
 RETAKE_QUANTIZATION="${RETAKE_QUANTIZATION:-}"
 
