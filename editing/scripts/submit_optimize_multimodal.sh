@@ -19,7 +19,7 @@
 #SBATCH --job-name=ltx_multimodal_opt
 #SBATCH --account=def-amahdavi
 #SBATCH --gpus-per-node=h100:1
-#SBATCH --mem=80G
+#SBATCH --mem=64G
 #SBATCH --time=04:00:00
 #SBATCH --output=%x_%j.out
 #SBATCH --error=%x_%j.err
@@ -37,9 +37,9 @@ GEMMA_ROOT="${GEMMA_ROOT:-/project/def-amahdavi/amirrz/HF/models/gemma-3-12b-it-
 
 SRC_VIDEO="${SRC_VIDEO:-${1:-}}"
 OPT_MODE="${OPT_MODE:-audio}"                   # text | audio | both | text,audio,both
-OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/multimodal_opt_$(echo "${OPT_MODE}" | tr ',' '_')}"
+OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/multimodal_dog_jump_$(echo "${OPT_MODE}" | tr ',' '_')}"
 
-EDIT_PROMPT="${EDIT_PROMPT:-A dog jumping energetically in place}"
+EDIT_PROMPT="${EDIT_PROMPT:-A dog jumping energetically up and down in place}"
 
 # CLIP model (needs internet or pre-cached in HF_HOME)
 CLIP_MODEL="${CLIP_MODEL:-openai/clip-vit-large-patch14}"
@@ -50,14 +50,14 @@ SEED="${SEED:-42}"
 NUM_INFERENCE_STEPS="${NUM_INFERENCE_STEPS:-30}"
 RETAKE_NUM_INFERENCE_STEPS="${RETAKE_NUM_INFERENCE_STEPS:-30}"
 FINAL_RETAKE_NUM_INFERENCE_STEPS="${FINAL_RETAKE_NUM_INFERENCE_STEPS:-30}"
-RETAKE_START_FRAMES="${RETAKE_START_FRAMES:-1}"
+RETAKE_START_FRAMES="${RETAKE_START_FRAMES:-5}"
 
 ITERATIONS="${ITERATIONS:-30}"
 LR="${LR:-0.01}"
 GRAD_CLIP="${GRAD_CLIP:-1.0}"
-AUD_OPT_LAST_STEPS="${AUD_OPT_LAST_STEPS:-6}"
+AUD_OPT_LAST_STEPS="${AUD_OPT_LAST_STEPS:-8}"
 
-MAX_EVAL_FRAMES="${MAX_EVAL_FRAMES:-33}"
+MAX_EVAL_FRAMES="${MAX_EVAL_FRAMES:-75}"
 FRAME_STRIDE="${FRAME_STRIDE:-1}"
 
 LATENT_REG_WEIGHT="${LATENT_REG_WEIGHT:-0.01}"
@@ -66,7 +66,7 @@ TEXT_REG_WEIGHT="${TEXT_REG_WEIGHT:-0.001}"
 # Shape — conservative for gradient-through-transformer on 80GB
 HEIGHT="${HEIGHT:-320}"
 WIDTH="${WIDTH:-512}"
-NUM_FRAMES="${NUM_FRAMES:-33}"
+NUM_FRAMES="${NUM_FRAMES:-75}"
 FRAME_RATE="${FRAME_RATE:-}"
 
 # Guidance — low-memory mode avoids duplicating the batch for CFG
@@ -114,6 +114,7 @@ source "${REPO_ROOT}/.venv/bin/activate"
 
 export TORCH_HOME="${TORCH_HOME:-/home/amirrz/.cache/torch}"
 export HF_HOME="${HF_HOME:-/home/amirrz/.cache/huggingface}"
+export HF_HUB_OFFLINE=1
 export PYTORCH_ALLOC_CONF="${PYTORCH_ALLOC_CONF:-expandable_segments:True,garbage_collection_threshold:0.8}"
 
 # ---------------------------------------------------------------------------
