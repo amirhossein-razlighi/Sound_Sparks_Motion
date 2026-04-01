@@ -20,7 +20,7 @@
 #SBATCH --account=def-amahdavi
 #SBATCH --gpus-per-node=h100:1
 #SBATCH --mem=64G
-#SBATCH --time=04:00:00
+#SBATCH --time=02:00:00
 #SBATCH --output=%x_%j.out
 #SBATCH --error=%x_%j.err
 
@@ -37,13 +37,13 @@ GEMMA_ROOT="${GEMMA_ROOT:-/project/def-amahdavi/amirrz/HF/models/gemma-3-12b-it-
 
 SRC_VIDEO="${SRC_VIDEO:-${1:-}}"
 OPT_MODE="${OPT_MODE:-audio}"                   # text | audio | both | text,audio,both
-OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/multimodal_dog_jump_$(echo "${OPT_MODE}" | tr ',' '_')}"
+OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/multimodal_balloon_gets_loose/$(echo "${OPT_MODE}" | tr ',' '_')}"
 
-EDIT_PROMPT="${EDIT_PROMPT:-A dog jumping energetically up and down in place}"
+EDIT_PROMPT="${EDIT_PROMPT:-A balloon gets loose on the strings and goes up in the sky}"
 
 # CLIP model (needs internet or pre-cached in HF_HOME)
 CLIP_MODEL="${CLIP_MODEL:-openai/clip-vit-large-patch14}"
-CLIP_MAX_FRAMES="${CLIP_MAX_FRAMES:-16}"
+CLIP_MAX_FRAMES="${CLIP_MAX_FRAMES:-30}"
 
 SEED="${SEED:-42}"
 # Use fewer steps than the flow-loss pipeline — CLIP loss is cheaper to compute
@@ -57,7 +57,7 @@ LR="${LR:-0.01}"
 GRAD_CLIP="${GRAD_CLIP:-1.0}"
 AUD_OPT_LAST_STEPS="${AUD_OPT_LAST_STEPS:-8}"
 
-MAX_EVAL_FRAMES="${MAX_EVAL_FRAMES:-75}"
+MAX_EVAL_FRAMES="${MAX_EVAL_FRAMES:-95}"
 FRAME_STRIDE="${FRAME_STRIDE:-1}"
 
 LATENT_REG_WEIGHT="${LATENT_REG_WEIGHT:-0.01}"
@@ -66,7 +66,7 @@ TEXT_REG_WEIGHT="${TEXT_REG_WEIGHT:-0.001}"
 # Shape — conservative for gradient-through-transformer on 80GB
 HEIGHT="${HEIGHT:-320}"
 WIDTH="${WIDTH:-512}"
-NUM_FRAMES="${NUM_FRAMES:-75}"
+NUM_FRAMES="${NUM_FRAMES:-95}"
 FRAME_RATE="${FRAME_RATE:-}"
 
 # Guidance — low-memory mode avoids duplicating the batch for CFG
