@@ -37,12 +37,18 @@ GEMMA_ROOT="${GEMMA_ROOT:-/project/def-amahdavi/amirrz/HF/models/gemma-3-12b-it-
 
 SRC_VIDEO="${SRC_VIDEO:-${1:-}}"
 OPT_MODE="${OPT_MODE:-audio}"                   # text | audio | both | text,audio,both
-OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/multimodal_balloon_gets_loose/$(echo "${OPT_MODE}" | tr ',' '_')}"
 
-EDIT_PROMPT="${EDIT_PROMPT:-A balloon gets loose on the strings and goes up in the sky}"
+# EDIT_PROMPT="${EDIT_PROMPT:-A red cars door opens}"
+# EDIT_PROMPT="${EDIT_PROMPT:-A bottle of wine drops on the table and shatters into pieces}"
+# EDIT_PROMPT="${EDIT_PROMPT:-A dog yawns}"
+EDIT_PROMPT="${EDIT_PROMPT:-A balloon gets loose from the string and flies away into the sky}"
+
+# First 5 words, lowercased, underscore-joined — keeps dir names short and readable
+PROMPT_SLUG=$(echo "${EDIT_PROMPT}" | tr '[:upper:]' '[:lower:]' | tr -s ' ' | cut -d' ' -f1-5 | tr ' ' '_')
+OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/Xclip/${PROMPT_SLUG}/$(echo "${OPT_MODE}" | tr ',' '_')}"
 
 # CLIP model (needs internet or pre-cached in HF_HOME)
-CLIP_MODEL="${CLIP_MODEL:-openai/clip-vit-large-patch14}"
+CLIP_MODEL="${CLIP_MODEL:-microsoft/xclip-base-patch32}"
 CLIP_MAX_FRAMES="${CLIP_MAX_FRAMES:-30}"
 
 SEED="${SEED:-42}"
@@ -52,7 +58,7 @@ RETAKE_NUM_INFERENCE_STEPS="${RETAKE_NUM_INFERENCE_STEPS:-30}"
 FINAL_RETAKE_NUM_INFERENCE_STEPS="${FINAL_RETAKE_NUM_INFERENCE_STEPS:-30}"
 RETAKE_START_FRAMES="${RETAKE_START_FRAMES:-5}"
 
-ITERATIONS="${ITERATIONS:-30}"
+ITERATIONS="${ITERATIONS:-50}"
 LR="${LR:-0.01}"
 GRAD_CLIP="${GRAD_CLIP:-1.0}"
 AUD_OPT_LAST_STEPS="${AUD_OPT_LAST_STEPS:-8}"
@@ -171,6 +177,9 @@ fi
 # ---------------------------------------------------------------------------
 # Run
 # ---------------------------------------------------------------------------
+mkdir -p "${OUTPUT_DIR}"
+printf '%s\n' "${EDIT_PROMPT}" > "${OUTPUT_DIR}/prompt.txt"
+
 python "${REPO_ROOT}/editing/optimize_multimodal.py" "${ARGS[@]}"
 
 echo "Finished with exit code $?"
