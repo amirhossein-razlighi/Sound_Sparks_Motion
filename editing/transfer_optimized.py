@@ -295,10 +295,16 @@ def run(args: argparse.Namespace) -> None:
         _retake_module.encode_prompts = orig_prompts
 
     # ---- Run 2: baseline — edit prompt, no injected latents ----
+    # Mirrors the optimization baseline exactly: same video latent, same (original)
+    # audio latent, same text context — only the optimized delta/audio are absent.
+    def _base_audio(audio_encoder, waveform, waveform_sr, output_shape, dtype):  # noqa: ARG001
+        return base_audio_latent
+
     def _base_prompts(prompts, model_ledger, **kwargs):  # noqa: ARG001
         return [base_pos_context, base_neg_context]
 
     _retake_module._encode_video_for_retake = _cached_video
+    _retake_module._encode_audio_for_retake = _base_audio
     _retake_module.encode_prompts = _base_prompts
     try:
         log.info("Running baseline inference (edit prompt, no transferred latents)...")
@@ -314,6 +320,7 @@ def run(args: argparse.Namespace) -> None:
         log.info("Saved baseline.mp4")
     finally:
         _retake_module._encode_video_for_retake = orig_video
+        _retake_module._encode_audio_for_retake = orig_audio
         _retake_module.encode_prompts = orig_prompts
 
     # ---- Run 3: neutral prompt + transferred latents ----
@@ -349,6 +356,7 @@ def run(args: argparse.Namespace) -> None:
         return [neutral_pos_context, base_neg_context]
 
     _retake_module._encode_video_for_retake = _cached_video
+    _retake_module._encode_audio_for_retake = _base_audio
     _retake_module.encode_prompts = _neutral_base
     try:
         log.info("Running neutral baseline inference (neutral prompt, no transferred latents)...")
@@ -364,6 +372,7 @@ def run(args: argparse.Namespace) -> None:
         log.info("Saved neutral_baseline.mp4")
     finally:
         _retake_module._encode_video_for_retake = orig_video
+        _retake_module._encode_audio_for_retake = orig_audio
         _retake_module.encode_prompts = orig_prompts
 
     # Save a record of what was transferred

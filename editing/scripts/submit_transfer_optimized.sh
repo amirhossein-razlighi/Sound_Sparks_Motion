@@ -32,8 +32,9 @@ GEMMA_ROOT="${GEMMA_ROOT:-/project/def-amahdavi/amirrz/HF/models/gemma-3-12b-it-
 TARGET_VIDEO="${TARGET_VIDEO:-${1:-}}"
 OPT_DIR="${OPT_DIR:-${2:-}}"
 TRANSFER_MODE="${TRANSFER_MODE:-audio}"         # text | audio | both
-EDIT_PROMPT="${EDIT_PROMPT:-A cat yawning}"
-NEUTRAL_PROMPT="${NEUTRAL_PROMPT:-A cat sitting on a chair}"
+# EDIT_PROMPT="${EDIT_PROMPT:-A cat yawning}"
+EDIT_PROMPT="${EDIT_PROMPT:-A yellow cars door opens}"
+NEUTRAL_PROMPT="${NEUTRAL_PROMPT:-A yellow cars standing still in the middle of a garage}"
 
 PROMPT_SLUG=$(echo "${EDIT_PROMPT}" | tr '[:upper:]' '[:lower:]' | tr -s ' ' | cut -d' ' -f1-5 | tr ' ' '_')
 OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/transfer/${PROMPT_SLUG}/${TRANSFER_MODE}}"
