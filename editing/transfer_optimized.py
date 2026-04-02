@@ -47,7 +47,7 @@ from audio_latent_opt.multimodal_loop import pre_encode_base_contexts
 from audio_latent_opt.runtime import build_retake_kwargs, prepare_retake_input_video
 
 import ltx_pipelines.retake as _retake_module
-from ltx_core.model.video_vae import TilingConfig
+from ltx_core.model.video_vae import TilingConfig, get_video_chunks_number
 from ltx_core.types import Audio
 from ltx_pipelines.utils.constants import detect_params
 from ltx_pipelines.utils.media_io import decode_audio_from_file, encode_video
@@ -171,7 +171,7 @@ def run(args: argparse.Namespace) -> None:
     )
     log.info("Target audio latent shape: %s", tuple(base_audio_latent.shape))
 
-    # ---- Encode text context for target prompt ----
+    # ---- Encode text contexts ----
     base_pos_context, base_neg_context = pre_encode_base_contexts(
         pipeline=pipeline,
         pos_prompt=args.edit_prompt,
@@ -179,6 +179,14 @@ def run(args: argparse.Namespace) -> None:
         device=device,
     )
     log.info("Text encoding shape: %s", tuple(base_pos_context.video_encoding.shape))
+
+    neutral_pos_context, _ = pre_encode_base_contexts(
+        pipeline=pipeline,
+        pos_prompt=args.neutral_prompt,
+        neg_prompt=args.negative_prompt,
+        device=device,
+    )
+    log.info("Neutral prompt encoded: %r", args.neutral_prompt)
 
     # ---- Adapt saved audio latent to target video's time dimension ----
     if saved_audio_latent is not None:
@@ -193,7 +201,7 @@ def run(args: argparse.Namespace) -> None:
     else:
         audio_for_render = base_audio_latent
 
-    # ---- Build positive context: apply text delta if present ----
+    # ---- Build positive contexts: apply text delta to both edit and neutral prompts ----
     if saved_text_delta is not None:
         target_seq = base_pos_context.video_encoding.shape[1]
         src_seq = saved_text_delta.shape[1]
@@ -208,16 +216,21 @@ def run(args: argparse.Namespace) -> None:
         else:
             delta = saved_text_delta.float()
 
+        delta_on_device = delta.to(device=device, dtype=base_pos_context.video_encoding.dtype)
         pos_context = EmbeddingsProcessorOutput(
-            video_encoding=base_pos_context.video_encoding + delta.to(
-                device=device, dtype=base_pos_context.video_encoding.dtype
-            ),
+            video_encoding=base_pos_context.video_encoding + delta_on_device,
             audio_encoding=base_pos_context.audio_encoding,
             attention_mask=base_pos_context.attention_mask,
         )
-        log.info("Applied text delta (shape %s) to target context.", tuple(delta.shape))
+        neutral_pos_context_with_delta = EmbeddingsProcessorOutput(
+            video_encoding=neutral_pos_context.video_encoding + delta_on_device,
+            audio_encoding=neutral_pos_context.audio_encoding,
+            attention_mask=neutral_pos_context.attention_mask,
+        )
+        log.info("Applied text delta (shape %s) to edit and neutral contexts.", tuple(delta.shape))
     else:
         pos_context = base_pos_context
+        neutral_pos_context_with_delta = neutral_pos_context
 
     # ---- Build retake kwargs ----
     retake_kwargs = build_retake_kwargs(
@@ -257,6 +270,9 @@ def run(args: argparse.Namespace) -> None:
     orig_audio = _retake_module._encode_audio_for_retake
     orig_prompts = _retake_module.encode_prompts
 
+    video_chunks = get_video_chunks_number(num_frames, TilingConfig.default())
+
+    # ---- Run 1: transferred latents ----
     _retake_module._encode_video_for_retake = _cached_video
     _retake_module._encode_audio_for_retake = _injected_audio
     _retake_module.encode_prompts = _patched_encode_prompts
@@ -264,20 +280,90 @@ def run(args: argparse.Namespace) -> None:
         log.info("Running inference with transferred latents (mode=%s)...", mode)
         with torch.no_grad():
             video_iter, _ = pipeline(video_path=str(retake_input_video), **retake_kwargs)
-
         out_path = output_dir / f"transfer_{mode}.mp4"
         encode_video(
             video=video_iter,
-            output_path=str(out_path),
-            fps=frame_rate,
+            fps=int(round(frame_rate)),
             audio=out_audio,
-            tiling_config=TilingConfig.default(),
-            num_frames=num_frames,
+            output_path=str(out_path),
+            video_chunks_number=video_chunks,
         )
-        log.info("Saved: %s", out_path)
+        log.info("Saved transferred: %s", out_path)
     finally:
         _retake_module._encode_video_for_retake = orig_video
         _retake_module._encode_audio_for_retake = orig_audio
+        _retake_module.encode_prompts = orig_prompts
+
+    # ---- Run 2: baseline — edit prompt, no injected latents ----
+    def _base_prompts(prompts, model_ledger, **kwargs):  # noqa: ARG001
+        return [base_pos_context, base_neg_context]
+
+    _retake_module._encode_video_for_retake = _cached_video
+    _retake_module.encode_prompts = _base_prompts
+    try:
+        log.info("Running baseline inference (edit prompt, no transferred latents)...")
+        with torch.no_grad():
+            video_iter, _ = pipeline(video_path=str(retake_input_video), **retake_kwargs)
+        encode_video(
+            video=video_iter,
+            fps=int(round(frame_rate)),
+            audio=out_audio,
+            output_path=str(output_dir / "baseline.mp4"),
+            video_chunks_number=video_chunks,
+        )
+        log.info("Saved baseline.mp4")
+    finally:
+        _retake_module._encode_video_for_retake = orig_video
+        _retake_module.encode_prompts = orig_prompts
+
+    # ---- Run 3: neutral prompt + transferred latents ----
+    # Does the motion appear even with a prompt that doesn't mention it?
+    # Isolates whether the effect comes from the audio latent / text delta
+    # rather than the prompt itself.
+    def _neutral_with_delta(prompts, model_ledger, **kwargs):  # noqa: ARG001
+        return [neutral_pos_context_with_delta, base_neg_context]
+
+    _retake_module._encode_video_for_retake = _cached_video
+    _retake_module._encode_audio_for_retake = _injected_audio
+    _retake_module.encode_prompts = _neutral_with_delta
+    try:
+        log.info("Running inference with transferred latents + neutral prompt...")
+        with torch.no_grad():
+            video_iter, _ = pipeline(video_path=str(retake_input_video), **retake_kwargs)
+        encode_video(
+            video=video_iter,
+            fps=int(round(frame_rate)),
+            audio=out_audio,
+            output_path=str(output_dir / f"neutral_transfer_{mode}.mp4"),
+            video_chunks_number=video_chunks,
+        )
+        log.info("Saved neutral_transfer_%s.mp4", mode)
+    finally:
+        _retake_module._encode_video_for_retake = orig_video
+        _retake_module._encode_audio_for_retake = orig_audio
+        _retake_module.encode_prompts = orig_prompts
+
+    # ---- Run 4: neutral prompt, no injected latents ----
+    # Pure control for the neutral prompt — what does retake do with no intervention?
+    def _neutral_base(prompts, model_ledger, **kwargs):  # noqa: ARG001
+        return [neutral_pos_context, base_neg_context]
+
+    _retake_module._encode_video_for_retake = _cached_video
+    _retake_module.encode_prompts = _neutral_base
+    try:
+        log.info("Running neutral baseline inference (neutral prompt, no transferred latents)...")
+        with torch.no_grad():
+            video_iter, _ = pipeline(video_path=str(retake_input_video), **retake_kwargs)
+        encode_video(
+            video=video_iter,
+            fps=int(round(frame_rate)),
+            audio=out_audio,
+            output_path=str(output_dir / "neutral_baseline.mp4"),
+            video_chunks_number=video_chunks,
+        )
+        log.info("Saved neutral_baseline.mp4")
+    finally:
+        _retake_module._encode_video_for_retake = orig_video
         _retake_module.encode_prompts = orig_prompts
 
     # Save a record of what was transferred
@@ -286,8 +372,15 @@ def run(args: argparse.Namespace) -> None:
         f"opt_dir: {opt_dir}\n"
         f"target_video: {args.target_video}\n"
         f"edit_prompt: {args.edit_prompt}\n"
+        f"neutral_prompt: {args.neutral_prompt}\n"
+        f"\n"
+        f"outputs:\n"
+        f"  transfer_{mode}.mp4        — injected latents + edit prompt\n"
+        f"  baseline.mp4              — no injection   + edit prompt\n"
+        f"  neutral_transfer_{mode}.mp4 — injected latents + neutral prompt\n"
+        f"  neutral_baseline.mp4      — no injection   + neutral prompt\n"
     )
-    log.info("Done.")
+    log.info("Done. 4 videos saved in %s", output_dir)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -304,6 +397,9 @@ def build_parser() -> argparse.ArgumentParser:
                    help="Which saved latents to transfer.")
     p.add_argument("--edit-prompt", required=True,
                    help="Prompt describing the desired motion on the TARGET video.")
+    p.add_argument("--neutral-prompt", required=True,
+                   help="A neutral/unrelated prompt (e.g. 'a cat sitting on a chair'). "
+                        "Used to check if the motion comes from the latents rather than the prompt.")
     p.add_argument("--output-dir", required=True)
 
     # Video shape

@@ -13,7 +13,7 @@
 #SBATCH --job-name=ltx_transfer
 #SBATCH --account=def-amahdavi
 #SBATCH --gpus-per-node=h100:1
-#SBATCH --mem=64G
+#SBATCH --mem=48G
 #SBATCH --time=01:00:00
 #SBATCH --output=%x_%j.out
 #SBATCH --error=%x_%j.err
@@ -33,6 +33,7 @@ TARGET_VIDEO="${TARGET_VIDEO:-${1:-}}"
 OPT_DIR="${OPT_DIR:-${2:-}}"
 TRANSFER_MODE="${TRANSFER_MODE:-audio}"         # text | audio | both
 EDIT_PROMPT="${EDIT_PROMPT:-A cat yawning}"
+NEUTRAL_PROMPT="${NEUTRAL_PROMPT:-A cat sitting on a chair}"
 
 PROMPT_SLUG=$(echo "${EDIT_PROMPT}" | tr '[:upper:]' '[:lower:]' | tr -s ' ' | cut -d' ' -f1-5 | tr ' ' '_')
 OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/transfer/${PROMPT_SLUG}/${TRANSFER_MODE}}"
@@ -77,6 +78,7 @@ echo "  Target video     : ${TARGET_VIDEO}"
 echo "  Opt dir          : ${OPT_DIR}"
 echo "  Transfer mode    : ${TRANSFER_MODE}"
 echo "  Edit prompt      : ${EDIT_PROMPT}"
+echo "  Neutral prompt   : ${NEUTRAL_PROMPT}"
 echo "  Output dir       : ${OUTPUT_DIR}"
 echo "========================================================"
 
@@ -92,7 +94,7 @@ export HF_HUB_OFFLINE=1
 export PYTORCH_ALLOC_CONF="${PYTORCH_ALLOC_CONF:-expandable_segments:True,garbage_collection_threshold:0.8}"
 
 mkdir -p "${OUTPUT_DIR}"
-printf '%s\n' "${EDIT_PROMPT}" > "${OUTPUT_DIR}/prompt.txt"
+printf 'edit_prompt: %s\nneutral_prompt: %s\n' "${EDIT_PROMPT}" "${NEUTRAL_PROMPT}" > "${OUTPUT_DIR}/prompt.txt"
 
 # ---------------------------------------------------------------------------
 # Build arguments
@@ -102,6 +104,7 @@ ARGS=(
     --opt-dir "${OPT_DIR}"
     --mode "${TRANSFER_MODE}"
     --edit-prompt "${EDIT_PROMPT}"
+    --neutral-prompt "${NEUTRAL_PROMPT}"
     --output-dir "${OUTPUT_DIR}"
     --checkpoint-path "${CKPT_ROOT}/ltx-2.3-22b-dev.safetensors"
     --gemma-root "${GEMMA_ROOT}"
