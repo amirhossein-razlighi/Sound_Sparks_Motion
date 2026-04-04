@@ -288,4 +288,5 @@ def compute_qwen_video_loss(
 
     # Soft yes-probability over {yes, no}
     yes_prob = torch.softmax(torch.stack([yes_logit, no_logit]), dim=0)[0]
-    return 1.0 - yes_prob
+    # return 1.0 - yes_prob
+    return -torch.log(yes_prob + 1e-8)  # log loss, more stable gradients when yes_prob ~ 0
