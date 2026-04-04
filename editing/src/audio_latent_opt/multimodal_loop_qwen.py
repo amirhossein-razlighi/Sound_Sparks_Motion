@@ -102,6 +102,7 @@ def gradient_optimize_multimodal_qwen(
         "delta_v": delta_v.detach().clone() if delta_v is not None else None,
         "audio_latent": audio_latent.detach().clone() if audio_latent is not None else None,
         "mode": mode,
+        "best_iter": 0,
         # Keep these aliases so render_final_video (imported from multimodal_loop) works unchanged
         "clip_loss": float("inf"),
         "clip_score": float("-inf"),
@@ -223,30 +224,42 @@ def gradient_optimize_multimodal_qwen(
                 best["qwen_score"] = qwen_score
                 best["clip_loss"] = total    # alias for render_final_video compat
                 best["clip_score"] = qwen_score
+                best["best_iter"] = it
                 if delta_v is not None:
                     best["delta_v"] = delta_v.detach().clone()
                 if audio_latent is not None:
                     best["audio_latent"] = audio_latent.detach().clone()
 
+            iters_without_improvement = it - best.get("best_iter", 0)
+
             if is_main:
                 csv_writer.writerow([it, qwen_loss, qwen_score, audio_reg, text_reg, total, grad_norm, int(is_best)])
                 csv_file.flush()
                 log.info(
-                    "[%s] iter %3d/%d  qwen_loss=%.4f  qwen_score=%.4f  total=%.4f  grad_norm=%.3f%s",
+                    "[%s] iter %3d/%d  qwen_loss=%.4f  qwen_score=%.4f  total=%.4f  grad_norm=%.3f  no_improve=%d%s",
                     mode, it, num_iters, qwen_loss, qwen_score, total, grad_norm,
-                    "  ★" if is_best else "",
+                    iters_without_improvement, "  ★" if is_best else "",
                 )
                 if tb_writer is not None:
                     tb_writer.add_scalar(f"{mode}/qwen_loss", qwen_loss, it)
                     tb_writer.add_scalar(f"{mode}/qwen_score", qwen_score, it)
                     tb_writer.add_scalar(f"{mode}/total_loss", total, it)
                     tb_writer.add_scalar(f"{mode}/grad_norm", grad_norm, it)
+                    tb_writer.add_scalar(f"{mode}/iters_without_improvement", iters_without_improvement, it)
                     if optimize_audio:
                         tb_writer.add_scalar(f"{mode}/audio_reg", audio_reg, it)
                     if optimize_text:
                         tb_writer.add_scalar(f"{mode}/text_reg", text_reg, it)
                     if is_best:
                         tb_writer.add_scalar(f"{mode}/best_qwen_score", qwen_score, it)
+
+            early_stop_limit = getattr(args, "early_stopping", 0)
+            if early_stop_limit > 0 and iters_without_improvement >= early_stop_limit:
+                log.info(
+                    "[%s] Early stopping: no improvement for %d consecutive iters (best at iter %d).",
+                    mode, iters_without_improvement, best.get("best_iter", 0),
+                )
+                break
     finally:
         csv_file.close()
         if tb_writer is not None:

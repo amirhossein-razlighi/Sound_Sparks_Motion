@@ -45,7 +45,10 @@ QWEN_ROOT="${QWEN_ROOT:-/project/def-amahdavi/amirrz/HF/models/Qwen2.5-VL-7B-Ins
 SRC_VIDEO="${SRC_VIDEO:-${1:-}}"
 OPT_MODE="${OPT_MODE:-audio}"
 
-EDIT_PROMPT="${EDIT_PROMPT:-A red cars door opens}"
+# EDIT_PROMPT="${EDIT_PROMPT:-A red cars door opens}"
+# EDIT_PROMPT="${EDIT_PROMPT:-A bottle of wine drops on the table and shatters into pieces}"
+# EDIT_PROMPT="${EDIT_PROMPT:-A dog yawns}"
+EDIT_PROMPT="${EDIT_PROMPT:-A balloon gets loose from the string and flies away into the sky}"
 
 PROMPT_SLUG=$(echo "${EDIT_PROMPT}" | tr '[:upper:]' '[:lower:]' | tr -s ' ' | cut -d' ' -f1-5 | tr ' ' '_')
 OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/QwenVL/${PROMPT_SLUG}/$(echo "${OPT_MODE}" | tr ',' '_')}"
@@ -62,16 +65,17 @@ RETAKE_NUM_INFERENCE_STEPS="${RETAKE_NUM_INFERENCE_STEPS:-30}"
 FINAL_RETAKE_NUM_INFERENCE_STEPS="${FINAL_RETAKE_NUM_INFERENCE_STEPS:-30}"
 RETAKE_START_FRAMES="${RETAKE_START_FRAMES:-5}"
 
-ITERATIONS="${ITERATIONS:-20}"
-LR="${LR:-0.01}"
+ITERATIONS="${ITERATIONS:-50}"
+LR="${LR:-0.001}"
 GRAD_CLIP="${GRAD_CLIP:-1.0}"
 AUD_OPT_LAST_STEPS="${AUD_OPT_LAST_STEPS:-8}"
+EARLY_STOPPING="${EARLY_STOPPING:-10}"
 
 MAX_EVAL_FRAMES="${MAX_EVAL_FRAMES:-95}"
 FRAME_STRIDE="${FRAME_STRIDE:-1}"
 
-LATENT_REG_WEIGHT="${LATENT_REG_WEIGHT:-0.01}"
-TEXT_REG_WEIGHT="${TEXT_REG_WEIGHT:-0.001}"
+LATENT_REG_WEIGHT="${LATENT_REG_WEIGHT:-0.1}"
+TEXT_REG_WEIGHT="${TEXT_REG_WEIGHT:-0.01}"
 
 HEIGHT="${HEIGHT:-320}"
 WIDTH="${WIDTH:-512}"
@@ -153,6 +157,7 @@ ARGS=(
     --lr "${LR}"
     --grad-clip "${GRAD_CLIP}"
     --audio-opt-last-steps "${AUD_OPT_LAST_STEPS}"
+    --early-stopping "${EARLY_STOPPING}"
     --max-eval-frames "${MAX_EVAL_FRAMES}"
     --frame-stride "${FRAME_STRIDE}"
     --latent-reg-weight "${LATENT_REG_WEIGHT}"
