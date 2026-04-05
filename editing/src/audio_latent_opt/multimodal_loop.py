@@ -404,6 +404,78 @@ def gradient_optimize_multimodal(
 
 
 # ---------------------------------------------------------------------------
+# Baseline video rendering (before optimisation)
+# ---------------------------------------------------------------------------
+
+def render_baseline_video(
+    *,
+    pipeline,
+    src_video: str,
+    cached_video_latent: torch.Tensor,
+    base_audio_latent: torch.Tensor,
+    base_pos_context: EmbeddingsProcessorOutput,
+    base_neg_context: EmbeddingsProcessorOutput,
+    retake_kwargs: dict,
+    output_path: Path,
+    num_frames: int,
+    frame_rate: float,
+    audio_sr: int,
+) -> None:
+    """Render a baseline video (unoptimised latents) to *output_path*."""
+    import torchaudio
+    from ltx_core.model.video_vae import TilingConfig, get_video_chunks_number
+    from ltx_core.types import Audio
+    from ltx_pipelines.utils.media_io import decode_audio_from_file, encode_video
+    from .core import align_waveform_length
+
+    duration = num_frames / frame_rate
+    src_audio = decode_audio_from_file(src_video, pipeline.device, max_duration=duration)
+    out_audio = None
+    if src_audio is not None:
+        wave = src_audio.waveform.squeeze(0).float()
+        if src_audio.sampling_rate != audio_sr:
+            wave = torchaudio.functional.resample(wave, orig_freq=src_audio.sampling_rate, new_freq=audio_sr)
+        wave = align_waveform_length(wave, int(duration * audio_sr))
+        if wave.shape[0] == 1:
+            wave = wave.expand(2, -1).contiguous()
+        elif wave.shape[0] > 2:
+            wave = wave[:2].contiguous()
+        out_audio = Audio(waveform=wave.cpu(), sampling_rate=audio_sr)
+
+    orig_encode_video = _retake_module._encode_video_for_retake
+    orig_encode_audio = _retake_module._encode_audio_for_retake
+    orig_encode_prompts = _retake_module.encode_prompts
+
+    def _cached_video(video_encoder, video_path, output_shape, dtype, device):  # noqa: ARG001
+        return cached_video_latent
+
+    def _base_audio(audio_encoder, waveform, waveform_sr, output_shape, dtype):  # noqa: ARG001
+        return base_audio_latent
+
+    def _base_text(prompts, model_ledger, **kwargs):  # noqa: ARG001
+        return [base_pos_context, base_neg_context]
+
+    _retake_module._encode_video_for_retake = _cached_video
+    _retake_module._encode_audio_for_retake = _base_audio
+    _retake_module.encode_prompts = _base_text
+    try:
+        with torch.no_grad():
+            video_iter, _ = pipeline(video_path=src_video, **retake_kwargs)
+        encode_video(
+            video=video_iter,
+            fps=int(round(frame_rate)),
+            audio=out_audio,
+            output_path=str(output_path),
+            video_chunks_number=get_video_chunks_number(num_frames, TilingConfig.default()),
+        )
+        log.info("Saved baseline video to %s", output_path)
+    finally:
+        _retake_module._encode_video_for_retake = orig_encode_video
+        _retake_module._encode_audio_for_retake = orig_encode_audio
+        _retake_module.encode_prompts = orig_encode_prompts
+
+
+# ---------------------------------------------------------------------------
 # Final video rendering with best parameters
 # ---------------------------------------------------------------------------
 
@@ -423,8 +495,9 @@ def render_final_video(
     frame_rate: float,
     audio_sr: int,
     audio_opt_last_steps: int,
+    skip_baseline: bool = False,
 ) -> None:
-    """Render the optimized video and a baseline to disk for comparison."""
+    """Render the optimized video and optionally a baseline to disk."""
     import torchaudio
     from ltx_core.model.video_vae import TilingConfig, get_video_chunks_number
     from ltx_core.types import Audio
@@ -499,6 +572,9 @@ def render_final_video(
         _retake_module._encode_audio_for_retake = orig_encode_audio
         if optimize_text:
             _retake_module.encode_prompts = orig_encode_prompts
+
+    if skip_baseline:
+        return
 
     # Baseline: base audio + base text context
     def _base_audio(audio_encoder, waveform, waveform_sr, output_shape, dtype):  # noqa: ARG001
