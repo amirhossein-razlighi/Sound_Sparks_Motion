@@ -45,3 +45,5 @@ tmp
 *.out
 
 results/
+
+.codex
