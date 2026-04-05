@@ -56,7 +56,6 @@ from audio_latent_opt.models import build_retake_pipeline, resolve_quantization_
 from audio_latent_opt.multimodal_loop import (
     gradient_optimize_multimodal,
     pre_encode_base_contexts,
-    render_baseline_video,
     render_final_video,
 )
 from audio_latent_opt.runtime import build_retake_kwargs, prepare_retake_input_video
@@ -161,31 +160,6 @@ def run(args: argparse.Namespace) -> None:
 
     eval_sample_start = 0  # start from frame 0 for CLIP evaluation
 
-    # ---- Build final-render kwargs once (used for baseline + per-mode final videos) ----
-    final_retake_kwargs = dict(retake_kwargs)
-    if args.final_retake_num_inference_steps is not None:
-        final_retake_kwargs["num_inference_steps"] = args.final_retake_num_inference_steps
-    final_vg, final_ag = build_guiders_for_mode(args=args, params=params, use_low_memory_guidance=False)
-    final_retake_kwargs["video_guider_params"] = final_vg
-    final_retake_kwargs["audio_guider_params"] = final_ag
-
-    # ---- Render baseline BEFORE optimisation so it's ready for inspection ----
-    if args.save_final_videos:
-        log.info("Rendering baseline video (before optimisation)...")
-        render_baseline_video(
-            pipeline=pipeline,
-            src_video=str(retake_input_video),
-            cached_video_latent=cached_video_latent,
-            base_audio_latent=base_audio_latent,
-            base_pos_context=base_pos_context,
-            base_neg_context=base_neg_context,
-            retake_kwargs=final_retake_kwargs,
-            output_path=output_dir / "baseline_video.mp4",
-            num_frames=num_frames,
-            frame_rate=frame_rate,
-            audio_sr=waveform_sr,
-        )
-
     # ---- Run optimization ----
     modes = [m.strip() for m in args.opt_mode.split(",")]
     all_results: dict[str, dict] = {}
@@ -232,9 +206,20 @@ def run(args: argparse.Namespace) -> None:
             mode, best["clip_score"], best["clip_loss"],
         )
 
-        # ---- Render final optimised video (baseline already saved upfront) ----
+        # ---- Render final videos ----
         if args.save_final_videos:
-            log.info("[%s] Rendering optimised video...", mode)
+            log.info("[%s] Rendering final videos...", mode)
+
+            final_retake_kwargs = dict(retake_kwargs)
+            if args.final_retake_num_inference_steps is not None:
+                final_retake_kwargs["num_inference_steps"] = args.final_retake_num_inference_steps
+
+            final_vg, final_ag = build_guiders_for_mode(
+                args=args, params=params, use_low_memory_guidance=False
+            )
+            final_retake_kwargs["video_guider_params"] = final_vg
+            final_retake_kwargs["audio_guider_params"] = final_ag
+
             render_final_video(
                 mode=mode,
                 best=best,
@@ -250,7 +235,6 @@ def run(args: argparse.Namespace) -> None:
                 frame_rate=frame_rate,
                 audio_sr=waveform_sr,
                 audio_opt_last_steps=args.audio_opt_last_steps,
-                skip_baseline=True,
             )
 
         gc.collect()
@@ -309,8 +293,6 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--grad-clip", type=float, default=1.0)
     p.add_argument("--audio-opt-last-steps", type=int, default=6)
     p.add_argument("--resume", action="store_true")
-    p.add_argument("--early-stopping", type=int, default=0,
-                   help="Stop after this many consecutive iters with no improvement. 0 = disabled.")
 
     # Eval
     p.add_argument("--max-eval-frames", type=int, default=33)

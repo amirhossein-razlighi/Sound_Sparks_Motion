@@ -25,12 +25,6 @@ from pathlib import Path
 import torch
 import torch.nn.functional as F
 
-try:
-    from torch.utils.tensorboard import SummaryWriter
-    _TB_AVAILABLE = True
-except ImportError:
-    _TB_AVAILABLE = False
-
 from ltx_core.text_encoders.gemma.embeddings_processor import EmbeddingsProcessorOutput
 import ltx_pipelines.retake as _retake_module
 import ltx_pipelines.utils.samplers as _samplers_module
@@ -288,7 +282,6 @@ def gradient_optimize_multimodal(
         "delta_v": delta_v.detach().clone() if delta_v is not None else None,
         "audio_latent": audio_latent.detach().clone() if audio_latent is not None else None,
         "mode": mode,
-        "best_iter": 0,
     }
 
     if getattr(args, "resume", False):
@@ -310,15 +303,6 @@ def gradient_optimize_multimodal(
     writer = csv.writer(csv_file)
     if is_main:
         writer.writerow(["iter", "clip_loss", "clip_score", "audio_reg", "text_reg", "total_loss", "grad_norm", "is_best"])
-
-    # ---- TensorBoard (optional) ----
-    tb_writer = None
-    if is_main and _TB_AVAILABLE:
-        tb_dir = output_dir / "tensorboard"
-        tb_writer = SummaryWriter(log_dir=str(tb_dir))
-        log.info("[%s] TensorBoard logs → %s", mode, tb_dir)
-    elif is_main:
-        log.warning("tensorboard not installed — metrics logged to CSV only.")
 
     try:
         for it in range(1, num_iters + 1):
@@ -400,46 +384,21 @@ def gradient_optimize_multimodal(
             if is_best:
                 best["clip_loss"] = total
                 best["clip_score"] = clip_score
-                best["best_iter"] = it
                 if delta_v is not None:
                     best["delta_v"] = delta_v.detach().clone()
                 if audio_latent is not None:
                     best["audio_latent"] = audio_latent.detach().clone()
 
-            iters_without_improvement = it - best.get("best_iter", 0)
-
             if is_main:
                 writer.writerow([it, clip_loss, clip_score, audio_reg, text_reg, total, grad_norm, int(is_best)])
                 csv_file.flush()
                 log.info(
-                    "[%s] iter %3d/%d  clip_loss=%.4f  clip_score=%.4f  total=%.4f  grad_norm=%.3f  no_improve=%d%s",
+                    "[%s] iter %3d/%d  clip_loss=%.4f  clip_score=%.4f  total=%.4f  grad_norm=%.3f%s",
                     mode, it, num_iters, clip_loss, clip_score, total, grad_norm,
-                    iters_without_improvement, "  ★" if is_best else "",
+                    "  ★" if is_best else "",
                 )
-                if tb_writer is not None:
-                    tb_writer.add_scalar(f"{mode}/clip_loss", clip_loss, it)
-                    tb_writer.add_scalar(f"{mode}/clip_score", clip_score, it)
-                    tb_writer.add_scalar(f"{mode}/total_loss", total, it)
-                    tb_writer.add_scalar(f"{mode}/grad_norm", grad_norm, it)
-                    tb_writer.add_scalar(f"{mode}/iters_without_improvement", iters_without_improvement, it)
-                    if optimize_audio:
-                        tb_writer.add_scalar(f"{mode}/audio_reg", audio_reg, it)
-                    if optimize_text:
-                        tb_writer.add_scalar(f"{mode}/text_reg", text_reg, it)
-                    if is_best:
-                        tb_writer.add_scalar(f"{mode}/best_clip_score", clip_score, it)
-
-            early_stop_limit = getattr(args, "early_stopping", 0)
-            if early_stop_limit > 0 and iters_without_improvement >= early_stop_limit:
-                log.info(
-                    "[%s] Early stopping: no improvement for %d consecutive iters (best at iter %d).",
-                    mode, iters_without_improvement, best.get("best_iter", 0),
-                )
-                break
     finally:
         csv_file.close()
-        if tb_writer is not None:
-            tb_writer.close()
 
     return best
 
@@ -447,78 +406,6 @@ def gradient_optimize_multimodal(
 # ---------------------------------------------------------------------------
 # Final video rendering with best parameters
 # ---------------------------------------------------------------------------
-
-def render_baseline_video(
-    *,
-    pipeline,
-    src_video: str,
-    cached_video_latent: torch.Tensor,
-    base_audio_latent: torch.Tensor,
-    base_pos_context: EmbeddingsProcessorOutput,
-    base_neg_context: EmbeddingsProcessorOutput,
-    retake_kwargs: dict,
-    output_path: Path,
-    num_frames: int,
-    frame_rate: float,
-    audio_sr: int,
-) -> None:
-    """Render the baseline video (source audio + source text, no optimisation).
-
-    Call this BEFORE the optimisation loop so the baseline is available for
-    inspection while the job is still running.
-    """
-    import torchaudio
-    from ltx_core.model.video_vae import TilingConfig, get_video_chunks_number
-    from ltx_core.types import Audio
-    from ltx_pipelines.utils.media_io import decode_audio_from_file, encode_video
-    from .core import align_waveform_length
-
-    duration = num_frames / frame_rate
-    src_audio = decode_audio_from_file(src_video, pipeline.device, max_duration=duration)
-    out_audio = None
-    if src_audio is not None:
-        wave = src_audio.waveform.squeeze(0).float()
-        if src_audio.sampling_rate != audio_sr:
-            wave = torchaudio.functional.resample(wave, orig_freq=src_audio.sampling_rate, new_freq=audio_sr)
-        wave = align_waveform_length(wave, int(duration * audio_sr))
-        if wave.shape[0] == 1:
-            wave = wave.expand(2, -1).contiguous()
-        elif wave.shape[0] > 2:
-            wave = wave[:2].contiguous()
-        out_audio = Audio(waveform=wave.cpu(), sampling_rate=audio_sr)
-
-    orig_encode_video = _retake_module._encode_video_for_retake
-    orig_encode_audio = _retake_module._encode_audio_for_retake
-    orig_encode_prompts = _retake_module.encode_prompts
-
-    def _cached_video(video_encoder, video_path, output_shape, dtype, device):  # noqa: ARG001
-        return cached_video_latent
-
-    def _base_audio(audio_encoder, waveform, waveform_sr, output_shape, dtype):  # noqa: ARG001
-        return base_audio_latent
-
-    def _base_prompts(prompts, model_ledger, **kwargs):  # noqa: ARG001
-        return [base_pos_context, base_neg_context]
-
-    _retake_module._encode_video_for_retake = _cached_video
-    _retake_module._encode_audio_for_retake = _base_audio
-    _retake_module.encode_prompts = _base_prompts
-    try:
-        with torch.no_grad():
-            video_iter, _ = pipeline(video_path=src_video, **retake_kwargs)
-        encode_video(
-            video=video_iter,
-            fps=int(round(frame_rate)),
-            audio=out_audio,
-            output_path=str(output_path),
-            video_chunks_number=get_video_chunks_number(num_frames, TilingConfig.default()),
-        )
-        log.info("Saved baseline video → %s", output_path)
-    finally:
-        _retake_module._encode_video_for_retake = orig_encode_video
-        _retake_module._encode_audio_for_retake = orig_encode_audio
-        _retake_module.encode_prompts = orig_encode_prompts
-
 
 def render_final_video(
     *,
@@ -536,9 +423,8 @@ def render_final_video(
     frame_rate: float,
     audio_sr: int,
     audio_opt_last_steps: int,
-    skip_baseline: bool = False,
 ) -> None:
-    """Render the optimised video (and optionally a baseline) to disk."""
+    """Render the optimized video and a baseline to disk for comparison."""
     import torchaudio
     from ltx_core.model.video_vae import TilingConfig, get_video_chunks_number
     from ltx_core.types import Audio
@@ -614,31 +500,30 @@ def render_final_video(
         if optimize_text:
             _retake_module.encode_prompts = orig_encode_prompts
 
-    if not skip_baseline:
-        # Baseline: base audio + base text context
-        def _base_audio(audio_encoder, waveform, waveform_sr, output_shape, dtype):  # noqa: ARG001
-            return base_audio_latent
+    # Baseline: base audio + base text context
+    def _base_audio(audio_encoder, waveform, waveform_sr, output_shape, dtype):  # noqa: ARG001
+        return base_audio_latent
 
-        def _base_text(prompts, model_ledger, **kwargs):  # noqa: ARG001
-            return [base_pos_context, base_neg_context]
+    def _base_text(prompts, model_ledger, **kwargs):  # noqa: ARG001
+        return [base_pos_context, base_neg_context]
 
-        _retake_module._encode_video_for_retake = _cached_video
-        _retake_module._encode_audio_for_retake = _base_audio
+    _retake_module._encode_video_for_retake = _cached_video
+    _retake_module._encode_audio_for_retake = _base_audio
+    if optimize_text:
+        _retake_module.encode_prompts = _base_text
+    try:
+        with torch.no_grad():
+            video_iter, _ = pipeline(video_path=src_video, **retake_kwargs)
+        encode_video(
+            video=video_iter,
+            fps=int(round(frame_rate)),
+            audio=out_audio,
+            output_path=str(output_dir / f"baseline_video_{mode}.mp4"),
+            video_chunks_number=get_video_chunks_number(num_frames, TilingConfig.default()),
+        )
+        log.info("[%s] Saved baseline video.", mode)
+    finally:
+        _retake_module._encode_video_for_retake = orig_encode_video
+        _retake_module._encode_audio_for_retake = orig_encode_audio
         if optimize_text:
-            _retake_module.encode_prompts = _base_text
-        try:
-            with torch.no_grad():
-                video_iter, _ = pipeline(video_path=src_video, **retake_kwargs)
-            encode_video(
-                video=video_iter,
-                fps=int(round(frame_rate)),
-                audio=out_audio,
-                output_path=str(output_dir / f"baseline_video_{mode}.mp4"),
-                video_chunks_number=get_video_chunks_number(num_frames, TilingConfig.default()),
-            )
-            log.info("[%s] Saved baseline video.", mode)
-        finally:
-            _retake_module._encode_video_for_retake = orig_encode_video
-            _retake_module._encode_audio_for_retake = orig_encode_audio
-            if optimize_text:
-                _retake_module.encode_prompts = orig_encode_prompts
+            _retake_module.encode_prompts = orig_encode_prompts
