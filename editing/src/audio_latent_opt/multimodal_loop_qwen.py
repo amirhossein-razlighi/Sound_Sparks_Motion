@@ -61,6 +61,7 @@ def gradient_optimize_multimodal_qwen(
     num_frames: int = 0,
     frame_rate: float = 25.0,
     audio_sr: int = 44100,
+    wandb_run=None,
 ) -> dict:
     """Run gradient optimization for one mode and return the best result.
 
@@ -261,6 +262,24 @@ def gradient_optimize_multimodal_qwen(
                     if is_best:
                         tb_writer.add_scalar(f"{mode}/best_qwen_yes_prob", qwen_score, it)
 
+                if wandb_run is not None:
+                    wandb_payload = {
+                        "global/iter": it,
+                        f"{mode}/qwen_nll": qwen_loss,
+                        f"{mode}/qwen_yes_prob": qwen_score,
+                        f"{mode}/total_loss": total,
+                        f"{mode}/grad_norm": grad_norm,
+                        f"{mode}/iters_without_improvement": iters_without_improvement,
+                        f"{mode}/is_best": int(is_best),
+                    }
+                    if optimize_audio:
+                        wandb_payload[f"{mode}/audio_reg"] = audio_reg
+                    if optimize_text:
+                        wandb_payload[f"{mode}/text_reg"] = text_reg
+                    if is_best:
+                        wandb_payload[f"{mode}/best_qwen_yes_prob"] = qwen_score
+                    wandb_run.log(wandb_payload, step=it)
+
                 if (
                     preview_every > 0
                     and it % preview_every == 0
@@ -287,6 +306,24 @@ def gradient_optimize_multimodal_qwen(
                         audio_opt_last_steps=args.audio_opt_last_steps,
                         skip_baseline=True,
                     )
+                    if wandb_run is not None:
+                        try:
+                            import wandb
+
+                            preview_path = preview_dir / f"best_optimized_video_{mode}.mp4"
+                            if preview_path.exists():
+                                wandb_run.log(
+                                    {
+                                        f"{mode}/preview_video": wandb.Video(
+                                            str(preview_path),
+                                            format="mp4",
+                                            caption=f"{mode} best-so-far at iter {it}",
+                                        )
+                                    },
+                                    step=it,
+                                )
+                        except Exception:
+                            log.exception("[%s] Failed to log preview video to W&B at iter %d", mode, it)
 
             early_stop_limit = getattr(args, "early_stopping", 0)
             if early_stop_limit > 0 and iters_without_improvement >= early_stop_limit:

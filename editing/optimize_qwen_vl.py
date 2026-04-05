@@ -25,6 +25,7 @@ from __future__ import annotations
 import argparse
 import gc
 import logging
+import os
 import sys
 from pathlib import Path
 
@@ -57,6 +58,69 @@ from ltx_pipelines.utils.constants import detect_params
 
 log = logging.getLogger(__name__)
 
+try:
+    import wandb
+except ImportError:
+    wandb = None
+
+
+def _init_wandb_run(args: argparse.Namespace, output_dir: Path):
+    if wandb is None:
+        log.warning("wandb not installed; skipping W&B logging.")
+        return None
+
+    if os.environ.get("WANDB_DISABLED", "").lower() in {"1", "true", "yes"}:
+        log.info("WANDB_DISABLED is set; skipping W&B logging.")
+        return None
+
+    tags = [t.strip() for t in (args.wandb_tags or "").split(",") if t.strip()]
+    config = {
+        "src_video": args.src_video,
+        "edit_prompt": args.edit_prompt,
+        "negative_prompt": args.negative_prompt,
+        "opt_mode": args.opt_mode,
+        "qwen_model": args.qwen_model,
+        "qwen_max_frames": args.qwen_max_frames,
+        "qwen_img_size": args.qwen_img_size,
+        "iterations": args.iterations,
+        "lr": args.lr,
+        "grad_clip": args.grad_clip,
+        "audio_opt_last_steps": args.audio_opt_last_steps,
+        "visualize_every_iters": args.visualize_every_iters,
+        "latent_reg_weight": args.latent_reg_weight,
+        "text_reg_weight": args.text_reg_weight,
+        "num_inference_steps": args.num_inference_steps,
+        "retake_num_inference_steps": args.retake_num_inference_steps,
+        "final_retake_num_inference_steps": args.final_retake_num_inference_steps,
+        "retake_start_frames": args.retake_start_frames,
+        "max_eval_frames": args.max_eval_frames,
+        "frame_stride": args.frame_stride,
+        "height": args.height,
+        "width": args.width,
+        "num_frames": args.num_frames,
+        "frame_rate": args.frame_rate,
+        "quantization": args.quantization,
+        "retake_quantization": args.retake_quantization,
+        "gradient_checkpointing": args.gradient_checkpointing,
+        "save_final_videos": args.save_final_videos,
+    }
+
+    run = wandb.init(
+        project=args.wandb_project,
+        entity=args.wandb_entity,
+        name=output_dir.name,
+        tags=tags,
+        dir=os.environ.get("WANDB_DIR"),
+        config=config,
+    )
+    log.info(
+        "W&B run initialized: mode=%s project=%s offline=%s",
+        os.environ.get("WANDB_MODE", "online"),
+        args.wandb_project,
+        os.environ.get("WANDB_MODE", "").lower() == "offline",
+    )
+    return run
+
 
 def run(args: argparse.Namespace) -> None:
     logging.basicConfig(
@@ -68,190 +132,122 @@ def run(args: argparse.Namespace) -> None:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     output_dir = Path(args.output_dir).expanduser().resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
+    wandb_run = _init_wandb_run(args, output_dir)
 
-    # ---- Resolve shape ----
-    height, width, num_frames, frame_rate = compute_target_shape(
-        args.src_video,
-        args.height,
-        args.width,
-        args.num_frames,
-        args.frame_rate,
-    )
-    duration = num_frames / frame_rate
-    log.info("Video shape: %dx%d, %d frames @ %.1f fps (%.2fs)", width, height, num_frames, frame_rate, duration)
+    try:
+        # ---- Resolve shape ----
+        height, width, num_frames, frame_rate = compute_target_shape(
+            args.src_video,
+            args.height,
+            args.width,
+            args.num_frames,
+            args.frame_rate,
+        )
+        duration = num_frames / frame_rate
+        log.info("Video shape: %dx%d, %d frames @ %.1f fps (%.2fs)", width, height, num_frames, frame_rate, duration)
 
-    # ---- Quantization ----
-    retake_quant = resolve_quantization_policy(
-        args.retake_quantization if args.retake_quantization is not None else args.quantization
-    )
-
-    # ---- Prepare input video ----
-    retake_input_video = prepare_retake_input_video(
-        args=args,
-        is_main=True,
-        output_dir=output_dir,
-        height=height,
-        width=width,
-        num_frames=num_frames,
-        frame_rate=frame_rate,
-    )
-
-    # ---- Build guiders ----
-    params = detect_params(args.checkpoint_path)
-    video_guider_params, audio_guider_params = build_guiders_for_mode(
-        args=args,
-        params=params,
-        use_low_memory_guidance=args.low_memory_guidance,
-    )
-
-    # ---- Load LTX Retake pipeline ----
-    log.info("Loading RetakePipeline (checkpoint: %s)...", args.checkpoint_path)
-    loras = _parse_loras(args.loras)
-    pipeline = build_retake_pipeline(
-        checkpoint_path=args.checkpoint_path,
-        gemma_root=args.gemma_root,
-        loras=loras,
-        device=device,
-        quant_policy=retake_quant,
-        gradient_checkpointing=args.gradient_checkpointing,
-    )
-
-    # ---- Encode source video/audio ----
-    cached_video_latent, base_audio_latent, waveform_sr = build_cached_source_latents(
-        pipeline=pipeline,
-        src_video=str(retake_input_video),
-        height=height,
-        width=width,
-        num_frames=num_frames,
-        audio_sr=args.audio_sr,
-        device=device,
-    )
-    base_audio_latent_fp32 = base_audio_latent.float().detach()
-
-    # ---- Pre-encode text contexts (Gemma, one-time) ----
-    base_pos_context, base_neg_context = pre_encode_base_contexts(
-        pipeline=pipeline,
-        pos_prompt=args.edit_prompt,
-        neg_prompt=args.negative_prompt,
-        device=device,
-    )
-
-    # ---- Load Qwen2.5-VL ----
-    log.info("Loading Qwen2.5-VL model (%s)...", args.qwen_model)
-    qwen_model, qwen_processor = build_qwen_model(
-        args.qwen_model,
-        device=device,
-        gradient_checkpointing=args.gradient_checkpointing,
-    )
-
-    # Ensure num_frames for Qwen is even
-    qwen_num_frames = args.qwen_max_frames
-    if qwen_num_frames % 2 != 0:
-        qwen_num_frames += 1
-    log.info("Building Qwen2.5-VL cached inputs (%d frames, %dpx)...", qwen_num_frames, args.qwen_img_size)
-    cached_qwen_inputs, yes_token_id, no_token_id = build_qwen_inputs(
-        processor=qwen_processor,
-        edit_prompt=args.edit_prompt,
-        num_frames=qwen_num_frames,
-        img_size=args.qwen_img_size,
-        device=device,
-    )
-    log.info("yes_token_id=%d  no_token_id=%d", yes_token_id, no_token_id)
-
-    # ---- Build retake kwargs ----
-    retake_kwargs = build_retake_kwargs(
-        args=args,
-        frame_rate=frame_rate,
-        duration=duration,
-        video_guider_params=video_guider_params,
-        audio_guider_params=audio_guider_params,
-    )
-
-    eval_sample_start = 0
-
-    # ---- Build final-render kwargs once (used for baseline + per-mode final videos) ----
-    final_retake_kwargs = dict(retake_kwargs)
-    if args.final_retake_num_inference_steps is not None:
-        final_retake_kwargs["num_inference_steps"] = args.final_retake_num_inference_steps
-    final_vg, final_ag = build_guiders_for_mode(args=args, params=params, use_low_memory_guidance=False)
-    final_retake_kwargs["video_guider_params"] = final_vg
-    final_retake_kwargs["audio_guider_params"] = final_ag
-
-    # ---- Render baseline BEFORE optimisation so it's ready for inspection ----
-    if args.save_final_videos:
-        log.info("Rendering baseline video (before optimisation)...")
-        render_baseline_video(
-            pipeline=pipeline,
-            src_video=str(retake_input_video),
-            cached_video_latent=cached_video_latent,
-            base_audio_latent=base_audio_latent,
-            base_pos_context=base_pos_context,
-            base_neg_context=base_neg_context,
-            retake_kwargs=final_retake_kwargs,
-            output_path=output_dir / "baseline_video.mp4",
-            num_frames=num_frames,
-            frame_rate=frame_rate,
-            audio_sr=waveform_sr,
+        # ---- Quantization ----
+        retake_quant = resolve_quantization_policy(
+            args.retake_quantization if args.retake_quantization is not None else args.quantization
         )
 
-    # ---- Run optimization ----
-    modes = [m.strip() for m in args.opt_mode.split(",")]
-    all_results: dict[str, dict] = {}
-
-    for mode in modes:
-        log.info("=" * 60)
-        log.info("Starting optimization mode: %s", mode.upper())
-        log.info("=" * 60)
-
-        mode_dir = output_dir / f"mode_{mode}"
-        mode_dir.mkdir(parents=True, exist_ok=True)
-
-        best = gradient_optimize_multimodal_qwen(
-            mode=mode,
+        # ---- Prepare input video ----
+        retake_input_video = prepare_retake_input_video(
             args=args,
             is_main=True,
-            output_dir=mode_dir,
-            base_pos_context=base_pos_context,
-            base_neg_context=base_neg_context,
-            base_audio_latent=base_audio_latent,
-            base_audio_latent_fp32=base_audio_latent_fp32,
-            cached_video_latent=cached_video_latent,
-            retake_input_video=str(retake_input_video),
-            pipeline=pipeline,
-            retake_kwargs=retake_kwargs,
-            qwen_model=qwen_model,
-            cached_qwen_inputs=cached_qwen_inputs,
-            yes_token_id=yes_token_id,
-            no_token_id=no_token_id,
-            eval_sample_start=eval_sample_start,
-            visualize_retake_kwargs=final_retake_kwargs,
+            output_dir=output_dir,
+            height=height,
+            width=width,
             num_frames=num_frames,
             frame_rate=frame_rate,
-            audio_sr=waveform_sr,
-        )
-        all_results[mode] = best
-
-        # Save best parameters
-        if best.get("audio_latent") is not None:
-            torch.save(best["audio_latent"].cpu(), mode_dir / f"best_audio_latent_{mode}.pt")
-        if best.get("delta_v") is not None:
-            torch.save(best["delta_v"].cpu(), mode_dir / f"best_text_delta_{mode}.pt")
-        torch.save(
-            {"mode": mode, "qwen_loss": best["qwen_loss"], "qwen_score": best["qwen_score"]},
-            mode_dir / f"best_params_{mode}.pt",
         )
 
-        log.info(
-            "[%s] Optimization done — best Qwen yes_prob: %.4f (total loss: %.4f)",
-            mode, best["qwen_score"], best["qwen_loss"],
+        # ---- Build guiders ----
+        params = detect_params(args.checkpoint_path)
+        video_guider_params, audio_guider_params = build_guiders_for_mode(
+            args=args,
+            params=params,
+            use_low_memory_guidance=args.low_memory_guidance,
         )
 
-        # ---- Render final optimised video (baseline already saved upfront) ----
+        # ---- Load LTX Retake pipeline ----
+        log.info("Loading RetakePipeline (checkpoint: %s)...", args.checkpoint_path)
+        loras = _parse_loras(args.loras)
+        pipeline = build_retake_pipeline(
+            checkpoint_path=args.checkpoint_path,
+            gemma_root=args.gemma_root,
+            loras=loras,
+            device=device,
+            quant_policy=retake_quant,
+            gradient_checkpointing=args.gradient_checkpointing,
+        )
+
+        # ---- Encode source video/audio ----
+        cached_video_latent, base_audio_latent, waveform_sr = build_cached_source_latents(
+            pipeline=pipeline,
+            src_video=str(retake_input_video),
+            height=height,
+            width=width,
+            num_frames=num_frames,
+            audio_sr=args.audio_sr,
+            device=device,
+        )
+        base_audio_latent_fp32 = base_audio_latent.float().detach()
+
+        # ---- Pre-encode text contexts (Gemma, one-time) ----
+        base_pos_context, base_neg_context = pre_encode_base_contexts(
+            pipeline=pipeline,
+            pos_prompt=args.edit_prompt,
+            neg_prompt=args.negative_prompt,
+            device=device,
+        )
+
+        # ---- Load Qwen2.5-VL ----
+        log.info("Loading Qwen2.5-VL model (%s)...", args.qwen_model)
+        qwen_model, qwen_processor = build_qwen_model(
+            args.qwen_model,
+            device=device,
+            gradient_checkpointing=args.gradient_checkpointing,
+        )
+
+        # Ensure num_frames for Qwen is even
+        qwen_num_frames = args.qwen_max_frames
+        if qwen_num_frames % 2 != 0:
+            qwen_num_frames += 1
+        log.info("Building Qwen2.5-VL cached inputs (%d frames, %dpx)...", qwen_num_frames, args.qwen_img_size)
+        cached_qwen_inputs, yes_token_id, no_token_id = build_qwen_inputs(
+            processor=qwen_processor,
+            edit_prompt=args.edit_prompt,
+            num_frames=qwen_num_frames,
+            img_size=args.qwen_img_size,
+            device=device,
+        )
+        log.info("yes_token_id=%d  no_token_id=%d", yes_token_id, no_token_id)
+
+        # ---- Build retake kwargs ----
+        retake_kwargs = build_retake_kwargs(
+            args=args,
+            frame_rate=frame_rate,
+            duration=duration,
+            video_guider_params=video_guider_params,
+            audio_guider_params=audio_guider_params,
+        )
+
+        eval_sample_start = 0
+
+        # ---- Build final-render kwargs once (used for baseline + per-mode final videos) ----
+        final_retake_kwargs = dict(retake_kwargs)
+        if args.final_retake_num_inference_steps is not None:
+            final_retake_kwargs["num_inference_steps"] = args.final_retake_num_inference_steps
+        final_vg, final_ag = build_guiders_for_mode(args=args, params=params, use_low_memory_guidance=False)
+        final_retake_kwargs["video_guider_params"] = final_vg
+        final_retake_kwargs["audio_guider_params"] = final_ag
+
+        # ---- Render baseline BEFORE optimisation so it's ready for inspection ----
         if args.save_final_videos:
-            log.info("[%s] Rendering optimised video...", mode)
-            render_final_video(
-                mode=mode,
-                best=best,
+            log.info("Rendering baseline video (before optimisation)...")
+            baseline_path = output_dir / "baseline_video.mp4"
+            render_baseline_video(
                 pipeline=pipeline,
                 src_video=str(retake_input_video),
                 cached_video_latent=cached_video_latent,
@@ -259,30 +255,127 @@ def run(args: argparse.Namespace) -> None:
                 base_pos_context=base_pos_context,
                 base_neg_context=base_neg_context,
                 retake_kwargs=final_retake_kwargs,
-                output_dir=mode_dir,
+                output_path=baseline_path,
                 num_frames=num_frames,
                 frame_rate=frame_rate,
                 audio_sr=waveform_sr,
-                audio_opt_last_steps=args.audio_opt_last_steps,
-                skip_baseline=True,
+            )
+            if wandb_run is not None and baseline_path.exists():
+                wandb_run.log(
+                    {"baseline_video": wandb.Video(str(baseline_path), format="mp4", caption="Baseline video")},
+                    step=0,
+                )
+
+        # ---- Run optimization ----
+        modes = [m.strip() for m in args.opt_mode.split(",")]
+        all_results: dict[str, dict] = {}
+
+        for mode in modes:
+            log.info("=" * 60)
+            log.info("Starting optimization mode: %s", mode.upper())
+            log.info("=" * 60)
+
+            mode_dir = output_dir / f"mode_{mode}"
+            mode_dir.mkdir(parents=True, exist_ok=True)
+
+            best = gradient_optimize_multimodal_qwen(
+                mode=mode,
+                args=args,
+                is_main=True,
+                output_dir=mode_dir,
+                base_pos_context=base_pos_context,
+                base_neg_context=base_neg_context,
+                base_audio_latent=base_audio_latent,
+                base_audio_latent_fp32=base_audio_latent_fp32,
+                cached_video_latent=cached_video_latent,
+                retake_input_video=str(retake_input_video),
+                pipeline=pipeline,
+                retake_kwargs=retake_kwargs,
+                qwen_model=qwen_model,
+                cached_qwen_inputs=cached_qwen_inputs,
+                yes_token_id=yes_token_id,
+                no_token_id=no_token_id,
+                eval_sample_start=eval_sample_start,
+                visualize_retake_kwargs=final_retake_kwargs,
+                num_frames=num_frames,
+                frame_rate=frame_rate,
+                audio_sr=waveform_sr,
+                wandb_run=wandb_run,
+            )
+            all_results[mode] = best
+
+            # Save best parameters
+            if best.get("audio_latent") is not None:
+                torch.save(best["audio_latent"].cpu(), mode_dir / f"best_audio_latent_{mode}.pt")
+            if best.get("delta_v") is not None:
+                torch.save(best["delta_v"].cpu(), mode_dir / f"best_text_delta_{mode}.pt")
+            torch.save(
+                {"mode": mode, "qwen_loss": best["qwen_loss"], "qwen_score": best["qwen_score"]},
+                mode_dir / f"best_params_{mode}.pt",
             )
 
-        gc.collect()
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
+            log.info(
+                "[%s] Optimization done — best Qwen yes_prob: %.4f (total loss: %.4f)",
+                mode, best["qwen_score"], best["qwen_loss"],
+            )
+            if wandb_run is not None:
+                wandb_run.summary[f"{mode}/best_qwen_yes_prob"] = best["qwen_score"]
+                wandb_run.summary[f"{mode}/best_total_loss"] = best["qwen_loss"]
+                wandb_run.summary[f"{mode}/best_iter"] = best.get("best_iter", 0)
 
-    # ---- Print comparison summary ----
-    log.info("")
-    log.info("=" * 60)
-    log.info("COMPARISON SUMMARY (Qwen2.5-VL loss)")
-    log.info("=" * 60)
-    log.info("%-10s  %-12s  %-12s", "mode", "yes_prob", "total_loss")
-    log.info("-" * 40)
-    for mode, result in sorted(all_results.items(), key=lambda x: -x[1]["qwen_score"]):
-        log.info("%-10s  %-12.4f  %-12.4f", mode, result["qwen_score"], result["qwen_loss"])
+            # ---- Render final optimised video (baseline already saved upfront) ----
+            if args.save_final_videos:
+                log.info("[%s] Rendering optimised video...", mode)
+                render_final_video(
+                    mode=mode,
+                    best=best,
+                    pipeline=pipeline,
+                    src_video=str(retake_input_video),
+                    cached_video_latent=cached_video_latent,
+                    base_audio_latent=base_audio_latent,
+                    base_pos_context=base_pos_context,
+                    base_neg_context=base_neg_context,
+                    retake_kwargs=final_retake_kwargs,
+                    output_dir=mode_dir,
+                    num_frames=num_frames,
+                    frame_rate=frame_rate,
+                    audio_sr=waveform_sr,
+                    audio_opt_last_steps=args.audio_opt_last_steps,
+                    skip_baseline=True,
+                )
+                if wandb_run is not None:
+                    final_video_path = mode_dir / f"best_optimized_video_{mode}.mp4"
+                    if final_video_path.exists():
+                        wandb_run.log(
+                            {
+                                f"{mode}/final_video": wandb.Video(
+                                    str(final_video_path),
+                                    format="mp4",
+                                    caption=f"{mode} final video",
+                                )
+                            },
+                            step=max(int(best.get("best_iter", 0)), 0),
+                        )
 
-    log.info("")
-    log.info("Outputs saved to: %s", output_dir)
+            gc.collect()
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+
+        # ---- Print comparison summary ----
+        log.info("")
+        log.info("=" * 60)
+        log.info("COMPARISON SUMMARY (Qwen2.5-VL loss)")
+        log.info("=" * 60)
+        log.info("%-10s  %-12s  %-12s", "mode", "yes_prob", "total_loss")
+        log.info("-" * 40)
+        for mode, result in sorted(all_results.items(), key=lambda x: -x[1]["qwen_score"]):
+            log.info("%-10s  %-12.4f  %-12.4f", mode, result["qwen_score"], result["qwen_loss"])
+
+        log.info("")
+        log.info("Outputs saved to: %s", output_dir)
+    finally:
+        if wandb_run is not None:
+            wandb_run.finish()
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -357,6 +450,9 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--quantization", default=None, choices=["fp8-cast", "fp8-scaled-mm"])
     p.add_argument("--retake-quantization", default=None, choices=["fp8-cast", "fp8-scaled-mm"])
     p.add_argument("--gradient-checkpointing", action=argparse.BooleanOptionalAction, default=True)
+    p.add_argument("--wandb-project", default=os.environ.get("WANDB_PROJECT", "ltx-qwen-opt"))
+    p.add_argument("--wandb-entity", default=os.environ.get("WANDB_ENTITY"))
+    p.add_argument("--wandb-tags", default=os.environ.get("WANDB_TAGS", ""))
 
     # Paths
     p.add_argument("--checkpoint-path", default=DEFAULT_CHECKPOINT)
