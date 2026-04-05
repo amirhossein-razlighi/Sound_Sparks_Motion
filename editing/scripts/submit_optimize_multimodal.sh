@@ -42,12 +42,14 @@ OPT_MODE="${OPT_MODE:-audio}"                   # text | audio | both | text,aud
 # EDIT_PROMPT="${EDIT_PROMPT:-A bottle of wine drops on the table and shatters into pieces}"
 # EDIT_PROMPT="${EDIT_PROMPT:-A dog yawns}"
 # EDIT_PROMPT="${EDIT_PROMPT:-A balloon gets loose from the string and flies away into the sky}"
-# EDIT_PROMPT="${EDIT_PROMPT:-A dog jumping up and down inplace}"
+EDIT_PROMPT="${EDIT_PROMPT:-A dog jumping up and down inplace on a chair}"
 # EDIT_PROMPT="${EDIT_PROMPT:-A balloon pops}"
-EDIT_PROMPT="${EDIT_PROMPT:-All wine bottles drop on the table}"
+# EDIT_PROMPT="${EDIT_PROMPT:-All wine bottles drop on the table}"
 # EDIT_PROMPT="${EDIT_PROMPT:-A man opens the cars door}"
+# EDIT_PROMPT="${EDIT_PROMPT:-A yellow car driving off the screen}"
 
-# First 5 words, lowercased, underscore-joined — keeps dir names short and readable
+
+NEGATIVE_PROMPT="${NEGATIVE_PROMPT:-blurry, artifacts, sudden change in scene, inconsistent changes, low quality, distorted}"
 PROMPT_SLUG=$(echo "${EDIT_PROMPT}" | tr '[:upper:]' '[:lower:]' | tr -s ' ' | cut -d' ' -f1-5 | tr ' ' '_')
 OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/Xclip/${PROMPT_SLUG}/$(echo "${OPT_MODE}" | tr ',' '_')}"
 
@@ -134,6 +136,7 @@ export PYTORCH_ALLOC_CONF="${PYTORCH_ALLOC_CONF:-expandable_segments:True,garbag
 ARGS=(
     --src-video "${SRC_VIDEO}"
     --edit-prompt "${EDIT_PROMPT}"
+    --negative-prompt "${NEGATIVE_PROMPT}"
     --output-dir "${OUTPUT_DIR}"
     --opt-mode "${OPT_MODE}"
     --clip-model "${CLIP_MODEL}"
