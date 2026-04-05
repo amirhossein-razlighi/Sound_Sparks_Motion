@@ -40,8 +40,8 @@ OPT_MODE="${OPT_MODE:-audio}"                   # text | audio | both | text,aud
 
 # EDIT_PROMPT="${EDIT_PROMPT:-A red cars door opens}"
 # EDIT_PROMPT="${EDIT_PROMPT:-A bottle of wine drops on the table and shatters into pieces}"
-# EDIT_PROMPT="${EDIT_PROMPT:-A dog yawns}"
-EDIT_PROMPT="${EDIT_PROMPT:-A balloon gets loose from the string and flies away into the sky}"
+EDIT_PROMPT="${EDIT_PROMPT:-A dog yawns}"
+# EDIT_PROMPT="${EDIT_PROMPT:-A balloon gets loose from the string and flies away into the sky}"
 
 # First 5 words, lowercased, underscore-joined — keeps dir names short and readable
 PROMPT_SLUG=$(echo "${EDIT_PROMPT}" | tr '[:upper:]' '[:lower:]' | tr -s ' ' | cut -d' ' -f1-5 | tr ' ' '_')
