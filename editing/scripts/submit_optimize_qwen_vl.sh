@@ -48,14 +48,21 @@ OPT_MODE="${OPT_MODE:-audio}"
 # EDIT_PROMPT="${EDIT_PROMPT:-A red cars door opens}"
 # EDIT_PROMPT="${EDIT_PROMPT:-A bottle of wine drops on the table and shatters into pieces}"
 # EDIT_PROMPT="${EDIT_PROMPT:-A dog yawns}"
-EDIT_PROMPT="${EDIT_PROMPT:-A balloon gets loose from the string and flies away into the sky}"
+# EDIT_PROMPT="${EDIT_PROMPT:-A balloon gets loose from the string and flies away into the sky}"
+EDIT_PROMPT="${EDIT_PROMPT:-A dog jumping up and down inplace on a chair}"
+# EDIT_PROMPT="${EDIT_PROMPT:-A guitarist spins 360 around herself while playing guitar solo on the scene}"
+# EDIT_PROMPT="${EDIT_PROMPT:-Wine bottles shatter on the table into pieces}"
+# EDIT_PROMPT="${EDIT_PROMPT:-A balloon pops}"
+# EDIT_PROMPT="${EDIT_PROMPT:-Wine bottles drop on the table}"
+# EDIT_PROMPT="${EDIT_PROMPT:-A man opens the cars door}"
 
 PROMPT_SLUG=$(echo "${EDIT_PROMPT}" | tr '[:upper:]' '[:lower:]' | tr -s ' ' | cut -d' ' -f1-5 | tr ' ' '_')
 OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/QwenVL/${PROMPT_SLUG}/$(echo "${OPT_MODE}" | tr ',' '_')}"
 
 # Qwen2.5-VL settings
-# Must be even. More frames = richer signal but more GPU memory.
-QWEN_MAX_FRAMES="${QWEN_MAX_FRAMES:-45}"
+# Must be even. X-CLIP's inductive bias is 8 frames; Qwen benefits from the
+# same range — more frames add temporal noise and cost without proportional gain.
+QWEN_MAX_FRAMES="${QWEN_MAX_FRAMES:-8}"
 # Must be divisible by 28. 224 → 64 spatial tokens/chunk. 252 → 81 tokens/chunk.
 QWEN_IMG_SIZE="${QWEN_IMG_SIZE:-224}"
 
@@ -69,13 +76,13 @@ ITERATIONS="${ITERATIONS:-50}"
 LR="${LR:-0.001}"
 GRAD_CLIP="${GRAD_CLIP:-1.0}"
 AUD_OPT_LAST_STEPS="${AUD_OPT_LAST_STEPS:-8}"
-EARLY_STOPPING="${EARLY_STOPPING:-15}"
+EARLY_STOPPING="${EARLY_STOPPING:-10}"
 
 MAX_EVAL_FRAMES="${MAX_EVAL_FRAMES:-95}"
 FRAME_STRIDE="${FRAME_STRIDE:-1}"
 
-LATENT_REG_WEIGHT="${LATENT_REG_WEIGHT:-0.1}"
-TEXT_REG_WEIGHT="${TEXT_REG_WEIGHT:-0.01}"
+LATENT_REG_WEIGHT="${LATENT_REG_WEIGHT:-0.01}"
+TEXT_REG_WEIGHT="${TEXT_REG_WEIGHT:-0.001}"
 
 HEIGHT="${HEIGHT:-320}"
 WIDTH="${WIDTH:-512}"

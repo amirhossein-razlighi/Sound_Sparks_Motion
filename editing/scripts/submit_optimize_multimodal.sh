@@ -41,7 +41,11 @@ OPT_MODE="${OPT_MODE:-audio}"                   # text | audio | both | text,aud
 # EDIT_PROMPT="${EDIT_PROMPT:-A red cars door opens}"
 # EDIT_PROMPT="${EDIT_PROMPT:-A bottle of wine drops on the table and shatters into pieces}"
 # EDIT_PROMPT="${EDIT_PROMPT:-A dog yawns}"
-EDIT_PROMPT="${EDIT_PROMPT:-A balloon gets loose from the string and flies away into the sky}"
+# EDIT_PROMPT="${EDIT_PROMPT:-A balloon gets loose from the string and flies away into the sky}"
+# EDIT_PROMPT="${EDIT_PROMPT:-A dog jumping up and down inplace}"
+# EDIT_PROMPT="${EDIT_PROMPT:-A balloon pops}"
+EDIT_PROMPT="${EDIT_PROMPT:-All wine bottles drop on the table}"
+# EDIT_PROMPT="${EDIT_PROMPT:-A man opens the cars door}"
 
 # First 5 words, lowercased, underscore-joined — keeps dir names short and readable
 PROMPT_SLUG=$(echo "${EDIT_PROMPT}" | tr '[:upper:]' '[:lower:]' | tr -s ' ' | cut -d' ' -f1-5 | tr ' ' '_')
@@ -59,9 +63,10 @@ FINAL_RETAKE_NUM_INFERENCE_STEPS="${FINAL_RETAKE_NUM_INFERENCE_STEPS:-30}"
 RETAKE_START_FRAMES="${RETAKE_START_FRAMES:-5}"
 
 ITERATIONS="${ITERATIONS:-50}"
-LR="${LR:-0.01}"
+LR="${LR:-0.001}"
 GRAD_CLIP="${GRAD_CLIP:-1.0}"
 AUD_OPT_LAST_STEPS="${AUD_OPT_LAST_STEPS:-8}"
+EARLY_STOPPING="${EARLY_STOPPING:-10}"
 
 MAX_EVAL_FRAMES="${MAX_EVAL_FRAMES:-95}"
 FRAME_STRIDE="${FRAME_STRIDE:-1}"
@@ -144,6 +149,7 @@ ARGS=(
     --lr "${LR}"
     --grad-clip "${GRAD_CLIP}"
     --audio-opt-last-steps "${AUD_OPT_LAST_STEPS}"
+    --early-stopping "${EARLY_STOPPING}"
     --max-eval-frames "${MAX_EVAL_FRAMES}"
     --frame-stride "${FRAME_STRIDE}"
     --latent-reg-weight "${LATENT_REG_WEIGHT}"
