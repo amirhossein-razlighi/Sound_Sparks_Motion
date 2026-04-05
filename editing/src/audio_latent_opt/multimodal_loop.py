@@ -25,6 +25,12 @@ from pathlib import Path
 import torch
 import torch.nn.functional as F
 
+try:
+    from torch.utils.tensorboard import SummaryWriter
+    _TB_AVAILABLE = True
+except ImportError:
+    _TB_AVAILABLE = False
+
 from ltx_core.text_encoders.gemma.embeddings_processor import EmbeddingsProcessorOutput
 import ltx_pipelines.retake as _retake_module
 import ltx_pipelines.utils.samplers as _samplers_module
@@ -282,6 +288,7 @@ def gradient_optimize_multimodal(
         "delta_v": delta_v.detach().clone() if delta_v is not None else None,
         "audio_latent": audio_latent.detach().clone() if audio_latent is not None else None,
         "mode": mode,
+        "best_iter": 0,
     }
 
     if getattr(args, "resume", False):
@@ -303,6 +310,15 @@ def gradient_optimize_multimodal(
     writer = csv.writer(csv_file)
     if is_main:
         writer.writerow(["iter", "clip_loss", "clip_score", "audio_reg", "text_reg", "total_loss", "grad_norm", "is_best"])
+
+    # ---- TensorBoard (optional) ----
+    tb_writer = None
+    if is_main and _TB_AVAILABLE:
+        tb_dir = output_dir / "tensorboard"
+        tb_writer = SummaryWriter(log_dir=str(tb_dir))
+        log.info("[%s] TensorBoard logs → %s", mode, tb_dir)
+    elif is_main:
+        log.warning("tensorboard not installed — metrics logged to CSV only.")
 
     try:
         for it in range(1, num_iters + 1):
@@ -384,21 +400,46 @@ def gradient_optimize_multimodal(
             if is_best:
                 best["clip_loss"] = total
                 best["clip_score"] = clip_score
+                best["best_iter"] = it
                 if delta_v is not None:
                     best["delta_v"] = delta_v.detach().clone()
                 if audio_latent is not None:
                     best["audio_latent"] = audio_latent.detach().clone()
 
+            iters_without_improvement = it - best.get("best_iter", 0)
+
             if is_main:
                 writer.writerow([it, clip_loss, clip_score, audio_reg, text_reg, total, grad_norm, int(is_best)])
                 csv_file.flush()
                 log.info(
-                    "[%s] iter %3d/%d  clip_loss=%.4f  clip_score=%.4f  total=%.4f  grad_norm=%.3f%s",
+                    "[%s] iter %3d/%d  clip_loss=%.4f  clip_score=%.4f  total=%.4f  grad_norm=%.3f  no_improve=%d%s",
                     mode, it, num_iters, clip_loss, clip_score, total, grad_norm,
-                    "  ★" if is_best else "",
+                    iters_without_improvement, "  ★" if is_best else "",
                 )
+                if tb_writer is not None:
+                    tb_writer.add_scalar(f"{mode}/clip_loss", clip_loss, it)
+                    tb_writer.add_scalar(f"{mode}/clip_score", clip_score, it)
+                    tb_writer.add_scalar(f"{mode}/total_loss", total, it)
+                    tb_writer.add_scalar(f"{mode}/grad_norm", grad_norm, it)
+                    tb_writer.add_scalar(f"{mode}/iters_without_improvement", iters_without_improvement, it)
+                    if optimize_audio:
+                        tb_writer.add_scalar(f"{mode}/audio_reg", audio_reg, it)
+                    if optimize_text:
+                        tb_writer.add_scalar(f"{mode}/text_reg", text_reg, it)
+                    if is_best:
+                        tb_writer.add_scalar(f"{mode}/best_clip_score", clip_score, it)
+
+            early_stop_limit = getattr(args, "early_stopping", 0)
+            if early_stop_limit > 0 and iters_without_improvement >= early_stop_limit:
+                log.info(
+                    "[%s] Early stopping: no improvement for %d consecutive iters (best at iter %d).",
+                    mode, iters_without_improvement, best.get("best_iter", 0),
+                )
+                break
     finally:
         csv_file.close()
+        if tb_writer is not None:
+            tb_writer.close()
 
     return best
 

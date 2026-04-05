@@ -309,6 +309,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--grad-clip", type=float, default=1.0)
     p.add_argument("--audio-opt-last-steps", type=int, default=6)
     p.add_argument("--resume", action="store_true")
+    p.add_argument("--early-stopping", type=int, default=0,
+                   help="Stop after this many consecutive iters with no improvement. 0 = disabled.")
 
     # Eval
     p.add_argument("--max-eval-frames", type=int, default=33)
