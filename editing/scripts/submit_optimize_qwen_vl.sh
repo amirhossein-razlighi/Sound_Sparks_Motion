@@ -96,6 +96,10 @@ A2V_SCALE="${A2V_SCALE:-}"
 
 QUANTIZATION="${QUANTIZATION:-fp8-cast}"
 SAVE_FINAL_VIDEOS="${SAVE_FINAL_VIDEOS:-1}"
+WANDB_PROJECT="${WANDB_PROJECT:-ltx-qwen-opt}"
+WANDB_ENTITY="${WANDB_ENTITY:-}"
+WANDB_TAGS="${WANDB_TAGS:-qwen-loss,cluster-offline}"
+WANDB_MODE="${WANDB_MODE:-offline}"
 
 # ---------------------------------------------------------------------------
 # Validation
@@ -127,6 +131,8 @@ echo "  Qwen model       : ${QWEN_ROOT}"
 echo "  Qwen frames      : ${QWEN_MAX_FRAMES}  img_size: ${QWEN_IMG_SIZE}"
 echo "  Iterations       : ${ITERATIONS}  LR: ${LR}"
 echo "  Visualize every  : ${VISUALIZE_EVERY_ITERS}"
+echo "  W&B project      : ${WANDB_PROJECT}"
+echo "  W&B mode         : ${WANDB_MODE}"
 echo "  Resolution       : ${WIDTH}x${HEIGHT}  frames: ${NUM_FRAMES}"
 echo "  Quantization     : ${QUANTIZATION}"
 echo "  Output dir       : ${OUTPUT_DIR}"
@@ -142,6 +148,16 @@ export TORCH_HOME="${TORCH_HOME:-/home/amirrz/.cache/torch}"
 export HF_HOME="${HF_HOME:-/home/amirrz/.cache/huggingface}"
 export HF_HUB_OFFLINE=1
 export PYTORCH_ALLOC_CONF="${PYTORCH_ALLOC_CONF:-expandable_segments:True,garbage_collection_threshold:0.8}"
+export WANDB_PROJECT
+export WANDB_ENTITY
+export WANDB_TAGS
+export WANDB_MODE
+export WANDB_DIR="${WANDB_DIR:-${OUTPUT_DIR}/wandb}"
+export WANDB_CACHE_DIR="${WANDB_CACHE_DIR:-/tmp/${USER}/wandb_cache}"
+export WANDB_CONFIG_DIR="${WANDB_CONFIG_DIR:-/home/${USER}/.config/wandb}"
+export WANDB_DISABLE_GIT="${WANDB_DISABLE_GIT:-true}"
+
+mkdir -p "${WANDB_DIR}" "${WANDB_CACHE_DIR}"
 
 # ---------------------------------------------------------------------------
 # Build arguments
