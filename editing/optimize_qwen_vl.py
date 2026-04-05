@@ -224,6 +224,10 @@ def run(args: argparse.Namespace) -> None:
             yes_token_id=yes_token_id,
             no_token_id=no_token_id,
             eval_sample_start=eval_sample_start,
+            visualize_retake_kwargs=final_retake_kwargs,
+            num_frames=num_frames,
+            frame_rate=frame_rate,
+            audio_sr=waveform_sr,
         )
         all_results[mode] = best
 
@@ -238,7 +242,7 @@ def run(args: argparse.Namespace) -> None:
         )
 
         log.info(
-            "[%s] Optimization done — best Qwen score: %.4f (loss: %.4f)",
+            "[%s] Optimization done — best Qwen yes_prob: %.4f (total loss: %.4f)",
             mode, best["qwen_score"], best["qwen_loss"],
         )
 
@@ -272,7 +276,7 @@ def run(args: argparse.Namespace) -> None:
     log.info("=" * 60)
     log.info("COMPARISON SUMMARY (Qwen2.5-VL loss)")
     log.info("=" * 60)
-    log.info("%-10s  %-12s  %-12s", "mode", "qwen_score", "qwen_loss")
+    log.info("%-10s  %-12s  %-12s", "mode", "yes_prob", "total_loss")
     log.info("-" * 40)
     for mode, result in sorted(all_results.items(), key=lambda x: -x[1]["qwen_score"]):
         log.info("%-10s  %-12.4f  %-12.4f", mode, result["qwen_score"], result["qwen_loss"])
@@ -316,6 +320,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--lr", type=float, default=0.01)
     p.add_argument("--grad-clip", type=float, default=1.0)
     p.add_argument("--audio-opt-last-steps", type=int, default=6)
+    p.add_argument("--visualize-every-iters", type=int, default=10,
+                   help="Render the best-so-far video every N iters. 0 disables previews.")
     p.add_argument("--resume", action="store_true")
     p.add_argument("--early-stopping", type=int, default=0,
                    help="Stop after this many consecutive iters with no improvement. 0 = disabled.")

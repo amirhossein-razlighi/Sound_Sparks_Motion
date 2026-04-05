@@ -11,6 +11,7 @@ from __future__ import annotations
 import csv
 import gc
 import logging
+import math
 from pathlib import Path
 
 import torch
@@ -56,12 +57,16 @@ def gradient_optimize_multimodal_qwen(
     yes_token_id: int,
     no_token_id: int,
     eval_sample_start: int,
+    visualize_retake_kwargs: dict | None = None,
+    num_frames: int = 0,
+    frame_rate: float = 25.0,
+    audio_sr: int = 44100,
 ) -> dict:
     """Run gradient optimization for one mode and return the best result.
 
     Returns a dict with keys:
         "qwen_loss"   : best total loss (lower is better)
-        "qwen_score"  : 1 - qwen_loss (higher is better, [0, 1])
+        "qwen_score"  : best Qwen yes-probability estimate (higher is better)
         "delta_v"     : best text delta tensor (or None if mode == "audio")
         "audio_latent": best audio latent tensor (or None if mode == "text")
         "mode"        : the optimization mode string
@@ -127,7 +132,7 @@ def gradient_optimize_multimodal_qwen(
     csv_writer = csv.writer(csv_file)
     if is_main:
         csv_writer.writerow([
-            "iter", "qwen_loss", "qwen_score",
+            "iter", "qwen_nll", "qwen_yes_prob",
             "audio_reg", "text_reg", "total_loss", "grad_norm", "is_best",
         ])
 
@@ -139,6 +144,9 @@ def gradient_optimize_multimodal_qwen(
         log.info("[%s] TensorBoard logs → %s", mode, tb_dir)
     elif is_main:
         log.warning("tensorboard not installed — metrics logged to CSV only.")
+
+    preview_every = max(int(getattr(args, "visualize_every_iters", 0) or 0), 0)
+    preview_root = output_dir / "visualizations"
 
     try:
         for it in range(1, num_iters + 1):
@@ -213,7 +221,7 @@ def gradient_optimize_multimodal_qwen(
             optimizer.step()
 
             qwen_loss = float(qwen_loss_t.detach().item())
-            qwen_score = 1.0 - qwen_loss
+            qwen_score = math.exp(-qwen_loss)
             audio_reg = float(audio_reg_t.detach().item())
             text_reg = float(text_reg_t.detach().item())
             total = float(total_t.detach().item())
@@ -236,13 +244,13 @@ def gradient_optimize_multimodal_qwen(
                 csv_writer.writerow([it, qwen_loss, qwen_score, audio_reg, text_reg, total, grad_norm, int(is_best)])
                 csv_file.flush()
                 log.info(
-                    "[%s] iter %3d/%d  qwen_loss=%.4f  qwen_score=%.4f  total=%.4f  grad_norm=%.3f  no_improve=%d%s",
+                    "[%s] iter %3d/%d  qwen_nll=%.4f  yes_prob=%.4f  total=%.4f  grad_norm=%.3f  no_improve=%d%s",
                     mode, it, num_iters, qwen_loss, qwen_score, total, grad_norm,
                     iters_without_improvement, "  ★" if is_best else "",
                 )
                 if tb_writer is not None:
-                    tb_writer.add_scalar(f"{mode}/qwen_loss", qwen_loss, it)
-                    tb_writer.add_scalar(f"{mode}/qwen_score", qwen_score, it)
+                    tb_writer.add_scalar(f"{mode}/qwen_nll", qwen_loss, it)
+                    tb_writer.add_scalar(f"{mode}/qwen_yes_prob", qwen_score, it)
                     tb_writer.add_scalar(f"{mode}/total_loss", total, it)
                     tb_writer.add_scalar(f"{mode}/grad_norm", grad_norm, it)
                     tb_writer.add_scalar(f"{mode}/iters_without_improvement", iters_without_improvement, it)
@@ -251,7 +259,34 @@ def gradient_optimize_multimodal_qwen(
                     if optimize_text:
                         tb_writer.add_scalar(f"{mode}/text_reg", text_reg, it)
                     if is_best:
-                        tb_writer.add_scalar(f"{mode}/best_qwen_score", qwen_score, it)
+                        tb_writer.add_scalar(f"{mode}/best_qwen_yes_prob", qwen_score, it)
+
+                if (
+                    preview_every > 0
+                    and it % preview_every == 0
+                    and visualize_retake_kwargs is not None
+                    and num_frames > 0
+                ):
+                    preview_dir = preview_root / f"iter_{it:03d}"
+                    preview_dir.mkdir(parents=True, exist_ok=True)
+                    log.info("[%s] Rendering best-so-far preview at iter %d...", mode, it)
+                    render_final_video(
+                        mode=mode,
+                        best=best,
+                        pipeline=pipeline,
+                        src_video=retake_input_video,
+                        cached_video_latent=cached_video_latent,
+                        base_audio_latent=base_audio_latent,
+                        base_pos_context=base_pos_context,
+                        base_neg_context=base_neg_context,
+                        retake_kwargs=visualize_retake_kwargs,
+                        output_dir=preview_dir,
+                        num_frames=num_frames,
+                        frame_rate=frame_rate,
+                        audio_sr=audio_sr,
+                        audio_opt_last_steps=args.audio_opt_last_steps,
+                        skip_baseline=True,
+                    )
 
             early_stop_limit = getattr(args, "early_stopping", 0)
             if early_stop_limit > 0 and iters_without_improvement >= early_stop_limit:

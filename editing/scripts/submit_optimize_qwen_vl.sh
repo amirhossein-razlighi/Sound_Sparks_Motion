@@ -61,7 +61,7 @@ PROMPT_SLUG=$(echo "${EDIT_PROMPT}" | tr '[:upper:]' '[:lower:]' | tr -s ' ' | c
 OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/QwenVL/${PROMPT_SLUG}/$(echo "${OPT_MODE}" | tr ',' '_')}"
 
 # Qwen2.5-VL settings
-QWEN_MAX_FRAMES="${QWEN_MAX_FRAMES:-16}"
+QWEN_MAX_FRAMES="${QWEN_MAX_FRAMES:-30}"
 # Must be divisible by 28. 224 → 64 spatial tokens/chunk. 252 → 81 tokens/chunk.
 QWEN_IMG_SIZE="${QWEN_IMG_SIZE:-224}"
 
@@ -76,6 +76,7 @@ LR="${LR:-0.005}"
 GRAD_CLIP="${GRAD_CLIP:-1.0}"
 AUD_OPT_LAST_STEPS="${AUD_OPT_LAST_STEPS:-8}"
 EARLY_STOPPING="${EARLY_STOPPING:-15}"
+VISUALIZE_EVERY_ITERS="${VISUALIZE_EVERY_ITERS:-10}"
 
 MAX_EVAL_FRAMES="${MAX_EVAL_FRAMES:-95}"
 FRAME_STRIDE="${FRAME_STRIDE:-1}"
@@ -125,6 +126,7 @@ echo "  Edit prompt      : ${EDIT_PROMPT}"
 echo "  Qwen model       : ${QWEN_ROOT}"
 echo "  Qwen frames      : ${QWEN_MAX_FRAMES}  img_size: ${QWEN_IMG_SIZE}"
 echo "  Iterations       : ${ITERATIONS}  LR: ${LR}"
+echo "  Visualize every  : ${VISUALIZE_EVERY_ITERS}"
 echo "  Resolution       : ${WIDTH}x${HEIGHT}  frames: ${NUM_FRAMES}"
 echo "  Quantization     : ${QUANTIZATION}"
 echo "  Output dir       : ${OUTPUT_DIR}"
@@ -164,6 +166,7 @@ ARGS=(
     --lr "${LR}"
     --grad-clip "${GRAD_CLIP}"
     --audio-opt-last-steps "${AUD_OPT_LAST_STEPS}"
+    --visualize-every-iters "${VISUALIZE_EVERY_ITERS}"
     --early-stopping "${EARLY_STOPPING}"
     --max-eval-frames "${MAX_EVAL_FRAMES}"
     --frame-stride "${FRAME_STRIDE}"
