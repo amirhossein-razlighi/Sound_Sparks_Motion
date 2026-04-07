@@ -13,8 +13,9 @@ generated frames.
 Pixel format follows Qwen2VLImageProcessor._preprocess exactly:
   - Normalise: (x - 0.5) / 0.5   (frames_chw is assumed to be in [0, 1])
   - Extract 14×14 spatial patches, 2-frame temporal patches, 2×2 spatial merge
-  - pixel_values_videos: [grid_t * gh * gw, C * 2 * 4 * 14²] = [N, 4704]
-  - video_grid_thw: [(grid_t, gh, gw)]  where gh = H // (14*2), gw = W // (14*2)
+  - pixel_values_videos: [grid_t * merged_h * merged_w, C * 2 * 4 * 14²] = [N, 4704]
+  - video_grid_thw from the processor is the raw patch grid before spatial merge:
+    [(grid_t, H // 14, W // 14)]
 
 For 224×224 images and 8 frames: N = 4 * 8 * 8 = 256, feature_dim = 4704.
 """

@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import logging
 import math
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -118,32 +119,60 @@ def log_attn_frames_to_wandb(
     step: int,
     caption: str = "",
     fps: int = 8,
+    save_dir: Path | str | None = None,
 ) -> None:
-    """Overlay heatmap on frames and log both the overlay video and a thumbnail
-    to wandb.
+    """Overlay heatmap on frames, optionally save it locally, and log it to W&B.
 
     Args:
         wandb_run: Active wandb run (or None — no-op).
-        tag: W&B media key prefix, e.g. "both/attn_qwen_iter_10".
+        tag: W&B media key prefix, e.g. "media/attention/both/qwen_optimized_iter_010".
         frames_np: [T, H, W, 3] uint8 frames.
         heatmap: float32 [T, H, W] or [H, W] heatmap.
         step: W&B step index.
         caption: Caption string for the video.
         fps: Playback fps for the logged video.
+        save_dir: Optional local directory for overlay MP4 + thumbnail PNG.
     """
+    overlay = overlay_heatmap(frames_np, heatmap)  # [T, H, W, 3] uint8
+    safe_name = tag.replace("/", "__")
+    video_path = None
+    thumb_path = None
+
+    if save_dir is not None:
+        try:
+            import imageio.v2 as imageio
+
+            save_dir = Path(save_dir)
+            save_dir.mkdir(parents=True, exist_ok=True)
+            video_path = save_dir / f"{safe_name}.mp4"
+            thumb_path = save_dir / f"{safe_name}_thumb.png"
+            imageio.mimsave(video_path, list(overlay), fps=fps, macro_block_size=1)
+            imageio.imwrite(thumb_path, overlay[len(overlay) // 2])
+            log.info("Saved attention overlay to %s", video_path)
+        except Exception:
+            log.warning("Failed to save attention overlay locally (tag=%s)", tag, exc_info=True)
+
     if wandb_run is None:
         return
+
     try:
         import wandb
 
-        overlay = overlay_heatmap(frames_np, heatmap)  # [T, H, W, 3] uint8
-
-        # Video: [T, H, W, C] → wandb expects [T, C, H, W]
-        video_arr = overlay.transpose(0, 3, 1, 2)  # [T, 3, H, W]
+        if video_path is not None and video_path.exists():
+            video = wandb.Video(str(video_path), format="mp4", caption=caption)
+        else:
+            # Raw array fallback requires wandb[media]/moviepy.
+            video_arr = overlay.transpose(0, 3, 1, 2)  # [T, 3, H, W]
+            video = wandb.Video(video_arr, fps=fps, format="mp4", caption=caption)
+        thumb = (
+            wandb.Image(str(thumb_path), caption=caption)
+            if thumb_path is not None and thumb_path.exists()
+            else wandb.Image(overlay[len(overlay) // 2], caption=caption)
+        )
         wandb_run.log(
             {
-                tag: wandb.Video(video_arr, fps=fps, format="mp4", caption=caption),
-                f"{tag}_thumb": wandb.Image(overlay[len(overlay) // 2], caption=caption),
+                tag: video,
+                f"{tag}_thumb": thumb,
             },
             step=step,
         )
@@ -168,6 +197,37 @@ def _get_video_pad_token_id(qwen_model) -> int:
     return 151656  # <|video_pad|> default for Qwen2.5-VL
 
 
+def _get_qwen_decoder_layers(qwen_model):
+    """Return the Qwen text decoder layers across common Transformers layouts."""
+    candidates = [
+        ("model.language_model.layers", getattr(getattr(qwen_model, "model", None), "language_model", None)),
+        ("model.layers", getattr(qwen_model, "model", None)),
+        ("language_model.layers", getattr(qwen_model, "language_model", None)),
+    ]
+    for name, module in candidates:
+        layers = getattr(module, "layers", None)
+        if layers is not None:
+            return layers, name
+    raise AttributeError("Could not find Qwen decoder layers on model.language_model.layers or model.layers")
+
+
+def _iter_qwen_attention_configs(qwen_model):
+    """Yield unique config objects whose _attn_implementation controls Qwen text attention."""
+    seen: set[int] = set()
+    for cfg in (
+        getattr(qwen_model, "config", None),
+        getattr(getattr(qwen_model, "config", None), "text_config", None),
+        getattr(getattr(qwen_model, "model", None), "config", None),
+        getattr(getattr(getattr(qwen_model, "model", None), "language_model", None), "config", None),
+    ):
+        if cfg is None or not hasattr(cfg, "_attn_implementation"):
+            continue
+        if id(cfg) in seen:
+            continue
+        seen.add(id(cfg))
+        yield cfg
+
+
 @torch.no_grad()
 def extract_qwen_attention_maps(
     frames_chw: torch.Tensor,
@@ -180,21 +240,33 @@ def extract_qwen_attention_maps(
     """Extract spatial attention maps from Qwen2.5-VL.
 
     Computes how much the model's yes/no generation token attends to each video
-    patch token.  Averaged over the last ``num_layers_to_avg`` decoder layers
+    patch token, averaged over the last ``num_layers_to_avg`` decoder layers
     and all attention heads.
+
+    Implementation notes
+    --------------------
+    Qwen2.5-VL defaults to ``_attn_implementation="sdpa"`` whose
+    ``sdpa_attention_forward`` always returns ``None`` for attention weights —
+    ``output_attentions=True`` is silently ignored.  We therefore:
+
+    1. Temporarily switch to ``"eager"`` so the standard matmul path runs and
+       returns real ``[B, H, S, S]`` tensors.
+    2. Register forward hooks on only the last ``num_layers_to_avg`` decoder
+       layers instead of using ``output_attentions=True``.  This avoids
+       allocating all 28 full attention matrices (~3 GB) and keeps memory low.
+    3. Each hook immediately reduces ``[B, H, S, S]`` → ``[num_vis_tokens]``
+       and discards the rest.
 
     Returns dict with:
         "attn_spatial": float32 numpy [grid_t, grid_h, grid_w]
-        "grid_thw": (grid_t, grid_h, grid_w)
-        "num_frames": int — how many frames were actually used
+        "grid_thw":     (grid_t, grid_h, grid_w)
+        "num_frames":   int
     or None on failure.
-
-    Memory note: ``output_attentions=True`` allocates ~140 MB on top of the
-    resident model.  All tensors are freed before returning.
     """
     try:
         from .qwen_loss import _frames_to_pixel_values
 
+        # ---- Prepare pixel values ----
         n = frames_chw.shape[0]
         num_frames = min(max_frames, n) if max_frames > 0 else n
         if num_frames % _TEMPORAL_PATCH_SIZE != 0:
@@ -202,81 +274,118 @@ def extract_qwen_attention_maps(
         num_frames = max(num_frames, _TEMPORAL_PATCH_SIZE)
 
         idx = torch.linspace(0, n - 1, num_frames, device=frames_chw.device).round().long()
-        frames = frames_chw[idx].detach()
-
         frames = F.interpolate(
-            frames,
+            frames_chw[idx].detach(),
             size=(img_size, img_size),
             mode="bilinear",
             align_corners=False,
         )
         pixel_values_videos = _frames_to_pixel_values(frames).to(dtype=torch.bfloat16)
 
-        # output_attentions=True is incompatible with gradient checkpointing
-        was_gc = getattr(qwen_model, "is_gradient_checkpointing", False)
-        if was_gc:
-            qwen_model.gradient_checkpointing_disable()
+        # ---- Find visual token positions ----
+        video_pad_id = _get_video_pad_token_id(qwen_model)
+        input_ids_1d = cached_inputs["input_ids"][0]  # [seq_len]
+        vis_positions = (input_ids_1d == video_pad_id).nonzero(as_tuple=True)[0]
+        if vis_positions.numel() == 0:
+            log.warning("No video pad tokens found in Qwen input_ids — skipping attn maps.")
+            return None
+        last_pos = int(input_ids_1d.shape[0]) - 1  # generation token position
 
+        # ---- Register hooks on the last N decoder layers ----
+        # Hooks capture self_attn output = (attn_output, attn_weights) under eager mode.
+        # attn_weights: [B, num_heads, seq_len, seq_len]
+        # We immediately slice out [0, :, last_pos, vis_positions] and average over heads.
+        captured: list[torch.Tensor] = []
+
+        def _make_hook(vis_pos, lpos):
+            def hook(module, inputs, output):
+                # output is (attn_output, attn_weights)
+                if not isinstance(output, (tuple, list)) or len(output) < 2:
+                    return
+                attn_weights = output[1]
+                if attn_weights is None:
+                    return
+                if attn_weights.ndim != 4:
+                    log.debug("Unexpected Qwen attention weight shape: %s", tuple(attn_weights.shape))
+                    return
+                # [B, H, seq, seq] → [H, num_vis]
+                a = attn_weights[0, :, lpos, :][:, vis_pos].float()
+                captured.append(a.mean(dim=0).detach().cpu())  # [num_vis]
+                del attn_weights, a
+            return hook
+
+        decoder_layers, decoder_layers_name = _get_qwen_decoder_layers(qwen_model)
+        n_layers = len(decoder_layers)
+        hook_indices = list(range(max(0, n_layers - num_layers_to_avg), n_layers))
+        log.debug("Qwen attention hooks using %s indices %s", decoder_layers_name, hook_indices)
+        hooks = []
+        for i in hook_indices:
+            h = decoder_layers[i].self_attn.register_forward_hook(
+                _make_hook(vis_positions, last_pos)
+            )
+            hooks.append(h)
+
+        # ---- Temporarily switch to eager attention ----
+        # sdpa_attention_forward always returns None for attn_weights;
+        # eager_attention_forward (lines 169-179 in modeling_qwen2_5_vl.py) returns them.
+        attn_configs = list(_iter_qwen_attention_configs(qwen_model))
+        orig_impls = [(cfg, cfg._attn_implementation) for cfg in attn_configs]
+        was_gc = getattr(qwen_model, "is_gradient_checkpointing", False)
         try:
-            outputs = qwen_model(
+            for cfg, _ in orig_impls:
+                cfg._attn_implementation = "eager"
+            if was_gc:
+                qwen_model.gradient_checkpointing_disable()
+
+            qwen_model(
                 input_ids=cached_inputs["input_ids"],
                 attention_mask=cached_inputs["attention_mask"],
                 pixel_values_videos=pixel_values_videos,
                 video_grid_thw=cached_inputs.get("video_grid_thw"),
-                output_attentions=True,
+                output_attentions=False,
+                use_cache=False,
             )
         finally:
+            for cfg, impl in orig_impls:
+                cfg._attn_implementation = impl
             if was_gc:
                 qwen_model.gradient_checkpointing_enable()
+            for h in hooks:
+                h.remove()
 
-        # outputs.attentions: tuple of [1, num_heads, seq_len, seq_len] per layer
-        attentions = outputs.attentions
-
-        # Find video pad token positions in the sequence
-        video_pad_id = _get_video_pad_token_id(qwen_model)
-        input_ids_1d = cached_inputs["input_ids"][0]  # [seq_len]
-        vis_positions = (input_ids_1d == video_pad_id).nonzero(as_tuple=True)[0]
-
-        if vis_positions.numel() == 0:
-            log.warning("No video pad tokens found — cannot extract Qwen attention maps.")
+        if not captured:
+            log.warning("Qwen attention hooks captured nothing — no weights available.")
             return None
 
-        last_pos = input_ids_1d.shape[0] - 1  # generation position
+        # ---- Average over captured layers ----
+        attn_vis = torch.stack(captured, dim=0).mean(dim=0).numpy()  # [num_vis_tokens]
 
-        # Average attention to visual tokens from the last `num_layers_to_avg` layers
-        attn_list = []
-        for layer_attn in attentions[-num_layers_to_avg:]:
-            # layer_attn: [1, H, seq, seq] → select row at last_pos, columns at vis_positions
-            a = layer_attn[0, :, last_pos, :][:, vis_positions].float()  # [H, num_vis]
-            attn_list.append(a.mean(dim=0))  # [num_vis]
-        attn_vis = torch.stack(attn_list, dim=0).mean(dim=0).cpu().numpy()  # [num_vis]
-
-        # Determine spatial grid from video_grid_thw
+        # ---- Determine spatial grid ----
         if "video_grid_thw" in cached_inputs:
-            thw = cached_inputs["video_grid_thw"][0]  # [grid_t, grid_h, grid_w]
+            thw = cached_inputs["video_grid_thw"][0]
+            # Qwen stores video_grid_thw as the raw ViT patch grid. The LLM
+            # sequence sees tokens after the 2x2 spatial merge.
             grid_t = int(thw[0])
-            grid_h = int(thw[1])
-            grid_w = int(thw[2])
+            grid_h = int(thw[1]) // _MERGE_SIZE
+            grid_w = int(thw[2]) // _MERGE_SIZE
         else:
             grid_t = num_frames // _TEMPORAL_PATCH_SIZE
-            grid_h = img_size // (14 * _MERGE_SIZE)  # patch_size=14, merge=2 → 28
+            grid_h = img_size // (14 * _MERGE_SIZE)  # patch_size=14, merge_size=2 → 28
             grid_w = grid_h
 
         expected = grid_t * grid_h * grid_w
         if attn_vis.shape[0] != expected:
             log.warning(
-                "Qwen vis-token count mismatch: got %d, expected %d",
-                attn_vis.shape[0], expected,
+                "Qwen vis-token count mismatch: got %d, expected grid %d×%d×%d=%d",
+                attn_vis.shape[0], grid_t, grid_h, grid_w, expected,
             )
             return None
 
         attn_spatial = attn_vis.reshape(grid_t, grid_h, grid_w).astype(np.float32)
-
-        del outputs, attentions
         torch.cuda.empty_cache()
 
         return {
-            "attn_spatial": attn_spatial,  # [grid_t, grid_h, grid_w]
+            "attn_spatial": attn_spatial,   # [grid_t, grid_h, grid_w]
             "grid_thw": (grid_t, grid_h, grid_w),
             "num_frames": num_frames,
         }
@@ -318,6 +427,7 @@ class LTXAttentionCapture:
         self._hooks: list = []
         self._storage: dict[str, Any] = {}
         self._orig_transformer_fn = None
+        self._hook_error_logged: set[str] = set()
 
     # ------------------------------------------------------------------
     def _make_hook(self, key: str):
@@ -325,14 +435,15 @@ class LTXAttentionCapture:
 
         def hook(module, args, kwargs, output):
             context = kwargs.get("context")
+            if context is None and len(args) > 1 and torch.is_tensor(args[1]):
+                context = args[1]
             if context is None:
                 return  # self-attention — skip
             x = args[0]
             with torch.no_grad():
                 try:
-                    dtype = module.to_q.weight.dtype
-                    x_f = x.detach().to(dtype=dtype)
-                    c_f = context.detach().to(dtype=dtype)
+                    x_f = x.detach()
+                    c_f = context.detach()
 
                     q = module.q_norm(module.to_q(x_f))   # [B, Tq, H*dh]
                     k = module.k_norm(module.to_k(c_f))   # [B, Tk, H*dh]
@@ -358,7 +469,9 @@ class LTXAttentionCapture:
 
                     del q, k, q_r, k_r, logits, max_logit, importance
                 except Exception:
-                    pass  # silent — visualization is best-effort
+                    if key not in self._hook_error_logged:
+                        log.warning("LTXAttentionCapture hook failed for %s", key, exc_info=True)
+                        self._hook_error_logged.add(key)
 
         return hook
 
@@ -391,6 +504,7 @@ class LTXAttentionCapture:
     def __enter__(self) -> "LTXAttentionCapture":
         self._storage.clear()
         self._hooks.clear()
+        self._hook_error_logged.clear()
 
         ledger = getattr(self._pipeline, "model_ledger", None)
         if ledger is None:

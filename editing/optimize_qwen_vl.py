@@ -262,7 +262,13 @@ def run(args: argparse.Namespace) -> None:
             )
             if wandb_run is not None and baseline_path.exists():
                 wandb_run.log(
-                    {"baseline_video": wandb.Video(str(baseline_path), format="mp4", caption="Baseline video")},
+                    {
+                        "media/video/baseline": wandb.Video(
+                            str(baseline_path),
+                            format="mp4",
+                            caption="Baseline video",
+                        )
+                    },
                     step=0,
                 )
 
@@ -351,7 +357,7 @@ def run(args: argparse.Namespace) -> None:
                     if final_video_path.exists():
                         wandb_run.log(
                             {
-                                f"{mode}/final_video": wandb.Video(
+                                f"media/video/{mode}/final": wandb.Video(
                                     str(final_video_path),
                                     format="mp4",
                                     caption=f"{mode} final video",

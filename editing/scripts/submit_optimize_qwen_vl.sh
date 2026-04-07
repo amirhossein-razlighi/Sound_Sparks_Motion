@@ -43,7 +43,7 @@ GEMMA_ROOT="${GEMMA_ROOT:-/project/def-amahdavi/amirrz/HF/models/gemma-3-12b-it-
 QWEN_ROOT="${QWEN_ROOT:-/project/def-amahdavi/amirrz/HF/models/Qwen2.5-VL-7B-Instruct}"
 
 SRC_VIDEO="${SRC_VIDEO:-${1:-}}"
-OPT_MODE="${OPT_MODE:-audio}"
+OPT_MODE="${OPT_MODE:-both}"
 
 # EDIT_PROMPT="${EDIT_PROMPT:-A red cars door opens}"
 # EDIT_PROMPT="${EDIT_PROMPT:-A bottle of wine drops on the table and shatters into pieces}"
@@ -76,7 +76,7 @@ LR="${LR:-0.005}"
 GRAD_CLIP="${GRAD_CLIP:-1.0}"
 AUD_OPT_LAST_STEPS="${AUD_OPT_LAST_STEPS:-8}"
 EARLY_STOPPING="${EARLY_STOPPING:-15}"
-VISUALIZE_EVERY_ITERS="${VISUALIZE_EVERY_ITERS:-10}"
+VISUALIZE_EVERY_ITERS="${VISUALIZE_EVERY_ITERS:-5}"
 
 MAX_EVAL_FRAMES="${MAX_EVAL_FRAMES:-95}"
 FRAME_STRIDE="${FRAME_STRIDE:-1}"

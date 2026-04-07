@@ -375,7 +375,7 @@ def gradient_optimize_multimodal_qwen(
                             if preview_path.exists():
                                 wandb_run.log(
                                     {
-                                        f"{mode}/preview_video": wandb.Video(
+                                        f"media/video/{mode}/preview_iter_{it:03d}": wandb.Video(
                                             str(preview_path),
                                             format="mp4",
                                             caption=f"{mode} best-so-far at iter {it}",
@@ -400,6 +400,7 @@ def gradient_optimize_multimodal_qwen(
                             attn_cap=attn_cap,
                             cached_video_latent=cached_video_latent,
                             wandb_run=wandb_run,
+                            save_dir=preview_dir / "attention",
                         )
 
             early_stop_limit = getattr(args, "early_stopping", 0)
@@ -440,6 +441,7 @@ def _log_attention_maps(
     attn_cap: "LTXAttentionCapture | None",
     cached_video_latent: torch.Tensor,
     wandb_run,
+    save_dir: Path | None = None,
 ) -> None:
     """Extract Qwen + LTX attention maps and log overlays to W&B.
 
@@ -470,11 +472,12 @@ def _log_attention_maps(
         attn_q_spatial = attn_q.mean(axis=0)  # [gh, gw]
         log_attn_frames_to_wandb(
             wandb_run=wandb_run,
-            tag=f"{mode}/attn_qwen_{label}",
+            tag=f"media/attention/{mode}/qwen_{label}_iter_{it:03d}",
             frames_np=frames_np,
             heatmap=attn_q_spatial,
             step=it,
             caption=f"Qwen scorer attention — {label} iter {it}",
+            save_dir=save_dir,
         )
         log.info("[%s] Qwen attention logged (grid %s).", mode, qwen_result["grid_thw"])
 
@@ -493,13 +496,16 @@ def _log_attention_maps(
                     attn_2d = attn_grid.squeeze()
                 log_attn_frames_to_wandb(
                     wandb_run=wandb_run,
-                    tag=f"{mode}/{tag_suffix}_{label}",
+                    tag=f"media/attention/{mode}/{tag_suffix}_{label}_iter_{it:03d}",
                     frames_np=frames_np,
                     heatmap=attn_2d,
                     step=it,
                     caption=f"{caption_suffix} — {label} iter {it}",
+                    save_dir=save_dir,
                 )
                 log.info("[%s] LTX %s attention logged.", mode, key)
+            else:
+                log.warning("[%s] LTX %s attention was not captured at iter %d.", mode, key, it)
 
 
 # ---------------------------------------------------------------------------
@@ -549,9 +555,10 @@ def _save_preview_audio(
         if wandb_run is not None:
             try:
                 import wandb
+                key_label = "baseline" if label == "baseline" else f"{label}_iter_{it:03d}"
                 wandb_run.log(
                     {
-                        f"{mode}/{label}_audio": wandb.Audio(
+                        f"media/audio/{mode}/{key_label}": wandb.Audio(
                             str(wav_path),
                             sample_rate=decoded.sampling_rate,
                             caption=f"{mode} {label} audio — iter {it}",

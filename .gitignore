@@ -48,3 +48,4 @@ results/
 
 .codex
 input*/
+*wandb/
