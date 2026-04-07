@@ -290,3 +290,13 @@ def compute_qwen_video_loss(
     yes_prob = torch.softmax(torch.stack([yes_logit, no_logit]), dim=0)[0]
     # return 1.0 - yes_prob
     return -torch.log(yes_prob + 1e-8)  # log loss, more stable gradients when yes_prob ~ 0
+
+
+# ---------------------------------------------------------------------------
+# Re-export attention extraction (implemented in attn_vis to avoid circular
+# imports; callers can import from either module)
+# ---------------------------------------------------------------------------
+def extract_qwen_attention_maps(frames_chw, qwen_model, cached_inputs, **kwargs):
+    """Convenience re-export — see attn_vis.extract_qwen_attention_maps."""
+    from .attn_vis import extract_qwen_attention_maps as _impl
+    return _impl(frames_chw, qwen_model, cached_inputs, **kwargs)

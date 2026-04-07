@@ -301,6 +301,9 @@ def run(args: argparse.Namespace) -> None:
                 frame_rate=frame_rate,
                 audio_sr=waveform_sr,
                 wandb_run=wandb_run,
+                # Enable attention map extraction whenever we have a W&B run
+                # and preview rendering is active (no extra LTX render needed).
+                extract_attn_maps=(wandb_run is not None and args.visualize_every_iters > 0),
             )
             all_results[mode] = best
 

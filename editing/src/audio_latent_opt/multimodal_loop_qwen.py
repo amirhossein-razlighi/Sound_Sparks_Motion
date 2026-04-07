@@ -24,6 +24,12 @@ except ImportError:
 
 from ltx_core.text_encoders.gemma.embeddings_processor import EmbeddingsProcessorOutput
 
+from .attn_vis import (
+    LTXAttentionCapture,
+    extract_qwen_attention_maps,
+    frames_to_numpy,
+    log_attn_frames_to_wandb,
+)
 from .multimodal_loop import (
     pre_encode_base_contexts,
     render_final_video,
@@ -62,6 +68,7 @@ def gradient_optimize_multimodal_qwen(
     frame_rate: float = 25.0,
     audio_sr: int = 44100,
     wandb_run=None,
+    extract_attn_maps: bool = False,
 ) -> dict:
     """Run gradient optimization for one mode and return the best result.
 
@@ -137,6 +144,18 @@ def gradient_optimize_multimodal_qwen(
             "audio_reg", "text_reg", "total_loss", "grad_norm", "is_best",
         ])
 
+    # ---- W&B Table (per-iteration metrics — sortable/filterable in W&B UI) ----
+    wandb_table = None
+    if wandb_run is not None and is_main:
+        try:
+            import wandb as _wandb
+            wandb_table = _wandb.Table(
+                columns=["iter", "yes_prob", "qwen_nll", "audio_reg",
+                         "text_reg", "total_loss", "grad_norm", "is_best"]
+            )
+        except Exception:
+            wandb_table = None
+
     # ---- TensorBoard (optional) ----
     tb_writer = None
     if is_main and _TB_AVAILABLE:
@@ -148,6 +167,21 @@ def gradient_optimize_multimodal_qwen(
 
     preview_every = max(int(getattr(args, "visualize_every_iters", 0) or 0), 0)
     preview_root = output_dir / "visualizations"
+
+    # ---- Save baseline audio (before any optimisation) ----
+    if is_main and optimize_audio and preview_every > 0:
+        baseline_audio_dir = output_dir / "visualizations" / "iter_000"
+        baseline_audio_dir.mkdir(parents=True, exist_ok=True)
+        _save_preview_audio(
+            it=0,
+            mode=mode,
+            label="baseline",
+            audio_latent=base_audio_latent_fp32,
+            pipeline=pipeline,
+            audio_sr=audio_sr,
+            preview_dir=baseline_audio_dir,
+            wandb_run=wandb_run,
+        )
 
     try:
         for it in range(1, num_iters + 1):
@@ -244,6 +278,9 @@ def gradient_optimize_multimodal_qwen(
             if is_main:
                 csv_writer.writerow([it, qwen_loss, qwen_score, audio_reg, text_reg, total, grad_norm, int(is_best)])
                 csv_file.flush()
+                if wandb_table is not None:
+                    wandb_table.add_data(it, qwen_score, qwen_loss, audio_reg,
+                                         text_reg, total, grad_norm, int(is_best))
                 log.info(
                     "[%s] iter %3d/%d  qwen_nll=%.4f  yes_prob=%.4f  total=%.4f  grad_norm=%.3f  no_improve=%d%s",
                     mode, it, num_iters, qwen_loss, qwen_score, total, grad_norm,
@@ -289,6 +326,13 @@ def gradient_optimize_multimodal_qwen(
                     preview_dir = preview_root / f"iter_{it:03d}"
                     preview_dir.mkdir(parents=True, exist_ok=True)
                     log.info("[%s] Rendering best-so-far preview at iter %d...", mode, it)
+
+                    # ---- Render preview (optionally with LTX cross-attention hooks) ----
+                    attn_cap = None
+                    if extract_attn_maps and wandb_run is not None:
+                        attn_cap = LTXAttentionCapture(pipeline, block_fraction=0.5)
+                        attn_cap.__enter__()
+
                     render_final_video(
                         mode=mode,
                         best=best,
@@ -306,6 +350,23 @@ def gradient_optimize_multimodal_qwen(
                         audio_opt_last_steps=args.audio_opt_last_steps,
                         skip_baseline=True,
                     )
+
+                    if attn_cap is not None:
+                        attn_cap.__exit__(None, None, None)
+
+                    # ---- Save optimized audio at this snapshot ----
+                    if optimize_audio and audio_latent is not None:
+                        _save_preview_audio(
+                            it=it,
+                            mode=mode,
+                            label="optimized",
+                            audio_latent=audio_latent.detach(),
+                            pipeline=pipeline,
+                            audio_sr=audio_sr,
+                            preview_dir=preview_dir,
+                            wandb_run=wandb_run,
+                        )
+
                     if wandb_run is not None:
                         try:
                             import wandb
@@ -325,6 +386,22 @@ def gradient_optimize_multimodal_qwen(
                         except Exception:
                             log.exception("[%s] Failed to log preview video to W&B at iter %d", mode, it)
 
+                    # ---- Attention map extraction & W&B logging ----
+                    if extract_attn_maps and wandb_run is not None:
+                        _log_attention_maps(
+                            it=it,
+                            mode=mode,
+                            label="optimized",
+                            gen_frames=gen_frames,
+                            qwen_model=qwen_model,
+                            cached_qwen_inputs=cached_qwen_inputs,
+                            qwen_max_frames=args.qwen_max_frames,
+                            qwen_img_size=args.qwen_img_size,
+                            attn_cap=attn_cap,
+                            cached_video_latent=cached_video_latent,
+                            wandb_run=wandb_run,
+                        )
+
             early_stop_limit = getattr(args, "early_stopping", 0)
             if early_stop_limit > 0 and iters_without_improvement >= early_stop_limit:
                 log.info(
@@ -336,8 +413,157 @@ def gradient_optimize_multimodal_qwen(
         csv_file.close()
         if tb_writer is not None:
             tb_writer.close()
+        # Log the per-iteration metrics table to W&B
+        if wandb_table is not None and wandb_run is not None:
+            try:
+                wandb_run.log({f"{mode}/metrics_table": wandb_table})
+            except Exception:
+                log.warning("[%s] Failed to log W&B metrics table", mode, exc_info=True)
 
     return best
+
+
+# ---------------------------------------------------------------------------
+# Attention map extraction helper (called at preview steps)
+# ---------------------------------------------------------------------------
+
+def _log_attention_maps(
+    *,
+    it: int,
+    mode: str,
+    label: str,
+    gen_frames: torch.Tensor,
+    qwen_model,
+    cached_qwen_inputs: dict,
+    qwen_max_frames: int,
+    qwen_img_size: int,
+    attn_cap: "LTXAttentionCapture | None",
+    cached_video_latent: torch.Tensor,
+    wandb_run,
+) -> None:
+    """Extract Qwen + LTX attention maps and log overlays to W&B.
+
+    Called only at preview_every steps inside a no_grad context (gen_frames
+    has already been detached from the compute graph by the time we get here
+    since optimizer.step() was called before the preview render).
+
+    Memory notes (H100):
+      - Qwen output_attentions=True: ~140 MB extra; freed before returning.
+      - LTX hooks: accumulate one [Tv] vector per step; ~200 KB total.
+    """
+    frames_np = frames_to_numpy(gen_frames)  # [N, H, W, 3] uint8
+
+    # ---- 1. Qwen self-attention: where does the scorer look? ----
+    log.info("[%s] Extracting Qwen attention maps at iter %d...", mode, it)
+    qwen_result = extract_qwen_attention_maps(
+        frames_chw=gen_frames.detach(),
+        qwen_model=qwen_model,
+        cached_inputs=cached_qwen_inputs,
+        max_frames=qwen_max_frames,
+        img_size=qwen_img_size,
+        num_layers_to_avg=4,
+    )
+    if qwen_result is not None:
+        # qwen_result["attn_spatial"]: [grid_t, grid_h, grid_w]
+        attn_q = qwen_result["attn_spatial"]  # [gt, gh, gw]
+        # Mean over temporal grid → 2-D spatial map for overlay
+        attn_q_spatial = attn_q.mean(axis=0)  # [gh, gw]
+        log_attn_frames_to_wandb(
+            wandb_run=wandb_run,
+            tag=f"{mode}/attn_qwen_{label}",
+            frames_np=frames_np,
+            heatmap=attn_q_spatial,
+            step=it,
+            caption=f"Qwen scorer attention — {label} iter {it}",
+        )
+        log.info("[%s] Qwen attention logged (grid %s).", mode, qwen_result["grid_thw"])
+
+    # ---- 2. LTX audio→video cross-attention: where does audio drive video? ----
+    if attn_cap is not None:
+        for key, tag_suffix, caption_suffix in [
+            ("audio_to_video", "attn_ltx_audio", "LTX audio→video attention"),
+            ("text_to_video",  "attn_ltx_text",  "LTX text→video attention"),
+        ]:
+            attn_grid = attn_cap.reshape_to_video_grid(key, cached_video_latent)
+            if attn_grid is not None:
+                # Average over temporal latent dimension → 2-D
+                if attn_grid.ndim == 3:
+                    attn_2d = attn_grid.mean(axis=0)
+                else:
+                    attn_2d = attn_grid.squeeze()
+                log_attn_frames_to_wandb(
+                    wandb_run=wandb_run,
+                    tag=f"{mode}/{tag_suffix}_{label}",
+                    frames_np=frames_np,
+                    heatmap=attn_2d,
+                    step=it,
+                    caption=f"{caption_suffix} — {label} iter {it}",
+                )
+                log.info("[%s] LTX %s attention logged.", mode, key)
+
+
+# ---------------------------------------------------------------------------
+# Audio decode + save helper (called at preview steps)
+# ---------------------------------------------------------------------------
+
+def _save_preview_audio(
+    *,
+    it: int,
+    mode: str,
+    label: str,
+    audio_latent: torch.Tensor,
+    pipeline,
+    audio_sr: int,
+    preview_dir: Path,
+    wandb_run,
+) -> None:
+    """Decode an audio latent back to waveform and save as WAV.
+
+    Uses the pipeline's audio_decoder + vocoder so the round-trip matches
+    exactly what the model hears.  All work is done under torch.no_grad().
+
+    Files are saved as:
+        <preview_dir>/<label>_audio_<mode>.wav
+
+    Also logs to W&B as wandb.Audio when wandb_run is not None.
+    """
+    try:
+        from ltx_core.model.audio_vae import decode_audio as vae_decode_audio
+        from .core import save_audio_wav
+
+        audio_decoder = pipeline.model_ledger.audio_decoder()
+        vocoder = pipeline.model_ledger.vocoder()
+
+        with torch.no_grad():
+            decoded = vae_decode_audio(
+                audio_latent.to(dtype=next(audio_decoder.parameters()).dtype),
+                audio_decoder,
+                vocoder,
+            )
+
+        wav_path = preview_dir / f"{label}_audio_{mode}.wav"
+        save_audio_wav(decoded.waveform, decoded.sampling_rate, str(wav_path))
+        log.info("[%s] Saved %s audio iter %d → %s (sr=%d)",
+                 mode, label, it, wav_path.name, decoded.sampling_rate)
+
+        if wandb_run is not None:
+            try:
+                import wandb
+                wandb_run.log(
+                    {
+                        f"{mode}/{label}_audio": wandb.Audio(
+                            str(wav_path),
+                            sample_rate=decoded.sampling_rate,
+                            caption=f"{mode} {label} audio — iter {it}",
+                        )
+                    },
+                    step=it,
+                )
+            except Exception:
+                log.warning("[%s] Failed to log audio to W&B at iter %d", mode, it, exc_info=True)
+
+    except Exception:
+        log.warning("[%s] Failed to decode/save audio at iter %d", mode, it, exc_info=True)
 
 
 __all__ = [
