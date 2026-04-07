@@ -125,7 +125,7 @@ def log_attn_frames_to_wandb(
 
     Args:
         wandb_run: Active wandb run (or None — no-op).
-        tag: W&B media key prefix, e.g. "media/attention/both/qwen_optimized_iter_010".
+        tag: W&B media key prefix, e.g. "media/attention/both/qwen_optimized".
         frames_np: [T, H, W, 3] uint8 frames.
         heatmap: float32 [T, H, W] or [H, W] heatmap.
         step: W&B step index.

@@ -24,9 +24,12 @@ from __future__ import annotations
 
 import argparse
 import gc
+import json
 import logging
 import os
+import re
 import sys
+from datetime import datetime
 from pathlib import Path
 
 import torch
@@ -51,7 +54,7 @@ from audio_latent_opt.multimodal_loop_qwen import (
     render_final_video,
 )
 from audio_latent_opt.multimodal_loop import render_baseline_video
-from audio_latent_opt.qwen_loss import QWEN_IMG_SIZE, build_qwen_inputs, build_qwen_model
+from audio_latent_opt.qwen_loss import QWEN_IMG_SIZE, build_qwen_model, build_qwen_rubric_inputs
 from audio_latent_opt.runtime import build_retake_kwargs, prepare_retake_input_video
 
 from ltx_pipelines.utils.constants import detect_params
@@ -62,6 +65,60 @@ try:
     import wandb
 except ImportError:
     wandb = None
+
+
+def _slugify_run_part(value: str, *, max_words: int | None = None, max_len: int = 48) -> str:
+    words = re.findall(r"[A-Za-z0-9]+", value.lower())
+    if max_words is not None:
+        words = words[:max_words]
+    slug = "-".join(words)[:max_len].strip("-")
+    return slug or "run"
+
+
+def _build_wandb_run_name(args: argparse.Namespace, output_dir: Path) -> str:
+    if os.environ.get("WANDB_NAME"):
+        return os.environ["WANDB_NAME"]
+
+    prompt_slug = _slugify_run_part(args.edit_prompt, max_words=5)
+    mode_slug = _slugify_run_part(args.opt_mode, max_len=24)
+    stamp = datetime.now().strftime("%m%d-%H%M%S")
+    job_id = os.environ.get("SLURM_JOB_ID")
+    suffix = f"job{job_id}" if job_id else stamp
+    return f"{prompt_slug}-{mode_slug}-{suffix}"
+
+
+def _write_run_config(args: argparse.Namespace, output_dir: Path) -> None:
+    """Persist run hparams/env next to artifacts for offline inspection."""
+    config = {
+        "args": vars(args),
+        "derived": {
+            "output_dir": str(output_dir),
+            "run_name": _build_wandb_run_name(args, output_dir),
+        },
+        "env": {
+            key: os.environ.get(key)
+            for key in [
+                "SLURM_JOB_ID",
+                "SLURM_JOB_NAME",
+                "SLURM_SUBMIT_DIR",
+                "WANDB_PROJECT",
+                "WANDB_ENTITY",
+                "WANDB_TAGS",
+                "WANDB_MODE",
+                "WANDB_NAME",
+                "WANDB_DIR",
+                "CUDA_VISIBLE_DEVICES",
+                "PYTORCH_ALLOC_CONF",
+            ]
+            if os.environ.get(key) is not None
+        },
+        "argv": sys.argv,
+    }
+
+    path = output_dir / "run_config.json"
+    with path.open("w") as f:
+        json.dump(config, f, indent=2, sort_keys=True)
+    log.info("Saved run config to %s", path)
 
 
 def _init_wandb_run(args: argparse.Namespace, output_dir: Path):
@@ -108,7 +165,7 @@ def _init_wandb_run(args: argparse.Namespace, output_dir: Path):
     run = wandb.init(
         project=args.wandb_project,
         entity=args.wandb_entity,
-        name=output_dir.name,
+        name=_build_wandb_run_name(args, output_dir),
         tags=tags,
         dir=os.environ.get("WANDB_DIR"),
         config=config,
@@ -132,6 +189,7 @@ def run(args: argparse.Namespace) -> None:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     output_dir = Path(args.output_dir).expanduser().resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
+    _write_run_config(args, output_dir)
     wandb_run = _init_wandb_run(args, output_dir)
 
     try:
@@ -214,8 +272,12 @@ def run(args: argparse.Namespace) -> None:
         qwen_num_frames = args.qwen_max_frames
         if qwen_num_frames % 2 != 0:
             qwen_num_frames += 1
-        log.info("Building Qwen2.5-VL cached inputs (%d frames, %dpx)...", qwen_num_frames, args.qwen_img_size)
-        cached_qwen_inputs, yes_token_id, no_token_id = build_qwen_inputs(
+        log.info(
+            "Building Qwen2.5-VL rubric cached inputs (%d frames, %dpx)...",
+            qwen_num_frames,
+            args.qwen_img_size,
+        )
+        cached_qwen_inputs, yes_token_id, no_token_id = build_qwen_rubric_inputs(
             processor=qwen_processor,
             edit_prompt=args.edit_prompt,
             num_frames=qwen_num_frames,
@@ -363,7 +425,7 @@ def run(args: argparse.Namespace) -> None:
                                     caption=f"{mode} final video",
                                 )
                             },
-                            step=max(int(best.get("best_iter", 0)), 0),
+                            step=max(int(args.iterations) + 1, int(best.get("best_iter", 0)) + 1),
                         )
 
             gc.collect()
@@ -421,6 +483,16 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--iterations", type=int, default=30)
     p.add_argument("--lr", type=float, default=0.01)
     p.add_argument("--grad-clip", type=float, default=1.0)
+    p.add_argument(
+        "--best-min-loss-delta",
+        type=float,
+        default=0.0,
+        help=(
+            "Require this much total-loss improvement before replacing the "
+            "best checkpoint. Useful when Qwen scores are noisy and tiny gains "
+            "replace visually better previews."
+        ),
+    )
     p.add_argument("--audio-opt-last-steps", type=int, default=6)
     p.add_argument("--visualize-every-iters", type=int, default=10,
                    help="Render the best-so-far video every N iters. 0 disables previews.")

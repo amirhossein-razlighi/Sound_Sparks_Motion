@@ -45,18 +45,10 @@ QWEN_ROOT="${QWEN_ROOT:-/project/def-amahdavi/amirrz/HF/models/Qwen2.5-VL-7B-Ins
 SRC_VIDEO="${SRC_VIDEO:-${1:-}}"
 OPT_MODE="${OPT_MODE:-both}"
 
-# EDIT_PROMPT="${EDIT_PROMPT:-A red cars door opens}"
-# EDIT_PROMPT="${EDIT_PROMPT:-A bottle of wine drops on the table and shatters into pieces}"
-EDIT_PROMPT="${EDIT_PROMPT:-A dog yawning}"
-# EDIT_PROMPT="${EDIT_PROMPT:-A balloon gets loose from the string and flies away into the sky}"
-# EDIT_PROMPT="${EDIT_PROMPT:-A dog jumping up and down inplace on a chair}"
-# EDIT_PROMPT="${EDIT_PROMPT:-A guitarist spins 360 around herself while playing guitar solo on the scene}"
-# EDIT_PROMPT="${EDIT_PROMPT:-Wine bottles shatter on the table into pieces}"
-# EDIT_PROMPT="${EDIT_PROMPT:-A balloon pops}"
-# EDIT_PROMPT="${EDIT_PROMPT:-Wine bottles drop on the table}"
-# EDIT_PROMPT="${EDIT_PROMPT:-A man opens the cars door}"
+EDIT_PROMPT="${EDIT_PROMPT:-The man is adjusting his tie with his right hand.}"
 
 NEGATIVE_PROMPT="${NEGATIVE_PROMPT:-blurry, low quality, artifacts, distorted}"
+ENHANCE_PROMPT="${ENHANCE_PROMPT:-1}"
 PROMPT_SLUG=$(echo "${EDIT_PROMPT}" | tr '[:upper:]' '[:lower:]' | tr -s ' ' | cut -d' ' -f1-5 | tr ' ' '_')
 OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/QwenVL/${PROMPT_SLUG}/$(echo "${OPT_MODE}" | tr ',' '_')}"
 
@@ -72,8 +64,9 @@ FINAL_RETAKE_NUM_INFERENCE_STEPS="${FINAL_RETAKE_NUM_INFERENCE_STEPS:-30}"
 RETAKE_START_FRAMES="${RETAKE_START_FRAMES:-5}"
 
 ITERATIONS="${ITERATIONS:-25}"
-LR="${LR:-0.005}"
+LR="${LR:-0.001}"
 GRAD_CLIP="${GRAD_CLIP:-1.0}"
+BEST_MIN_LOSS_DELTA="${BEST_MIN_LOSS_DELTA:-0.10}"
 AUD_OPT_LAST_STEPS="${AUD_OPT_LAST_STEPS:-8}"
 EARLY_STOPPING="${EARLY_STOPPING:-15}"
 VISUALIZE_EVERY_ITERS="${VISUALIZE_EVERY_ITERS:-5}"
@@ -127,9 +120,11 @@ echo "  Job ID           : ${SLURM_JOB_ID:-local}"
 echo "  Source video     : ${SRC_VIDEO}"
 echo "  Opt mode         : ${OPT_MODE}"
 echo "  Edit prompt      : ${EDIT_PROMPT}"
+echo "  Enhance prompt   : ${ENHANCE_PROMPT}"
 echo "  Qwen model       : ${QWEN_ROOT}"
 echo "  Qwen frames      : ${QWEN_MAX_FRAMES}  img_size: ${QWEN_IMG_SIZE}"
 echo "  Iterations       : ${ITERATIONS}  LR: ${LR}"
+echo "  Best min delta   : ${BEST_MIN_LOSS_DELTA}"
 echo "  Visualize every  : ${VISUALIZE_EVERY_ITERS}"
 echo "  W&B project      : ${WANDB_PROJECT}"
 echo "  W&B mode         : ${WANDB_MODE}"
@@ -181,6 +176,7 @@ ARGS=(
     --iterations "${ITERATIONS}"
     --lr "${LR}"
     --grad-clip "${GRAD_CLIP}"
+    --best-min-loss-delta "${BEST_MIN_LOSS_DELTA}"
     --audio-opt-last-steps "${AUD_OPT_LAST_STEPS}"
     --visualize-every-iters "${VISUALIZE_EVERY_ITERS}"
     --early-stopping "${EARLY_STOPPING}"
@@ -199,6 +195,10 @@ ARGS=(
 [[ -n "${CFG_SCALE}" ]]        && ARGS+=( --cfg-scale "${CFG_SCALE}" )
 [[ -n "${AUDIO_CFG_SCALE}" ]]  && ARGS+=( --audio-cfg-scale "${AUDIO_CFG_SCALE}" )
 [[ -n "${A2V_SCALE}" ]]        && ARGS+=( --a2v-scale "${A2V_SCALE}" )
+
+if [[ "${ENHANCE_PROMPT}" == "1" ]]; then
+    ARGS+=( --enhance-prompt )
+fi
 
 if [[ "${LOW_MEMORY_GUIDANCE}" == "1" ]]; then
     ARGS+=( --low-memory-guidance )

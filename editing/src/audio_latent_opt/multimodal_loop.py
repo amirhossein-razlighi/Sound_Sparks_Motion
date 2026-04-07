@@ -475,6 +475,42 @@ def render_baseline_video(
         _retake_module.encode_prompts = orig_encode_prompts
 
 
+def _audio_latent_to_output_audio(
+    *,
+    audio_latent: torch.Tensor,
+    pipeline,
+    duration: float,
+) -> "Audio":
+    """Decode an audio latent to a stereo Audio object for muxing into MP4."""
+    from ltx_core.model.audio_vae import decode_audio as vae_decode_audio
+    from ltx_core.types import Audio
+    from .core import align_waveform_length
+
+    audio_decoder = pipeline.model_ledger.audio_decoder()
+    vocoder = pipeline.model_ledger.vocoder()
+
+    with torch.no_grad():
+        decoded = vae_decode_audio(
+            audio_latent.to(dtype=next(audio_decoder.parameters()).dtype),
+            audio_decoder,
+            vocoder,
+        )
+
+    wave = decoded.waveform.detach().float()
+    if wave.ndim == 3 and wave.shape[0] == 1:
+        wave = wave.squeeze(0)
+    if wave.ndim == 1:
+        wave = wave.unsqueeze(0)
+
+    wave = align_waveform_length(wave, int(duration * decoded.sampling_rate))
+    if wave.shape[0] == 1:
+        wave = wave.expand(2, -1).contiguous()
+    elif wave.shape[0] > 2:
+        wave = wave[:2].contiguous()
+
+    return Audio(waveform=wave.cpu(), sampling_rate=decoded.sampling_rate)
+
+
 # ---------------------------------------------------------------------------
 # Final video rendering with best parameters
 # ---------------------------------------------------------------------------
@@ -527,7 +563,7 @@ def render_final_video(
 
     duration = num_frames / frame_rate
     src_audio = decode_audio_from_file(src_video, pipeline.device, max_duration=duration)
-    out_audio = None
+    source_out_audio = None
     if src_audio is not None:
         wave = src_audio.waveform.squeeze(0).float()
         if src_audio.sampling_rate != audio_sr:
@@ -537,7 +573,23 @@ def render_final_video(
             wave = wave.expand(2, -1).contiguous()
         elif wave.shape[0] > 2:
             wave = wave[:2].contiguous()
-        out_audio = Audio(waveform=wave.cpu(), sampling_rate=audio_sr)
+        source_out_audio = Audio(waveform=wave.cpu(), sampling_rate=audio_sr)
+
+    optimized_out_audio = source_out_audio
+    if optimize_audio and best_audio_latent is not None:
+        try:
+            optimized_out_audio = _audio_latent_to_output_audio(
+                audio_latent=audio_for_render,
+                pipeline=pipeline,
+                duration=duration,
+            )
+            log.info("[%s] Using decoded optimized audio latent in optimized MP4.", mode)
+        except Exception:
+            log.warning(
+                "[%s] Failed to decode optimized audio latent for MP4; falling back to source audio.",
+                mode,
+                exc_info=True,
+            )
 
     orig_encode_video = _retake_module._encode_video_for_retake
     orig_encode_audio = _retake_module._encode_audio_for_retake
@@ -562,7 +614,7 @@ def render_final_video(
         encode_video(
             video=video_iter,
             fps=int(round(frame_rate)),
-            audio=out_audio,
+            audio=optimized_out_audio,
             output_path=str(output_dir / f"best_optimized_video_{mode}.mp4"),
             video_chunks_number=get_video_chunks_number(num_frames, TilingConfig.default()),
         )
@@ -575,6 +627,22 @@ def render_final_video(
 
     if skip_baseline:
         return
+
+    baseline_out_audio = source_out_audio
+    if optimize_audio:
+        try:
+            baseline_out_audio = _audio_latent_to_output_audio(
+                audio_latent=base_audio_latent,
+                pipeline=pipeline,
+                duration=duration,
+            )
+            log.info("[%s] Using decoded baseline audio latent in baseline MP4.", mode)
+        except Exception:
+            log.warning(
+                "[%s] Failed to decode baseline audio latent for MP4; falling back to source audio.",
+                mode,
+                exc_info=True,
+            )
 
     # Baseline: base audio + base text context
     def _base_audio(audio_encoder, waveform, waveform_sr, output_shape, dtype):  # noqa: ARG001
@@ -593,7 +661,7 @@ def render_final_video(
         encode_video(
             video=video_iter,
             fps=int(round(frame_rate)),
-            audio=out_audio,
+            audio=baseline_out_audio,
             output_path=str(output_dir / f"baseline_video_{mode}.mp4"),
             video_chunks_number=get_video_chunks_number(num_frames, TilingConfig.default()),
         )

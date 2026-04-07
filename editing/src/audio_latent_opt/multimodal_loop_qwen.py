@@ -40,6 +40,13 @@ from .qwen_loss import compute_qwen_video_loss
 log = logging.getLogger(__name__)
 
 
+def _clear_cuda_cache() -> None:
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+        torch.cuda.synchronize()
+
+
 def gradient_optimize_multimodal_qwen(
     *,
     mode: str,  # "text" | "audio" | "both"
@@ -138,11 +145,18 @@ def gradient_optimize_multimodal_qwen(
     csv_path = output_dir / f"optimization_log_qwen_{mode}.csv"
     csv_file = csv_path.open("w", newline="") if is_main else open("/dev/null", "w", newline="")
     csv_writer = csv.writer(csv_file)
+    rubric_metric_names = [
+        str(item["name"])
+        for item in cached_qwen_inputs.get("rubric_items", [])
+    ]
     if is_main:
-        csv_writer.writerow([
+        csv_header = [
             "iter", "qwen_nll", "qwen_yes_prob",
             "audio_reg", "text_reg", "total_loss", "grad_norm", "is_best",
-        ])
+        ]
+        for name in rubric_metric_names:
+            csv_header.extend([f"{name}_nll", f"{name}_yes_prob"])
+        csv_writer.writerow(csv_header)
 
     # ---- W&B Table (per-iteration metrics — sortable/filterable in W&B UI) ----
     wandb_table = None
@@ -150,8 +164,15 @@ def gradient_optimize_multimodal_qwen(
         try:
             import wandb as _wandb
             wandb_table = _wandb.Table(
-                columns=["iter", "yes_prob", "qwen_nll", "audio_reg",
-                         "text_reg", "total_loss", "grad_norm", "is_best"]
+                columns=(
+                    ["iter", "yes_prob", "qwen_nll", "audio_reg",
+                     "text_reg", "total_loss", "grad_norm", "is_best"]
+                    + [
+                        col
+                        for name in rubric_metric_names
+                        for col in (f"{name}_nll", f"{name}_yes_prob")
+                    ]
+                )
             )
         except Exception:
             wandb_table = None
@@ -223,7 +244,7 @@ def gradient_optimize_multimodal_qwen(
                 raise RuntimeError("Generated video has no frames.")
 
             # Qwen2.5-VL alignment loss
-            qwen_loss_t = compute_qwen_video_loss(
+            qwen_loss_t, qwen_details = compute_qwen_video_loss(
                 frames_chw=gen_frames,
                 qwen_model=qwen_model,
                 cached_inputs=cached_qwen_inputs,
@@ -231,6 +252,8 @@ def gradient_optimize_multimodal_qwen(
                 no_token_id=no_token_id,
                 max_frames=args.qwen_max_frames,
                 img_size=args.qwen_img_size,
+                backward=True,
+                return_details=True,
             )
 
             # Regularization (same as multimodal_loop)
@@ -245,7 +268,9 @@ def gradient_optimize_multimodal_qwen(
                 text_reg_t = args.text_reg_weight * torch.mean(delta_v ** 2)
 
             total_t = qwen_loss_t + audio_reg_t + text_reg_t
-            total_t.backward()
+            reg_t = audio_reg_t + text_reg_t
+            if reg_t.requires_grad:
+                reg_t.backward()
 
             grad_norm = 0.0
             if args.grad_clip > 0:
@@ -261,7 +286,8 @@ def gradient_optimize_multimodal_qwen(
             text_reg = float(text_reg_t.detach().item())
             total = float(total_t.detach().item())
 
-            is_best = total < best["qwen_loss"]
+            best_min_loss_delta = max(float(getattr(args, "best_min_loss_delta", 0.0) or 0.0), 0.0)
+            is_best = total < (best["qwen_loss"] - best_min_loss_delta)
             if is_best:
                 best["qwen_loss"] = total
                 best["qwen_score"] = qwen_score
@@ -276,15 +302,34 @@ def gradient_optimize_multimodal_qwen(
             iters_without_improvement = it - best.get("best_iter", 0)
 
             if is_main:
-                csv_writer.writerow([it, qwen_loss, qwen_score, audio_reg, text_reg, total, grad_norm, int(is_best)])
+                detail_by_name = {str(item["name"]): item for item in qwen_details}
+                rubric_values = []
+                for name in rubric_metric_names:
+                    item = detail_by_name.get(name, {})
+                    rubric_values.extend([
+                        item.get("nll", ""),
+                        item.get("yes_prob", ""),
+                    ])
+                csv_writer.writerow([
+                    it, qwen_loss, qwen_score, audio_reg, text_reg, total, grad_norm, int(is_best),
+                    *rubric_values,
+                ])
                 csv_file.flush()
                 if wandb_table is not None:
-                    wandb_table.add_data(it, qwen_score, qwen_loss, audio_reg,
-                                         text_reg, total, grad_norm, int(is_best))
+                    wandb_table.add_data(
+                        it, qwen_score, qwen_loss, audio_reg, text_reg, total, grad_norm, int(is_best),
+                        *rubric_values,
+                    )
+                rubric_log = ""
+                if qwen_details:
+                    rubric_log = "  rubric=" + ", ".join(
+                        f"{item['name']}:{float(item['yes_prob']):.4f}"
+                        for item in qwen_details
+                    )
                 log.info(
-                    "[%s] iter %3d/%d  qwen_nll=%.4f  yes_prob=%.4f  total=%.4f  grad_norm=%.3f  no_improve=%d%s",
+                    "[%s] iter %3d/%d  qwen_nll=%.4f  yes_prob=%.4f  total=%.4f  grad_norm=%.3f  no_improve=%d%s%s",
                     mode, it, num_iters, qwen_loss, qwen_score, total, grad_norm,
-                    iters_without_improvement, "  ★" if is_best else "",
+                    iters_without_improvement, "  ★" if is_best else "", rubric_log,
                 )
                 if tb_writer is not None:
                     tb_writer.add_scalar(f"{mode}/qwen_nll", qwen_loss, it)
@@ -298,6 +343,10 @@ def gradient_optimize_multimodal_qwen(
                         tb_writer.add_scalar(f"{mode}/text_reg", text_reg, it)
                     if is_best:
                         tb_writer.add_scalar(f"{mode}/best_qwen_yes_prob", qwen_score, it)
+                    for item in qwen_details:
+                        name = str(item["name"])
+                        tb_writer.add_scalar(f"{mode}/rubric/{name}_nll", float(item["nll"]), it)
+                        tb_writer.add_scalar(f"{mode}/rubric/{name}_yes_prob", float(item["yes_prob"]), it)
 
                 if wandb_run is not None:
                     wandb_payload = {
@@ -315,6 +364,10 @@ def gradient_optimize_multimodal_qwen(
                         wandb_payload[f"{mode}/text_reg"] = text_reg
                     if is_best:
                         wandb_payload[f"{mode}/best_qwen_yes_prob"] = qwen_score
+                    for item in qwen_details:
+                        name = str(item["name"])
+                        wandb_payload[f"{mode}/rubric/{name}_nll"] = float(item["nll"])
+                        wandb_payload[f"{mode}/rubric/{name}_yes_prob"] = float(item["yes_prob"])
                     wandb_run.log(wandb_payload, step=it)
 
                 if (
@@ -329,79 +382,87 @@ def gradient_optimize_multimodal_qwen(
 
                     # ---- Render preview (optionally with LTX cross-attention hooks) ----
                     attn_cap = None
-                    if extract_attn_maps and wandb_run is not None:
-                        attn_cap = LTXAttentionCapture(pipeline, block_fraction=0.5)
-                        attn_cap.__enter__()
+                    attn_cap_active = False
+                    try:
+                        if extract_attn_maps and wandb_run is not None:
+                            attn_cap = LTXAttentionCapture(pipeline, block_fraction=0.5)
+                            attn_cap.__enter__()
+                            attn_cap_active = True
 
-                    render_final_video(
-                        mode=mode,
-                        best=best,
-                        pipeline=pipeline,
-                        src_video=retake_input_video,
-                        cached_video_latent=cached_video_latent,
-                        base_audio_latent=base_audio_latent,
-                        base_pos_context=base_pos_context,
-                        base_neg_context=base_neg_context,
-                        retake_kwargs=visualize_retake_kwargs,
-                        output_dir=preview_dir,
-                        num_frames=num_frames,
-                        frame_rate=frame_rate,
-                        audio_sr=audio_sr,
-                        audio_opt_last_steps=args.audio_opt_last_steps,
-                        skip_baseline=True,
-                    )
-
-                    if attn_cap is not None:
-                        attn_cap.__exit__(None, None, None)
-
-                    # ---- Save optimized audio at this snapshot ----
-                    if optimize_audio and audio_latent is not None:
-                        _save_preview_audio(
-                            it=it,
+                        render_final_video(
                             mode=mode,
-                            label="optimized",
-                            audio_latent=audio_latent.detach(),
+                            best=best,
                             pipeline=pipeline,
-                            audio_sr=audio_sr,
-                            preview_dir=preview_dir,
-                            wandb_run=wandb_run,
-                        )
-
-                    if wandb_run is not None:
-                        try:
-                            import wandb
-
-                            preview_path = preview_dir / f"best_optimized_video_{mode}.mp4"
-                            if preview_path.exists():
-                                wandb_run.log(
-                                    {
-                                        f"media/video/{mode}/preview_iter_{it:03d}": wandb.Video(
-                                            str(preview_path),
-                                            format="mp4",
-                                            caption=f"{mode} best-so-far at iter {it}",
-                                        )
-                                    },
-                                    step=it,
-                                )
-                        except Exception:
-                            log.exception("[%s] Failed to log preview video to W&B at iter %d", mode, it)
-
-                    # ---- Attention map extraction & W&B logging ----
-                    if extract_attn_maps and wandb_run is not None:
-                        _log_attention_maps(
-                            it=it,
-                            mode=mode,
-                            label="optimized",
-                            gen_frames=gen_frames,
-                            qwen_model=qwen_model,
-                            cached_qwen_inputs=cached_qwen_inputs,
-                            qwen_max_frames=args.qwen_max_frames,
-                            qwen_img_size=args.qwen_img_size,
-                            attn_cap=attn_cap,
+                            src_video=retake_input_video,
                             cached_video_latent=cached_video_latent,
-                            wandb_run=wandb_run,
-                            save_dir=preview_dir / "attention",
+                            base_audio_latent=base_audio_latent,
+                            base_pos_context=base_pos_context,
+                            base_neg_context=base_neg_context,
+                            retake_kwargs=visualize_retake_kwargs,
+                            output_dir=preview_dir,
+                            num_frames=num_frames,
+                            frame_rate=frame_rate,
+                            audio_sr=audio_sr,
+                            audio_opt_last_steps=args.audio_opt_last_steps,
+                            skip_baseline=True,
                         )
+
+                        if attn_cap is not None:
+                            attn_cap.__exit__(None, None, None)
+                            attn_cap_active = False
+
+                        # ---- Save optimized audio at this snapshot ----
+                        if optimize_audio and audio_latent is not None:
+                            _save_preview_audio(
+                                it=it,
+                                mode=mode,
+                                label="optimized",
+                                audio_latent=audio_latent.detach(),
+                                pipeline=pipeline,
+                                audio_sr=audio_sr,
+                                preview_dir=preview_dir,
+                                wandb_run=wandb_run,
+                            )
+
+                        if wandb_run is not None:
+                            try:
+                                import wandb
+
+                                preview_path = preview_dir / f"best_optimized_video_{mode}.mp4"
+                                if preview_path.exists():
+                                    wandb_run.log(
+                                        {
+                                            f"media/video/{mode}/preview": wandb.Video(
+                                                str(preview_path),
+                                                format="mp4",
+                                                caption=f"{mode} best-so-far at iter {it}",
+                                            )
+                                        },
+                                        step=it,
+                                    )
+                            except Exception:
+                                log.exception("[%s] Failed to log preview video to W&B at iter %d", mode, it)
+
+                        # ---- Attention map extraction & W&B logging ----
+                        if extract_attn_maps and wandb_run is not None:
+                            _log_attention_maps(
+                                it=it,
+                                mode=mode,
+                                label="optimized",
+                                gen_frames=gen_frames.detach(),
+                                qwen_model=qwen_model,
+                                cached_qwen_inputs=cached_qwen_inputs,
+                                qwen_max_frames=args.qwen_max_frames,
+                                qwen_img_size=args.qwen_img_size,
+                                attn_cap=attn_cap,
+                                cached_video_latent=cached_video_latent,
+                                wandb_run=wandb_run,
+                                save_dir=preview_dir / "attention",
+                            )
+                    finally:
+                        if attn_cap is not None and attn_cap_active:
+                            attn_cap.__exit__(None, None, None)
+                        _clear_cuda_cache()
 
             early_stop_limit = getattr(args, "early_stopping", 0)
             if early_stop_limit > 0 and iters_without_improvement >= early_stop_limit:
@@ -409,7 +470,12 @@ def gradient_optimize_multimodal_qwen(
                     "[%s] Early stopping: no improvement for %d consecutive iters (best at iter %d).",
                     mode, iters_without_improvement, best.get("best_iter", 0),
                 )
+                del gen_frames, qwen_loss_t, audio_reg_t, text_reg_t, total_t, reg_t, qwen_details
+                _clear_cuda_cache()
                 break
+
+            del gen_frames, qwen_loss_t, audio_reg_t, text_reg_t, total_t, reg_t, qwen_details
+            _clear_cuda_cache()
     finally:
         csv_file.close()
         if tb_writer is not None:
@@ -472,7 +538,7 @@ def _log_attention_maps(
         attn_q_spatial = attn_q.mean(axis=0)  # [gh, gw]
         log_attn_frames_to_wandb(
             wandb_run=wandb_run,
-            tag=f"media/attention/{mode}/qwen_{label}_iter_{it:03d}",
+            tag=f"media/attention/{mode}/qwen_{label}",
             frames_np=frames_np,
             heatmap=attn_q_spatial,
             step=it,
@@ -496,7 +562,7 @@ def _log_attention_maps(
                     attn_2d = attn_grid.squeeze()
                 log_attn_frames_to_wandb(
                     wandb_run=wandb_run,
-                    tag=f"media/attention/{mode}/{tag_suffix}_{label}_iter_{it:03d}",
+                    tag=f"media/attention/{mode}/{tag_suffix}_{label}",
                     frames_np=frames_np,
                     heatmap=attn_2d,
                     step=it,
@@ -555,10 +621,9 @@ def _save_preview_audio(
         if wandb_run is not None:
             try:
                 import wandb
-                key_label = "baseline" if label == "baseline" else f"{label}_iter_{it:03d}"
                 wandb_run.log(
                     {
-                        f"media/audio/{mode}/{key_label}": wandb.Audio(
+                        f"media/audio/{mode}/{label}": wandb.Audio(
                             str(wav_path),
                             sample_rate=decoded.sampling_rate,
                             caption=f"{mode} {label} audio — iter {it}",
