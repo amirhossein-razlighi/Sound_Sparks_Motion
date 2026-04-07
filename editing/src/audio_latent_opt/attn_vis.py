@@ -67,7 +67,8 @@ def overlay_heatmap(
 
     Args:
         frames:  [T, H, W, 3] uint8 video frames.
-        heatmap: float32 array broadcastable to [T, H, W].  Values in [0, 1].
+        heatmap: float32 array of shape [H', W'] or [T', H', W'].
+                 Any spatial/temporal resolution — upsampled to match frames.
         alpha:   Heatmap opacity (0 = invisible, 1 = solid colour).
 
     Returns:
@@ -75,29 +76,28 @@ def overlay_heatmap(
     """
     T, H, W, _ = frames.shape
 
-    # Ensure heatmap is [T, H, W]
     hmap = np.asarray(heatmap, dtype=np.float32)
     if hmap.ndim == 2:
-        hmap = np.broadcast_to(hmap[np.newaxis], (T, H, W))
+        # 2-D spatial map — add a dummy temporal dim so trilinear can handle it.
+        # After upsampling the single "frame" is copied across all T output frames.
+        hmap = hmap[np.newaxis]          # [1, H', W']
     elif hmap.ndim != 3:
         raise ValueError(f"heatmap must be 2-D or 3-D, got shape {hmap.shape}")
+    # hmap is now [T', H', W']
 
-    # Upsample to frame resolution using bilinear (via torch)
-    hmap_t = torch.from_numpy(hmap).unsqueeze(0).unsqueeze(0)  # [1, 1, T, H', W']  or [1,1,H',W']
-    if hmap_t.shape[-2:] != (H, W) or hmap_t.shape[2] != T:
-        if hmap_t.dim() == 4:
-            hmap_t = F.interpolate(hmap_t, size=(H, W), mode="bilinear", align_corners=False)
-        else:
-            hmap_t = F.interpolate(hmap_t, size=(T, H, W), mode="trilinear", align_corners=False)
-    hmap_np = hmap_t.squeeze().numpy()  # [T, H, W] or [H, W]
-    if hmap_np.ndim == 2:
-        hmap_np = np.broadcast_to(hmap_np[np.newaxis], (T, H, W))
+    # Upsample to [T, H, W] via trilinear interpolation.
+    # F.interpolate with mode="trilinear" expects [N, C, D, H, W].
+    hmap_t = torch.from_numpy(np.ascontiguousarray(hmap)).unsqueeze(0).unsqueeze(0).float()
+    # shape: [1, 1, T', H', W']
+    if hmap_t.shape[2:] != torch.Size([T, H, W]):
+        hmap_t = F.interpolate(hmap_t, size=(T, H, W), mode="trilinear", align_corners=False)
+    hmap_np = hmap_t.squeeze(0).squeeze(0).numpy()  # [T, H, W]
 
-    # Normalise per-frame so the brightest spot is always full colour
+    # Normalise per-frame so the brightest spot always uses the full colour range.
     hmin = hmap_np.min(axis=(1, 2), keepdims=True)
     hmax = hmap_np.max(axis=(1, 2), keepdims=True)
     safe_range = np.where((hmax - hmin) > 1e-6, hmax - hmin, 1.0)
-    hmap_norm = (hmap_np - hmin) / safe_range  # [T, H, W] in [0,1]
+    hmap_norm = (hmap_np - hmin) / safe_range  # [T, H, W] in [0, 1]
 
     colour = _plasma(hmap_norm)  # [T, H, W, 3] float32
 
@@ -291,48 +291,39 @@ def extract_qwen_attention_maps(
 # ---------------------------------------------------------------------------
 
 class LTXAttentionCapture:
-    """Context manager that registers forward hooks on LTX cross-attention.
+    """Context manager that captures LTX cross-attention during a render call.
 
-    Hooks fire on every transformer block call during the denoising loop.
-    Attention weights are averaged over heads, batch, and denoising steps.
+    ``RetakePipeline`` instantiates the transformer fresh on every call via
+    ``model_ledger.transformer()`` and deletes it afterwards — there is no
+    persistent reference to hook from the outside.  This class works around
+    that by **monkey-patching** ``model_ledger.transformer`` so that when the
+    pipeline creates the model we immediately register forward hooks on the
+    desired block, then restore the original method when the context exits.
+
+    Hooks fire on every denoising step and accumulate a lightweight
+    per-video-token attention score.  Only one block is hooked (middle by
+    default) to stay within H100 VRAM budget.
 
     Usage::
 
         with LTXAttentionCapture(pipeline, block_fraction=0.5) as cap:
-            render_final_video(...)
+            render_final_video(...)   # hooks fire inside here
         audio_attn = cap.get("audio_to_video")  # float32 numpy [Tv]
         text_attn  = cap.get("text_to_video")   # float32 numpy [Tv]
-
-    Memory note: only one transformer block is hooked (the middle block by
-    default) to stay within H100 VRAM budget.  All intermediate tensors are
-    freed immediately inside the hook.
     """
 
     def __init__(self, pipeline, block_fraction: float = 0.5):
-        """
-        Args:
-            pipeline: The RetakePipeline instance.
-            block_fraction: Which block to hook.  0.5 = middle block.
-        """
         self._pipeline = pipeline
         self._block_fraction = block_fraction
         self._hooks: list = []
         self._storage: dict[str, Any] = {}
-        self._ltx_model = None
+        self._orig_transformer_fn = None
 
     # ------------------------------------------------------------------
-    def _find_ltx_model(self):
-        """Find the LTXModel (has .transformer_blocks) inside the pipeline."""
-        for _, m in self._pipeline.named_modules():
-            if hasattr(m, "transformer_blocks"):
-                return m
-        return None
-
     def _make_hook(self, key: str):
         storage = self._storage
 
         def hook(module, args, kwargs, output):
-            # args[0] = x (query source), kwargs['context'] = key/value source
             context = kwargs.get("context")
             if context is None:
                 return  # self-attention — skip
@@ -351,19 +342,13 @@ class LTXAttentionCapture:
                     dh = D // h
                     scale = math.sqrt(dh)
 
-                    q_r = q.view(B, Tq, h, dh).permute(0, 2, 1, 3).float()  # [B,h,Tq,dh]
+                    q_r = q.view(B, Tq, h, dh).permute(0, 2, 1, 3).float()
                     k_r = k.view(B, k.shape[1], h, dh).permute(0, 2, 1, 3).float()
 
-                    # Full attention matrix → per-video-token attention mass
-                    # [B,h,Tq,Tk] softmax over Tk → sum over Tk is always 1.
-                    # We want: for each Tq, how much attention does it have overall.
-                    # Use the row-sum (=1 by softmax) — so just use the *logit spread*
-                    # instead: take max logit per query as attention "intensity".
                     logits = (q_r @ k_r.transpose(-2, -1)) / scale  # [B,h,Tq,Tk]
-                    # max logit → proxy for "how strongly does this video token
-                    # align with ANY context token"
-                    max_logit = logits.max(dim=-1).values.float()  # [B, h, Tq]
-                    # Softmax over the query positions → relative importance
+                    # Max logit per query → proxy for "how strongly does this
+                    # video token align with any context token"
+                    max_logit = logits.max(dim=-1).values.float()   # [B, h, Tq]
                     importance = max_logit.softmax(dim=-1).mean(dim=[0, 1]).cpu()  # [Tq]
 
                     prev = storage.get(key)
@@ -373,35 +358,28 @@ class LTXAttentionCapture:
 
                     del q, k, q_r, k_r, logits, max_logit, importance
                 except Exception:
-                    pass  # silent fail — visualization is best-effort
+                    pass  # silent — visualization is best-effort
 
         return hook
 
-    # ------------------------------------------------------------------
-    def __enter__(self) -> "LTXAttentionCapture":
-        self._storage.clear()
-        self._hooks.clear()
-
-        ltx = self._find_ltx_model()
-        if ltx is None:
-            log.warning("LTXAttentionCapture: could not find LTXModel in pipeline — skipping hooks.")
-            return self
-        self._ltx_model = ltx
-
-        n_blocks = len(ltx.transformer_blocks)
+    def _register_hooks_on_model(self, ltx_model) -> None:
+        # model_ledger.transformer() returns X0Model; the actual LTXModel
+        # (which owns transformer_blocks) is nested at .velocity_model
+        if not hasattr(ltx_model, "transformer_blocks") and hasattr(ltx_model, "velocity_model"):
+            ltx_model = ltx_model.velocity_model
+        n_blocks = len(ltx_model.transformer_blocks)
         block_idx = int(n_blocks * self._block_fraction)
         block_idx = max(0, min(block_idx, n_blocks - 1))
-        block = ltx.transformer_blocks[block_idx]
+        block = ltx_model.transformer_blocks[block_idx]
 
         log.info("LTXAttentionCapture: hooking block %d / %d", block_idx, n_blocks)
-
         for attn_name, storage_key in [
             ("audio_to_video_attn", "audio_to_video"),
             ("attn2",               "text_to_video"),
         ]:
             attn_module = getattr(block, attn_name, None)
             if attn_module is None:
-                log.warning("Block %d has no attribute '%s' — skipping.", block_idx, attn_name)
+                log.warning("Block %d has no '%s' — skipping.", block_idx, attn_name)
                 continue
             handle = attn_module.register_forward_hook(
                 self._make_hook(storage_key),
@@ -409,11 +387,43 @@ class LTXAttentionCapture:
             )
             self._hooks.append(handle)
 
+    # ------------------------------------------------------------------
+    def __enter__(self) -> "LTXAttentionCapture":
+        self._storage.clear()
+        self._hooks.clear()
+
+        ledger = getattr(self._pipeline, "model_ledger", None)
+        if ledger is None:
+            log.warning("LTXAttentionCapture: pipeline has no model_ledger — skipping.")
+            return self
+
+        # Patch model_ledger.transformer so we can intercept the freshly-
+        # created model before the denoising loop starts.
+        orig_fn = ledger.transformer
+        capture = self  # close over self
+
+        def patched_transformer():
+            model = orig_fn()
+            capture._register_hooks_on_model(model)
+            return model
+
+        self._orig_transformer_fn = orig_fn
+        ledger.transformer = patched_transformer
         return self
 
     def __exit__(self, *_):
+        # Restore the original factory method
+        ledger = getattr(self._pipeline, "model_ledger", None)
+        if ledger is not None and self._orig_transformer_fn is not None:
+            ledger.transformer = self._orig_transformer_fn
+            self._orig_transformer_fn = None
+        # Remove any hooks still attached (the model may already be deleted,
+        # but remove() is a no-op in that case)
         for h in self._hooks:
-            h.remove()
+            try:
+                h.remove()
+            except Exception:
+                pass
         self._hooks.clear()
 
     # ------------------------------------------------------------------
