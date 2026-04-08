@@ -52,6 +52,19 @@ body {
   color: var(--muted);
 }
 
+.developer-credit {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 12px;
+  padding: 7px 12px;
+  border: 1px solid rgba(154, 167, 184, 0.26);
+  border-radius: 999px;
+  background: rgba(154, 167, 184, 0.1);
+  color: #c9d1dc;
+  font-size: 13px;
+  letter-spacing: 0.01em;
+}
+
 .header-note {
   color: var(--muted);
   font-size: 14px;
