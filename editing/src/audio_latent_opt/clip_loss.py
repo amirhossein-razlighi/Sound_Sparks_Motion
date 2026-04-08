@@ -152,3 +152,55 @@ def compute_clip_video_loss(
         cosine_sim = (image_features * text_emb).sum(dim=-1)  # [T]
 
     return 1.0 - cosine_sim.mean()
+
+
+def _encode_clip_image_frames(
+    frames_chw: torch.Tensor,
+    clip_model,
+) -> torch.Tensor:
+    """Encode individual frames with CLIP/X-CLIP's image tower."""
+    pixel_values = F.interpolate(
+        frames_chw,
+        size=(224, 224),
+        mode="bilinear",
+        align_corners=False,
+    )
+    mean = torch.tensor(_CLIP_MEAN, device=pixel_values.device, dtype=pixel_values.dtype).view(1, 3, 1, 1)
+    std = torch.tensor(_CLIP_STD, device=pixel_values.device, dtype=pixel_values.dtype).view(1, 3, 1, 1)
+    pixel_values = (pixel_values - mean) / std
+
+    from transformers import XCLIPModel
+    if isinstance(clip_model, XCLIPModel):
+        vision_out = clip_model.vision_model(pixel_values=pixel_values)
+        image_features = clip_model.visual_projection(vision_out[1]).float()
+    else:
+        image_features = clip_model.get_image_features(pixel_values=pixel_values).float()
+    return F.normalize(image_features, dim=-1)
+
+
+@torch.no_grad()
+def compute_clip_dual_prompt_frame_similarities(
+    frames_chw: torch.Tensor,
+    static_text_embedding: torch.Tensor,
+    edit_text_embedding: torch.Tensor,
+    clip_model,
+    *,
+    batch_size: int = 8,
+) -> dict[str, list[float]]:
+    """Compute per-frame CLIP similarities to static and edit prompts in small batches."""
+    static_scores: list[float] = []
+    edit_scores: list[float] = []
+    batch_size = max(int(batch_size), 1)
+
+    for start in range(0, frames_chw.shape[0], batch_size):
+        batch = frames_chw[start:start + batch_size]
+        features = _encode_clip_image_frames(batch, clip_model)
+        static_emb = static_text_embedding.to(device=features.device, dtype=features.dtype)
+        edit_emb = edit_text_embedding.to(device=features.device, dtype=features.dtype)
+        static_scores.extend((features * static_emb).sum(dim=-1).detach().cpu().tolist())
+        edit_scores.extend((features * edit_emb).sum(dim=-1).detach().cpu().tolist())
+
+    return {
+        "static": [float(x) for x in static_scores],
+        "edit": [float(x) for x in edit_scores],
+    }

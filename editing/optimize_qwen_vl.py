@@ -23,6 +23,7 @@ Single H200 80GB: add --quantization fp8-cast --gradient-checkpointing
 from __future__ import annotations
 
 import argparse
+import csv
 import gc
 import json
 import logging
@@ -54,7 +55,19 @@ from audio_latent_opt.multimodal_loop_qwen import (
     render_final_video,
 )
 from audio_latent_opt.multimodal_loop import render_baseline_video
-from audio_latent_opt.qwen_loss import QWEN_IMG_SIZE, build_qwen_model, build_qwen_rubric_inputs
+from audio_latent_opt.clip_loss import (
+    build_clip_model,
+    compute_clip_dual_prompt_frame_similarities,
+    encode_text_for_clip,
+)
+from audio_latent_opt.metrics import decode_video_frames_rgb
+from audio_latent_opt.perceptual_loss import cache_source_frames
+from audio_latent_opt.qwen_loss import (
+    DEFAULT_QWEN_MOTION_QUESTION,
+    QWEN_IMG_SIZE,
+    build_qwen_model,
+    build_qwen_rubric_inputs,
+)
 from audio_latent_opt.runtime import build_retake_kwargs, prepare_retake_input_video
 
 from ltx_pipelines.utils.constants import detect_params
@@ -139,6 +152,15 @@ def _init_wandb_run(args: argparse.Namespace, output_dir: Path):
         "qwen_model": args.qwen_model,
         "qwen_max_frames": args.qwen_max_frames,
         "qwen_img_size": args.qwen_img_size,
+        "qwen_sample_mode": args.qwen_sample_mode,
+        "qwen_contiguous_start_frame": args.qwen_contiguous_start_frame,
+        "qwen_gradient_rubric": args.qwen_gradient_rubric,
+        "qwen_motion_question": args.qwen_motion_question,
+        "static_prompt": args.static_prompt,
+        "clip_similarity_diag_model": args.clip_similarity_diag_model,
+        "clip_similarity_diag": args.clip_similarity_diag,
+        "clip_similarity_diag_max_frames": args.clip_similarity_diag_max_frames,
+        "clip_similarity_diag_batch_size": args.clip_similarity_diag_batch_size,
         "iterations": args.iterations,
         "lr": args.lr,
         "grad_clip": args.grad_clip,
@@ -177,6 +199,111 @@ def _init_wandb_run(args: argparse.Namespace, output_dir: Path):
         os.environ.get("WANDB_MODE", "").lower() == "offline",
     )
     return run
+
+
+def _video_to_chw_tensor(video_path: Path, *, max_frames: int, device: torch.device) -> torch.Tensor:
+    frames = decode_video_frames_rgb(
+        str(video_path),
+        max_frames=max_frames if max_frames > 0 else None,
+        frame_stride=1,
+        resize_to=None,
+    )
+    if not frames:
+        raise RuntimeError(f"No frames decoded from {video_path}")
+    tensor = torch.stack([
+        torch.from_numpy(frame).permute(2, 0, 1).float().div(255.0)
+        for frame in frames
+    ])
+    return tensor.to(device)
+
+
+def _write_clip_similarity_diagnostics(
+    *,
+    baseline_path: Path,
+    optimized_path: Path,
+    mode: str,
+    output_dir: Path,
+    clip_model,
+    static_embedding: torch.Tensor,
+    edit_embedding: torch.Tensor,
+    max_frames: int,
+    batch_size: int,
+    device: torch.device,
+    wandb_run,
+) -> None:
+    """Save per-frame static/edit CLIP similarity CSV + plot for baseline and optimized MP4s."""
+    if not baseline_path.exists() or not optimized_path.exists():
+        log.warning(
+            "[%s] Skipping CLIP similarity diagnostics; missing baseline=%s optimized=%s",
+            mode, baseline_path.exists(), optimized_path.exists(),
+        )
+        return
+
+    diag_dir = output_dir / "diagnostics"
+    diag_dir.mkdir(parents=True, exist_ok=True)
+    csv_path = diag_dir / f"clip_similarity_{mode}.csv"
+    plot_path = diag_dir / f"clip_similarity_{mode}.png"
+
+    rows: list[dict[str, float | int | str]] = []
+    series: dict[str, dict[str, list[float]]] = {}
+    for label, video_path in (("baseline", baseline_path), ("optimized", optimized_path)):
+        frames = _video_to_chw_tensor(video_path, max_frames=max_frames, device=device)
+        with torch.no_grad():
+            scores = compute_clip_dual_prompt_frame_similarities(
+                frames,
+                static_embedding,
+                edit_embedding,
+                clip_model,
+                batch_size=batch_size,
+            )
+        series[label] = scores
+        for frame_idx, (static_sim, edit_sim) in enumerate(zip(scores["static"], scores["edit"], strict=True)):
+            rows.append(
+                {
+                    "video": label,
+                    "frame": frame_idx,
+                    "static_similarity": static_sim,
+                    "edit_similarity": edit_sim,
+                    "edit_minus_static": edit_sim - static_sim,
+                }
+            )
+        del frames
+
+    with csv_path.open("w", newline="") as f:
+        writer = csv.DictWriter(
+            f,
+            fieldnames=["video", "frame", "static_similarity", "edit_similarity", "edit_minus_static"],
+        )
+        writer.writeheader()
+        writer.writerows(rows)
+
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+
+        fig, ax = plt.subplots(figsize=(10, 5))
+        for label, scores in series.items():
+            x = list(range(len(scores["static"])))
+            ax.plot(x, scores["static"], label=f"{label}: static", linestyle="--")
+            ax.plot(x, scores["edit"], label=f"{label}: edit")
+        ax.set_xlabel("Frame")
+        ax.set_ylabel("CLIP cosine similarity")
+        ax.set_title(f"Per-frame CLIP prompt similarity ({mode})")
+        ax.grid(True, alpha=0.25)
+        ax.legend(loc="best")
+        fig.tight_layout()
+        fig.savefig(plot_path, dpi=160)
+        plt.close(fig)
+        log.info("[%s] Saved CLIP similarity diagnostics: %s and %s", mode, csv_path, plot_path)
+
+        if wandb_run is not None:
+            try:
+                wandb_run.log({f"diagnostics/{mode}/clip_similarity_plot": wandb.Image(str(plot_path))})
+            except Exception:
+                log.warning("[%s] Failed to log CLIP similarity plot to W&B", mode, exc_info=True)
+    except Exception:
+        log.warning("[%s] Failed to plot CLIP similarity diagnostics; CSV saved to %s", mode, csv_path, exc_info=True)
 
 
 def run(args: argparse.Namespace) -> None:
@@ -283,6 +410,7 @@ def run(args: argparse.Namespace) -> None:
             num_frames=qwen_num_frames,
             img_size=args.qwen_img_size,
             device=device,
+            motion_question=args.qwen_motion_question,
         )
         log.info("yes_token_id=%d  no_token_id=%d", yes_token_id, no_token_id)
 
@@ -296,6 +424,24 @@ def run(args: argparse.Namespace) -> None:
         )
 
         eval_sample_start = 0
+
+        # ---- Cache source frames for perceptual loss (one-time render) ----
+        cached_src_frames = None
+        if args.lpips_weight > 0 or args.temporal_weight > 0:
+            log.info("Caching source video frames for perceptual quality loss...")
+            cached_src_frames = cache_source_frames(
+                pipeline=pipeline,
+                src_video=str(retake_input_video),
+                cached_video_latent=cached_video_latent,
+                base_audio_latent=base_audio_latent,
+                base_pos_context=base_pos_context,
+                base_neg_context=base_neg_context,
+                retake_kwargs=retake_kwargs,
+                max_frames=args.max_eval_frames,
+                frame_stride=args.frame_stride,
+                eval_sample_start=eval_sample_start,
+            )
+            log.info("Cached %d source frames (shape: %s)", cached_src_frames.shape[0], tuple(cached_src_frames.shape))
 
         # ---- Build final-render kwargs once (used for baseline + per-mode final videos) ----
         final_retake_kwargs = dict(retake_kwargs)
@@ -372,6 +518,7 @@ def run(args: argparse.Namespace) -> None:
                 # Enable attention map extraction whenever we have a W&B run
                 # and preview rendering is active (no extra LTX render needed).
                 extract_attn_maps=(wandb_run is not None and args.visualize_every_iters > 0),
+                cached_src_frames=cached_src_frames,
             )
             all_results[mode] = best
 
@@ -427,6 +574,45 @@ def run(args: argparse.Namespace) -> None:
                             },
                             step=max(int(args.iterations) + 1, int(best.get("best_iter", 0)) + 1),
                         )
+                if args.clip_similarity_diag:
+                    static_prompt = args.static_prompt or f"A static frame before the edit: {args.edit_prompt} has not happened yet."
+                    log.info("[%s] Loading CLIP similarity diagnostic model (%s)...", mode, args.clip_similarity_diag_model)
+                    clip_diag_model, clip_diag_tokenizer = build_clip_model(
+                        args.clip_similarity_diag_model,
+                        device,
+                    )
+                    clip_diag_static_embedding = encode_text_for_clip(
+                        static_prompt,
+                        clip_diag_model,
+                        clip_diag_tokenizer,
+                        device,
+                    )
+                    clip_diag_edit_embedding = encode_text_for_clip(
+                        args.edit_prompt,
+                        clip_diag_model,
+                        clip_diag_tokenizer,
+                        device,
+                    )
+                    log.info("[%s] CLIP diagnostic static prompt: %s", mode, static_prompt)
+                    log.info("[%s] CLIP diagnostic edit prompt: %s", mode, args.edit_prompt)
+                    final_video_path = mode_dir / f"best_optimized_video_{mode}.mp4"
+                    _write_clip_similarity_diagnostics(
+                        baseline_path=output_dir / "baseline_video.mp4",
+                        optimized_path=final_video_path,
+                        mode=mode,
+                        output_dir=mode_dir,
+                        clip_model=clip_diag_model,
+                        static_embedding=clip_diag_static_embedding,
+                        edit_embedding=clip_diag_edit_embedding,
+                        max_frames=args.clip_similarity_diag_max_frames,
+                        batch_size=args.clip_similarity_diag_batch_size,
+                        device=device,
+                        wandb_run=wandb_run,
+                    )
+                    del clip_diag_model, clip_diag_tokenizer, clip_diag_static_embedding, clip_diag_edit_embedding
+                    gc.collect()
+                    if torch.cuda.is_available():
+                        torch.cuda.empty_cache()
 
             gc.collect()
             if torch.cuda.is_available():
@@ -474,10 +660,86 @@ def build_parser() -> argparse.ArgumentParser:
                    help="Frames to pass to Qwen2.5-VL per iteration (must be even).")
     p.add_argument("--qwen-img-size", type=int, default=QWEN_IMG_SIZE,
                    help="Spatial size for Qwen input frames (must be divisible by 28).")
+    p.add_argument(
+        "--qwen-sample-mode",
+        default="linspace",
+        choices=["linspace", "contiguous", "contiguous_random"],
+        help="How to sample frames for the Qwen loss. contiguous uses a temporal window after the static prefix.",
+    )
+    p.add_argument(
+        "--qwen-contiguous-start-frame",
+        type=int,
+        default=0,
+        help="Start frame for contiguous Qwen sampling.",
+    )
+    p.add_argument(
+        "--qwen-gradient-rubric",
+        default="full",
+        choices=["motion", "full"],
+        help="Which Qwen rubric questions receive gradients. motion can reduce memory; full matches the rubric objective.",
+    )
+    p.add_argument(
+        "--qwen-motion-question",
+        default=DEFAULT_QWEN_MOTION_QUESTION,
+        help=(
+            "Question used for the motion rubric Qwen loss. May include "
+            "{edit_prompt}; answer should be yes/no."
+        ),
+    )
 
     # Regularization
     p.add_argument("--latent-reg-weight", type=float, default=0.01)
     p.add_argument("--text-reg-weight", type=float, default=0.001)
+    p.add_argument(
+        "--reg-schedule",
+        default="constant",
+        choices=["constant", "linear_warmup", "cosine_increase"],
+        help=(
+            "Regularization schedule. 'cosine_increase' ramps reg up over iterations "
+            "to prevent late-stage adversarial drift (recommended for hard edits)."
+        ),
+    )
+
+    # Perceptual quality preservation
+    p.add_argument(
+        "--lpips-weight", type=float, default=0.0,
+        help=(
+            "Weight for LPIPS source preservation loss. Penalizes perceptual "
+            "deviation from source video to prevent artifact introduction. "
+            "Recommended: 0.1-0.5 for hard edits, 0.0 for easy edits."
+        ),
+    )
+    p.add_argument(
+        "--temporal-weight", type=float, default=0.0,
+        help=(
+            "Weight for temporal consistency loss. Penalizes excess frame-to-frame "
+            "perceptual jumps (flickering). Recommended: 0.05-0.2."
+        ),
+    )
+    p.add_argument(
+        "--lpips-backbone",
+        default="alex",
+        choices=["alex", "vgg"],
+        help="LPIPS backbone. alex (~30MB) is faster; vgg (~60MB) may be slightly more accurate.",
+    )
+    p.add_argument(
+        "--lr-schedule",
+        default="constant",
+        choices=["constant", "cosine"],
+        help=(
+            "Learning rate schedule. 'cosine' anneals LR to near-zero, "
+            "preventing late-stage adversarial exploitation."
+        ),
+    )
+    p.add_argument("--static-prompt", default="",
+                   help="Static/reference prompt for the end-of-run CLIP similarity diagnostic.")
+    p.add_argument("--clip-similarity-diag-model", default="openai/clip-vit-base-patch32")
+    p.add_argument("--clip-similarity-diag", action=argparse.BooleanOptionalAction, default=True,
+                   help="After final render, save per-frame CLIP similarities to static/edit prompts for baseline and optimized videos.")
+    p.add_argument("--clip-similarity-diag-max-frames", type=int, default=0,
+                   help="Max frames to decode for CLIP similarity diagnostics. 0 = all frames.")
+    p.add_argument("--clip-similarity-diag-batch-size", type=int, default=8,
+                   help="Batch size for no-grad CLIP similarity diagnostics.")
 
     # Optimization
     p.add_argument("--iterations", type=int, default=30)

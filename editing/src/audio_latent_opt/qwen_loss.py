@@ -41,14 +41,16 @@ _MERGE_SIZE = 2  # 2×2 spatial patch merge → effective token covers 28×28 pi
 # 224 = 8 * 28  →  8×8 = 64 spatial tokens per temporal chunk
 QWEN_IMG_SIZE = 224
 
+DEFAULT_QWEN_MOTION_QUESTION = (
+    'Does this video clearly show the action or state change described by '
+    'the edit prompt: "{edit_prompt}"? Answer only \'yes\' or \'no\'.'
+)
+
 QWEN_RUBRIC_QUESTIONS = (
     {
         "name": "motion",
         "weight": 0.70,
-        "template": (
-            'Does this video clearly show the action or state change described by '
-            'the edit prompt: "{edit_prompt}"? Answer only \'yes\' or \'no\'.'
-        ),
+        "template": DEFAULT_QWEN_MOTION_QUESTION,
     },
     {
         "name": "entities",
@@ -201,6 +203,7 @@ def build_qwen_rubric_inputs(
     num_frames: int,
     img_size: int,
     device: torch.device,
+    motion_question: str | None = None,
 ) -> tuple[dict, int, int]:
     """Build cached Qwen yes/no inputs for the default 3-question rubric."""
     rubric_items = []
@@ -208,7 +211,12 @@ def build_qwen_rubric_inputs(
     no_token_id = None
 
     for spec in QWEN_RUBRIC_QUESTIONS:
-        question_text = spec["template"].format(edit_prompt=edit_prompt)
+        question_template = motion_question if spec["name"] == "motion" and motion_question else spec["template"]
+        question_text = (
+            question_template.format(edit_prompt=edit_prompt)
+            if "{edit_prompt}" in question_template
+            else question_template
+        )
         cached, yes_id, no_id = build_qwen_inputs(
             processor=processor,
             edit_prompt=edit_prompt,
@@ -317,6 +325,9 @@ def compute_qwen_video_loss(
     img_size: int = QWEN_IMG_SIZE,
     backward: bool = False,
     return_details: bool = False,
+    sample_mode: str = "linspace",
+    contiguous_start_frame: int = 0,
+    rubric_weight_overrides: dict[str, float] | None = None,
 ) -> torch.Tensor | tuple[torch.Tensor, list[dict[str, float | str]]]:
     """Differentiable Qwen2.5-VL video-text alignment loss.
 
@@ -337,6 +348,16 @@ def compute_qwen_video_loss(
             this to avoid keeping multiple full Qwen graphs in memory at once.
         return_details: If True, also return per-rubric-question detached
             losses/scores for logging.
+        sample_mode: "linspace" samples uniformly across the video; "contiguous"
+            samples a contiguous window starting at contiguous_start_frame;
+            "contiguous_random" samples one contiguous window whose start is
+            randomly chosen at or after contiguous_start_frame.
+        contiguous_start_frame: Start index for "contiguous" sampling. This is
+            useful when early frames should remain static and the scorer should
+            judge the edit after the static prefix.
+        rubric_weight_overrides: Optional per-question weights for this call.
+            Use {"motion": 1.0, "entities": 0.0, "overall": 0.0} to keep the
+            gradient focused and reduce memory.
 
     Returns:
         Scalar loss in [0, 1].  Lower = frames more consistent with prompt.
@@ -349,9 +370,24 @@ def compute_qwen_video_loss(
         num_frames -= num_frames % _TEMPORAL_PATCH_SIZE
     num_frames = max(num_frames, _TEMPORAL_PATCH_SIZE)
 
+    if sample_mode == "linspace":
+        sample_idx = torch.linspace(0, n - 1, num_frames, device=frames_chw.device).round().long()
+    elif sample_mode == "contiguous":
+        start = min(max(int(contiguous_start_frame), 0), max(n - num_frames, 0))
+        sample_idx = torch.arange(start, start + num_frames, device=frames_chw.device).long()
+    elif sample_mode == "contiguous_random":
+        min_start = min(max(int(contiguous_start_frame), 0), max(n - num_frames, 0))
+        max_start = max(n - num_frames, min_start)
+        if max_start <= min_start:
+            start = min_start
+        else:
+            start = int(torch.randint(min_start, max_start + 1, (1,), device=frames_chw.device).item())
+        sample_idx = torch.arange(start, start + num_frames, device=frames_chw.device).long()
+    else:
+        raise ValueError(f"Unknown Qwen sample_mode: {sample_mode!r}")
+
     def _prepare_pixel_values() -> torch.Tensor:
-        idx = torch.linspace(0, n - 1, num_frames, device=frames_chw.device).round().long()
-        frames = frames_chw[idx]  # [T, 3, H, W]
+        frames = frames_chw[sample_idx]  # [T, 3, H, W]
 
         # Resize to model's fixed spatial resolution (differentiable)
         frames = F.interpolate(
@@ -388,13 +424,27 @@ def compute_qwen_video_loss(
 
     if "rubric_items" in cached_inputs:
         details: list[dict[str, float | str]] = []
+        raw_items = cached_inputs["rubric_items"]
+        weights = []
+        for item in raw_items:
+            if rubric_weight_overrides is None:
+                weights.append(float(item["weight"]))
+            else:
+                weights.append(float(rubric_weight_overrides.get(str(item["name"]), 0.0)))
+        weight_sum = sum(max(w, 0.0) for w in weights)
+        if weight_sum <= 0:
+            raise ValueError("At least one Qwen rubric weight must be positive.")
+        rubric_items = [
+            (item, max(weight, 0.0) / weight_sum)
+            for item, weight in zip(raw_items, weights, strict=True)
+            if weight > 0
+        ]
         if backward:
             total_value = torch.zeros((), device=frames_chw.device, dtype=torch.float32)
-            rubric_items = cached_inputs["rubric_items"]
-            for i, item in enumerate(rubric_items):
+            for i, (item, weight) in enumerate(rubric_items):
                 pixel_values_videos = _prepare_pixel_values()
                 item_nll = _single_loss(item["inputs"], pixel_values_videos)
-                loss = float(item["weight"]) * item_nll
+                loss = float(weight) * item_nll
                 retain_graph = i < len(rubric_items) - 1
                 loss.backward(retain_graph=retain_graph)
                 total_value = total_value + loss.detach()
@@ -402,7 +452,7 @@ def compute_qwen_video_loss(
                     details.append(
                         {
                             "name": str(item["name"]),
-                            "weight": float(item["weight"]),
+                            "weight": float(weight),
                             "nll": float(item_nll.detach().item()),
                             "yes_prob": float(torch.exp(-item_nll.detach()).item()),
                         }
@@ -414,14 +464,14 @@ def compute_qwen_video_loss(
 
         pixel_values_videos = _prepare_pixel_values()
         losses = []
-        for item in cached_inputs["rubric_items"]:
+        for item, weight in rubric_items:
             item_nll = _single_loss(item["inputs"], pixel_values_videos)
-            losses.append(float(item["weight"]) * item_nll)
+            losses.append(float(weight) * item_nll)
             if return_details:
                 details.append(
                     {
                         "name": str(item["name"]),
-                        "weight": float(item["weight"]),
+                        "weight": float(weight),
                         "nll": float(item_nll.detach().item()),
                         "yes_prob": float(torch.exp(-item_nll.detach()).item()),
                     }

@@ -35,6 +35,10 @@ from .multimodal_loop import (
     render_final_video,
     render_with_injected_latents,
 )
+from .perceptual_loss import (
+    adaptive_reg_weight,
+    compute_perceptual_quality_loss,
+)
 from .qwen_loss import compute_qwen_video_loss
 
 log = logging.getLogger(__name__)
@@ -76,6 +80,7 @@ def gradient_optimize_multimodal_qwen(
     audio_sr: int = 44100,
     wandb_run=None,
     extract_attn_maps: bool = False,
+    cached_src_frames: torch.Tensor | None = None,
 ) -> dict:
     """Run gradient optimization for one mode and return the best result.
 
@@ -110,6 +115,15 @@ def gradient_optimize_multimodal_qwen(
         log.info("[%s] Audio latent shape: %s, %.1fK params", mode, tuple(audio_latent.shape), audio_latent.numel() / 1e3)
 
     optimizer = torch.optim.Adam(params, lr=args.lr)
+
+    # ---- LR scheduler (cosine annealing to prevent late-stage adversarial drift) ----
+    lr_schedule = getattr(args, "lr_schedule", "constant")
+    scheduler = None
+    if lr_schedule == "cosine" and args.iterations > 1:
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+            optimizer, T_max=args.iterations, eta_min=args.lr * 0.01,
+        )
+        log.info("[%s] Using cosine LR schedule: %.6f → %.6f", mode, args.lr, args.lr * 0.01)
 
     # ---- Resume from checkpoint ----
     best_latent_path = output_dir / f"best_audio_latent_{mode}.pt"
@@ -152,7 +166,9 @@ def gradient_optimize_multimodal_qwen(
     if is_main:
         csv_header = [
             "iter", "qwen_nll", "qwen_yes_prob",
-            "audio_reg", "text_reg", "total_loss", "grad_norm", "is_best",
+            "audio_reg", "text_reg", "perceptual_loss",
+            "lpips_raw", "temporal_raw",
+            "total_loss", "grad_norm", "is_best",
         ]
         for name in rubric_metric_names:
             csv_header.extend([f"{name}_nll", f"{name}_yes_prob"])
@@ -166,7 +182,8 @@ def gradient_optimize_multimodal_qwen(
             wandb_table = _wandb.Table(
                 columns=(
                     ["iter", "yes_prob", "qwen_nll", "audio_reg",
-                     "text_reg", "total_loss", "grad_norm", "is_best"]
+                     "text_reg", "perceptual_loss", "lpips_raw", "temporal_raw",
+                     "total_loss", "grad_norm", "is_best"]
                     + [
                         col
                         for name in rubric_metric_names
@@ -244,6 +261,9 @@ def gradient_optimize_multimodal_qwen(
                 raise RuntimeError("Generated video has no frames.")
 
             # Qwen2.5-VL alignment loss
+            rubric_weight_overrides = None
+            if getattr(args, "qwen_gradient_rubric", "motion") == "motion":
+                rubric_weight_overrides = {"motion": 1.0, "entities": 0.0, "overall": 0.0}
             qwen_loss_t, qwen_details = compute_qwen_video_loss(
                 frames_chw=gen_frames,
                 qwen_model=qwen_model,
@@ -254,20 +274,49 @@ def gradient_optimize_multimodal_qwen(
                 img_size=args.qwen_img_size,
                 backward=True,
                 return_details=True,
+                sample_mode=getattr(args, "qwen_sample_mode", "linspace"),
+                contiguous_start_frame=getattr(args, "qwen_contiguous_start_frame", 0),
+                rubric_weight_overrides=rubric_weight_overrides,
             )
 
-            # Regularization (same as multimodal_loop)
+            # Perceptual quality loss (LPIPS source preservation + temporal consistency)
+            perceptual_loss_t = torch.tensor(0.0, device=qwen_loss_t.device)
+            perceptual_details: dict[str, float] = {}
+            lpips_weight = getattr(args, "lpips_weight", 0.0)
+            temporal_weight = getattr(args, "temporal_weight", 0.0)
+            if cached_src_frames is not None and (lpips_weight > 0 or temporal_weight > 0):
+                perceptual_loss_t, perceptual_details = compute_perceptual_quality_loss(
+                    gen_frames=gen_frames,
+                    src_frames=cached_src_frames,
+                    lpips_weight=lpips_weight,
+                    temporal_weight=temporal_weight,
+                    backbone=getattr(args, "lpips_backbone", "alex"),
+                    max_lpips_frames=min(16, gen_frames.shape[0]),
+                    max_temporal_pairs=min(12, gen_frames.shape[0] - 1),
+                    backward=True,
+                )
+
+            # Adaptive regularization (increase over time to prevent late-stage adversarial drift)
+            reg_schedule = getattr(args, "reg_schedule", "constant")
+            audio_reg_w = adaptive_reg_weight(
+                args.latent_reg_weight, it, num_iters, schedule=reg_schedule,
+            )
+            text_reg_w = adaptive_reg_weight(
+                args.text_reg_weight, it, num_iters, schedule=reg_schedule,
+            )
+
+            # Regularization
             audio_reg_t = torch.tensor(0.0, device=qwen_loss_t.device)
-            if optimize_audio and audio_latent is not None and args.latent_reg_weight > 0:
-                audio_reg_t = args.latent_reg_weight * torch.mean(
+            if optimize_audio and audio_latent is not None and audio_reg_w > 0:
+                audio_reg_t = audio_reg_w * torch.mean(
                     (audio_latent - base_audio_latent_fp32) ** 2
                 )
 
             text_reg_t = torch.tensor(0.0, device=qwen_loss_t.device)
-            if optimize_text and delta_v is not None and args.text_reg_weight > 0:
-                text_reg_t = args.text_reg_weight * torch.mean(delta_v ** 2)
+            if optimize_text and delta_v is not None and text_reg_w > 0:
+                text_reg_t = text_reg_w * torch.mean(delta_v ** 2)
 
-            total_t = qwen_loss_t + audio_reg_t + text_reg_t
+            total_t = qwen_loss_t + perceptual_loss_t + audio_reg_t + text_reg_t
             reg_t = audio_reg_t + text_reg_t
             if reg_t.requires_grad:
                 reg_t.backward()
@@ -279,11 +328,14 @@ def gradient_optimize_multimodal_qwen(
                 grad_norm = float(sum(p.grad.norm().item() ** 2 for p in params if p.grad is not None) ** 0.5)
 
             optimizer.step()
+            if scheduler is not None:
+                scheduler.step()
 
             qwen_loss = float(qwen_loss_t.detach().item())
             qwen_score = math.exp(-qwen_loss)
             audio_reg = float(audio_reg_t.detach().item())
             text_reg = float(text_reg_t.detach().item())
+            perceptual_loss = float(perceptual_loss_t.detach().item()) if torch.is_tensor(perceptual_loss_t) else 0.0
             total = float(total_t.detach().item())
 
             best_min_loss_delta = max(float(getattr(args, "best_min_loss_delta", 0.0) or 0.0), 0.0)
@@ -311,13 +363,21 @@ def gradient_optimize_multimodal_qwen(
                         item.get("yes_prob", ""),
                     ])
                 csv_writer.writerow([
-                    it, qwen_loss, qwen_score, audio_reg, text_reg, total, grad_norm, int(is_best),
+                    it, qwen_loss, qwen_score, audio_reg, text_reg,
+                    perceptual_loss,
+                    perceptual_details.get("lpips_raw", ""),
+                    perceptual_details.get("temporal_raw", ""),
+                    total, grad_norm, int(is_best),
                     *rubric_values,
                 ])
                 csv_file.flush()
                 if wandb_table is not None:
                     wandb_table.add_data(
-                        it, qwen_score, qwen_loss, audio_reg, text_reg, total, grad_norm, int(is_best),
+                        it, qwen_score, qwen_loss, audio_reg, text_reg,
+                        perceptual_loss,
+                        perceptual_details.get("lpips_raw", 0.0),
+                        perceptual_details.get("temporal_raw", 0.0),
+                        total, grad_norm, int(is_best),
                         *rubric_values,
                     )
                 rubric_log = ""
@@ -326,10 +386,13 @@ def gradient_optimize_multimodal_qwen(
                         f"{item['name']}:{float(item['yes_prob']):.4f}"
                         for item in qwen_details
                     )
+                percep_log = ""
+                if perceptual_details:
+                    percep_log = f"  lpips={perceptual_details.get('lpips_raw', 0):.4f}  temporal={perceptual_details.get('temporal_raw', 0):.4f}"
                 log.info(
-                    "[%s] iter %3d/%d  qwen_nll=%.4f  yes_prob=%.4f  total=%.4f  grad_norm=%.3f  no_improve=%d%s%s",
+                    "[%s] iter %3d/%d  qwen_nll=%.4f  yes_prob=%.4f  total=%.4f  grad_norm=%.3f  no_improve=%d%s%s%s",
                     mode, it, num_iters, qwen_loss, qwen_score, total, grad_norm,
-                    iters_without_improvement, "  ★" if is_best else "", rubric_log,
+                    iters_without_improvement, "  ★" if is_best else "", percep_log, rubric_log,
                 )
                 if tb_writer is not None:
                     tb_writer.add_scalar(f"{mode}/qwen_nll", qwen_loss, it)
@@ -341,6 +404,10 @@ def gradient_optimize_multimodal_qwen(
                         tb_writer.add_scalar(f"{mode}/audio_reg", audio_reg, it)
                     if optimize_text:
                         tb_writer.add_scalar(f"{mode}/text_reg", text_reg, it)
+                    if perceptual_details:
+                        tb_writer.add_scalar(f"{mode}/perceptual_total", perceptual_loss, it)
+                        for pk, pv in perceptual_details.items():
+                            tb_writer.add_scalar(f"{mode}/perceptual/{pk}", pv, it)
                     if is_best:
                         tb_writer.add_scalar(f"{mode}/best_qwen_yes_prob", qwen_score, it)
                     for item in qwen_details:
@@ -362,6 +429,10 @@ def gradient_optimize_multimodal_qwen(
                         wandb_payload[f"{mode}/audio_reg"] = audio_reg
                     if optimize_text:
                         wandb_payload[f"{mode}/text_reg"] = text_reg
+                    if perceptual_details:
+                        wandb_payload[f"{mode}/perceptual_total"] = perceptual_loss
+                        for pk, pv in perceptual_details.items():
+                            wandb_payload[f"{mode}/perceptual/{pk}"] = pv
                     if is_best:
                         wandb_payload[f"{mode}/best_qwen_yes_prob"] = qwen_score
                     for item in qwen_details:
@@ -474,7 +545,7 @@ def gradient_optimize_multimodal_qwen(
                 _clear_cuda_cache()
                 break
 
-            del gen_frames, qwen_loss_t, audio_reg_t, text_reg_t, total_t, reg_t, qwen_details
+            del gen_frames, qwen_loss_t, audio_reg_t, text_reg_t, perceptual_loss_t, total_t, reg_t, qwen_details, perceptual_details
             _clear_cuda_cache()
     finally:
         csv_file.close()
