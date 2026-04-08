@@ -5,13 +5,14 @@
 # Same experiment structure as submit_optimize_multimodal.sh but replaces
 # X-CLIP with Qwen2.5-VL (7B) as the video-text alignment scorer.
 #
-# Resource note (single H200 80GB):
+# Resource note (single H100/H200 80GB):
 #   LTX-22B fp8  : ~22 GB
 #   Qwen2.5-VL-7B bf16 : ~14 GB
 #   Activations + optimizer states: ~30 GB
 #   Total estimate: ~65 GB — fits in 80 GB with gradient checkpointing.
 #
-# If you hit OOM, switch to --qwen-model Qwen2.5-VL-3B-Instruct (~6 GB bf16).
+# If you hit OOM, keep QWEN_GRADIENT_RUBRIC=motion, reduce QWEN_MAX_FRAMES,
+# or switch to Qwen2.5-VL-3B-Instruct (~6 GB bf16).
 #
 # Usage (three modes, three separate jobs):
 #   OPT_MODE=text  sbatch editing/scripts/submit_optimize_qwen_vl.sh /path/to/video.mp4
@@ -54,12 +55,12 @@ PROMPT_SLUG=$(echo "${EDIT_PROMPT}" | tr '[:upper:]' '[:lower:]' | tr -s ' ' | c
 OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/QwenVL/${PROMPT_SLUG}/$(echo "${OPT_MODE}" | tr ',' '_')}"
 
 # Qwen2.5-VL settings
-QWEN_MAX_FRAMES="${QWEN_MAX_FRAMES:-30}"
+QWEN_MAX_FRAMES="${QWEN_MAX_FRAMES:-8}"
 # Must be divisible by 28. 224 → 64 spatial tokens/chunk. 252 → 81 tokens/chunk.
 QWEN_IMG_SIZE="${QWEN_IMG_SIZE:-224}"
 QWEN_SAMPLE_MODE="${QWEN_SAMPLE_MODE:-linspace}" # linspace | contiguous | contiguous_random
 QWEN_CONTIGUOUS_START_FRAME="${QWEN_CONTIGUOUS_START_FRAME:-4}"
-QWEN_GRADIENT_RUBRIC="${QWEN_GRADIENT_RUBRIC:-full}"
+QWEN_GRADIENT_RUBRIC="${QWEN_GRADIENT_RUBRIC:-motion}"
 QWEN_MOTION_QUESTION="${QWEN_MOTION_QUESTION:-Does this video clearly show the action or state change described by the edit prompt: \"${EDIT_PROMPT}\"? Answer only 'yes' or 'no'.}"
 
 SEED="${SEED:-42}"
@@ -162,7 +163,8 @@ source "${REPO_ROOT}/.venv/bin/activate"
 export TORCH_HOME="${TORCH_HOME:-/home/amirrz/.cache/torch}"
 export HF_HOME="${HF_HOME:-/home/amirrz/.cache/huggingface}"
 export HF_HUB_OFFLINE=1
-export PYTORCH_ALLOC_CONF="${PYTORCH_ALLOC_CONF:-expandable_segments:True,garbage_collection_threshold:0.8}"
+export PYTORCH_CUDA_ALLOC_CONF="${PYTORCH_CUDA_ALLOC_CONF:-${PYTORCH_ALLOC_CONF:-expandable_segments:True,garbage_collection_threshold:0.8}}"
+export PYTORCH_ALLOC_CONF="${PYTORCH_ALLOC_CONF:-${PYTORCH_CUDA_ALLOC_CONF}}"
 export WANDB_PROJECT
 export WANDB_ENTITY
 export WANDB_TAGS

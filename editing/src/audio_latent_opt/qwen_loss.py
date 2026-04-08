@@ -356,7 +356,7 @@ def compute_qwen_video_loss(
             useful when early frames should remain static and the scorer should
             judge the edit after the static prefix.
         rubric_weight_overrides: Optional per-question weights for this call.
-            Use {"motion": 1.0, "entities": 0.0, "overall": 0.0} to keep the
+            Use a single positive weight, e.g. {"motion": 1.0}, to keep the
             gradient focused and reduce memory.
 
     Returns:

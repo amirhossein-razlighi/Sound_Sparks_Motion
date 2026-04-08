@@ -122,6 +122,7 @@ def _write_run_config(args: argparse.Namespace, output_dir: Path) -> None:
                 "WANDB_DIR",
                 "CUDA_VISIBLE_DEVICES",
                 "PYTORCH_ALLOC_CONF",
+                "PYTORCH_CUDA_ALLOC_CONF",
             ]
             if os.environ.get(key) is not None
         },
@@ -674,9 +675,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument(
         "--qwen-gradient-rubric",
-        default="full",
-        choices=["motion", "full"],
-        help="Which Qwen rubric questions receive gradients. motion can reduce memory; full matches the rubric objective.",
+        default="motion",
+        choices=["motion", "entities", "overall", "full"],
+        help=(
+            "Which Qwen rubric questions receive gradients. Single-component "
+            "modes reduce memory; full matches the weighted rubric objective."
+        ),
     )
     p.add_argument(
         "--qwen-motion-question",

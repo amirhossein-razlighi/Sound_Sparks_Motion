@@ -260,10 +260,39 @@ def gradient_optimize_multimodal_qwen(
             if gen_frames.shape[0] < 1:
                 raise RuntimeError("Generated video has no frames.")
 
-            # Qwen2.5-VL alignment loss
+            # Perceptual quality loss — computed BEFORE Qwen loss because
+            # Qwen's backward=True frees the graph.  Perceptual loss must
+            # use retain_graph=True so Qwen can still backprop afterward.
+            perceptual_loss_t = torch.tensor(0.0, device=gen_frames.device)
+            perceptual_details: dict[str, float] = {}
+            lpips_weight = getattr(args, "lpips_weight", 0.0)
+            temporal_weight = getattr(args, "temporal_weight", 0.0)
+            need_perceptual = cached_src_frames is not None and (lpips_weight > 0 or temporal_weight > 0)
+            if need_perceptual:
+                perceptual_loss_t, perceptual_details = compute_perceptual_quality_loss(
+                    gen_frames=gen_frames,
+                    src_frames=cached_src_frames,
+                    lpips_weight=lpips_weight,
+                    temporal_weight=temporal_weight,
+                    backbone=getattr(args, "lpips_backbone", "alex"),
+                    max_lpips_frames=min(16, gen_frames.shape[0]),
+                    max_temporal_pairs=min(12, gen_frames.shape[0] - 1),
+                    backward=False,  # we backward manually with retain_graph
+                )
+                if perceptual_loss_t.requires_grad:
+                    perceptual_loss_t.backward(retain_graph=True)
+                    perceptual_loss_t = perceptual_loss_t.detach()
+
+            # Qwen2.5-VL alignment loss (backward=True frees the graph — must come last)
             rubric_weight_overrides = None
-            if getattr(args, "qwen_gradient_rubric", "motion") == "motion":
-                rubric_weight_overrides = {"motion": 1.0, "entities": 0.0, "overall": 0.0}
+            qwen_gradient_rubric = getattr(args, "qwen_gradient_rubric", "motion")
+            if qwen_gradient_rubric != "full":
+                rubric_weight_overrides = {
+                    "motion": 0.0,
+                    "entities": 0.0,
+                    "overall": 0.0,
+                    str(qwen_gradient_rubric): 1.0,
+                }
             qwen_loss_t, qwen_details = compute_qwen_video_loss(
                 frames_chw=gen_frames,
                 qwen_model=qwen_model,
@@ -278,23 +307,6 @@ def gradient_optimize_multimodal_qwen(
                 contiguous_start_frame=getattr(args, "qwen_contiguous_start_frame", 0),
                 rubric_weight_overrides=rubric_weight_overrides,
             )
-
-            # Perceptual quality loss (LPIPS source preservation + temporal consistency)
-            perceptual_loss_t = torch.tensor(0.0, device=qwen_loss_t.device)
-            perceptual_details: dict[str, float] = {}
-            lpips_weight = getattr(args, "lpips_weight", 0.0)
-            temporal_weight = getattr(args, "temporal_weight", 0.0)
-            if cached_src_frames is not None and (lpips_weight > 0 or temporal_weight > 0):
-                perceptual_loss_t, perceptual_details = compute_perceptual_quality_loss(
-                    gen_frames=gen_frames,
-                    src_frames=cached_src_frames,
-                    lpips_weight=lpips_weight,
-                    temporal_weight=temporal_weight,
-                    backbone=getattr(args, "lpips_backbone", "alex"),
-                    max_lpips_frames=min(16, gen_frames.shape[0]),
-                    max_temporal_pairs=min(12, gen_frames.shape[0] - 1),
-                    backward=True,
-                )
 
             # Adaptive regularization (increase over time to prevent late-stage adversarial drift)
             reg_schedule = getattr(args, "reg_schedule", "constant")
@@ -316,7 +328,8 @@ def gradient_optimize_multimodal_qwen(
             if optimize_text and delta_v is not None and text_reg_w > 0:
                 text_reg_t = text_reg_w * torch.mean(delta_v ** 2)
 
-            total_t = qwen_loss_t + perceptual_loss_t + audio_reg_t + text_reg_t
+            # perceptual_loss_t is detached (already backpropped); add for logging only
+            total_t = qwen_loss_t + audio_reg_t + text_reg_t
             reg_t = audio_reg_t + text_reg_t
             if reg_t.requires_grad:
                 reg_t.backward()
@@ -336,7 +349,7 @@ def gradient_optimize_multimodal_qwen(
             audio_reg = float(audio_reg_t.detach().item())
             text_reg = float(text_reg_t.detach().item())
             perceptual_loss = float(perceptual_loss_t.detach().item()) if torch.is_tensor(perceptual_loss_t) else 0.0
-            total = float(total_t.detach().item())
+            total = float(total_t.detach().item()) + perceptual_loss  # include perceptual for logging/best selection
 
             best_min_loss_delta = max(float(getattr(args, "best_min_loss_delta", 0.0) or 0.0), 0.0)
             is_best = total < (best["qwen_loss"] - best_min_loss_delta)

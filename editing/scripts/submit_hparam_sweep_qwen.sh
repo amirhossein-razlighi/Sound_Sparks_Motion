@@ -84,9 +84,10 @@ OPT_MODE="${OPT_MODE:-both}"     # run both audio+text so we capture all signal
 SWEEP_SLUG="lr${LR}_reg${LATENT_REG_WEIGHT}_aud${AUD_OPT_LAST_STEPS}"
 OUTPUT_DIR="${REPO_ROOT}/results/hparam_sweep/${SWEEP_SLUG}"
 
-# Fixed settings — do not sweep these (use known-good defaults)
-QWEN_MAX_FRAMES=30
+# Fixed settings — do not sweep these (use memory-safe defaults)
+QWEN_MAX_FRAMES="${QWEN_MAX_FRAMES:-8}"
 QWEN_IMG_SIZE=224
+QWEN_GRADIENT_RUBRIC="${QWEN_GRADIENT_RUBRIC:-motion}"
 SEED=42
 NUM_INFERENCE_STEPS=30
 RETAKE_NUM_INFERENCE_STEPS=30
@@ -125,7 +126,8 @@ source "${REPO_ROOT}/.venv/bin/activate"
 export TORCH_HOME="${TORCH_HOME:-/home/amirrz/.cache/torch}"
 export HF_HOME="${HF_HOME:-/home/amirrz/.cache/huggingface}"
 export HF_HUB_OFFLINE=1
-export PYTORCH_ALLOC_CONF="${PYTORCH_ALLOC_CONF:-expandable_segments:True,garbage_collection_threshold:0.8}"
+export PYTORCH_CUDA_ALLOC_CONF="${PYTORCH_CUDA_ALLOC_CONF:-${PYTORCH_ALLOC_CONF:-expandable_segments:True,garbage_collection_threshold:0.8}}"
+export PYTORCH_ALLOC_CONF="${PYTORCH_ALLOC_CONF:-${PYTORCH_CUDA_ALLOC_CONF}}"
 
 export WANDB_PROJECT="${WANDB_PROJECT:-ltx-qwen-opt}"
 export WANDB_ENTITY="${WANDB_ENTITY:-}"
@@ -152,6 +154,7 @@ ARGS=(
     --qwen-model "${QWEN_ROOT}"
     --qwen-max-frames "${QWEN_MAX_FRAMES}"
     --qwen-img-size "${QWEN_IMG_SIZE}"
+    --qwen-gradient-rubric "${QWEN_GRADIENT_RUBRIC}"
     --checkpoint-path "${CKPT_ROOT}/ltx-2.3-22b-dev.safetensors"
     --gemma-root "${GEMMA_ROOT}"
     --seed "${SEED}"
