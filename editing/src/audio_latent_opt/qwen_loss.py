@@ -21,6 +21,7 @@ For 224×224 images and 8 frames: N = 4 * 8 * 8 = 256, feature_dim = 4704.
 """
 from __future__ import annotations
 
+import math
 import logging
 
 import torch
@@ -311,6 +312,51 @@ def _frames_to_pixel_values(
     return x.reshape(num_tokens, patch_dim)
 
 
+def _continuous_positions_to_unique_indices(positions: torch.Tensor, n: int) -> torch.Tensor:
+    """Round sorted continuous positions to strictly increasing frame indices."""
+    rounded: list[int] = []
+    last = -1
+    remaining = len(positions)
+
+    for pos in positions.detach().cpu().tolist():
+        max_allowed = n - remaining
+        idx = int(round(float(pos)))
+        idx = min(max(idx, last + 1), max_allowed)
+        rounded.append(idx)
+        last = idx
+        remaining -= 1
+
+    return torch.tensor(rounded, device=positions.device, dtype=torch.long)
+
+
+def _normal_sample_indices(n: int, num_frames: int, device: torch.device) -> torch.Tensor:
+    """Sample endpoints plus denser middle frames via normal quantiles."""
+    if num_frames <= 2 or n <= 2:
+        return torch.linspace(0, n - 1, num_frames, device=device).round().long()
+
+    # Choose a finite quantile range and map evenly spaced probabilities
+    # through the inverse normal CDF. This clusters interior samples near the
+    # midpoint while still keeping explicit first/last frame coverage.
+    eps = min(0.2, max(1.0 / (num_frames + 1), 1e-3))
+    u = torch.linspace(0.0, 1.0, num_frames, device=device, dtype=torch.float32)
+    inner_u = u[1:-1].clamp(eps, 1.0 - eps)
+
+    z_limit = math.sqrt(2.0) * torch.erfinv(
+        torch.tensor(1.0 - 2.0 * eps, device=device, dtype=torch.float32)
+    )
+    inner_z = math.sqrt(2.0) * torch.erfinv(2.0 * inner_u - 1.0)
+
+    inner_positions = (inner_z / (2.0 * z_limit) + 0.5) * float(n - 1)
+    positions = torch.cat(
+        [
+            torch.zeros(1, device=device, dtype=torch.float32),
+            inner_positions,
+            torch.full((1,), float(n - 1), device=device, dtype=torch.float32),
+        ]
+    )
+    return _continuous_positions_to_unique_indices(positions, n)
+
+
 # ---------------------------------------------------------------------------
 # Differentiable loss
 # ---------------------------------------------------------------------------
@@ -348,7 +394,9 @@ def compute_qwen_video_loss(
             this to avoid keeping multiple full Qwen graphs in memory at once.
         return_details: If True, also return per-rubric-question detached
             losses/scores for logging.
-        sample_mode: "linspace" samples uniformly across the video; "contiguous"
+        sample_mode: "linspace" samples uniformly across the video; "normal"
+            samples across the full video with denser coverage near the
+            midpoint while still including the start and end; "contiguous"
             samples a contiguous window starting at contiguous_start_frame;
             "contiguous_random" samples one contiguous window whose start is
             randomly chosen at or after contiguous_start_frame.
@@ -372,6 +420,8 @@ def compute_qwen_video_loss(
 
     if sample_mode == "linspace":
         sample_idx = torch.linspace(0, n - 1, num_frames, device=frames_chw.device).round().long()
+    elif sample_mode == "normal":
+        sample_idx = _normal_sample_indices(n, num_frames, frames_chw.device)
     elif sample_mode == "contiguous":
         start = min(max(int(contiguous_start_frame), 0), max(n - num_frames, 0))
         sample_idx = torch.arange(start, start + num_frames, device=frames_chw.device).long()

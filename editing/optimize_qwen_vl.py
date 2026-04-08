@@ -664,8 +664,12 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--qwen-sample-mode",
         default="linspace",
-        choices=["linspace", "contiguous", "contiguous_random"],
-        help="How to sample frames for the Qwen loss. contiguous uses a temporal window after the static prefix.",
+        choices=["linspace", "normal", "contiguous", "contiguous_random"],
+        help=(
+            "How to sample frames for the Qwen loss. normal covers the full "
+            "clip with denser sampling near the midpoint; contiguous uses a "
+            "temporal window after the static prefix."
+        ),
     )
     p.add_argument(
         "--qwen-contiguous-start-frame",
