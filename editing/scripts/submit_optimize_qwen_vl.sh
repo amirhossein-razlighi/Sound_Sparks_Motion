@@ -46,13 +46,14 @@ QWEN_ROOT="${QWEN_ROOT:-/project/def-amahdavi/amirrz/HF/models/Qwen2.5-VL-7B-Ins
 SRC_VIDEO="${SRC_VIDEO:-${1:-}}"
 OPT_MODE="${OPT_MODE:-both}"
 
-EDIT_PROMPT="${EDIT_PROMPT:-A red rose blooming.}"
-STATIC_PROMPT="${STATIC_PROMPT:-A red rose bud in a green grass field.}"
+EDIT_PROMPT="${EDIT_PROMPT:-A bird openning its wings.}"
+STATIC_PROMPT="${STATIC_PROMPT:-A bird sitting on a branch of tree.}"
+NAME_OF_THIS_EXP="${NAME_OF_THIS_EXP:-retake_frames_5/}"
 
 NEGATIVE_PROMPT="${NEGATIVE_PROMPT:-blurry, low quality, artifacts, distorted}"
 ENHANCE_PROMPT="${ENHANCE_PROMPT:-1}"
 PROMPT_SLUG=$(echo "${EDIT_PROMPT}" | tr '[:upper:]' '[:lower:]' | tr -s ' ' | cut -d' ' -f1-5 | tr ' ' '_')
-OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/QwenVL/${PROMPT_SLUG}/$(echo "${OPT_MODE}" | tr ',' '_')}"
+OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/QwenVL/${PROMPT_SLUG}/${NAME_OF_THIS_EXP}$(echo "${OPT_MODE}" | tr ',' '_')}"
 
 # Qwen2.5-VL settings
 QWEN_MAX_FRAMES="${QWEN_MAX_FRAMES:-8}"
@@ -67,7 +68,7 @@ SEED="${SEED:-42}"
 NUM_INFERENCE_STEPS="${NUM_INFERENCE_STEPS:-30}"
 RETAKE_NUM_INFERENCE_STEPS="${RETAKE_NUM_INFERENCE_STEPS:-30}"
 FINAL_RETAKE_NUM_INFERENCE_STEPS="${FINAL_RETAKE_NUM_INFERENCE_STEPS:-30}"
-RETAKE_START_FRAMES="${RETAKE_START_FRAMES:-10}"
+RETAKE_START_FRAMES="${RETAKE_START_FRAMES:-5}"
 
 ITERATIONS="${ITERATIONS:-30}"
 LR="${LR:-0.005}"
