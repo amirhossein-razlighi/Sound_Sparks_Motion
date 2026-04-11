@@ -314,6 +314,14 @@ def run(args: argparse.Namespace) -> None:
         datefmt="%H:%M:%S",
     )
 
+    # Seed all RNG sources before any model or pipeline call so the baseline
+    # video is reproducible across SLURM jobs (cuBLAS draws from the global
+    # CUDA RNG, which is not controlled by the per-pipeline Generator).
+    torch.manual_seed(args.seed)
+    torch.cuda.manual_seed_all(args.seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     output_dir = Path(args.output_dir).expanduser().resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
