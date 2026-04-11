@@ -283,7 +283,12 @@ def gradient_optimize_multimodal_qwen(
                     perceptual_loss_t.backward(retain_graph=True)
                     perceptual_loss_t = perceptual_loss_t.detach()
 
-            # Qwen2.5-VL alignment loss (backward=True frees the graph — must come last)
+            # Qwen2.5-VL alignment loss
+            # With qwen_grad_accum_steps > 1: run N Qwen passes per render using
+            # different random frame windows (contiguous_random). Gradient is
+            # accumulated on a detached copy of gen_frames so each Qwen graph is
+            # freed after its own backward — no N× memory overhead. The averaged
+            # gradient is then chained through the rendering graph once at the end.
             rubric_weight_overrides = None
             qwen_gradient_rubric = getattr(args, "qwen_gradient_rubric", "motion")
             if qwen_gradient_rubric != "full":
@@ -293,20 +298,70 @@ def gradient_optimize_multimodal_qwen(
                     "overall": 0.0,
                     str(qwen_gradient_rubric): 1.0,
                 }
-            qwen_loss_t, qwen_details = compute_qwen_video_loss(
-                frames_chw=gen_frames,
-                qwen_model=qwen_model,
-                cached_inputs=cached_qwen_inputs,
-                yes_token_id=yes_token_id,
-                no_token_id=no_token_id,
-                max_frames=args.qwen_max_frames,
-                img_size=args.qwen_img_size,
-                backward=True,
-                return_details=True,
-                sample_mode=getattr(args, "qwen_sample_mode", "linspace"),
-                contiguous_start_frame=getattr(args, "qwen_contiguous_start_frame", 0),
-                rubric_weight_overrides=rubric_weight_overrides,
-            )
+
+            qwen_grad_accum = max(1, int(getattr(args, "qwen_grad_accum_steps", 1)))
+
+            if qwen_grad_accum == 1:
+                # Original single-pass path — backward=True frees the graph.
+                qwen_loss_t, qwen_details = compute_qwen_video_loss(
+                    frames_chw=gen_frames,
+                    qwen_model=qwen_model,
+                    cached_inputs=cached_qwen_inputs,
+                    yes_token_id=yes_token_id,
+                    no_token_id=no_token_id,
+                    max_frames=args.qwen_max_frames,
+                    img_size=args.qwen_img_size,
+                    backward=True,
+                    return_details=True,
+                    sample_mode=getattr(args, "qwen_sample_mode", "linspace"),
+                    contiguous_start_frame=getattr(args, "qwen_contiguous_start_frame", 0),
+                    rubric_weight_overrides=rubric_weight_overrides,
+                )
+            else:
+                # Multi-pass gradient accumulation.
+                # Detach gen_frames → each Qwen graph freed after its own backward,
+                # not N copies held simultaneously. Averaged gradient then propagates
+                # through the rendering graph (retained by perceptual backward, or
+                # still intact if perceptual was skipped).
+                gf_det = gen_frames.detach().requires_grad_(True)
+                accum_loss = torch.zeros((), device=gen_frames.device)
+                qwen_details = []
+                base_sample_mode = getattr(args, "qwen_sample_mode", "linspace")
+                for accum_i in range(qwen_grad_accum):
+                    # Pass 0: user's chosen mode (e.g. linspace gives full-arc coverage).
+                    # Passes 1+: contiguous_random for diversity — different window each
+                    # time so the averaged gradient is not just N copies of the same estimate.
+                    pass_sample_mode = base_sample_mode if accum_i == 0 else "contiguous_random"
+                    _result = compute_qwen_video_loss(
+                        frames_chw=gf_det,
+                        qwen_model=qwen_model,
+                        cached_inputs=cached_qwen_inputs,
+                        yes_token_id=yes_token_id,
+                        no_token_id=no_token_id,
+                        max_frames=args.qwen_max_frames,
+                        img_size=args.qwen_img_size,
+                        backward=False,
+                        return_details=(accum_i == 0),
+                        sample_mode=pass_sample_mode,
+                        contiguous_start_frame=getattr(args, "qwen_contiguous_start_frame", 0),
+                        rubric_weight_overrides=rubric_weight_overrides,
+                    )
+                    if accum_i == 0:
+                        loss_i, qwen_details = _result
+                    else:
+                        loss_i = _result  # plain tensor when return_details=False
+                    # Scale by 1/N and backward: frees this Qwen graph,
+                    # accumulates gradient in gf_det.grad.
+                    (loss_i / qwen_grad_accum).backward()
+                    accum_loss = accum_loss + loss_i.detach()
+
+                qwen_loss_t = accum_loss / qwen_grad_accum
+
+                # Chain the averaged Qwen gradient through the rendering graph.
+                # gen_frames still has its grad_fn (rendering kept alive by
+                # perceptual retain_graph=True, or untouched if no perceptual).
+                if gf_det.grad is not None and gen_frames.grad_fn is not None:
+                    gen_frames.backward(gradient=gf_det.grad)
 
             # Adaptive regularization (increase over time to prevent late-stage adversarial drift)
             reg_schedule = getattr(args, "reg_schedule", "constant")

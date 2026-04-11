@@ -54,9 +54,15 @@ NEGATIVE_PROMPT="${NEGATIVE_PROMPT:-blurry, low quality, artifacts, distorted}"
 ENHANCE_PROMPT="${ENHANCE_PROMPT:-1}"
 PROMPT_SLUG=$(echo "${EDIT_PROMPT}" | tr '[:upper:]' '[:lower:]' | tr -s ' ' | cut -d' ' -f1-5 | tr ' ' '_')
 QWEN_MAX_FRAMES="${QWEN_MAX_FRAMES:-8}" # Choose between 8 / 16 / 30. Sometimes LESS IS BETTER!
-OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/QwenVL/${PROMPT_SLUG}/qwen_frames_${QWEN_MAX_FRAMES}/${NAME_OF_THIS_EXP}}"
+OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/QwenVL/${PROMPT_SLUG}/multi_grad/qwen_frames_${QWEN_MAX_FRAMES}/${NAME_OF_THIS_EXP}}"
 
 RETAKE_START_FRAMES="${RETAKE_START_FRAMES:-5}"
+# Gradient accumulation: run N Qwen passes per optimizer step and average the
+# gradients. Reduces dependence on lucky cuBLAS non-determinism.
+# N=3 costs ~3x Qwen time per iter but uses the same peak VRAM.
+# Pass 0 always uses QWEN_SAMPLE_MODE (your global/arc view).
+# Passes 1+ automatically use contiguous_random for diversity.
+QWEN_GRAD_ACCUM_STEPS="${QWEN_GRAD_ACCUM_STEPS:-3}"
 QWEN_SAMPLE_MODE="${QWEN_SAMPLE_MODE:-linspace}" # linspace | normal | contiguous | contiguous_random
 LPIPS_WEIGHT="${LPIPS_WEIGHT:-0.0}"               # 0.0 = disabled; 0.1-0.5 recommended for hard edits
 TEMPORAL_WEIGHT="${TEMPORAL_WEIGHT:-0.0}"         # 0.0 = disabled; 0.05-0.2 for temporal smoothness
@@ -142,7 +148,7 @@ echo "  Edit prompt      : ${EDIT_PROMPT}"
 echo "  Static prompt    : ${STATIC_PROMPT}"
 echo "  Enhance prompt   : ${ENHANCE_PROMPT}"
 echo "  Qwen model       : ${QWEN_ROOT}"
-echo "  Qwen frames      : ${QWEN_MAX_FRAMES}  img_size: ${QWEN_IMG_SIZE}  sample: ${QWEN_SAMPLE_MODE}@${QWEN_CONTIGUOUS_START_FRAME}  rubric: ${QWEN_GRADIENT_RUBRIC}"
+echo "  Qwen frames      : ${QWEN_MAX_FRAMES}  img_size: ${QWEN_IMG_SIZE}  sample: ${QWEN_SAMPLE_MODE}@${QWEN_CONTIGUOUS_START_FRAME}  rubric: ${QWEN_GRADIENT_RUBRIC}  grad_accum: ${QWEN_GRAD_ACCUM_STEPS}"
 echo "  Qwen motion Q    : ${QWEN_MOTION_QUESTION}"
 echo "  Iterations       : ${ITERATIONS}  LR: ${LR}  LR_sched: ${LR_SCHEDULE}"
 echo "  Perceptual       : lpips=${LPIPS_WEIGHT}  temporal=${TEMPORAL_WEIGHT}  backbone=${LPIPS_BACKBONE}  reg_sched=${REG_SCHEDULE}"
@@ -194,6 +200,7 @@ ARGS=(
     --qwen-contiguous-start-frame "${QWEN_CONTIGUOUS_START_FRAME}"
     --qwen-gradient-rubric "${QWEN_GRADIENT_RUBRIC}"
     --qwen-motion-question "${QWEN_MOTION_QUESTION}"
+    --qwen-grad-accum-steps "${QWEN_GRAD_ACCUM_STEPS}"
     --checkpoint-path "${CKPT_ROOT}/ltx-2.3-22b-dev.safetensors"
     --gemma-root "${GEMMA_ROOT}"
     --seed "${SEED}"

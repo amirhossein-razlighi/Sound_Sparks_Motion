@@ -695,6 +695,18 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     p.add_argument(
+        "--qwen-grad-accum-steps",
+        type=int,
+        default=1,
+        help=(
+            "Number of Qwen forward-backward passes per optimizer step. "
+            "Each pass uses a different random frame window (contiguous_random). "
+            "Averaging N gradient estimates reduces direction variance caused by "
+            "cuBLAS non-determinism. N=3 is a good starting point; higher N costs "
+            "N× more Qwen time per step but uses ~same peak memory."
+        ),
+    )
+    p.add_argument(
         "--qwen-motion-question",
         default=DEFAULT_QWEN_MOTION_QUESTION,
         help=(
