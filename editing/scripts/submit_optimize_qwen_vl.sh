@@ -46,17 +46,16 @@ QWEN_ROOT="${QWEN_ROOT:-/project/def-amahdavi/amirrz/HF/models/Qwen2.5-VL-7B-Ins
 SRC_VIDEO="${SRC_VIDEO:-${1:-}}"
 OPT_MODE="${OPT_MODE:-both}"
 
-EDIT_PROMPT="${EDIT_PROMPT:-A dog yawning}"
-STATIC_PROMPT="${STATIC_PROMPT:-A dog sitting on a chair}"
-NAME_OF_THIS_EXP="${NAME_OF_THIS_EXP:-linspace_without_lpips_and_with_grad_clip/}"
+EDIT_PROMPT="${EDIT_PROMPT:-A red rose blooming.}"
+STATIC_PROMPT="${STATIC_PROMPT:-A red rose bud in a green grass field.}"
+NAME_OF_THIS_EXP="${NAME_OF_THIS_EXP:-linspace_w_lpips/}"
 
 NEGATIVE_PROMPT="${NEGATIVE_PROMPT:-blurry, low quality, artifacts, distorted}"
 ENHANCE_PROMPT="${ENHANCE_PROMPT:-1}"
 PROMPT_SLUG=$(echo "${EDIT_PROMPT}" | tr '[:upper:]' '[:lower:]' | tr -s ' ' | cut -d' ' -f1-5 | tr ' ' '_')
-OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/QwenVL/${PROMPT_SLUG}/${NAME_OF_THIS_EXP}$(echo "${OPT_MODE}" | tr ',' '_')}"
+QWEN_MAX_FRAMES="${QWEN_MAX_FRAMES:-8}" # Choose between 8 / 16 / 30. Sometimes LESS IS BETTER!
+OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/QwenVL/${PROMPT_SLUG}/qwen_frames_${QWEN_MAX_FRAMES}/${NAME_OF_THIS_EXP}}"
 
-# Qwen2.5-VL settings
-QWEN_MAX_FRAMES="${QWEN_MAX_FRAMES:-30}"
 # Must be divisible by 28. 224 → 64 spatial tokens/chunk. 252 → 81 tokens/chunk.
 QWEN_IMG_SIZE="${QWEN_IMG_SIZE:-224}"
 QWEN_SAMPLE_MODE="${QWEN_SAMPLE_MODE:-linspace}" # linspace | normal | contiguous | contiguous_random
@@ -64,11 +63,16 @@ QWEN_CONTIGUOUS_START_FRAME="${QWEN_CONTIGUOUS_START_FRAME:-4}"
 QWEN_GRADIENT_RUBRIC="${QWEN_GRADIENT_RUBRIC:-motion}"
 QWEN_MOTION_QUESTION="${QWEN_MOTION_QUESTION:-Does this video clearly show the action or state change described by the edit prompt: \"${EDIT_PROMPT}\"? Answer only 'yes' or 'no'.}"
 
+# Perceptual quality preservation (anti-adversarial)
+LPIPS_WEIGHT="${LPIPS_WEIGHT:-0.1}"               # 0.0 = disabled; 0.1-0.5 recommended for hard edits
+TEMPORAL_WEIGHT="${TEMPORAL_WEIGHT:-0.05}"         # 0.0 = disabled; 0.05-0.2 for temporal smoothness
+LPIPS_BACKBONE="${LPIPS_BACKBONE:-alex}"           # alex (~30MB) | vgg (~60MB)
+
+RETAKE_START_FRAMES="${RETAKE_START_FRAMES:-10}"
 SEED="${SEED:-42}"
 NUM_INFERENCE_STEPS="${NUM_INFERENCE_STEPS:-30}"
 RETAKE_NUM_INFERENCE_STEPS="${RETAKE_NUM_INFERENCE_STEPS:-30}"
 FINAL_RETAKE_NUM_INFERENCE_STEPS="${FINAL_RETAKE_NUM_INFERENCE_STEPS:-30}"
-RETAKE_START_FRAMES="${RETAKE_START_FRAMES:-5}"
 
 ITERATIONS="${ITERATIONS:-30}"
 LR="${LR:-0.005}"
@@ -89,10 +93,6 @@ LATENT_REG_WEIGHT="${LATENT_REG_WEIGHT:-0.01}"
 TEXT_REG_WEIGHT="${TEXT_REG_WEIGHT:-0.001}"
 REG_SCHEDULE="${REG_SCHEDULE:-cosine_increase}"   # constant | linear_warmup | cosine_increase
 
-# Perceptual quality preservation (anti-adversarial)
-LPIPS_WEIGHT="${LPIPS_WEIGHT:-0.0}"               # 0.0 = disabled; 0.1-0.5 recommended for hard edits
-TEMPORAL_WEIGHT="${TEMPORAL_WEIGHT:-0.0}"         # 0.0 = disabled; 0.05-0.2 for temporal smoothness
-LPIPS_BACKBONE="${LPIPS_BACKBONE:-alex}"           # alex (~30MB) | vgg (~60MB)
 LR_SCHEDULE="${LR_SCHEDULE:-cosine}"              # constant | cosine
 
 HEIGHT="${HEIGHT:-320}"
