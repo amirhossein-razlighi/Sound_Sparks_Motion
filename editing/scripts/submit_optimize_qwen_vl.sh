@@ -54,7 +54,7 @@ NEGATIVE_PROMPT="${NEGATIVE_PROMPT:-blurry, low quality, artifacts, distorted}"
 ENHANCE_PROMPT="${ENHANCE_PROMPT:-1}"
 PROMPT_SLUG=$(echo "${EDIT_PROMPT}" | tr '[:upper:]' '[:lower:]' | tr -s ' ' | cut -d' ' -f1-5 | tr ' ' '_')
 QWEN_MAX_FRAMES="${QWEN_MAX_FRAMES:-8}" # Choose between 8 / 16 / 30. Sometimes LESS IS BETTER!
-OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/QwenVL/${PROMPT_SLUG}/multi_grad/qwen_frames_${QWEN_MAX_FRAMES}/${NAME_OF_THIS_EXP}}"
+OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/QwenVL/${PROMPT_SLUG}/${NAME_OF_THIS_EXP}}"
 
 RETAKE_START_FRAMES="${RETAKE_START_FRAMES:-5}"
 # Gradient accumulation: run N Qwen passes per optimizer step and average the

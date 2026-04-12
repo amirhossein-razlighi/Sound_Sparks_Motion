@@ -20,29 +20,32 @@
 # ============================================================
 # PROMPTS & VIDEO  — always edit these
 # ============================================================
-SRC_VIDEO="/path/to/your/video.mp4"
-EDIT_PROMPT="A red car door opens."
-STATIC_PROMPT="A red car in the middle of a garage."
-NAME_OF_THIS_EXP="my_sweep"   # base name; sweep tags are appended automatically
+SRC_VIDEO="/home/amirrz/my_codes/LTX-2/input_videos/3_gold_fishes_in_a_glass_fish.mp4"
+EDIT_PROMPT="A goldfish jumps out of the fish tank into the air."
+STATIC_PROMPT="three goldfish swimming in a fish tank."
+NAME_OF_THIS_EXP="sweep_exp"   # base name; sweep tags are appended automatically
 
 # ============================================================
 # SWEEP PARAMETERS
 # Single value  →  one element array, e.g. (0.0)
 # Multiple values → space-separated, e.g. (0.0 0.1 0.5)
 # ============================================================
-RETAKE_START_FRAMES=(5)
-QWEN_GRAD_ACCUM_STEPS=(3)
-QWEN_SAMPLE_MODE=(linspace)
-LPIPS_WEIGHT=(0.0)
-TEMPORAL_WEIGHT=(0.0)
+RETAKE_START_FRAMES=(1 5)
+QWEN_GRAD_ACCUM_STEPS=(1 3)
+QWEN_SAMPLE_MODE=(linspace normal)
+# LPIPS_ENABLED=0  →  LPIPS_WEIGHT=0.0 + TEMPORAL_WEIGHT=0.0 (one combo)
+# LPIPS_ENABLED=1  →  cartesian product of the non-zero arrays below
+LPIPS_ENABLED=(0 1)
+LPIPS_WEIGHT_VALUES=(0.1)
+TEMPORAL_WEIGHT_VALUES=(0.05)
 LR=(0.005)
+QWEN_MAX_FRAMES=(8 24)
 
 # ============================================================
 # FIXED SETTINGS  (not swept, passed as-is to every job)
 # Leave a variable empty ("") to use the sbatch script default.
 # ============================================================
 ITERATIONS=30
-QWEN_MAX_FRAMES=8
 EARLY_STOPPING=15
 VISUALIZE_EVERY_ITERS=5
 SEED=42
@@ -67,7 +70,7 @@ WANDB_TAGS="qwen-loss,cluster-offline"
 # ============================================================
 # SLURM settings for each submitted job
 # ============================================================
-SBATCH_TIME="02:00:00"
+SBATCH_TIME="01:30:00"
 SBATCH_MEM="64G"
 SBATCH_GPU="h100:1"
 SBATCH_ACCOUNT="def-amahdavi"
@@ -104,9 +107,24 @@ _expand() {
 _expand RETAKE_START_FRAMES  "${RETAKE_START_FRAMES[@]}"
 _expand QWEN_GRAD_ACCUM_STEPS "${QWEN_GRAD_ACCUM_STEPS[@]}"
 _expand QWEN_SAMPLE_MODE     "${QWEN_SAMPLE_MODE[@]}"
-_expand LPIPS_WEIGHT         "${LPIPS_WEIGHT[@]}"
-_expand TEMPORAL_WEIGHT      "${TEMPORAL_WEIGHT[@]}"
+_expand QWEN_MAX_FRAMES      "${QWEN_MAX_FRAMES[@]}"
 _expand LR                   "${LR[@]}"
+
+# Build LPIPS pairs: each entry is "lpips_val,temporal_val"
+# LPIPS_ENABLED=0 → "0.0,0.0" ; LPIPS_ENABLED=1 → cartesian product of non-zero arrays
+_lpips_pairs=()
+for _en in "${LPIPS_ENABLED[@]}"; do
+    if [[ "$_en" == "0" ]]; then
+        _lpips_pairs+=("0.0,0.0")
+    else
+        for _lw in "${LPIPS_WEIGHT_VALUES[@]}"; do
+            for _tw in "${TEMPORAL_WEIGHT_VALUES[@]}"; do
+                _lpips_pairs+=("${_lw},${_tw}")
+            done
+        done
+    fi
+done
+_expand LPIPS_PAIR "${_lpips_pairs[@]}"
 
 total="${#combos[@]}"
 echo "=================================================="
@@ -140,18 +158,28 @@ for combo in "${combos[@]}"; do
     sweep_env=()
     sweep_tag=""
     for pair in "${pairs[@]}"; do
-        sweep_env+=("${pair}")
         key="${pair%%=*}"
         val="${pair#*=}"
-        # Build a short tag for the output directory
-        case "$key" in
-            RETAKE_START_FRAMES)   sweep_tag+="rsf${val}_"   ;;
-            LR)                    sweep_tag+="lr${val}_"    ;;
-            LPIPS_WEIGHT)          sweep_tag+="lpips${val}_" ;;
-            TEMPORAL_WEIGHT)       sweep_tag+="temp${val}_"  ;;
-            QWEN_GRAD_ACCUM_STEPS) sweep_tag+="accum${val}_" ;;
-            QWEN_SAMPLE_MODE)      sweep_tag+="mode${val}_"  ;;
-        esac
+        if [[ "$key" == "LPIPS_PAIR" ]]; then
+            # Decode "lpips_val,temporal_val" into two separate env vars
+            _lpips_w="${val%%,*}"
+            _temp_w="${val##*,}"
+            sweep_env+=("LPIPS_WEIGHT=${_lpips_w}" "TEMPORAL_WEIGHT=${_temp_w}")
+            if [[ "$_lpips_w" == "0.0" ]]; then
+                sweep_tag+="lpipsOFF_"
+            else
+                sweep_tag+="lpips${_lpips_w}_temp${_temp_w}_"
+            fi
+        else
+            sweep_env+=("${pair}")
+            case "$key" in
+                RETAKE_START_FRAMES)   sweep_tag+="rsf${val}_"    ;;
+                LR)                    sweep_tag+="lr${val}_"     ;;
+                QWEN_GRAD_ACCUM_STEPS) sweep_tag+="accum${val}_"  ;;
+                QWEN_SAMPLE_MODE)      sweep_tag+="mode${val}_"   ;;
+                QWEN_MAX_FRAMES)       sweep_tag+="frames${val}_" ;;
+            esac
+        fi
     done
     sweep_tag="${sweep_tag%_}"   # strip trailing underscore
 
@@ -168,7 +196,6 @@ for combo in "${combos[@]}"; do
         STATIC_PROMPT="${STATIC_PROMPT}"
         NAME_OF_THIS_EXP="${job_name}/"
         ITERATIONS="${ITERATIONS}"
-        QWEN_MAX_FRAMES="${QWEN_MAX_FRAMES}"
         EARLY_STOPPING="${EARLY_STOPPING}"
         VISUALIZE_EVERY_ITERS="${VISUALIZE_EVERY_ITERS}"
         SEED="${SEED}"
