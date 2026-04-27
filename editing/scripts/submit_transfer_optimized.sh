@@ -37,10 +37,10 @@ QWEN_ROOT="${QWEN_ROOT:-/project/def-amahdavi/amirrz/HF/models/Qwen2.5-VL-7B-Ins
 TARGET_VIDEO="${TARGET_VIDEO:-${1:-}}"
 OPT_DIR="${OPT_DIR:-${2:-}}"
 TRANSFER_MODE="${TRANSFER_MODE:-both}"        # text | audio | both
-EDIT_PROMPT="${EDIT_PROMPT:-A surprised man.}"
-STATIC_PROMPT="${STATIC_PROMPT:-A man is standing in the middle of a room.}"            # before-state description for CLIP diagnostics
+EDIT_PROMPT="${EDIT_PROMPT:-The man pets the dog.}"
+STATIC_PROMPT="${STATIC_PROMPT:-A man and a dog in front of a bench.}"            # before-state description for CLIP diagnostics
 NEGATIVE_PROMPT="${NEGATIVE_PROMPT:-blurry, low quality, artifacts, distorted}"
-EXPERIMENT_NAME="${EXPERIMENT_NAME:-linspace_w_lpips/}"
+EXPERIMENT_NAME="${EXPERIMENT_NAME:-normal_w_lpips/}"
 
 PROMPT_SLUG=$(echo "${EDIT_PROMPT}" | tr '[:upper:]' '[:lower:]' | tr -s ' ' | cut -d' ' -f1-5 | tr ' ' '_')
 OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/transfer/${PROMPT_SLUG}/${EXPERIMENT_NAME}}"

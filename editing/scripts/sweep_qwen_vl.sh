@@ -20,9 +20,9 @@
 # ============================================================
 # PROMPTS & VIDEO  — always edit these
 # ============================================================
-SRC_VIDEO="/home/amirrz/my_codes/LTX-2/input_videos/3_gold_fishes_in_a_glass_fish.mp4"
-EDIT_PROMPT="A goldfish jumps out of the fish tank into the air."
-STATIC_PROMPT="three goldfish swimming in a fish tank."
+SRC_VIDEO="/home/amirrz/my_codes/LTX-2/input_videos/hummingbird_hovering_near_a_flower_during_a.mp4"
+EDIT_PROMPT="Hummingbird extending its beak."
+STATIC_PROMPT="Hummingbird hovering near a flower during a light drizzle."
 NAME_OF_THIS_EXP="sweep_exp"   # base name; sweep tags are appended automatically
 
 # ============================================================
@@ -30,7 +30,7 @@ NAME_OF_THIS_EXP="sweep_exp"   # base name; sweep tags are appended automaticall
 # Single value  →  one element array, e.g. (0.0)
 # Multiple values → space-separated, e.g. (0.0 0.1 0.5)
 # ============================================================
-RETAKE_START_FRAMES=(1 5)
+RETAKE_START_FRAMES=(3 5 25)
 QWEN_GRAD_ACCUM_STEPS=(1 3)
 QWEN_SAMPLE_MODE=(linspace normal)
 # LPIPS_ENABLED=0  →  LPIPS_WEIGHT=0.0 + TEMPORAL_WEIGHT=0.0 (one combo)
