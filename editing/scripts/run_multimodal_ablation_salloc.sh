@@ -26,9 +26,9 @@ set -euo pipefail
 # ============================================================
 # PROMPTS & VIDEO  — always edit these
 # ============================================================
-SRC_VIDEO="input_videos/dog_sitting_on_chair.mp4"
-EDIT_PROMPT="A dog yawning"
-STATIC_PROMPT="A dog sitting on a chair"
+SRC_VIDEO="input_videos/a_turtle_resting_on_a_rock.mp4"
+EDIT_PROMPT="Turtle extending its neck."
+STATIC_PROMPT="A turtle resting on a rock."
 NAME_OF_THIS_EXP="ablation"   # output subdir under results/QwenVL/<prompt_slug>/
 
 # ============================================================
@@ -39,19 +39,19 @@ NAME_OF_THIS_EXP="ablation"   # output subdir under results/QwenVL/<prompt_slug>
 #   both
 #   text,audio,both
 # ============================================================
-OPT_MODE="text"
+OPT_MODE="audio"
 
 # ============================================================
 # Sweep settings collapsed to single values for one interactive run
 # These defaults come from the finalized sweep/submit scripts.
 # ============================================================
-RETAKE_START_FRAMES=5
+RETAKE_START_FRAMES=3
 QWEN_GRAD_ACCUM_STEPS=1
 QWEN_SAMPLE_MODE="linspace"
 LPIPS_WEIGHT=0.1
 TEMPORAL_WEIGHT=0.05
 LR=0.005
-QWEN_MAX_FRAMES=30
+QWEN_MAX_FRAMES=8
 
 # ============================================================
 # FIXED SETTINGS  (same style/defaults as the finalized scripts)
