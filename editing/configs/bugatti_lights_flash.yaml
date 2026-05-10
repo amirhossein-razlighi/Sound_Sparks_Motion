@@ -1,0 +1,60 @@
+# Usage:  bash editing/scripts/run.sh editing/configs/bugatti_lights_flash.yaml
+# Optionally add --benchmark for timing-only mode.
+
+src_video: "input_videos/a_yellow_bugatti_in_a_garage_static.mp4"
+edit_prompt: "The car front lights turn on and off periodically."
+static_prompt: "A yellow car in a garage."
+negative_prompt: "blurry, low quality, artifacts, distorted"
+
+experiment_name: "bugatti_lights_flash"
+opt_mode: "both"
+seed: 42
+enhance_prompt: true
+
+height: 320
+width:  512
+num_frames: 95
+frame_rate: null
+
+iterations: 30
+early_stopping: 15
+lr: 0.005
+lr_schedule: "cosine"
+grad_clip: 0.0
+best_min_loss_delta: 0.0
+retake_start_frames: 5
+num_inference_steps: 30
+retake_num_inference_steps: 30
+final_retake_num_inference_steps: 30
+audio_opt_last_steps: 8
+
+qwen_max_frames: 8
+qwen_img_size: 224
+qwen_sample_mode: "normal"
+qwen_contiguous_start_frame: 4
+qwen_gradient_rubric: "motion"
+qwen_grad_accum_steps: 3
+
+lpips_weight: 0.0
+temporal_weight: 0.0
+lpips_backbone: "alex"
+latent_reg_weight: 0.01
+text_reg_weight: 0.001
+reg_schedule: "cosine_increase"
+
+clip_similarity_diag: true
+clip_model: "openai/clip-vit-base-patch32"
+clip_max_frames: 0
+clip_batch_size: 8
+max_eval_frames: 95
+frame_stride: 1
+visualize_every_iters: 5
+
+quantization: "fp8-cast"
+low_memory_guidance: true
+save_final_videos: true
+gradient_checkpointing: true
+
+wandb_project: "sound-sparks-motion"
+wandb_tags: "qwen-loss"
+wandb_mode: "offline"

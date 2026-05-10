@@ -1,0 +1,32 @@
+# Usage:  bash editing/scripts/transfer.sh editing/configs/transfer/falcon_to_parrot_opening_wings.yaml
+#
+# opt_dir must point to the mode_both (or mode_text / mode_audio) folder
+# produced by a previous optimization run.
+# The path below is relative to the repo root.
+
+target_video: "input_videos/a_red_parrot_sitting_on_a_tree.mp4"
+opt_dir: "results/QwenVL/a_bird_openning_its_wings./linspace_w_lpips/both/mode_both"
+mode: "both"
+
+edit_prompt: "A red bird opening its wings."
+static_prompt: "A red bird sitting on a branch."
+negative_prompt: "blurry, low quality, artifacts, distorted"
+
+experiment_name: "falcon_to_parrot_opening_wings"
+seed: 42
+enhance_prompt: true
+
+height: 320
+width:  512
+num_frames: 95
+frame_rate: null
+
+num_inference_steps: 30
+retake_start_frames: 5
+qwen_eval_frames: 16
+
+clip_diag: true
+clip_model: "openai/clip-vit-base-patch32"
+clip_max_frames: 0
+
+quantization: "fp8-cast"

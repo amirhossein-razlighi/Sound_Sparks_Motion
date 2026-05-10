@@ -1,0 +1,32 @@
+# Usage:  bash editing/scripts/transfer.sh editing/configs/transfer/groom_to_cartoon_laughing.yaml
+#
+# opt_dir must point to the mode_both (or mode_text / mode_audio) folder
+# produced by a previous optimization run.
+# The path below is relative to the repo root.
+
+target_video: "input_videos/a_cartoonish_video_of_a_man_young.mp4"
+opt_dir: "results/a_man_is_laughing_outloud/normal_wo_lpips/both/mode_both"
+mode: "both"
+
+edit_prompt: "The boy is laughing out loud."
+static_prompt: "A boy standing in front of a building."
+negative_prompt: "blurry, low quality, artifacts, distorted"
+
+experiment_name: "groom_to_cartoon_laughing"
+seed: 42
+enhance_prompt: true
+
+height: 320
+width:  512
+num_frames: 95
+frame_rate: null
+
+num_inference_steps: 30
+retake_start_frames: 5
+qwen_eval_frames: 16
+
+clip_diag: true
+clip_model: "openai/clip-vit-base-patch32"
+clip_max_frames: 0
+
+quantization: "fp8-cast"

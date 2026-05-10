@@ -1,0 +1,32 @@
+# Usage:  bash editing/scripts/transfer.sh editing/configs/transfer/groom_to_person_shouting.yaml
+#
+# opt_dir must point to the mode_both (or mode_text / mode_audio) folder
+# produced by a previous optimization run.
+# The path below is relative to the repo root.
+
+target_video: "input_videos/a_person_standing_up_in_front_of.mp4"
+opt_dir: "results/QwenVL/a_angry_man_is_shouting./normal_w_lpips/both/mode_both"
+mode: "both"
+
+edit_prompt: "A man shouting."
+static_prompt: "A man is standing."
+negative_prompt: "blurry, low quality, artifacts, distorted"
+
+experiment_name: "groom_to_person_shouting"
+seed: 42
+enhance_prompt: true
+
+height: 320
+width:  512
+num_frames: 95
+frame_rate: null
+
+num_inference_steps: 30
+retake_start_frames: 5
+qwen_eval_frames: 16
+
+clip_diag: true
+clip_model: "openai/clip-vit-base-patch32"
+clip_max_frames: 0
+
+quantization: "fp8-cast"
