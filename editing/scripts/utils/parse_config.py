@@ -210,9 +210,6 @@ def main() -> None:
     if val("resume", False):
         _emit("--resume")
 
-    if val("render_without_quantization", False):
-        _emit("--render-without-quantization")
-
     # optional scale overrides
     e("--cfg-scale",       "cfg_scale")
     e("--audio-cfg-scale", "audio_cfg_scale")

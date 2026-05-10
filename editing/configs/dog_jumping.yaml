@@ -54,7 +54,6 @@ quantization: "fp8-cast"
 low_memory_guidance: true
 save_final_videos: true
 gradient_checkpointing: true
-render_without_quantization: true  # re-renders baseline + final without fp8 after the loop
 
 wandb_project: "sound-sparks-motion"
 wandb_tags: "qwen-loss"

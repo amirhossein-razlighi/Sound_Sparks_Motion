@@ -461,12 +461,9 @@ def run(args: argparse.Namespace) -> None:
         final_retake_kwargs["audio_guider_params"] = final_ag
 
         # ---- Render baseline BEFORE optimisation so it's ready for inspection ----
-        # When unquantized re-renders are requested, this early copy is labelled _fp8
-        # and the clean unquantized baseline is produced at the end of the run.
         if args.save_final_videos:
-            early_baseline_name = "baseline_video_fp8.mp4" if args.render_without_quantization else "baseline_video.mp4"
-            log.info("Rendering baseline video (before optimisation) → %s...", early_baseline_name)
-            baseline_path = output_dir / early_baseline_name
+            log.info("Rendering baseline video (before optimisation)...")
+            baseline_path = output_dir / "baseline_video.mp4"
             render_baseline_video(
                 pipeline=pipeline,
                 src_video=str(retake_input_video),
@@ -483,10 +480,10 @@ def run(args: argparse.Namespace) -> None:
             if wandb_run is not None and baseline_path.exists():
                 wandb_run.log(
                     {
-                        "media/video/baseline_fp8": wandb.Video(
+                        "media/video/baseline": wandb.Video(
                             str(baseline_path),
                             format="mp4",
-                            caption="Baseline video (fp8-cast)",
+                            caption="Baseline video",
                         )
                     },
                     step=0,
@@ -555,9 +552,7 @@ def run(args: argparse.Namespace) -> None:
 
             # ---- Render final optimised video (baseline already saved upfront) ----
             if args.save_final_videos:
-                # When we will re-render without quantization later, label this copy _fp8.
-                final_suffix = "_fp8" if args.render_without_quantization else ""
-                log.info("[%s] Rendering optimised video (fp8-cast)...", mode)
+                log.info("[%s] Rendering optimised video...", mode)
                 render_final_video(
                     mode=mode,
                     best=best,
@@ -574,17 +569,16 @@ def run(args: argparse.Namespace) -> None:
                     audio_sr=waveform_sr,
                     audio_opt_last_steps=args.audio_opt_last_steps,
                     skip_baseline=True,
-                    filename_suffix=final_suffix,
                 )
                 if wandb_run is not None:
-                    final_video_path = mode_dir / f"best_optimized_video_{mode}{final_suffix}.mp4"
+                    final_video_path = mode_dir / f"best_optimized_video_{mode}.mp4"
                     if final_video_path.exists():
                         wandb_run.log(
                             {
-                                f"media/video/{mode}/final_fp8": wandb.Video(
+                                f"media/video/{mode}/final": wandb.Video(
                                     str(final_video_path),
                                     format="mp4",
-                                    caption=f"{mode} final video (fp8-cast)",
+                                    caption=f"{mode} final video",
                                 )
                             },
                             step=max(int(args.iterations) + 1, int(best.get("best_iter", 0)) + 1),
@@ -642,91 +636,6 @@ def run(args: argparse.Namespace) -> None:
         log.info("-" * 40)
         for mode, result in sorted(all_results.items(), key=lambda x: -x[1]["qwen_score"]):
             log.info("%-10s  %-12.4f  %-12.4f", mode, result["qwen_score"], result["qwen_loss"])
-
-        # ---- Unquantized re-render (baseline + final) ----
-        if args.render_without_quantization and args.save_final_videos:
-            log.info("")
-            log.info("=" * 60)
-            log.info("Unquantized re-render: freeing Qwen and reloading pipeline...")
-            log.info("=" * 60)
-
-            # Free Qwen — no longer needed.
-            del qwen_model, qwen_processor
-            gc.collect()
-            if torch.cuda.is_available():
-                torch.cuda.empty_cache()
-
-            # Reload pipeline without quantization.
-            del pipeline
-            gc.collect()
-            if torch.cuda.is_available():
-                torch.cuda.empty_cache()
-
-            pipeline_fp32 = build_retake_pipeline(
-                checkpoint_path=args.checkpoint_path,
-                gemma_root=args.gemma_root,
-                loras=loras,
-                device=device,
-                quant_policy=None,
-                gradient_checkpointing=False,
-            )
-
-            # Rebuild final kwargs without quantization (guiders are config-only, reusable).
-            final_retake_kwargs_fp32 = dict(final_retake_kwargs)
-
-            # Baseline (unquantized).
-            log.info("Rendering baseline video (unquantized) → baseline_video.mp4 ...")
-            render_baseline_video(
-                pipeline=pipeline_fp32,
-                src_video=str(retake_input_video),
-                cached_video_latent=cached_video_latent,
-                base_audio_latent=base_audio_latent,
-                base_pos_context=base_pos_context,
-                base_neg_context=base_neg_context,
-                retake_kwargs=final_retake_kwargs_fp32,
-                output_path=output_dir / "baseline_video.mp4",
-                num_frames=num_frames,
-                frame_rate=frame_rate,
-                audio_sr=waveform_sr,
-            )
-            if wandb_run is not None and (output_dir / "baseline_video.mp4").exists():
-                wandb_run.log(
-                    {"media/video/baseline": wandb.Video(
-                        str(output_dir / "baseline_video.mp4"),
-                        format="mp4", caption="Baseline video (unquantized)")},
-                    step=0,
-                )
-
-            # Final "ours" per mode (unquantized).
-            for mode, best in all_results.items():
-                mode_dir = output_dir / f"mode_{mode}"
-                log.info("[%s] Rendering optimised video (unquantized)...", mode)
-                render_final_video(
-                    mode=mode,
-                    best=best,
-                    pipeline=pipeline_fp32,
-                    src_video=str(retake_input_video),
-                    cached_video_latent=cached_video_latent,
-                    base_audio_latent=base_audio_latent,
-                    base_pos_context=base_pos_context,
-                    base_neg_context=base_neg_context,
-                    retake_kwargs=final_retake_kwargs_fp32,
-                    output_dir=mode_dir,
-                    num_frames=num_frames,
-                    frame_rate=frame_rate,
-                    audio_sr=waveform_sr,
-                    audio_opt_last_steps=args.audio_opt_last_steps,
-                    skip_baseline=True,
-                )
-                if wandb_run is not None:
-                    fp32_path = mode_dir / f"best_optimized_video_{mode}.mp4"
-                    if fp32_path.exists():
-                        wandb_run.log(
-                            {f"media/video/{mode}/final": wandb.Video(
-                                str(fp32_path), format="mp4",
-                                caption=f"{mode} final video (unquantized)")},
-                            step=max(int(args.iterations) + 1, int(best.get("best_iter", 0)) + 1),
-                        )
 
         log.info("")
         log.info("Outputs saved to: %s", output_dir)
@@ -901,16 +810,6 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--retake-start-frames", type=int, default=1)
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--save-final-videos", action=argparse.BooleanOptionalAction, default=True)
-    p.add_argument(
-        "--render-without-quantization",
-        action=argparse.BooleanOptionalAction,
-        default=False,
-        help=(
-            "After the optimization loop, reload the pipeline without quantization and "
-            "produce unquantized versions of the baseline and final best video. "
-            "The quantized renders are saved with a _fp8 suffix for comparison."
-        ),
-    )
 
     # Guidance
     p.add_argument("--cfg-scale", type=float, default=None)
