@@ -532,6 +532,7 @@ def render_final_video(
     audio_sr: int,
     audio_opt_last_steps: int,
     skip_baseline: bool = False,
+    filename_suffix: str = "",
 ) -> None:
     """Render the optimized video and optionally a baseline to disk."""
     import torchaudio
@@ -615,7 +616,7 @@ def render_final_video(
             video=video_iter,
             fps=int(round(frame_rate)),
             audio=optimized_out_audio,
-            output_path=str(output_dir / f"best_optimized_video_{mode}.mp4"),
+            output_path=str(output_dir / f"best_optimized_video_{mode}{filename_suffix}.mp4"),
             video_chunks_number=get_video_chunks_number(num_frames, TilingConfig.default()),
         )
         log.info("[%s] Saved optimized video.", mode)
