@@ -147,11 +147,28 @@ export PYTORCH_ALLOC_CONF="${PYTORCH_ALLOC_CONF:-${PYTORCH_CUDA_ALLOC_CONF}}"
 export HF_HOME="${HF_HOME:-${HOME}/.cache/huggingface}"
 export HF_HUB_OFFLINE="${HF_HUB_OFFLINE:-0}"
 
-# W&B settings — extracted from args for env export
+# W&B settings
 export WANDB_DIR="${WANDB_DIR:-${OUTPUT_DIR_SELECTED}/wandb}"
 export WANDB_CACHE_DIR="${WANDB_CACHE_DIR:-/tmp/${USER}/wandb_cache}"
 export WANDB_CONFIG_DIR="${WANDB_CONFIG_DIR:-${HOME}/.config/wandb}"
 export WANDB_DISABLE_GIT="${WANDB_DISABLE_GIT:-true}"
+
+# Export WANDB_MODE from the config's wandb_mode field (default: offline).
+# The Python script has no --wandb-mode flag; W&B reads this from the environment.
+if [[ -z "${WANDB_MODE:-}" ]]; then
+    WANDB_MODE_FROM_CONFIG=$(
+        "${PYTHON_BIN}" -c "
+import sys
+try:
+    import yaml
+    cfg = yaml.safe_load(open('${CONFIG_FILE}')) or {}
+    print(cfg.get('wandb_mode', 'offline'))
+except Exception:
+    print('offline')
+" 2>/dev/null || echo "offline"
+    )
+    export WANDB_MODE="${WANDB_MODE_FROM_CONFIG}"
+fi
 
 if [[ "${BENCHMARK}" == "1" ]]; then
     export WANDB_DISABLED=true

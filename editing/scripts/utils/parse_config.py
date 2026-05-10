@@ -215,6 +215,10 @@ def main() -> None:
     e("--audio-cfg-scale", "audio_cfg_scale")
     e("--a2v-scale",       "a2v_scale")
 
+    # wandb — project and tags are CLI args; mode is exported as WANDB_MODE by run.sh
+    e("--wandb-project", "wandb_project", "sound-sparks-motion")
+    e("--wandb-tags",    "wandb_tags")
+
 
 if __name__ == "__main__":
     main()
