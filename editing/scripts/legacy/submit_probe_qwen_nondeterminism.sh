@@ -18,7 +18,7 @@
 # =============================================================================
 
 #SBATCH --job-name=qwen_probe
-#SBATCH --account=def-amahdavi
+#SBATCH --account=your-hpc-account
 #SBATCH --gpus-per-node=h100:1
 #SBATCH --mem=32G
 #SBATCH --time=00:30:00
@@ -32,8 +32,8 @@ nvidia-smi
 # ---------------------------------------------------------------------------
 # Settings
 # ---------------------------------------------------------------------------
-REPO_ROOT="${REPO_ROOT:-/home/amirrz/my_codes/LTX-2}"
-QWEN_ROOT="${QWEN_ROOT:-/project/def-amahdavi/amirrz/HF/models/Qwen2.5-VL-7B-Instruct}"
+REPO_ROOT="${REPO_ROOT:-${REPO_ROOT}}"
+QWEN_ROOT="${QWEN_ROOT:-${QWEN_ROOT}}"
 VIDEO="${VIDEO:-${REPO_ROOT}/input_videos/a_red_ferrari_standing_still_in_the.mp4}"
 EDIT_PROMPT="${EDIT_PROMPT:-A red car door opens.}"
 N_FRAMES="${N_FRAMES:-8}"
@@ -54,7 +54,7 @@ echo "========================================================"
 module load opencv cuda/12.9
 source "${REPO_ROOT}/.venv/bin/activate"
 
-export HF_HOME="${HF_HOME:-/home/amirrz/.cache/huggingface}"
+export HF_HOME="${HF_HOME:-${HOME}/.cache/huggingface}"
 export HF_HUB_OFFLINE=1
 export PYTORCH_CUDA_ALLOC_CONF="${PYTORCH_CUDA_ALLOC_CONF:-expandable_segments:True}"
 

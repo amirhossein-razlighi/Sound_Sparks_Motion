@@ -20,7 +20,7 @@
 # =============================================================================
 
 #SBATCH --job-name=ltx_edit_diff
-#SBATCH --account=def-amahdavi
+#SBATCH --account=your-hpc-account
 #SBATCH --gpus-per-node=h100:1
 #SBATCH --mem=48G
 #SBATCH --time=02:45:00
@@ -30,9 +30,9 @@
 # ---------------------------------------------------------------------------
 # Settings — override via environment variables before sbatch
 # ---------------------------------------------------------------------------
-REPO_ROOT="${REPO_ROOT:-/home/amirrz/my_codes/LTX-2}"
-CKPT_ROOT="${CKPT_ROOT:-/project/def-amahdavi/amirrz/LTX-2/checkpoints}"
-GEMMA_ROOT="${GEMMA_ROOT:-/project/def-amahdavi/amirrz/HF/models/gemma-3-12b-it-qat-q4_0-unquantized}"
+REPO_ROOT="${REPO_ROOT:-${REPO_ROOT}}"
+CKPT_ROOT="${CKPT_ROOT:-${CKPT_ROOT}}"
+GEMMA_ROOT="${GEMMA_ROOT:-${GEMMA_ROOT}}"
 
 # Positional args: $1 = src video path, $2 = edit prompt
 SRC_VIDEO="${SRC_VIDEO:-${1:-}}"

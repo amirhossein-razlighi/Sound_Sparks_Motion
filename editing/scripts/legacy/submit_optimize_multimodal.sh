@@ -17,7 +17,7 @@
 # =============================================================================
 
 #SBATCH --job-name=ltx_multimodal_opt
-#SBATCH --account=def-amahdavi
+#SBATCH --account=your-hpc-account
 #SBATCH --gpus-per-node=h100:1
 #SBATCH --mem=64G
 #SBATCH --time=02:00:00
@@ -31,9 +31,9 @@ nvidia-smi
 # ---------------------------------------------------------------------------
 # Settings — override with environment variables before sbatch
 # ---------------------------------------------------------------------------
-REPO_ROOT="${REPO_ROOT:-/home/amirrz/my_codes/LTX-2}"
-CKPT_ROOT="${CKPT_ROOT:-/project/def-amahdavi/amirrz/LTX-2/checkpoints}"
-GEMMA_ROOT="${GEMMA_ROOT:-/project/def-amahdavi/amirrz/HF/models/gemma-3-12b-it-qat-q4_0-unquantized}"
+REPO_ROOT="${REPO_ROOT:-${REPO_ROOT}}"
+CKPT_ROOT="${CKPT_ROOT:-${CKPT_ROOT}}"
+GEMMA_ROOT="${GEMMA_ROOT:-${GEMMA_ROOT}}"
 
 SRC_VIDEO="${SRC_VIDEO:-${1:-}}"
 OPT_MODE="${OPT_MODE:-audio}"                   # text | audio | both | text,audio,both
@@ -118,8 +118,8 @@ echo "========================================================"
 module load opencv cuda/12.9
 source "${REPO_ROOT}/.venv/bin/activate"
 
-export TORCH_HOME="${TORCH_HOME:-/home/amirrz/.cache/torch}"
-export HF_HOME="${HF_HOME:-/home/amirrz/.cache/huggingface}"
+export TORCH_HOME="${TORCH_HOME:-${HOME}/.cache/torch}"
+export HF_HOME="${HF_HOME:-${HOME}/.cache/huggingface}"
 export HF_HUB_OFFLINE=1
 export PYTORCH_ALLOC_CONF="${PYTORCH_ALLOC_CONF:-expandable_segments:True,garbage_collection_threshold:0.8}"
 

@@ -17,7 +17,7 @@
 # =============================================================================
 
 #SBATCH --job-name=ltx_audio_edit_all
-#SBATCH --account=def-amahdavi
+#SBATCH --account=your-hpc-account
 #SBATCH --gpus-per-node=h100:1
 #SBATCH --mem=64G
 #SBATCH --time=06:00:00
@@ -27,9 +27,9 @@
 # ---------------------------------------------------------------------------
 # Settings
 # ---------------------------------------------------------------------------
-REPO_ROOT="${REPO_ROOT:-/home/amirrz/my_codes/LTX-2}"
-CKPT_ROOT="${CKPT_ROOT:-/project/def-amahdavi/amirrz/LTX-2/checkpoints}"
-GEMMA_ROOT="${GEMMA_ROOT:-/project/def-amahdavi/amirrz/HF/models/gemma-3-12b-it-qat-q4_0-unquantized}"
+REPO_ROOT="${REPO_ROOT:-${REPO_ROOT}}"
+CKPT_ROOT="${CKPT_ROOT:-${CKPT_ROOT}}"
+GEMMA_ROOT="${GEMMA_ROOT:-${GEMMA_ROOT}}"
 
 # Positional args: $1 = src video path, $2 = prompt
 SRC_VIDEO="${SRC_VIDEO:-${1:-}}"

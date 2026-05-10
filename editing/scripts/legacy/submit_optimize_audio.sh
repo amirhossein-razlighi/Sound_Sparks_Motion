@@ -18,7 +18,7 @@
 # =============================================================================
 
 #SBATCH --job-name=ltx_opt_audio
-#SBATCH --account=def-amahdavi
+#SBATCH --account=your-hpc-account
 #SBATCH --gpus-per-node=h100:1
 #SBATCH --mem=80G
 #SBATCH --time=03:00:00
@@ -32,9 +32,9 @@ nvidia-smi
 # ---------------------------------------------------------------------------
 # Settings
 # ---------------------------------------------------------------------------
-REPO_ROOT="${REPO_ROOT:-/home/amirrz/my_codes/LTX-2}"
-CKPT_ROOT="${CKPT_ROOT:-/project/def-amahdavi/amirrz/LTX-2/checkpoints}"
-GEMMA_ROOT="${GEMMA_ROOT:-/project/def-amahdavi/amirrz/HF/models/gemma-3-12b-it-qat-q4_0-unquantized}"
+REPO_ROOT="${REPO_ROOT:-${REPO_ROOT}}"
+CKPT_ROOT="${CKPT_ROOT:-${CKPT_ROOT}}"
+GEMMA_ROOT="${GEMMA_ROOT:-${GEMMA_ROOT}}"
 
 SRC_VIDEO="${SRC_VIDEO:-${1:-}}"
 OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/results/editing_results_guitar_smash_optimize}"
@@ -69,7 +69,7 @@ GRAD_CLIP="${GRAD_CLIP:-0.5}"
 GENERATE_SAM2_MASKS="${GENERATE_SAM2_MASKS:-1}"
 OBJECT_PROMPT="${OBJECT_PROMPT:-person}"
 SAM2_CONFIG="${SAM2_CONFIG:-configs/sam2.1/sam2.1_hiera_l.yaml}"
-SAM2_CHECKPOINT="${SAM2_CHECKPOINT:-/project/def-amahdavi/amirrz/SAM-2/checkpoints/sam2.1_hiera_large.pt}"
+SAM2_CHECKPOINT="${SAM2_CHECKPOINT:-${HOME}/SAM-2/checkpoints/sam2.1_hiera_large.pt}"
 SAM2_DEVICE="${SAM2_DEVICE:-cuda}"
 SAM2_DET_SCORE_THRESHOLD="${SAM2_DET_SCORE_THRESHOLD:-0.35}"
 SAM2_MASK_NAME_TAG="${SAM2_MASK_NAME_TAG:-}"
@@ -149,9 +149,9 @@ fi
 
 if [[ -z "${RAFT_WEIGHTS_PATH}" ]]; then
     if [[ "${RAFT_MODEL}" == "raft_small" ]]; then
-        RAFT_WEIGHTS_PATH="/home/amirrz/.cache/torch/hub/checkpoints/raft_small_C_T_V2-01064c6d.pth"
+        RAFT_WEIGHTS_PATH="${HOME}/.cache/torch/hub/checkpoints/raft_small_C_T_V2-01064c6d.pth"
     else
-        RAFT_WEIGHTS_PATH="/home/amirrz/.cache/torch/hub/checkpoints/raft_large_C_T_SKHT_V2-ff5fadd5.pth"
+        RAFT_WEIGHTS_PATH="${HOME}/.cache/torch/hub/checkpoints/raft_large_C_T_SKHT_V2-ff5fadd5.pth"
     fi
 fi
 
@@ -227,7 +227,7 @@ module load opencv cuda/12.9
 source "${REPO_ROOT}/.venv/bin/activate"
 
 # Keep torch cache explicit for reproducible offline loading.
-export TORCH_HOME="${TORCH_HOME:-/home/amirrz/.cache/torch}"
+export TORCH_HOME="${TORCH_HOME:-${HOME}/.cache/torch}"
 export PYTORCH_ALLOC_CONF="${PYTORCH_ALLOC_CONF:-expandable_segments:True,garbage_collection_threshold:0.8}"
 
 if [[ "${GENERATE_SAM2_MASKS}" == "1" ]] && [[ -z "${TARGET_VIDEO}" ]]; then
