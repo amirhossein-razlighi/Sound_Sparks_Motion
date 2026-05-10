@@ -1,0 +1,52 @@
+# =============================================================================
+# Transfer template — apply optimized conditioning latents from one video
+# to a new target video.
+#
+# Fill in the fields marked <FILL> and run:
+#   bash editing/scripts/transfer.sh editing/configs/transfer/yours.yaml
+#
+# Required env vars:
+#   export CKPT_ROOT=/path/to/dir/containing/ltx-2.3-22b-dev.safetensors
+#   export QWEN_ROOT=/path/to/Qwen2.5-VL-7B-Instruct
+#   export GEMMA_ROOT=/path/to/gemma-3-12b-it-qat-q4_0-unquantized
+#
+# Prerequisite: run an optimization experiment first (editing/scripts/run.sh)
+# and point opt_dir at the resulting mode_both / mode_text / mode_audio folder.
+# =============================================================================
+
+# --- Target video (the video you want to edit) --------------------------------
+target_video: "<FILL: e.g. input_videos/my_new_video.mp4>"
+
+# --- Source of optimized latents (from a previous run.sh experiment) ----------
+# Point to the mode_both / mode_text / mode_audio subfolder inside results/.
+opt_dir: "<FILL: e.g. results/QwenVL/a_dog_yawning/linspace_w_lpips/both/mode_both>"
+mode: "both"   # text | audio | both — must match what was optimized
+
+# --- Prompts (optional but recommended) ---------------------------------------
+edit_prompt: "<FILL: e.g. A cat yawning.>"
+static_prompt: "<FILL: e.g. A cat sitting on a chair.>"
+negative_prompt: "blurry, low quality, artifacts, distorted"
+
+# --- Experiment ---------------------------------------------------------------
+experiment_name: "<FILL: short label for the output folder>"
+seed: 42
+enhance_prompt: true
+
+# --- Video dimensions ---------------------------------------------------------
+height: 320
+width:  512
+num_frames: 95
+frame_rate: null
+
+# --- Inference ----------------------------------------------------------------
+num_inference_steps: 30
+retake_start_frames: 5
+qwen_eval_frames: 16   # frames used by Qwen for scoring (no grad)
+
+# --- Diagnostics --------------------------------------------------------------
+clip_diag: true
+clip_model: "openai/clip-vit-base-patch32"
+clip_max_frames: 0     # 0 = all frames
+
+# --- Runtime ------------------------------------------------------------------
+quantization: "fp8-cast"

@@ -17,7 +17,7 @@
 # =============================================================================
 
 #SBATCH --job-name=ltx_hires_transfer
-#SBATCH --account=def-amahdavi
+#SBATCH --account=your-hpc-account
 #SBATCH --gpus-per-node=h100:1
 #SBATCH --mem=64G
 #SBATCH --time=01:00:00
@@ -31,7 +31,7 @@ nvidia-smi
 # ---------------------------------------------------------------------------
 # Settings — override with environment variables before sbatch
 # ---------------------------------------------------------------------------
-REPO_ROOT="${REPO_ROOT:-/home/amirrz/my_codes/LTX-2}"
+REPO_ROOT="${REPO_ROOT:-${REPO_ROOT}}"
 
 OPT_DIR="${OPT_DIR:-}"          # top-level exp dir (contains prompt.txt + mode_both/)
 SRC_VIDEO="${SRC_VIDEO:-}"      # source video at native resolution (no resize)
@@ -102,8 +102,8 @@ echo "========================================================"
 module load opencv cuda/12.9 tensorboard
 source "${REPO_ROOT}/.venv/bin/activate"
 
-export TORCH_HOME="${TORCH_HOME:-/home/amirrz/.cache/torch}"
-export HF_HOME="${HF_HOME:-/home/amirrz/.cache/huggingface}"
+export TORCH_HOME="${TORCH_HOME:-${HOME}/.cache/torch}"
+export HF_HOME="${HF_HOME:-${HOME}/.cache/huggingface}"
 export HF_HUB_OFFLINE=1
 export PYTORCH_CUDA_ALLOC_CONF="${PYTORCH_CUDA_ALLOC_CONF:-expandable_segments:True,garbage_collection_threshold:0.8}"
 export PYTORCH_ALLOC_CONF="${PYTORCH_ALLOC_CONF:-${PYTORCH_CUDA_ALLOC_CONF}}"

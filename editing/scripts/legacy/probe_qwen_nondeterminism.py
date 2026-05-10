@@ -14,7 +14,7 @@ Does this under three conditions (one at a time, set --mode):
 
 Usage (on the cluster, after activating the venv):
     python editing/scripts/probe_qwen_nondeterminism.py \\
-        --qwen-model /project/def-amahdavi/amirrz/HF/models/Qwen2.5-VL-7B-Instruct \\
+        --qwen-model ${QWEN_ROOT} \\
         --video input_videos/a_red_ferrari_standing_still_in_the.mp4 \\
         --edit-prompt "A red car door opens." \\
         --n-repeats 20 \\
@@ -42,7 +42,7 @@ import torch.nn.functional as F
 # Make editing/src importable
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from audio_latent_opt.qwen_loss import (
+from motion_opt.qwen_loss import (
     build_qwen_model,
     build_qwen_rubric_inputs,
     QWEN_IMG_SIZE,
@@ -94,7 +94,7 @@ def run_single_pass(
     frames = frames_fixed.clone().requires_grad_(True)
 
     # --- replicate _frames_to_pixel_values from qwen_loss.py ---
-    from audio_latent_opt.qwen_loss import _frames_to_pixel_values
+    from motion_opt.qwen_loss import _frames_to_pixel_values
 
     pixel_values = _frames_to_pixel_values(frames).to(dtype=torch.bfloat16)
 

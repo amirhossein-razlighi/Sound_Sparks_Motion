@@ -1,120 +1,227 @@
-# LTX-2
+# Sound Sparks Motion
 
-[![Website](https://img.shields.io/badge/Website-LTX-181717?logo=google-chrome)](https://ltx.io)
-[![Model](https://img.shields.io/badge/HuggingFace-Model-orange?logo=huggingface)](https://huggingface.co/Lightricks/LTX-2.3)
-[![Demo](https://img.shields.io/badge/Demo-Try%20Now-brightgreen?logo=vercel)](https://app.ltx.studio/ltx-2-playground/i2v)
-[![Paper](https://img.shields.io/badge/Paper-PDF-EC1C24?logo=adobeacrobatreader&logoColor=white)](https://arxiv.org/abs/2601.03233)
-[![Discord](https://img.shields.io/badge/Join-Discord-5865F2?logo=discord)](https://discord.gg/ltxplatform)
+Code for the paper **"Sound Sparks Motion: Audio and Text Tuning for Video Editing"** (SIGGRAPH Asia 2026).
 
-**LTX-2** is the first DiT-based audio-video foundation model that contains all core capabilities of modern video generation in one model: synchronized audio and video, high fidelity, multiple performance modes, production-ready outputs, API access, and open access.
+We show that jointly optimizing the text and audio conditioning vectors of a pretrained audio-video diffusion model — supervised by a vision-language model (Qwen2.5-VL) — reliably induces desired motion edits without any fine-tuning of the diffusion model itself.
 
-<div align="center">
-  <video src="https://github.com/user-attachments/assets/4414adc0-086c-43de-b367-9362eeb20228" width="70%" poster=""> </video>
-</div>
+---
 
-## 🚀 Quick Start
+## Overview
 
-```bash
-# Clone the repository
-git clone https://github.com/Lightricks/LTX-2.git
-cd LTX-2
+Given a source video and an edit prompt, our method:
 
-# Set up the environment
-uv sync --frozen
-source .venv/bin/activate
+1. **Freezes** the LTX-2 video generation model.
+2. **Optimizes** text and/or audio conditioning embeddings via gradient descent, using Qwen2.5-VL as a differentiable motion alignment signal.
+3. **Applies** the optimized embeddings inside the [Retake](packages/ltx-pipelines/src/ltx_pipelines/retake.py) pipeline to regenerate a target time window of the source video.
+
+The result is a video that exhibits the described motion while preserving the appearance and content of the original.
+
+---
+
+## Repository Structure
+
+```
+.
+├── editing/                     ← Main experiment code
+│   ├── configs/                 ← YAML experiment configs (start here)
+│   ├── scripts/
+│   │   ├── run.sh               ← Main entry point: run from a YAML config
+│   │   ├── sweep.sh             ← Hyperparameter sweep (sequential)
+│   │   ├── transfer.sh          ← Transfer optimized latents to a new video
+│   │   ├── benchmark_from_config.sh  ← Timing benchmark replay
+│   │   ├── setup/               ← Model download helpers
+│   │   │   ├── download_models.sh
+│   │   │   ├── download_qwen.sh
+│   │   │   └── download_clip.sh
+│   │   ├── ablations/           ← Ablation study scripts
+│   │   │   ├── run_ablation.sh
+│   │   │   ├── run_benchmark.sh
+│   │   │   ├── run_regularizer_ablation.sh
+│   │   │   └── run_scorer_ablation.sh
+│   │   ├── utils/               ← Internal helpers (YAML parser, etc.)
+│   │   └── legacy/              ← Deprecated scripts (kept for reference)
+│   ├── optimize_qwen_vl.py      ← Main optimization entry point
+│   ├── optimize_qwen_vl_benchmark.py  ← Timing-only version
+│   ├── transfer_optimized.py    ← Transfer latents to a new target video
+│   ├── experiments/             ← Ablation/observation Python scripts
+│   └── src/
+│       └── motion_opt/          ← Core Python library
+├── packages/
+│   ├── ltx-core/                ← LTX-2 model implementation
+│   ├── ltx-pipelines/           ← High-level pipelines (Retake, A2V, etc.)
+│   └── ltx-trainer/             ← LoRA / fine-tuning tools
+├── visualization/               ← Web-based result viewer
+└── gpt_as_a_judge_prompt.txt    ← GPT-based evaluation prompt
 ```
 
-### Required Models
+---
 
-Download the following models from the [LTX-2.3 HuggingFace repository](https://huggingface.co/Lightricks/LTX-2.3):
+## Setup
 
-**LTX-2.3 Model Checkpoint** (choose and download one of the following)
-  * [`ltx-2.3-22b-dev.safetensors`](https://huggingface.co/Lightricks/LTX-2.3/blob/main/ltx-2.3-22b-dev.safetensors) - [Download](https://huggingface.co/Lightricks/LTX-2.3/resolve/main/ltx-2.3-22b-dev.safetensors)
-  * [`ltx-2.3-22b-distilled.safetensors`](https://huggingface.co/Lightricks/LTX-2.3/blob/main/ltx-2.3-22b-distilled.safetensors) - [Download](https://huggingface.co/Lightricks/LTX-2.3/resolve/main/ltx-2.3-22b-distilled.safetensors)
+### 1. Install dependencies
 
-**Spatial Upscaler** - Required for current two-stage pipeline implementations in this repository
-  * [`ltx-2.3-spatial-upscaler-x2-1.0.safetensors`](https://huggingface.co/Lightricks/LTX-2.3/blob/main/ltx-2.3-spatial-upscaler-x2-1.0.safetensors) - [Download](https://huggingface.co/Lightricks/LTX-2.3/resolve/main/ltx-2.3-spatial-upscaler-x2-1.0.safetensors)
-  * [`ltx-2.3-spatial-upscaler-x1.5-1.0.safetensors`](https://huggingface.co/Lightricks/LTX-2.3/blob/main/ltx-2.3-spatial-upscaler-x1.5-1.0.safetensors) - [Download](https://huggingface.co/Lightricks/LTX-2.3/resolve/main/ltx-2.3-spatial-upscaler-x1.5-1.0.safetensors)
+```bash
+git clone <this-repo>
+cd <repo-root>
+uv sync --frozen
+source .venv/bin/activate
+pip install pyyaml   # required for YAML config parsing
+```
 
-**Temporal Upscaler** - Supported by the model and will be required for future pipeline implementations
-  * [`ltx-2.3-temporal-upscaler-x2-1.0.safetensors`](https://huggingface.co/Lightricks/LTX-2.3/blob/main/ltx-2.3-temporal-upscaler-x2-1.0.safetensors) - [Download](https://huggingface.co/Lightricks/LTX-2.3/resolve/main/ltx-2.3-temporal-upscaler-x2-1.0.safetensors)
+### 2. Download model weights
 
-**Distilled LoRA** - Required for current two-stage pipeline implementations in this repository (except DistilledPipeline and ICLoraPipeline)
-  * [`ltx-2.3-22b-distilled-lora-384.safetensors`](https://huggingface.co/Lightricks/LTX-2.3/blob/main/ltx-2.3-22b-distilled-lora-384.safetensors) - [Download](https://huggingface.co/Lightricks/LTX-2.3/resolve/main/ltx-2.3-22b-distilled-lora-384.safetensors)
+You need three models: **LTX-2.3**, **Qwen2.5-VL-7B**, and **Gemma-3-12b**.
 
-**Gemma Text Encoder** (download all assets from the repository)
-  * [`Gemma 3`](https://huggingface.co/google/gemma-3-12b-it-qat-q4_0-unquantized/tree/main)
+```bash
+# Set destination paths
+export CKPT_ROOT=~/checkpoints
+export HF_MODELS_ROOT=~/models
 
-**LoRAs**
-  * [`LTX-2.3-22b-IC-LoRA-Union-Control`](https://huggingface.co/Lightricks/LTX-2.3-22b-IC-LoRA-Union-Control) - [Download](https://huggingface.co/Lightricks/LTX-2.3-22b-IC-LoRA-Union-Control/resolve/main/ltx-2.3-22b-ic-lora-union-control-ref0.5.safetensors)
-  * [`LTX-2.3-22b-IC-LoRA-Inpainting`](https://huggingface.co/Lightricks/LTX-2.3-22b-IC-LoRA-Inpainting) - [Download](https://huggingface.co/Lightricks/LTX-2.3-22b-IC-LoRA-Inpainting/resolve/main/ltx-2.3-22b-ic-lora-inpainting.safetensors)
-  * [`LTX-2.3-22b-IC-LoRA-Motion-Track-Control`](https://huggingface.co/Lightricks/LTX-2.3-22b-IC-LoRA-Motion-Track-Control) - [Download](https://huggingface.co/Lightricks/LTX-2.3-22b-IC-LoRA-Motion-Track-Control/resolve/main/ltx-2.3-22b-ic-lora-motion-track-control-ref0.5.safetensors)
-  * [`LTX-2-19b-IC-LoRA-Detailer`](https://huggingface.co/Lightricks/LTX-2-19b-IC-LoRA-Detailer) - [Download](https://huggingface.co/Lightricks/LTX-2-19b-IC-LoRA-Detailer/resolve/main/ltx-2-19b-ic-lora-detailer.safetensors)
-  * [`LTX-2-19b-IC-LoRA-Pose-Control`](https://huggingface.co/Lightricks/LTX-2-19b-IC-LoRA-Pose-Control) - [Download](https://huggingface.co/Lightricks/LTX-2-19b-IC-LoRA-Pose-Control/resolve/main/ltx-2-19b-ic-lora-pose-control.safetensors)
-  * [`LTX-2-19b-LoRA-Camera-Control-Dolly-In`](https://huggingface.co/Lightricks/LTX-2-19b-LoRA-Camera-Control-Dolly-In) - [Download](https://huggingface.co/Lightricks/LTX-2-19b-LoRA-Camera-Control-Dolly-In/resolve/main/ltx-2-19b-lora-camera-control-dolly-in.safetensors)
-  * [`LTX-2-19b-LoRA-Camera-Control-Dolly-Left`](https://huggingface.co/Lightricks/LTX-2-19b-LoRA-Camera-Control-Dolly-Left) - [Download](https://huggingface.co/Lightricks/LTX-2-19b-LoRA-Camera-Control-Dolly-Left/resolve/main/ltx-2-19b-lora-camera-control-dolly-left.safetensors)
-  * [`LTX-2-19b-LoRA-Camera-Control-Dolly-Out`](https://huggingface.co/Lightricks/LTX-2-19b-LoRA-Camera-Control-Dolly-Out) - [Download](https://huggingface.co/Lightricks/LTX-2-19b-LoRA-Camera-Control-Dolly-Out/resolve/main/ltx-2-19b-lora-camera-control-dolly-out.safetensors)
-  * [`LTX-2-19b-LoRA-Camera-Control-Dolly-Right`](https://huggingface.co/Lightricks/LTX-2-19b-LoRA-Camera-Control-Dolly-Right) - [Download](https://huggingface.co/Lightricks/LTX-2-19b-LoRA-Camera-Control-Dolly-Right/resolve/main/ltx-2-19b-lora-camera-control-dolly-right.safetensors)
-  * [`LTX-2-19b-LoRA-Camera-Control-Jib-Down`](https://huggingface.co/Lightricks/LTX-2-19b-LoRA-Camera-Control-Jib-Down) - [Download](https://huggingface.co/Lightricks/LTX-2-19b-LoRA-Camera-Control-Jib-Down/resolve/main/ltx-2-19b-lora-camera-control-jib-down.safetensors)
-  * [`LTX-2-19b-LoRA-Camera-Control-Jib-Up`](https://huggingface.co/Lightricks/LTX-2-19b-LoRA-Camera-Control-Jib-Up) - [Download](https://huggingface.co/Lightricks/LTX-2-19b-LoRA-Camera-Control-Jib-Up/resolve/main/ltx-2-19b-lora-camera-control-jib-up.safetensors)
-  * [`LTX-2-19b-LoRA-Camera-Control-Static`](https://huggingface.co/Lightricks/LTX-2-19b-LoRA-Camera-Control-Static) - [Download](https://huggingface.co/Lightricks/LTX-2-19b-LoRA-Camera-Control-Static/resolve/main/ltx-2-19b-lora-camera-control-static.safetensors)
+bash editing/scripts/setup/download_models.sh
+```
 
-### Available Pipelines
+Or download each model individually:
 
-* **[TI2VidTwoStagesPipeline](packages/ltx-pipelines/src/ltx_pipelines/ti2vid_two_stages.py)** - Production-quality text/image-to-video with 2x upsampling (recommended)
-* **[TI2VidTwoStagesHQPipeline](packages/ltx-pipelines/src/ltx_pipelines/ti2vid_two_stages_hq.py)** - Same two-stage flow as above but uses the res_2s second-order sampler (fewer steps, better quality)
-* **[TI2VidOneStagePipeline](packages/ltx-pipelines/src/ltx_pipelines/ti2vid_one_stage.py)** - Single-stage generation for quick prototyping
-* **[DistilledPipeline](packages/ltx-pipelines/src/ltx_pipelines/distilled.py)** - Fastest inference with 8 predefined sigmas
-* **[ICLoraPipeline](packages/ltx-pipelines/src/ltx_pipelines/ic_lora.py)** - Video-to-video and image-to-video transformations (uses distilled model.)
-* **[KeyframeInterpolationPipeline](packages/ltx-pipelines/src/ltx_pipelines/keyframe_interpolation.py)** - Interpolate between keyframe images
-* **[A2VidPipelineTwoStage](packages/ltx-pipelines/src/ltx_pipelines/a2vid_two_stage.py)** - Audio-to-video generation conditioned on an input audio file
-* **[RetakePipeline](packages/ltx-pipelines/src/ltx_pipelines/retake.py)** - Regenerate a specific time region of an existing video
+```bash
+# Qwen2.5-VL (supervision model, ~14 GB bf16)
+QWEN_DEST=~/models/Qwen2.5-VL-7B-Instruct \
+bash editing/scripts/setup/download_qwen.sh
 
-### ⚡ Optimization Tips
+# CLIP models (for diagnostic similarity scores)
+bash editing/scripts/setup/download_clip.sh
+```
 
-* **Use DistilledPipeline** - Fastest inference with only 8 predefined sigmas (8 steps stage 1, 4 steps stage 2)
-* **Enable FP8 quantization** - Enables lower memory footprint: `--quantization fp8-cast` (CLI) or `quantization=QuantizationPolicy.fp8_cast()` (Python). For Hopper GPUs with TensorRT-LLM, use `--quantization fp8-scaled-mm` for FP8 scaled matrix multiplication.
-* **Install attention optimizations** - Use xFormers (`uv sync --extra xformers`) or [Flash Attention 3](https://github.com/Dao-AILab/flash-attention) for Hopper GPUs
-* **Use gradient estimation** - Reduce inference steps from 40 to 20-30 while maintaining quality (see [pipeline documentation](packages/ltx-pipelines/README.md#denoising-loop-optimization))
-* **Skip memory cleanup** - If you have sufficient VRAM, disable automatic memory cleanup between stages for faster processing
-* **Choose single-stage pipeline** - Use `TI2VidOneStagePipeline` for faster generation when high resolution isn't required
+> **On HPC clusters:** run downloads on the login node (internet access). Compute jobs run with `HF_HUB_OFFLINE=1` once weights are cached.
 
-## ✍️ Prompting for LTX-2
+### 3. Set environment variables
 
-When writing prompts, focus on detailed, chronological descriptions of actions and scenes. Include specific movements, appearances, camera angles, and environmental details - all in a single flowing paragraph. Start directly with the action, and keep descriptions literal and precise. Think like a cinematographer describing a shot list. Keep within 200 words. For best results, build your prompts using this structure:
+```bash
+export CKPT_ROOT=/path/to/checkpoints       # contains ltx-2.3-22b-dev.safetensors
+export QWEN_ROOT=/path/to/Qwen2.5-VL-7B-Instruct
+export GEMMA_ROOT=/path/to/gemma-3-12b-it-qat-q4_0-unquantized
+```
 
-- Start with main action in a single sentence
-- Add specific details about movements and gestures
-- Describe character/object appearances precisely
-- Include background and environment details
-- Specify camera angles and movements
-- Describe lighting and colors
-- Note any changes or sudden events
+---
 
-For additional guidance on writing a prompt please refer to <https://ltx.video/blog/how-to-prompt-for-ltx-2>
+## Running Experiments
 
-### Automatic Prompt Enhancement
+### Single experiment from a YAML config
 
-LTX-2 pipelines support automatic prompt enhancement via an `enhance_prompt` parameter.
+```bash
+bash editing/scripts/run.sh editing/configs/example_hummingbird.yaml
+```
 
-## 🔌 ComfyUI Integration
+Edit the config to point to your own video and prompts:
 
-To use our model with ComfyUI, please follow the instructions at <https://github.com/Lightricks/ComfyUI-LTXVideo/>.
+```yaml
+src_video: "input_videos/my_video.mp4"
+edit_prompt: "The bird opens its wings."
+static_prompt: "A bird perched on a branch."
+opt_mode: "both"        # text | audio | both
+experiment_name: "bird_wings"
+```
 
-## 📦 Packages
+See [editing/configs/](editing/configs/) for annotated examples covering all three modes (`text`, `audio`, `both`).
 
-This repository is organized as a monorepo with three main packages:
+### Dry-run (no GPU required)
 
-* **[ltx-core](packages/ltx-core/)** - Core model implementation, inference stack, and utilities
-* **[ltx-pipelines](packages/ltx-pipelines/)** - High-level pipeline implementations for text-to-video, image-to-video, and other generation modes
-* **[ltx-trainer](packages/ltx-trainer/)** - Training and fine-tuning tools for LoRA, full fine-tuning, and IC-LoRA
+```bash
+DRY_RUN=1 bash editing/scripts/run.sh editing/configs/example_hummingbird.yaml
+```
 
-Each package has its own README and documentation. See the [Documentation](#-documentation) section below.
+### Hyperparameter sweep
 
-## 📚 Documentation
+```bash
+# Edit SRC_VIDEO, EDIT_PROMPT, STATIC_PROMPT in sweep.sh, then:
+bash editing/scripts/sweep.sh
 
-Each package includes comprehensive documentation:
+# Dry-run to preview all combinations:
+DRY_RUN=1 bash editing/scripts/sweep.sh
+```
 
-* **[LTX-Core README](packages/ltx-core/README.md)** - Core model implementation, inference stack, and utilities
-* **[LTX-Pipelines README](packages/ltx-pipelines/README.md)** - High-level pipeline implementations and usage guides
-* **[LTX-Trainer README](packages/ltx-trainer/README.md)** - Training and fine-tuning documentation with detailed guides
+### Transfer optimized latents to a new video
+
+After optimizing on a source video, apply the learned conditioning to a different target:
+
+```bash
+TARGET_VIDEO=/path/to/target.mp4 \
+OPT_DIR=/path/to/results/QwenVL/my_prompt/my_exp/mode_both \
+TRANSFER_MODE=both \
+EDIT_PROMPT="A cat yawning" \
+STATIC_PROMPT="A cat sitting still" \
+bash editing/scripts/transfer.sh
+```
+
+### Benchmark timing
+
+Replay an existing run in timing mode to measure per-iteration latency:
+
+```bash
+bash editing/scripts/benchmark_from_config.sh \
+    /path/to/results/QwenVL/my_prompt/my_exp/run_config.json
+```
+
+---
+
+## Configuration Reference
+
+All experiment parameters are documented inline in the sample configs:
+
+| Config | Mode | Description |
+|--------|------|-------------|
+| [`example_hummingbird.yaml`](editing/configs/example_hummingbird.yaml) | `both` | Joint text+audio optimization |
+| [`example_turtle_neck.yaml`](editing/configs/example_turtle_neck.yaml) | `audio` | Audio-only optimization |
+| [`example_car_door.yaml`](editing/configs/example_car_door.yaml) | `text` | Text-only optimization |
+
+Key parameters:
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `opt_mode` | `both` | What to optimize: `text`, `audio`, or `both` |
+| `iterations` | 30 | Optimization steps |
+| `lr` | 0.005 | Learning rate |
+| `retake_start_frames` | 5 | Conditioning window for Retake pipeline |
+| `qwen_max_frames` | 8 | Frames sampled for Qwen supervision |
+| `qwen_grad_accum_steps` | 3 | Qwen forward passes averaged per optimizer step |
+| `lpips_weight` | 0.0 | LPIPS perceptual regularizer (0 = disabled) |
+| `temporal_weight` | 0.0 | Temporal consistency regularizer (0 = disabled) |
+| `quantization` | `fp8-cast` | Model quantization (required for low-memory GPU) |
+
+---
+
+## Ablation Studies
+
+Scripts for reproducing ablations from the paper are in `editing/scripts/ablations/`:
+
+```bash
+# Regularizer ablation (no_reg / lpips_only / temporal_only / all_reg)
+SRC_VIDEO=input_videos/my_video.mp4 \
+EDIT_PROMPT="A rose blooming" \
+STATIC_PROMPT="A rose bud." \
+bash editing/scripts/ablations/run_regularizer_ablation.sh
+
+# Scorer ablation (Qwen vs CLIP vs X-CLIP)
+bash editing/scripts/ablations/run_scorer_ablation.sh
+```
+
+---
+
+## Hardware Requirements
+
+- **GPU:** NVIDIA H100 or H200 80 GB (required for LTX-22B fp8 + Qwen2.5-VL-7B)
+- **VRAM breakdown:** LTX-22B fp8 ~22 GB · Qwen2.5-VL-7B bf16 ~14 GB · activations ~30 GB ≈ 66 GB total
+- **Time per run:** ~30 min for 30 iterations (without early stopping, otherwise it will take on average nearly 10~15 mins based on complexity of the task) with `opt_mode=both`
+
+If memory is tight: use `qwen_max_frames: 8` (not higher), reduce `qwen_grad_accum_steps` to 1, or switch to `Qwen/Qwen2.5-VL-3B-Instruct` (~6 GB).
+
+---
+
+## Base Model
+
+This project builds on [LTX-2](https://huggingface.co/Lightricks/LTX-2.3) by Lightricks — a DiT-based audio-video foundation model. The base model code is in `packages/` (unchanged from the original repository).
+
+---
+
+## License
+
+See [LICENSE](LICENSE).

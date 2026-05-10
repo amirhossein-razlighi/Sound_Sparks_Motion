@@ -35,40 +35,40 @@ from pathlib import Path
 
 import torch
 
-_CKPT_ROOT = "/project/def-amahdavi/amirrz/LTX-2/checkpoints"
+_CKPT_ROOT = "${CKPT_ROOT}"
 DEFAULT_CHECKPOINT = f"{_CKPT_ROOT}/ltx-2.3-22b-dev.safetensors"
-DEFAULT_GEMMA_ROOT = "/project/def-amahdavi/amirrz/HF/models/gemma-3-12b-it-qat-q4_0-unquantized/"
-DEFAULT_QWEN_ROOT = "/project/def-amahdavi/amirrz/HF/models/Qwen2.5-VL-7B-Instruct"
+DEFAULT_GEMMA_ROOT = "${GEMMA_ROOT}/"
+DEFAULT_QWEN_ROOT = "${QWEN_ROOT}"
 
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
-from audio_latent_opt.core import (
+from motion_opt.core import (
     _parse_loras,
     build_cached_source_latents,
     build_guiders_for_mode,
     compute_target_shape,
 )
-from audio_latent_opt.models import build_retake_pipeline, resolve_quantization_policy
-from audio_latent_opt.multimodal_loop_qwen import (
+from motion_opt.models import build_retake_pipeline, resolve_quantization_policy
+from motion_opt.multimodal_loop_qwen import (
     gradient_optimize_multimodal_qwen,
     pre_encode_base_contexts,
     render_final_video,
 )
-from audio_latent_opt.multimodal_loop import render_baseline_video
-from audio_latent_opt.clip_loss import (
+from motion_opt.multimodal_loop import render_baseline_video
+from motion_opt.clip_loss import (
     build_clip_model,
     compute_clip_dual_prompt_frame_similarities,
     encode_text_for_clip,
 )
-from audio_latent_opt.metrics import decode_video_frames_rgb
-from audio_latent_opt.perceptual_loss import cache_source_frames
-from audio_latent_opt.qwen_loss import (
+from motion_opt.metrics import decode_video_frames_rgb
+from motion_opt.perceptual_loss import cache_source_frames
+from motion_opt.qwen_loss import (
     DEFAULT_QWEN_MOTION_QUESTION,
     QWEN_IMG_SIZE,
     build_qwen_model,
     build_qwen_rubric_inputs,
 )
-from audio_latent_opt.runtime import build_retake_kwargs, prepare_retake_input_video
+from motion_opt.runtime import build_retake_kwargs, prepare_retake_input_video
 
 from ltx_pipelines.utils.constants import detect_params
 
