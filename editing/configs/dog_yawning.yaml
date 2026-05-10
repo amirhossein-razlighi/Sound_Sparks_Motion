@@ -2,8 +2,8 @@
 # Optionally add --benchmark for timing-only mode.
 
 src_video: "input_videos/dog_sitting_on_chair.mp4"
-edit_prompt: "A dog yawning."
-static_prompt: "A dog sitting on a chair."
+edit_prompt: "A dog yawning"
+static_prompt: "A dog sitting on a chair"
 negative_prompt: "blurry, low quality, artifacts, distorted"
 
 experiment_name: "dog_yawning"

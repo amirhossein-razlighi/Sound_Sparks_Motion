@@ -2,7 +2,7 @@
 # Optionally add --benchmark for timing-only mode.
 
 src_video: "input_videos/a_groom_standing_in_the_middle_of.mp4"
-edit_prompt: "A man raising his right hand up and holding it there."
+edit_prompt: "A man raising his right hand up and holding it there"
 # static_prompt: ""  # optional: before-state description
 negative_prompt: "blurry, low quality, artifacts, distorted"
 
@@ -16,12 +16,12 @@ width:  512
 num_frames: 95
 frame_rate: null
 
-iterations: 30
+iterations: 25
 early_stopping: 15
-lr: 0.005
+lr: 0.001
 lr_schedule: "cosine"
-grad_clip: 0.0
-best_min_loss_delta: 0.0
+grad_clip: 1.0
+best_min_loss_delta: 0.1
 retake_start_frames: 5
 num_inference_steps: 30
 retake_num_inference_steps: 30

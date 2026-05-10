@@ -2,7 +2,7 @@
 # Optionally add --benchmark for timing-only mode.
 
 src_video: "input_videos/a_falcon_bird_sitting_on_a_tree.mp4"
-edit_prompt: "A bird opening its wings."
+edit_prompt: "A bird openning its wings."
 static_prompt: "A bird sitting on a branch of tree."
 negative_prompt: "blurry, low quality, artifacts, distorted"
 

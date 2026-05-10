@@ -3,7 +3,7 @@
 
 src_video: "input_videos/3_gold_fishes_in_a_glass_fish.mp4"
 edit_prompt: "A goldfish jumps out of the fish tank into the air and back into the tank."
-static_prompt: "Three goldfish swimming in a fish tank."
+static_prompt: "three goldfish swimming in a fish tank."
 negative_prompt: "blurry, low quality, artifacts, distorted"
 
 experiment_name: "goldfish_jumping_back"

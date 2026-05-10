@@ -2,7 +2,7 @@
 # Optionally add --benchmark for timing-only mode.
 
 src_video: "input_videos/a_groom_standing_in_the_middle_of.mp4"
-edit_prompt: "An angry man is shouting."
+edit_prompt: "A angry man is shouting."
 static_prompt: "A smiling man."
 negative_prompt: "blurry, low quality, artifacts, distorted"
 
