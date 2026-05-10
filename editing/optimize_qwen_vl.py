@@ -364,67 +364,9 @@ def run(args: argparse.Namespace) -> None:
             use_low_memory_guidance=args.low_memory_guidance,
         )
 
-        loras = _parse_loras(args.loras)
-
-        # ---- Early unquantized baseline (optional) ----
-        # When render_without_quantization is set, load the pipeline without fp8 first,
-        # encode the source (VAE/text encoders are unaffected by DiT quantization so the
-        # cached tensors are identical and are reused for the rest of the run), render
-        # baseline_video.mp4, then free the pipeline before loading the quantized one.
-        cached_video_latent = base_audio_latent = base_pos_context = base_neg_context = waveform_sr = None
-        if args.render_without_quantization and args.save_final_videos:
-            log.info("Loading unquantized pipeline for early baseline render...")
-            pipeline_pre = build_retake_pipeline(
-                checkpoint_path=args.checkpoint_path,
-                gemma_root=args.gemma_root,
-                loras=loras,
-                device=device,
-                quant_policy=None,
-                gradient_checkpointing=False,
-            )
-            cached_video_latent, base_audio_latent, waveform_sr = build_cached_source_latents(
-                pipeline=pipeline_pre,
-                src_video=str(retake_input_video),
-                height=height, width=width, num_frames=num_frames,
-                audio_sr=args.audio_sr, device=device,
-            )
-            base_pos_context, base_neg_context = pre_encode_base_contexts(
-                pipeline=pipeline_pre,
-                pos_prompt=args.edit_prompt,
-                neg_prompt=args.negative_prompt,
-                device=device,
-            )
-            # Build guiders for the unquantized baseline render (full guidance, no low-mem).
-            pre_vg, pre_ag = build_guiders_for_mode(args=args, params=params, use_low_memory_guidance=False)
-            pre_baseline_kwargs = build_retake_kwargs(
-                args=args,
-                frame_rate=frame_rate,
-                duration=num_frames / frame_rate,
-                video_guider_params=pre_vg,
-                audio_guider_params=pre_ag,
-            )
-            log.info("Rendering early baseline (unquantized) → baseline_video.mp4 ...")
-            render_baseline_video(
-                pipeline=pipeline_pre,
-                src_video=str(retake_input_video),
-                cached_video_latent=cached_video_latent,
-                base_audio_latent=base_audio_latent,
-                base_pos_context=base_pos_context,
-                base_neg_context=base_neg_context,
-                retake_kwargs=pre_baseline_kwargs,
-                output_path=output_dir / "baseline_video.mp4",
-                num_frames=num_frames,
-                frame_rate=frame_rate,
-                audio_sr=waveform_sr,
-            )
-            del pipeline_pre, pre_vg, pre_ag, pre_baseline_kwargs
-            gc.collect()
-            if torch.cuda.is_available():
-                torch.cuda.empty_cache()
-            log.info("Early baseline saved. Loading quantized pipeline for optimization...")
-
-        # ---- Load LTX Retake pipeline (quantized, used for opt loop + fp8 final render) ----
+        # ---- Load LTX Retake pipeline ----
         log.info("Loading RetakePipeline (checkpoint: %s)...", args.checkpoint_path)
+        loras = _parse_loras(args.loras)
         pipeline = build_retake_pipeline(
             checkpoint_path=args.checkpoint_path,
             gemma_root=args.gemma_root,
@@ -434,27 +376,25 @@ def run(args: argparse.Namespace) -> None:
             gradient_checkpointing=args.gradient_checkpointing,
         )
 
-        # ---- Encode source video/audio (skip if already done by the pre-opt baseline pass) ----
-        if cached_video_latent is None:
-            cached_video_latent, base_audio_latent, waveform_sr = build_cached_source_latents(
-                pipeline=pipeline,
-                src_video=str(retake_input_video),
-                height=height,
-                width=width,
-                num_frames=num_frames,
-                audio_sr=args.audio_sr,
-                device=device,
-            )
+        # ---- Encode source video/audio ----
+        cached_video_latent, base_audio_latent, waveform_sr = build_cached_source_latents(
+            pipeline=pipeline,
+            src_video=str(retake_input_video),
+            height=height,
+            width=width,
+            num_frames=num_frames,
+            audio_sr=args.audio_sr,
+            device=device,
+        )
         base_audio_latent_fp32 = base_audio_latent.float().detach()
 
         # ---- Pre-encode text contexts (Gemma, one-time) ----
-        if base_pos_context is None:
-            base_pos_context, base_neg_context = pre_encode_base_contexts(
-                pipeline=pipeline,
-                pos_prompt=args.edit_prompt,
-                neg_prompt=args.negative_prompt,
-                device=device,
-            )
+        base_pos_context, base_neg_context = pre_encode_base_contexts(
+            pipeline=pipeline,
+            pos_prompt=args.edit_prompt,
+            neg_prompt=args.negative_prompt,
+            device=device,
+        )
 
         # ---- Load Qwen2.5-VL ----
         log.info("Loading Qwen2.5-VL model (%s)...", args.qwen_model)
@@ -521,11 +461,12 @@ def run(args: argparse.Namespace) -> None:
         final_retake_kwargs["audio_guider_params"] = final_ag
 
         # ---- Render baseline BEFORE optimisation so it's ready for inspection ----
-        # Skipped when render_without_quantization=True because the clean unquantized
-        # baseline was already saved above. Here we only render the fp8 variant.
-        if args.save_final_videos and not args.render_without_quantization:
-            log.info("Rendering baseline video (before optimisation) → baseline_video.mp4 ...")
-            baseline_path = output_dir / "baseline_video.mp4"
+        # When unquantized re-renders are requested, this early copy is labelled _fp8
+        # and the clean unquantized baseline is produced at the end of the run.
+        if args.save_final_videos:
+            early_baseline_name = "baseline_video_fp8.mp4" if args.render_without_quantization else "baseline_video.mp4"
+            log.info("Rendering baseline video (before optimisation) → %s...", early_baseline_name)
+            baseline_path = output_dir / early_baseline_name
             render_baseline_video(
                 pipeline=pipeline,
                 src_video=str(retake_input_video),
@@ -542,10 +483,10 @@ def run(args: argparse.Namespace) -> None:
             if wandb_run is not None and baseline_path.exists():
                 wandb_run.log(
                     {
-                        "media/video/baseline": wandb.Video(
+                        "media/video/baseline_fp8": wandb.Video(
                             str(baseline_path),
                             format="mp4",
-                            caption="Baseline video",
+                            caption="Baseline video (fp8-cast)",
                         )
                     },
                     step=0,
@@ -733,26 +674,22 @@ def run(args: argparse.Namespace) -> None:
             # Rebuild final kwargs without quantization (guiders are config-only, reusable).
             final_retake_kwargs_fp32 = dict(final_retake_kwargs)
 
-            # Baseline (unquantized) — skip if already saved by the pre-opt pass.
-            baseline_path = output_dir / "baseline_video.mp4"
-            if not baseline_path.exists():
-                log.info("Rendering baseline video (unquantized) → baseline_video.mp4 ...")
-                render_baseline_video(
-                    pipeline=pipeline_fp32,
-                    src_video=str(retake_input_video),
-                    cached_video_latent=cached_video_latent,
-                    base_audio_latent=base_audio_latent,
-                    base_pos_context=base_pos_context,
-                    base_neg_context=base_neg_context,
-                    retake_kwargs=final_retake_kwargs_fp32,
-                    output_path=baseline_path,
-                    num_frames=num_frames,
-                    frame_rate=frame_rate,
-                    audio_sr=waveform_sr,
-                )
-            else:
-                log.info("Baseline video already saved (pre-opt pass) → skipping re-render.")
-            if wandb_run is not None and baseline_path.exists():
+            # Baseline (unquantized).
+            log.info("Rendering baseline video (unquantized) → baseline_video.mp4 ...")
+            render_baseline_video(
+                pipeline=pipeline_fp32,
+                src_video=str(retake_input_video),
+                cached_video_latent=cached_video_latent,
+                base_audio_latent=base_audio_latent,
+                base_pos_context=base_pos_context,
+                base_neg_context=base_neg_context,
+                retake_kwargs=final_retake_kwargs_fp32,
+                output_path=output_dir / "baseline_video.mp4",
+                num_frames=num_frames,
+                frame_rate=frame_rate,
+                audio_sr=waveform_sr,
+            )
+            if wandb_run is not None and (output_dir / "baseline_video.mp4").exists():
                 wandb_run.log(
                     {"media/video/baseline": wandb.Video(
                         str(output_dir / "baseline_video.mp4"),
