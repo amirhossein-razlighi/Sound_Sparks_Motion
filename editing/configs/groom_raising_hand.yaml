@@ -3,7 +3,7 @@
 
 src_video: "input_videos/a_groom_standing_in_the_middle_of.mp4"
 edit_prompt: "A man raising his right hand up and holding it there"
-# static_prompt: ""  # optional: before-state description
+static_prompt: "A man is smiling"
 negative_prompt: "blurry, low quality, artifacts, distorted"
 
 experiment_name: "groom_raising_hand"
