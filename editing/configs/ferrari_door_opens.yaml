@@ -6,7 +6,7 @@ edit_prompt: "A red car door opens."
 static_prompt: "A red car in the middle of a garage."
 negative_prompt: "blurry, low quality, artifacts, distorted"
 
-experiment_name: "ferrari_door_opens"
+experiment_name: "red_car_door_opens"
 opt_mode: "both"
 seed: 42
 enhance_prompt: true
@@ -17,12 +17,12 @@ num_frames: 95
 frame_rate: null
 
 iterations: 50
-early_stopping: 15
-lr: 0.005
+early_stopping: 20
+lr: 0.007
 lr_schedule: "cosine"
 grad_clip: 0.0
 best_min_loss_delta: 0.0
-retake_start_frames: 5
+retake_start_frames: 3
 num_inference_steps: 30
 retake_num_inference_steps: 30
 final_retake_num_inference_steps: 30
@@ -33,10 +33,10 @@ qwen_img_size: 224
 qwen_sample_mode: "linspace"
 qwen_contiguous_start_frame: 4
 qwen_gradient_rubric: "motion"
-qwen_grad_accum_steps: 3
+qwen_grad_accum_steps: 1
 
-lpips_weight: 0.0
-temporal_weight: 0.0
+lpips_weight: 0.01
+temporal_weight: 0.001
 lpips_backbone: "alex"
 latent_reg_weight: 0.01
 text_reg_weight: 0.001
