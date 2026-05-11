@@ -16,7 +16,7 @@ width:  512
 num_frames: 95
 frame_rate: null
 
-iterations: 30
+iterations: 50
 early_stopping: 15
 lr: 0.005
 lr_schedule: "cosine"
