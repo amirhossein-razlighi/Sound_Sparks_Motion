@@ -2,11 +2,11 @@
 # Optionally add --benchmark for timing-only mode.
 
 src_video: "input_videos/a_red_ferrari_standing_still_in_the.mp4"
-edit_prompt: "The red Ferrari driver-side door visibly swings outward from closed to open."
+edit_prompt: "A red car door opens."
 static_prompt: "A red car in the middle of a garage."
 negative_prompt: "blurry, low quality, artifacts, distorted"
 
-experiment_name: "red_car_door_opens2"
+experiment_name: "red_car_door_opens"
 opt_mode: "both"
 seed: 42
 enhance_prompt: true
