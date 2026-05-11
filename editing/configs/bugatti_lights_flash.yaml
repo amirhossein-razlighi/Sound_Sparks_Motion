@@ -28,9 +28,9 @@ retake_num_inference_steps: 30
 final_retake_num_inference_steps: 30
 audio_opt_last_steps: 8
 
-qwen_max_frames: 8
+qwen_max_frames: 24
 qwen_img_size: 224
-qwen_sample_mode: "normal"
+qwen_sample_mode: "linspace"
 qwen_contiguous_start_frame: 4
 qwen_gradient_rubric: "motion"
 qwen_grad_accum_steps: 3
