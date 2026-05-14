@@ -7,3 +7,9 @@
 *.jpeg filter=lfs diff=lfs merge=lfs -text
 *.jpg filter=lfs diff=lfs merge=lfs -text
 *.webp filter=lfs diff=lfs merge=lfs -text
+
+# GitHub Pages cannot serve LFS files — store website assets directly in git
+docs/assets/**/*.mp4 !filter !diff !merge -text
+docs/assets/**/*.jpg !filter !diff !merge -text
+docs/assets/**/*.png !filter !diff !merge -text
+docs/assets/**/*.webp !filter !diff !merge -text
