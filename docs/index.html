@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sound Sparks Motion: Audio and Text Tuning for Video Editing — SIGGRAPH Asia 2026">
+  <meta property="og:title" content="Sound Sparks Motion">
+  <meta property="og:description" content="A training-free framework for motion editing in audio-visual video generation models.">
+  <meta property="og:image" content="assets/images/teaser.jpg">
+  <title>Sound Sparks Motion</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- ── Navigation ───────────────────────────────────────────── -->
+  <nav id="nav">
+    <div class="nav-inner">
+      <span class="nav-logo">Sound Sparks Motion</span>
+      <ul class="nav-links">
+        <li><a href="#abstract">Abstract</a></li>
+        <li><a href="#method">Method</a></li>
+        <li><a href="#results">Results</a></li>
+        <li><a href="#bibtex">BibTeX</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ── Hero ─────────────────────────────────────────────────── -->
+  <section id="hero">
+    <canvas id="waveform-canvas" aria-hidden="true"></canvas>
+
+    <div class="hero-content">
+      <div class="venue-badge">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M7 4v3.5l2 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        SIGGRAPH Asia 2026
+      </div>
+
+      <h1 class="hero-title">
+        <span class="word-sound">Sound</span>
+        <span class="word-sparks">Sparks</span>
+        <span class="word-motion">Motion</span>
+      </h1>
+
+      <p class="hero-subtitle">Audio and Text Tuning for Video Editing</p>
+
+      <div class="authors-block">
+        <div class="authors-names">
+          <a href="#" class="author">AmirHossein Razlighi<sup>1</sup></a>
+          <span class="sep">·</span>
+          <a href="#" class="author">Aryan Mikaeili<sup>2</sup></a>
+          <span class="sep">·</span>
+          <a href="#" class="author">Ali Mahdavi-Amiri<sup>2</sup></a>
+          <span class="sep">·</span>
+          <a href="#" class="author">Daniel Cohen-Or<sup>3</sup></a>
+          <span class="sep">·</span>
+          <a href="#" class="author">Yiorgos Chrysanthou<sup>1,4</sup></a>
+        </div>
+        <div class="affiliations">
+          <span><sup>1</sup>University of Cyprus</span>
+          <span><sup>2</sup>Simon Fraser University</span>
+          <span><sup>3</sup>Tel Aviv University</span>
+          <span><sup>4</sup>CYENS Center of Excellence</span>
+        </div>
+      </div>
+
+      <div class="hero-buttons">
+        <a href="#" class="btn btn-disabled" aria-disabled="true" title="Coming soon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <rect x="2" y="3" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M5 7h6M5 9.5h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Paper (Coming Soon)
+        </a>
+        <a href="https://github.com/amirhossein-razlighi/Sound_Sparks_Motion" class="btn btn-outline" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+          </svg>
+          Code
+        </a>
+      </div>
+    </div>
+
+    <div class="scroll-hint" aria-hidden="true">
+      <span></span>
+    </div>
+  </section>
+
+  <!-- ── Teaser ────────────────────────────────────────────────── -->
+  <section id="teaser">
+    <div class="container">
+      <figure class="teaser-figure">
+        <img src="assets/images/teaser.jpg"
+             alt="Given a source video and an edit prompt, our method tunes the audio latent as a conditioning parameter to the LTX video model, such that the desired motion edit is realized in the edited video."
+             class="teaser-img"
+             loading="lazy">
+        <figcaption>
+          Given a source video and an edit prompt, our method tunes the audio latent as a conditioning parameter to the LTX video model, such that the desired motion edit is realized in the edited video.
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ── Abstract ─────────────────────────────────────────────── -->
+  <section id="abstract">
+    <div class="container">
+      <h2 class="section-title">Abstract</h2>
+      <div class="abstract-text">
+        <p>
+          Motion-centric video editing remains difficult for large generative video models, which often respond well to appearance changes but struggle to produce specific, localized actions or state transitions in an existing clip. We introduce <strong>Sound Sparks Motion</strong>, a training-free framework that enables motion editing in an audio-visual video generation model by tuning its internal multimodal conditioning signals at test time.
+        </p>
+        <p>
+          Rather than modifying model weights, our method tunes only two lightweight variables: an <em>audio latent</em> derived from the source video and a <em>residual perturbation</em> in the text-conditioning. We find that this combination can encourage motion edits that the underlying model often struggles to realize under prompt-only control.
+        </p>
+        <p>
+          Since there is no direct way to evaluate temporal alignment between text and motion, we guide the tuning process using a vision–language model that provides feedback indicating whether the intended motion appears in the generated video. This simple supervision yields an effective semantic objective for motion editing, while regularization and perceptual-temporal constraints help preserve content and visual quality. Beyond per-video tuning, we show that the learned latent controls are <em>transferable</em> across videos, suggesting that they capture reusable motion-edit directions rather than overfitting to a single example.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Method ───────────────────────────────────────────────── -->
+  <section id="method">
+    <div class="container">
+      <h2 class="section-title">Method</h2>
+      <p class="section-lead">
+        Our method turns a frozen retake-style video editor into a motion-aware editor through test-time latent tuning — no fine-tuning required.
+      </p>
+
+      <div class="method-steps">
+        <div class="method-step">
+          <div class="step-num">01</div>
+          <div class="step-body">
+            <h3>Freeze the Model</h3>
+            <p>The LTX-2 video generation model weights remain entirely frozen. We never backpropagate into the model parameters.</p>
+          </div>
+        </div>
+        <div class="method-arrow" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="method-step">
+          <div class="step-num">02</div>
+          <div class="step-body">
+            <h3>Optimize Conditioning</h3>
+            <p>We tune two lightweight variables — an <em>audio latent</em> and a <em>text residual</em> — via gradient descent. Qwen2.5-VL provides a differentiable motion-alignment signal as supervision.</p>
+          </div>
+        </div>
+        <div class="method-arrow" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="method-step">
+          <div class="step-num">03</div>
+          <div class="step-body">
+            <h3>Apply via Retake</h3>
+            <p>The optimized conditioning embeddings are injected into the Retake pipeline to regenerate only the target time window, preserving the rest of the video.</p>
+          </div>
+        </div>
+      </div>
+
+      <figure class="method-figure">
+        <img src="assets/images/arch.jpg"
+             alt="Architecture diagram showing the Sound Sparks Motion pipeline"
+             loading="lazy">
+        <figcaption>
+          Overview of the Sound Sparks Motion pipeline. The audio latent α and text residual Δv are optimized jointly while all model weights remain frozen.
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ── Results ──────────────────────────────────────────────── -->
+  <section id="results">
+    <div class="container">
+      <h2 class="section-title">Results</h2>
+      <p class="section-lead">
+        Hover a card to play both videos simultaneously. All videos are loaded lazily.
+      </p>
+
+      <div class="results-grid">
+
+        <!-- Bird -->
+        <div class="comparison-card" data-id="bird">
+          <div class="card-prompt">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path d="M2 4h10M2 7h7M2 10h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            "The bird opens its wings."
+          </div>
+          <div class="video-pair">
+            <div class="video-col">
+              <div class="video-label">Source</div>
+              <video data-src="assets/videos/bird_input.mp4"
+                     loop muted playsinline preload="none"
+                     aria-label="Source: bird sitting on tree branch"></video>
+              <div class="video-skeleton" aria-hidden="true"></div>
+            </div>
+            <div class="video-divider">
+              <span>vs</span>
+            </div>
+            <div class="video-col">
+              <div class="video-label ours">Ours</div>
+              <video data-src="assets/videos/bird_output.mp4"
+                     loop muted playsinline preload="none"
+                     aria-label="Ours: bird opening its wings"></video>
+              <div class="video-skeleton" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rose -->
+        <div class="comparison-card" data-id="rose">
+          <div class="card-prompt">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path d="M2 4h10M2 7h7M2 10h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            "The rose blooms."
+          </div>
+          <div class="video-pair">
+            <div class="video-col">
+              <div class="video-label">Source</div>
+              <video data-src="assets/videos/rose_input.mp4"
+                     loop muted playsinline preload="none"
+                     aria-label="Source: rose bud"></video>
+              <div class="video-skeleton" aria-hidden="true"></div>
+            </div>
+            <div class="video-divider">
+              <span>vs</span>
+            </div>
+            <div class="video-col">
+              <div class="video-label ours">Ours</div>
+              <video data-src="assets/videos/rose_output.mp4"
+                     loop muted playsinline preload="none"
+                     aria-label="Ours: rose blooming"></video>
+              <div class="video-skeleton" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dog -->
+        <div class="comparison-card" data-id="dog">
+          <div class="card-prompt">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path d="M2 4h10M2 7h7M2 10h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            "The dog yawns."
+          </div>
+          <div class="video-pair">
+            <div class="video-col">
+              <div class="video-label">Source</div>
+              <video data-src="assets/videos/dog_input.mp4"
+                     loop muted playsinline preload="none"
+                     aria-label="Source: dog sitting"></video>
+              <div class="video-skeleton" aria-hidden="true"></div>
+            </div>
+            <div class="video-divider">
+              <span>vs</span>
+            </div>
+            <div class="video-col">
+              <div class="video-label ours">Ours</div>
+              <video data-src="assets/videos/dog_output.mp4"
+                     loop muted playsinline preload="none"
+                     aria-label="Ours: dog yawning"></video>
+              <div class="video-skeleton" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /.results-grid -->
+    </div>
+  </section>
+
+  <!-- ── BibTeX ────────────────────────────────────────────────── -->
+  <section id="bibtex">
+    <div class="container">
+      <h2 class="section-title">BibTeX</h2>
+      <div class="bibtex-wrapper">
+        <button class="copy-btn" id="copy-bibtex" aria-label="Copy BibTeX">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <rect x="4.5" y="4.5" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.3"/>
+            <path d="M2.5 9.5V2.5a1 1 0 0 1 1-1h7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Copy
+        </button>
+        <pre id="bibtex-code"><code>@inproceedings{razlighi2026sound,
+  title     = {{Sound Sparks Motion}: Audio and Text Tuning for Video Editing},
+  author    = {Razlighi, AmirHossein and Mikaeili, Aryan and
+               Mahdavi-Amiri, Ali and Cohen-Or, Daniel and
+               Chrysanthou, Yiorgos},
+  booktitle = {SIGGRAPH Asia},
+  year      = {2026}
+}</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ───────────────────────────────────────────────── -->
+  <footer id="footer">
+    <div class="container footer-inner">
+      <p>© 2026 Sound Sparks Motion Authors.</p>
+      <p class="footer-credit">
+        Website design inspired by
+        <a href="https://nerfies.github.io" target="_blank" rel="noopener">Nerfies</a> and
+        <a href="https://segment-me-in-time.github.io" target="_blank" rel="noopener">Segment Me in Time</a>.
+      </p>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

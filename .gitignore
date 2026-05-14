@@ -26,7 +26,7 @@ tmp
 *.safetensors
 *.sft
 
-# Media files
+# Media files (excluded from tracking; website assets are explicitly allowed below)
 *.gif
 *.heic
 *.heif
@@ -39,6 +39,9 @@ tmp
 *.png
 *.wav
 *.webp
+
+# Allow website assets to be committed
+!docs/assets/**
 
 
 *.err
