@@ -235,37 +235,6 @@
 })();
 
 
-/* ── BibTeX copy button ──────────────────────────────────────── */
-(function initCopyBibtex() {
-  const btn  = document.getElementById('copy-bibtex');
-  const code = document.getElementById('bibtex-code');
-  if (!btn || !code) return;
-
-  btn.addEventListener('click', async () => {
-    const text = code.querySelector('code')?.textContent ?? code.textContent;
-    try {
-      await navigator.clipboard.writeText(text);
-    } catch {
-      const ta = Object.assign(document.createElement('textarea'), {
-        value: text, style: 'position:fixed;opacity:0'
-      });
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-    }
-    btn.textContent = '✓ Copied!';
-    btn.classList.add('copied');
-    setTimeout(() => {
-      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-        <rect x="4.5" y="4.5" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.3"/>
-        <path d="M2.5 9.5V2.5a1 1 0 0 1 1-1h7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-      </svg> Copy`;
-      btn.classList.remove('copied');
-    }, 2000);
-  });
-})();
-
 
 /* ── Active nav link on scroll ───────────────────────────────── */
 (function initActiveNav() {
