@@ -213,7 +213,7 @@
   const btnRight = document.getElementById('arrow-right');
   if (!carousel || !btnLeft || !btnRight) return;
 
-  const SCROLL_BY = 480;
+  const SCROLL_BY = Math.min(980, window.innerWidth - 80);
 
   function updateArrows() {
     const atStart = carousel.scrollLeft <= 8;
