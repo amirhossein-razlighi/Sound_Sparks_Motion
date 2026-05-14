@@ -10,10 +10,10 @@
   let raf, time = 0;
 
   const WAVES = [
-    { color: 'rgba(245, 158, 11, 0.18)', freq: 0.018, amp: 45, speed: 0.0022, phase: 0 },
-    { color: 'rgba(139, 92, 246, 0.12)', freq: 0.013, amp: 65, speed: 0.0015, phase: Math.PI * 0.6 },
-    { color: 'rgba(245, 158, 11, 0.08)', freq: 0.024, amp: 28, speed: 0.0028, phase: Math.PI * 1.2 },
-    { color: 'rgba(139, 92, 246, 0.07)', freq: 0.009, amp: 80, speed: 0.0010, phase: Math.PI * 1.8 },
+    { color: 'rgba(245, 158, 11, 0.10)', freq: 0.012, amp: 28, speed: 0.00055, phase: 0 },
+    { color: 'rgba(139, 92, 246, 0.07)', freq: 0.008, amp: 42, speed: 0.00038, phase: Math.PI * 0.7 },
+    { color: 'rgba(245, 158, 11, 0.05)', freq: 0.018, amp: 16, speed: 0.00070, phase: Math.PI * 1.4 },
+    { color: 'rgba(139, 92, 246, 0.04)', freq: 0.005, amp: 55, speed: 0.00025, phase: Math.PI * 2.1 },
   ];
 
   function resize() {
