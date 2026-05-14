@@ -8,6 +8,7 @@
   <meta property="og:description" content="A training-free framework for motion editing in audio-visual video generation models.">
   <meta property="og:image" content="assets/images/teaser.jpg">
   <title>Sound Sparks Motion</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -179,32 +180,25 @@
     <div class="container">
       <h2 class="section-title">Results</h2>
       <p class="section-lead">
-        Hover a card to play both videos. Scroll horizontally to see all examples — including <span class="transfer-inline-badge">Transfer</span> results where learned controls are applied to new videos.
+        Drag the slider to compare source and result. Scroll horizontally for all examples — <span class="transfer-inline-badge">Transfer</span> results show learned controls applied to unseen videos.
       </p>
     </div>
 
     <div class="carousel-wrapper">
       <div class="results-carousel" id="results-carousel">
 
-        <!-- ── Regular results ───────────────────────────── -->
-
         <!-- Bird -->
         <div class="comparison-card" data-id="bird">
           <div class="card-header">
             <span class="card-prompt">"The bird opens its wings."</span>
           </div>
-          <div class="video-pair">
-            <div class="video-col">
-              <div class="video-label">Source</div>
-              <video data-src="assets/videos/bird_input.mp4" loop muted playsinline preload="none"></video>
-              <div class="video-skeleton"></div>
-            </div>
-            <div class="video-divider"><span>vs</span></div>
-            <div class="video-col">
-              <div class="video-label ours">Ours</div>
-              <video data-src="assets/videos/bird_output.mp4" loop muted playsinline preload="none"></video>
-              <div class="video-skeleton"></div>
-            </div>
+          <div class="vc-wrap">
+            <video class="vc-r" data-src="assets/videos/bird_output.mp4" loop muted playsinline preload="none"></video>
+            <div class="vc-l-clip"><video class="vc-l" data-src="assets/videos/bird_input.mp4" loop muted playsinline preload="none"></video></div>
+            <span class="vc-tag vc-tag-l">Source</span>
+            <span class="vc-tag vc-tag-r">Ours</span>
+            <div class="vc-line"><button class="vc-btn" aria-label="Drag to compare"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M8 5L3 11l5 6M14 5l5 6-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+            <div class="vc-skeleton"></div>
           </div>
         </div>
 
@@ -213,38 +207,28 @@
           <div class="card-header">
             <span class="card-prompt">"The rose blooms."</span>
           </div>
-          <div class="video-pair">
-            <div class="video-col">
-              <div class="video-label">Source</div>
-              <video data-src="assets/videos/rose_input.mp4" loop muted playsinline preload="none"></video>
-              <div class="video-skeleton"></div>
-            </div>
-            <div class="video-divider"><span>vs</span></div>
-            <div class="video-col">
-              <div class="video-label ours">Ours</div>
-              <video data-src="assets/videos/rose_output.mp4" loop muted playsinline preload="none"></video>
-              <div class="video-skeleton"></div>
-            </div>
+          <div class="vc-wrap">
+            <video class="vc-r" data-src="assets/videos/rose_output.mp4" loop muted playsinline preload="none"></video>
+            <div class="vc-l-clip"><video class="vc-l" data-src="assets/videos/rose_input.mp4" loop muted playsinline preload="none"></video></div>
+            <span class="vc-tag vc-tag-l">Source</span>
+            <span class="vc-tag vc-tag-r">Ours</span>
+            <div class="vc-line"><button class="vc-btn" aria-label="Drag to compare"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M8 5L3 11l5 6M14 5l5 6-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+            <div class="vc-skeleton"></div>
           </div>
         </div>
 
-        <!-- Dog yawning -->
+        <!-- Dog -->
         <div class="comparison-card" data-id="dog">
           <div class="card-header">
             <span class="card-prompt">"The dog yawns."</span>
           </div>
-          <div class="video-pair">
-            <div class="video-col">
-              <div class="video-label">Source</div>
-              <video data-src="assets/videos/dog_input.mp4" loop muted playsinline preload="none"></video>
-              <div class="video-skeleton"></div>
-            </div>
-            <div class="video-divider"><span>vs</span></div>
-            <div class="video-col">
-              <div class="video-label ours">Ours</div>
-              <video data-src="assets/videos/dog_output.mp4" loop muted playsinline preload="none"></video>
-              <div class="video-skeleton"></div>
-            </div>
+          <div class="vc-wrap">
+            <video class="vc-r" data-src="assets/videos/dog_output.mp4" loop muted playsinline preload="none"></video>
+            <div class="vc-l-clip"><video class="vc-l" data-src="assets/videos/dog_input.mp4" loop muted playsinline preload="none"></video></div>
+            <span class="vc-tag vc-tag-l">Source</span>
+            <span class="vc-tag vc-tag-r">Ours</span>
+            <div class="vc-line"><button class="vc-btn" aria-label="Drag to compare"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M8 5L3 11l5 6M14 5l5 6-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+            <div class="vc-skeleton"></div>
           </div>
         </div>
 
@@ -253,18 +237,13 @@
           <div class="card-header">
             <span class="card-prompt">"A goldfish jumps out of the tank."</span>
           </div>
-          <div class="video-pair">
-            <div class="video-col">
-              <div class="video-label">Source</div>
-              <video data-src="assets/videos/fish_input.mp4" loop muted playsinline preload="none"></video>
-              <div class="video-skeleton"></div>
-            </div>
-            <div class="video-divider"><span>vs</span></div>
-            <div class="video-col">
-              <div class="video-label ours">Ours</div>
-              <video data-src="assets/videos/fish_output.mp4" loop muted playsinline preload="none"></video>
-              <div class="video-skeleton"></div>
-            </div>
+          <div class="vc-wrap">
+            <video class="vc-r" data-src="assets/videos/fish_output.mp4" loop muted playsinline preload="none"></video>
+            <div class="vc-l-clip"><video class="vc-l" data-src="assets/videos/fish_input.mp4" loop muted playsinline preload="none"></video></div>
+            <span class="vc-tag vc-tag-l">Source</span>
+            <span class="vc-tag vc-tag-r">Ours</span>
+            <div class="vc-line"><button class="vc-btn" aria-label="Drag to compare"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M8 5L3 11l5 6M14 5l5 6-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+            <div class="vc-skeleton"></div>
           </div>
         </div>
 
@@ -273,18 +252,13 @@
           <div class="card-header">
             <span class="card-prompt">"The man raises his right hand."</span>
           </div>
-          <div class="video-pair">
-            <div class="video-col">
-              <div class="video-label">Source</div>
-              <video data-src="assets/videos/raise_input.mp4" loop muted playsinline preload="none"></video>
-              <div class="video-skeleton"></div>
-            </div>
-            <div class="video-divider"><span>vs</span></div>
-            <div class="video-col">
-              <div class="video-label ours">Ours</div>
-              <video data-src="assets/videos/raise_output.mp4" loop muted playsinline preload="none"></video>
-              <div class="video-skeleton"></div>
-            </div>
+          <div class="vc-wrap">
+            <video class="vc-r" data-src="assets/videos/raise_output.mp4" loop muted playsinline preload="none"></video>
+            <div class="vc-l-clip"><video class="vc-l" data-src="assets/videos/raise_input.mp4" loop muted playsinline preload="none"></video></div>
+            <span class="vc-tag vc-tag-l">Source</span>
+            <span class="vc-tag vc-tag-r">Ours</span>
+            <div class="vc-line"><button class="vc-btn" aria-label="Drag to compare"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M8 5L3 11l5 6M14 5l5 6-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+            <div class="vc-skeleton"></div>
           </div>
         </div>
 
@@ -293,18 +267,13 @@
           <div class="card-header">
             <span class="card-prompt">"The car's lights flash on."</span>
           </div>
-          <div class="video-pair">
-            <div class="video-col">
-              <div class="video-label">Source</div>
-              <video data-src="assets/videos/carlights_input.mp4" loop muted playsinline preload="none"></video>
-              <div class="video-skeleton"></div>
-            </div>
-            <div class="video-divider"><span>vs</span></div>
-            <div class="video-col">
-              <div class="video-label ours">Ours</div>
-              <video data-src="assets/videos/carlights_output.mp4" loop muted playsinline preload="none"></video>
-              <div class="video-skeleton"></div>
-            </div>
+          <div class="vc-wrap">
+            <video class="vc-r" data-src="assets/videos/carlights_output.mp4" loop muted playsinline preload="none"></video>
+            <div class="vc-l-clip"><video class="vc-l" data-src="assets/videos/carlights_input.mp4" loop muted playsinline preload="none"></video></div>
+            <span class="vc-tag vc-tag-l">Source</span>
+            <span class="vc-tag vc-tag-r">Ours</span>
+            <div class="vc-line"><button class="vc-btn" aria-label="Drag to compare"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M8 5L3 11l5 6M14 5l5 6-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+            <div class="vc-skeleton"></div>
           </div>
         </div>
 
@@ -313,46 +282,29 @@
           <div class="card-header">
             <span class="card-prompt">"The man pets the dog."</span>
           </div>
-          <div class="video-pair">
-            <div class="video-col">
-              <div class="video-label">Source</div>
-              <video data-src="assets/videos/pets_input.mp4" loop muted playsinline preload="none"></video>
-              <div class="video-skeleton"></div>
-            </div>
-            <div class="video-divider"><span>vs</span></div>
-            <div class="video-col">
-              <div class="video-label ours">Ours</div>
-              <video data-src="assets/videos/pets_output.mp4" loop muted playsinline preload="none"></video>
-              <div class="video-skeleton"></div>
-            </div>
+          <div class="vc-wrap">
+            <video class="vc-r" data-src="assets/videos/pets_output.mp4" loop muted playsinline preload="none"></video>
+            <div class="vc-l-clip"><video class="vc-l" data-src="assets/videos/pets_input.mp4" loop muted playsinline preload="none"></video></div>
+            <span class="vc-tag vc-tag-l">Source</span>
+            <span class="vc-tag vc-tag-r">Ours</span>
+            <div class="vc-line"><button class="vc-btn" aria-label="Drag to compare"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M8 5L3 11l5 6M14 5l5 6-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+            <div class="vc-skeleton"></div>
           </div>
         </div>
-
-        <!-- ── Transfer results ──────────────────────────── -->
 
         <!-- Transfer: red bird -->
         <div class="comparison-card is-transfer" data-id="t-bird">
           <div class="card-header">
             <span class="card-prompt">"The bird opens its wings."</span>
-            <span class="transfer-badge">
-              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
-                <path d="M1.5 5.5h8M6 2l3.5 3.5L6 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              Transfer
-            </span>
+            <span class="transfer-badge"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true"><path d="M1.5 5.5h8M6 2l3.5 3.5L6 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Transfer</span>
           </div>
-          <div class="video-pair">
-            <div class="video-col">
-              <div class="video-label">New Video</div>
-              <video data-src="assets/videos/t_bird_input.mp4" loop muted playsinline preload="none"></video>
-              <div class="video-skeleton"></div>
-            </div>
-            <div class="video-divider"><span>vs</span></div>
-            <div class="video-col">
-              <div class="video-label ours">Transferred</div>
-              <video data-src="assets/videos/t_bird_output.mp4" loop muted playsinline preload="none"></video>
-              <div class="video-skeleton"></div>
-            </div>
+          <div class="vc-wrap">
+            <video class="vc-r" data-src="assets/videos/t_bird_output.mp4" loop muted playsinline preload="none"></video>
+            <div class="vc-l-clip"><video class="vc-l" data-src="assets/videos/t_bird_input.mp4" loop muted playsinline preload="none"></video></div>
+            <span class="vc-tag vc-tag-l">New Video</span>
+            <span class="vc-tag vc-tag-r transfer">Transferred</span>
+            <div class="vc-line transfer"><button class="vc-btn" aria-label="Drag to compare"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M8 5L3 11l5 6M14 5l5 6-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+            <div class="vc-skeleton"></div>
           </div>
         </div>
 
@@ -360,25 +312,15 @@
         <div class="comparison-card is-transfer" data-id="t-boy">
           <div class="card-header">
             <span class="card-prompt">"The boy laughs out loud."</span>
-            <span class="transfer-badge">
-              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
-                <path d="M1.5 5.5h8M6 2l3.5 3.5L6 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              Transfer
-            </span>
+            <span class="transfer-badge"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true"><path d="M1.5 5.5h8M6 2l3.5 3.5L6 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Transfer</span>
           </div>
-          <div class="video-pair">
-            <div class="video-col">
-              <div class="video-label">New Video</div>
-              <video data-src="assets/videos/t_boy_input.mp4" loop muted playsinline preload="none"></video>
-              <div class="video-skeleton"></div>
-            </div>
-            <div class="video-divider"><span>vs</span></div>
-            <div class="video-col">
-              <div class="video-label ours">Transferred</div>
-              <video data-src="assets/videos/t_boy_output.mp4" loop muted playsinline preload="none"></video>
-              <div class="video-skeleton"></div>
-            </div>
+          <div class="vc-wrap">
+            <video class="vc-r" data-src="assets/videos/t_boy_output.mp4" loop muted playsinline preload="none"></video>
+            <div class="vc-l-clip"><video class="vc-l" data-src="assets/videos/t_boy_input.mp4" loop muted playsinline preload="none"></video></div>
+            <span class="vc-tag vc-tag-l">New Video</span>
+            <span class="vc-tag vc-tag-r transfer">Transferred</span>
+            <div class="vc-line transfer"><button class="vc-btn" aria-label="Drag to compare"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M8 5L3 11l5 6M14 5l5 6-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+            <div class="vc-skeleton"></div>
           </div>
         </div>
 
@@ -386,31 +328,20 @@
         <div class="comparison-card is-transfer" data-id="t-cat">
           <div class="card-header">
             <span class="card-prompt">"The cat yawns."</span>
-            <span class="transfer-badge">
-              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
-                <path d="M1.5 5.5h8M6 2l3.5 3.5L6 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              Transfer
-            </span>
+            <span class="transfer-badge"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true"><path d="M1.5 5.5h8M6 2l3.5 3.5L6 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Transfer</span>
           </div>
-          <div class="video-pair">
-            <div class="video-col">
-              <div class="video-label">New Video</div>
-              <video data-src="assets/videos/t_cat_input.mp4" loop muted playsinline preload="none"></video>
-              <div class="video-skeleton"></div>
-            </div>
-            <div class="video-divider"><span>vs</span></div>
-            <div class="video-col">
-              <div class="video-label ours">Transferred</div>
-              <video data-src="assets/videos/t_cat_output.mp4" loop muted playsinline preload="none"></video>
-              <div class="video-skeleton"></div>
-            </div>
+          <div class="vc-wrap">
+            <video class="vc-r" data-src="assets/videos/t_cat_output.mp4" loop muted playsinline preload="none"></video>
+            <div class="vc-l-clip"><video class="vc-l" data-src="assets/videos/t_cat_input.mp4" loop muted playsinline preload="none"></video></div>
+            <span class="vc-tag vc-tag-l">New Video</span>
+            <span class="vc-tag vc-tag-r transfer">Transferred</span>
+            <div class="vc-line transfer"><button class="vc-btn" aria-label="Drag to compare"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M8 5L3 11l5 6M14 5l5 6-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+            <div class="vc-skeleton"></div>
           </div>
         </div>
 
       </div><!-- /.results-carousel -->
 
-      <!-- Scroll arrows -->
       <button class="carousel-arrow arrow-left" id="arrow-left" aria-label="Scroll left">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12 4l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
