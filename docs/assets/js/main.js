@@ -11,10 +11,10 @@
   let raf, time = 0;
 
   const WAVES = [
-    { color: 'rgba(245, 158, 11, 0.18)', freq: 0.018, amp: 45, speed: 0.018, phase: 0 },
-    { color: 'rgba(139, 92, 246, 0.12)', freq: 0.013, amp: 65, speed: 0.013, phase: Math.PI * 0.6 },
-    { color: 'rgba(245, 158, 11, 0.08)', freq: 0.024, amp: 28, speed: 0.022, phase: Math.PI * 1.2 },
-    { color: 'rgba(139, 92, 246, 0.07)', freq: 0.009, amp: 80, speed: 0.009, phase: Math.PI * 1.8 },
+    { color: 'rgba(245, 158, 11, 0.18)', freq: 0.018, amp: 45, speed: 0.0022, phase: 0 },
+    { color: 'rgba(139, 92, 246, 0.12)', freq: 0.013, amp: 65, speed: 0.0015, phase: Math.PI * 0.6 },
+    { color: 'rgba(245, 158, 11, 0.08)', freq: 0.024, amp: 28, speed: 0.0028, phase: Math.PI * 1.2 },
+    { color: 'rgba(139, 92, 246, 0.07)', freq: 0.009, amp: 80, speed: 0.0010, phase: Math.PI * 1.8 },
   ];
 
   function resize() {
@@ -203,6 +203,30 @@
       btn.classList.remove('copied');
     }, 2000);
   });
+})();
+
+
+/* ── Carousel arrow buttons ──────────────────────────────────── */
+(function initCarousel() {
+  const carousel = document.getElementById('results-carousel');
+  const btnLeft  = document.getElementById('arrow-left');
+  const btnRight = document.getElementById('arrow-right');
+  if (!carousel || !btnLeft || !btnRight) return;
+
+  const SCROLL_BY = 480;
+
+  function updateArrows() {
+    const atStart = carousel.scrollLeft <= 8;
+    const atEnd   = carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 8;
+    btnLeft.classList.toggle('hidden', atStart);
+    btnRight.classList.toggle('hidden', atEnd);
+  }
+
+  btnLeft.addEventListener('click',  () => carousel.scrollBy({ left: -SCROLL_BY, behavior: 'smooth' }));
+  btnRight.addEventListener('click', () => carousel.scrollBy({ left:  SCROLL_BY, behavior: 'smooth' }));
+  carousel.addEventListener('scroll', updateArrows, { passive: true });
+
+  updateArrows(); // init state
 })();
 
 

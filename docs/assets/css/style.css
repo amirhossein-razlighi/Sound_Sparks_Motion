@@ -508,18 +508,94 @@ figcaption {
 }
 .method-figure img.loaded { opacity: 1; }
 
-/* ── Results ─────────────────────────────────────────────────── */
+/* ── Results carousel ────────────────────────────────────────── */
 #results {
-  padding-block: var(--section-gap);
+  padding-top: var(--section-gap);
+  padding-bottom: var(--section-gap);
 }
 
-.results-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 500px), 1fr));
-  gap: 2rem;
+#results .container {
+  margin-bottom: 2.5rem;
 }
 
+/* wrapper provides the fade edges + arrow positioning */
+.carousel-wrapper {
+  position: relative;
+}
+
+.carousel-wrapper::before,
+.carousel-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 80px;
+  z-index: 2;
+  pointer-events: none;
+}
+.carousel-wrapper::before {
+  left: 0;
+  background: linear-gradient(to right, var(--bg), transparent);
+}
+.carousel-wrapper::after {
+  right: 0;
+  background: linear-gradient(to left, var(--bg), transparent);
+}
+
+.results-carousel {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding: 0.5rem calc((100vw - min(1100px, 100% - 48px)) / 2 + 24px) 1.5rem;
+  /* hide scrollbar visually but keep it functional */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.1) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+.results-carousel::-webkit-scrollbar {
+  height: 4px;
+}
+.results-carousel::-webkit-scrollbar-track { background: transparent; }
+.results-carousel::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
+}
+
+/* Carousel navigation arrows */
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--border-hover);
+  background: rgba(13, 13, 28, 0.85);
+  backdrop-filter: blur(10px);
+  color: var(--text-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s, opacity 0.2s;
+}
+.carousel-arrow:hover {
+  color: var(--text-1);
+  border-color: rgba(255,255,255,0.25);
+  background: rgba(13, 13, 28, 0.95);
+}
+.carousel-arrow.hidden { opacity: 0; pointer-events: none; }
+.arrow-left  { left: 16px; }
+.arrow-right { right: 16px; }
+
+/* ── Comparison cards ────────────────────────────────────────── */
 .comparison-card {
+  flex: 0 0 460px;
+  scroll-snap-align: start;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
@@ -528,26 +604,77 @@ figcaption {
 }
 
 .comparison-card:hover {
-  border-color: rgba(245, 158, 11, 0.25);
-  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.08),
-              0 20px 60px rgba(0, 0, 0, 0.4);
-  transform: translateY(-4px);
+  border-color: rgba(245, 158, 11, 0.3);
+  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.07),
+              0 24px 64px rgba(0, 0, 0, 0.5);
+  transform: translateY(-5px);
+}
+
+/* Transfer card accent */
+.comparison-card.is-transfer {
+  border-color: rgba(139, 92, 246, 0.2);
+}
+.comparison-card.is-transfer:hover {
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.08),
+              0 24px 64px rgba(0, 0, 0, 0.5);
+}
+
+/* Card header row */
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0.9rem 1.1rem;
+  border-bottom: 1px solid var(--border);
+  min-height: 48px;
 }
 
 .card-prompt {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 1rem 1.25rem;
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--text-2);
   font-style: italic;
-  border-bottom: 1px solid var(--border);
+  line-height: 1.4;
 }
 
-.card-prompt svg { color: var(--orange); flex-shrink: 0; }
+/* Transfer badge on card header */
+.transfer-badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--purple);
+  background: var(--purple-dim);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  padding: 3px 9px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
 
+/* Inline badge in section lead text */
+.transfer-inline-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.78em;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--purple);
+  background: var(--purple-dim);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  padding: 1px 7px;
+  border-radius: 100px;
+  vertical-align: middle;
+}
+
+/* Video pair layout */
 .video-pair {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -567,22 +694,28 @@ figcaption {
   top: 8px;
   left: 8px;
   z-index: 2;
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.7);
-  background: rgba(0,0,0,0.55);
+  color: rgba(255,255,255,0.75);
+  background: rgba(0,0,0,0.6);
   backdrop-filter: blur(6px);
-  padding: 3px 8px;
+  padding: 3px 9px;
   border-radius: 100px;
   border: 1px solid rgba(255,255,255,0.1);
+  white-space: nowrap;
 }
 
 .video-label.ours {
   color: var(--orange);
-  background: rgba(0,0,0,0.55);
-  border-color: rgba(245, 158, 11, 0.3);
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+/* "Transferred" label uses purple */
+.is-transfer .video-label.ours {
+  color: #a78bfa;
+  border-color: rgba(167, 139, 250, 0.35);
 }
 
 .video-col video {
@@ -620,17 +753,26 @@ figcaption {
 }
 .video-divider span {
   position: absolute;
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--text-3);
   background: var(--card);
   border: 1px solid var(--border);
-  padding: 4px 7px;
+  padding: 4px 6px;
   border-radius: var(--radius-sm);
   white-space: nowrap;
   writing-mode: vertical-rl;
+}
+
+/* Badge in venue label */
+.badge-review {
+  font-size: 0.85em;
+  opacity: 0.75;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: none;
 }
 
 /* ── BibTeX ──────────────────────────────────────────────────── */
@@ -742,9 +884,11 @@ figcaption {
   .method-steps { flex-direction: column; }
   .method-arrow { display: none; }
 
-  .results-grid { grid-template-columns: 1fr; }
+  .comparison-card { flex: 0 0 88vw; }
 
   .video-col video { aspect-ratio: 3/4; }
+
+  .carousel-arrow { display: none; }
 
   .footer-inner { flex-direction: column; text-align: center; }
 }
