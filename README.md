@@ -146,15 +146,22 @@ export GEMMA_ROOT=/path/to/gemma-3-12b-it-qat-q4_0-unquantized
 bash editing/scripts/run.sh editing/configs/dog_yawning.yaml
 ```
 
-Edit the config to point to your own video and prompts:
+Or use this config template for your own videos and prompts:
+```bash
+bash editing/scripts/run.sh editing/configs/yours.yaml
+```
+
+Edit the config to point to your own video and prompts. for example:
 
 ```yaml
 src_video: "input_videos/dog_video.mp4"
 edit_prompt: "A dog yawning"
 static_prompt: "A dog sitting on a chair"
-opt_mode: "both"          # text | audio | both
+opt_mode: "both"
 experiment_name: "dog_yawning"
 ```
+
+Also you can customize the tuning hyperparameters (learning rate, number of iterations, regularization weights, etc.) in the same YAML file.
 
 See [`editing/configs/`](editing/configs/) for annotated examples covering all experiments.
 
