@@ -41,6 +41,7 @@ tmp
 *.wav
 *.webp
 
+!static/supplementary.mp4
 
 *.err
 *.out
