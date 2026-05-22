@@ -1,10 +1,9 @@
 #!/bin/bash
 # =============================================================================
-# Run a multimodal motion editing experiment from a YAML config.
+# Run a motion editing experiment from a YAML config.
 #
 # Usage:
-#   bash editing/scripts/run.sh editing/configs/example_hummingbird.yaml
-#   bash editing/scripts/run.sh --benchmark editing/configs/example_hummingbird.yaml
+#   bash editing/scripts/run.sh editing/configs/dog_yawning.yaml
 #
 # Required environment variables (set before calling, or put paths in the config):
 #   CKPT_ROOT   — directory containing ltx-2.3-22b-dev.safetensors
@@ -12,13 +11,10 @@
 #   GEMMA_ROOT  — directory containing Gemma-3-12b text encoder weights
 #
 # Optional flags / environment overrides:
-#   --benchmark — benchmark mode: uses optimize_qwen_vl_benchmark.py, disables W&B
-#                 and intermediate visualization, forces one final best-video render
 #   --dry-run   — same as DRY_RUN=1
 #   REPO_ROOT   — repo root (auto-detected from script location if unset)
 #   OUTPUT_DIR  — override the output directory generated from the config
 #   DRY_RUN=1   — print the final command without running it (no GPU needed)
-#   BENCHMARK=1 — same as --benchmark
 #
 # Works on any machine with a GPU. On HPC clusters with a module system,
 # relevant modules are loaded automatically if the 'module' command is available.
@@ -27,13 +23,11 @@
 set -euo pipefail
 
 DRY_RUN="${DRY_RUN:-0}"
-BENCHMARK="${BENCHMARK:-0}"
 
 # Parse flags before the config positional arg
 CONFIG_FILE=""
 for arg in "$@"; do
     case "$arg" in
-        --benchmark) BENCHMARK=1 ;;
         --dry-run)   DRY_RUN=1   ;;
         *)           CONFIG_FILE="$arg" ;;
     esac
@@ -42,12 +36,7 @@ done
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="${REPO_ROOT:-$(cd "${SCRIPT_DIR}/../.." && pwd)}"
 PARSE_SCRIPT="${SCRIPT_DIR}/utils/parse_config.py"
-
-if [[ "${BENCHMARK}" == "1" ]]; then
-    MAIN_SCRIPT="${REPO_ROOT}/editing/optimize_qwen_vl_benchmark.py"
-else
-    MAIN_SCRIPT="${REPO_ROOT}/editing/optimize_qwen_vl.py"
-fi
+MAIN_SCRIPT="${REPO_ROOT}/editing/optimize_qwen_vl.py"
 
 # ---------------------------------------------------------------------------
 # Validation
@@ -92,18 +81,8 @@ echo "========================================================"
 echo "  Sound Sparks Motion — optimization run"
 echo "  Config     : ${CONFIG_FILE}"
 echo "  Output dir : ${OUTPUT_DIR_SELECTED}"
-echo "  Benchmark  : ${BENCHMARK}"
 echo "  DRY_RUN    : ${DRY_RUN}"
 echo "========================================================"
-
-# In benchmark mode, force settings for clean timing and minimal I/O
-if [[ "${BENCHMARK}" == "1" ]]; then
-    ARGS+=(
-        --visualize-every-iters 0
-        --no-clip-similarity-diag
-        --save-final-videos
-    )
-fi
 
 if [[ "${DRY_RUN}" == "1" ]]; then
     echo ""
@@ -168,11 +147,6 @@ except Exception:
 " 2>/dev/null || echo "offline"
     )
     export WANDB_MODE="${WANDB_MODE_FROM_CONFIG}"
-fi
-
-if [[ "${BENCHMARK}" == "1" ]]; then
-    export WANDB_DISABLED=true
-    export WANDB_MODE=disabled
 fi
 
 mkdir -p "${OUTPUT_DIR_SELECTED}" "${WANDB_DIR}" "${WANDB_CACHE_DIR}"

@@ -69,27 +69,24 @@ Given a source video and an edit prompt, our method:
 
 ```
 .
-├── editing/                          ← Main experiment code
+├── editing/
 │   ├── configs/                      ← YAML experiment configs (start here)
+│   │   └── transfer/                 ← Transfer experiment configs
 │   ├── scripts/
 │   │   ├── run.sh                    ← Main entry point: run from a YAML config
-│   │   ├── sweep.sh                  ← Hyperparameter sweep (sequential)
-│   │   ├── transfer.sh               ← Transfer optimized latents to a new video
-│   │   ├── benchmark_from_config.sh  ← Timing benchmark replay
-│   │   ├── setup/                    ← Model download helpers
-│   │   │   ├── download_models.sh
-│   │   │   ├── download_qwen.sh
-│   │   │   └── download_clip.sh
-│   │   └── ablations/                ← Ablation study scripts
-│   ├── optimize_qwen_vl.py           ← Main optimization entry point
-│   ├── transfer_optimized.py         ← Transfer latents to a new target video
-│   └── src/
-│       └── motion_opt/               ← Core Python library
+│   │   ├── transfer.sh               ← Apply optimized latents to a new video
+│   │   ├── sweep.sh                  ← Sequential hyperparameter sweep
+│   │   └── setup/                    ← Model download helpers
+│   │       ├── download_models.sh
+│   │       ├── download_qwen.sh
+│   │       └── download_clip.sh
+│   ├── optimize_qwen_vl.py           ← Main optimization script
+│   ├── transfer_optimized.py         ← Transfer script
+│   └── src/motion_opt/               ← Core Python library
 ├── packages/
 │   ├── ltx-core/                     ← LTX-2 model implementation
 │   ├── ltx-pipelines/                ← High-level pipelines (Retake, A2V, etc.)
 │   └── ltx-trainer/                  ← LoRA / fine-tuning tools
-├── visualization/                    ← Web-based result viewer
 └── gpt_as_a_judge_prompt.txt         ← GPT-based evaluation prompt
 ```
 
