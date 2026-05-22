@@ -678,7 +678,7 @@ figcaption {
 .vc-wrap {
   position: relative;
   overflow: hidden;
-  aspect-ratio: 4/3;
+  aspect-ratio: 8/5;   /* matches native video dimensions (512×320) — no cropping */
   background: #000;
   cursor: col-resize;
   user-select: none;
@@ -971,7 +971,7 @@ figcaption {
 
   .comparison-card { flex: 0 0 calc(100vw - 32px); }
 
-  .vc-wrap { aspect-ratio: 3/4; }   /* taller on small screens — shows more of portrait video */
+  /* vc-wrap keeps 8/5 on mobile too — matches native video dimensions */
 
   .vc-btn { width: 52px; height: 52px; } /* bigger touch target on mobile */
 

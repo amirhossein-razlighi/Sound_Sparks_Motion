@@ -173,11 +173,21 @@
     document.addEventListener('touchend',   () => { dragging = false; });
     document.addEventListener('touchcancel',() => { dragging = false; });
 
-    /* ── Play / pause on hover (desktop) ── */
-    wrap.addEventListener('mouseenter', playBoth);
-    wrap.addEventListener('mouseleave', pauseBoth);
+    /* ── Play / pause: hover on desktop, auto-play-in-view on touch devices ── */
+    const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
-    /* ── Play / pause on tap (mobile) ── */
+    if (isTouchDevice) {
+      /* Auto-play when card is ≥40% visible; pause when scrolled away */
+      const playObs = new IntersectionObserver(([entry]) => {
+        entry.isIntersecting ? playBoth() : pauseBoth();
+      }, { threshold: 0.4 });
+      playObs.observe(wrap);
+    } else {
+      wrap.addEventListener('mouseenter', playBoth);
+      wrap.addEventListener('mouseleave', pauseBoth);
+    }
+
+    /* ── Tap to toggle play/pause on mobile ── */
     let tapping = false;
     wrap.addEventListener('touchstart', () => { tapping = true; }, { passive: true });
     wrap.addEventListener('touchend', () => {
