@@ -180,7 +180,7 @@ Fill in `yours.yaml` with your paths and prompts:
 ```yaml
 target_video: "input_videos/my_new_video.mp4"
 opt_dir: "results/QwenVL/a_dog_yawning/.../mode_both"
-mode: "both"              # text | audio | both — must match what was optimized
+mode: "both"              # must match what was optimized
 
 edit_prompt: "A cat yawning."
 static_prompt: "A cat sitting on a chair."
