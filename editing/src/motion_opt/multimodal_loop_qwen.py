@@ -667,7 +667,7 @@ def _log_attention_maps(
     has already been detached from the compute graph by the time we get here
     since optimizer.step() was called before the preview render).
 
-    Memory notes (H100):
+    Memory notes:
       - Qwen output_attentions=True: ~140 MB extra; freed before returning.
       - LTX hooks: accumulate one [Tv] vector per step; ~200 KB total.
     """

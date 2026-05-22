@@ -12,12 +12,12 @@ conditioning parameter is being optimized (audio latent, text delta, or both).
 
 Pixel format follows Qwen2VLImageProcessor._preprocess exactly:
   - Normalise: (x - 0.5) / 0.5   (frames_chw is assumed to be in [0, 1])
-  - Extract 14×14 spatial patches, 2-frame temporal patches, 2×2 spatial merge
+  - Extract 14x14 spatial patches, 2-frame temporal patches, 2x2 spatial merge
   - pixel_values_videos: [grid_t * merged_h * merged_w, C * 2 * 4 * 14²] = [N, 4704]
   - video_grid_thw from the processor is the raw patch grid before spatial merge:
     [(grid_t, H // 14, W // 14)]
 
-For 224×224 images and 8 frames: N = 4 * 8 * 8 = 256, feature_dim = 4704.
+For 224x224 images and 8 frames: N = 4 * 8 * 8 = 256, feature_dim = 4704.
 """
 from __future__ import annotations
 
@@ -36,10 +36,10 @@ _QWEN_STD = [0.5, 0.5, 0.5]
 # Visual architecture constants (match Qwen2.5-VL-7B config)
 _PATCH_SIZE = 14
 _TEMPORAL_PATCH_SIZE = 2
-_MERGE_SIZE = 2  # 2×2 spatial patch merge → effective token covers 28×28 pixels
+_MERGE_SIZE = 2  # 2x2 spatial patch merge → effective token covers 28x28 pixels
 
 # Safe image size: divisible by patch_size * merge_size = 28
-# 224 = 8 * 28  →  8×8 = 64 spatial tokens per temporal chunk
+# 224 = 8 * 28  →  8x8 = 64 spatial tokens per temporal chunk
 QWEN_IMG_SIZE = 224
 
 DEFAULT_QWEN_MOTION_QUESTION = (

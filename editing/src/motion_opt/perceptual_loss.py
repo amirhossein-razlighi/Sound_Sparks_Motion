@@ -13,9 +13,9 @@ Three complementary losses:
   3. **Latent magnitude penalty** — soft constraint on how far audio/text
      parameters drift from initialization (adaptive version of L2 reg).
 
-Memory budget (H100 80GB):
+Memory budget:
   - LPIPS-AlexNet: ~30 MB weights, ~200 MB activations for 33 frames
-  - Total overhead: < 500 MB — negligible vs. LTX (22GB) + Qwen (14GB)
+  - Total overhead: < 500 MB
 """
 from __future__ import annotations
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Main entry point for motion-driven video editing via gradient optimization.
 
-Freezes the LTX-2 video generation model and optimizes text and/or audio
+Freezes the LTX-2 video generation model and tunes text and audio
 conditioning embeddings so that the regenerated video matches a target motion
 description.  Qwen2.5-VL is used as the differentiable alignment signal:
 
@@ -20,7 +20,7 @@ Usage
 -----
     python editing/optimize_qwen_vl.py \\
         --src-video /path/to/dog.mp4 \\
-        --edit-prompt "A dog jumping energetically" \\
+        --edit-prompt "A dog jumping up in the air" \\
         --output-dir /path/to/output \\
         --opt-mode both
 
@@ -321,8 +321,7 @@ def run(args: argparse.Namespace) -> None:
     )
 
     # Seed all RNG sources before any model or pipeline call so the baseline
-    # video is reproducible across SLURM jobs (cuBLAS draws from the global
-    # CUDA RNG, which is not controlled by the per-pipeline Generator).
+    # video is reproducible 
     torch.manual_seed(args.seed)
     torch.cuda.manual_seed_all(args.seed)
     torch.backends.cudnn.deterministic = True
@@ -466,9 +465,9 @@ def run(args: argparse.Namespace) -> None:
         final_retake_kwargs["video_guider_params"] = final_vg
         final_retake_kwargs["audio_guider_params"] = final_ag
 
-        # ---- Render baseline BEFORE optimisation so it's ready for inspection ----
+        # ---- Render baseline before optimization so it's ready for inspection ----
         if args.save_final_videos:
-            log.info("Rendering baseline video (before optimisation)...")
+            log.info("Rendering baseline video (before optimization)...")
             baseline_path = output_dir / "baseline_video.mp4"
             render_baseline_video(
                 pipeline=pipeline,
@@ -531,7 +530,7 @@ def run(args: argparse.Namespace) -> None:
                 audio_sr=waveform_sr,
                 wandb_run=wandb_run,
                 # Enable attention map extraction whenever we have a W&B run
-                # and preview rendering is active (no extra LTX render needed).
+                # and preview rendering is active.
                 extract_attn_maps=(wandb_run is not None and args.visualize_every_iters > 0),
                 cached_src_frames=cached_src_frames,
             )
