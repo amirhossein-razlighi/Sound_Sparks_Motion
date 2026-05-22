@@ -4,11 +4,11 @@ Code for the paper **"Sound Sparks Motion: Audio and Text Tuning for Video Editi
 
 We show that jointly optimizing the text and audio conditioning vectors of a pretrained audio-video diffusion model — supervised by a vision-language model (Qwen2.5-VL) — reliably induces desired motion edits without any fine-tuning of the diffusion model itself.
 
-<body>
-<video controls autoplay loop muted playsinline>
-  <source src="static/supplementary.mp4" type="video/mp4">
-</video>
-</body>
+
+
+https://github.com/user-attachments/assets/00e68e53-48ab-4bb4-b0c0-e269766d0106
+
+
 
 ---
 
