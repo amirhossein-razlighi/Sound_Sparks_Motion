@@ -288,7 +288,7 @@ sup {
   justify-content: center;
   gap: 0.4rem 1.2rem;
   font-size: 0.8rem;
-  color: var(--text-2);
+  color: #a8b8cc;
 }
 
 /* Buttons */
@@ -398,7 +398,7 @@ sup {
 
 figcaption {
   font-size: 0.875rem;
-  color: var(--text-2);
+  color: #a8b8cc;
   max-width: 680px;
   text-align: center;
   line-height: 1.6;
