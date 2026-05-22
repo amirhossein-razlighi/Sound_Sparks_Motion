@@ -83,11 +83,10 @@ Given a source video and an edit prompt, our method:
 │   ├── optimize_qwen_vl.py           ← Main optimization script
 │   ├── transfer_optimized.py         ← Transfer script
 │   └── src/motion_opt/               ← Core Python library
-├── packages/
-│   ├── ltx-core/                     ← LTX-2 model implementation
-│   ├── ltx-pipelines/                ← High-level pipelines (Retake, A2V, etc.)
-│   └── ltx-trainer/                  ← LoRA / fine-tuning tools
-└── gpt_as_a_judge_prompt.txt         ← GPT-based evaluation prompt
+└── packages/
+    ├── ltx-core/                     ← LTX-2 model implementation
+    ├── ltx-pipelines/                ← High-level pipelines (Retake, A2V, etc.)
+    └── ltx-trainer/                  ← LoRA / fine-tuning tools
 ```
 
 ---
