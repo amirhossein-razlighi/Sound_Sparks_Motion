@@ -261,3 +261,19 @@
   }, { rootMargin: '-40% 0px -55% 0px' });
   sections.forEach(s => obs.observe(s));
 })();
+
+
+/* ── BibTeX copy button ──────────────────────────────────────── */
+(function initBibtexCopy() {
+  const btn  = document.getElementById('bibtex-copy-btn');
+  const pre  = document.getElementById('bibtex-entry');
+  if (!btn || !pre) return;
+  btn.addEventListener('click', () => {
+    navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+      const span = btn.querySelector('span');
+      btn.classList.add('copied');
+      span.textContent = 'Copied!';
+      setTimeout(() => { btn.classList.remove('copied'); span.textContent = 'Copy'; }, 2000);
+    });
+  });
+})();

@@ -883,37 +883,53 @@ figcaption {
   border-color: rgba(74, 222, 128, 0.3);
 }
 
-.bibtex-pending {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  text-align: center;
-  max-width: 460px;
-  padding: 2.5rem 2rem;
-  border: 1px dashed rgba(255,255,255,0.1);
+.bibtex-block {
+  position: relative;
+  max-width: 680px;
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   background: var(--surface);
+  overflow: hidden;
 }
 
-.bibtex-pending-icon {
-  color: var(--text-3);
-  opacity: 0.6;
-}
-
-.bibtex-pending-title {
-  font-family: 'Sora', sans-serif;
-  font-size: 1rem;
-  font-weight: 600;
+.bibtex-code {
+  display: block;
+  padding: 1.5rem 1.75rem;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  font-size: 0.82rem;
+  line-height: 1.75;
   color: var(--text-2);
-  letter-spacing: -0.01em;
+  white-space: pre;
+  overflow-x: auto;
+  margin: 0;
 }
 
-.bibtex-pending-sub {
-  font-size: 0.85rem;
+.bibtex-copy {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
   color: var(--text-2);
-  line-height: 1.6;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.bibtex-copy:hover {
+  color: var(--text-1);
+  border-color: var(--border-hover);
+  background: rgba(255,255,255,0.06);
+}
+.bibtex-copy.copied {
+  color: #4ade80;
+  border-color: rgba(74, 222, 128, 0.3);
 }
 
 /* ── Footer ──────────────────────────────────────────────────── */

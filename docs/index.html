@@ -72,12 +72,12 @@
       </div>
 
       <div class="hero-buttons">
-        <a href="#" class="btn btn-disabled" aria-disabled="true" title="Coming soon">
+        <a href="https://arxiv.org/abs/2605.15307" class="btn btn-outline" target="_blank" rel="noopener">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <rect x="2" y="3" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
             <path d="M5 7h6M5 9.5h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
-          Paper (Coming Soon)
+          Paper
         </a>
         <a href="https://github.com/amirhossein-razlighi/Sound_Sparks_Motion" class="btn btn-outline" target="_blank" rel="noopener">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
@@ -355,15 +355,17 @@
   <section id="bibtex">
     <div class="container">
       <h2 class="section-title">BibTeX</h2>
-      <div class="bibtex-pending">
-        <div class="bibtex-pending-icon" aria-hidden="true">
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-            <circle cx="14" cy="14" r="12" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 3"/>
-            <path d="M14 9v5.5l3.5 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <p class="bibtex-pending-title">Citation coming soon</p>
-        <p class="bibtex-pending-sub">The full citation will be available here once the paper is accepted and published.</p>
+      <div class="bibtex-block">
+        <button class="bibtex-copy" id="bibtex-copy-btn" aria-label="Copy BibTeX">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true"><rect x="4.5" y="4.5" width="8" height="9" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M2.5 10.5V2.5h8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          <span>Copy</span>
+        </button>
+        <pre class="bibtex-code" id="bibtex-entry">@article{razlighi2026sound,
+  title={Sound Sparks Motion: Audio and Text Tuning for Video Editing},
+  author={Razlighi, AmirHossein Naghi and Mikaeili, Aryan and Mahdavi-Amiri, Ali and Cohen-Or, Daniel and Chrysanthou, Yiorgos},
+  journal={arXiv preprint arXiv:2605.15307},
+  year={2026}
+}</pre>
       </div>
     </div>
   </section>
