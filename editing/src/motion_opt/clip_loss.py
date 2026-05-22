@@ -1,13 +1,11 @@
-"""Video-CLIP loss: measures how consistent generated frames are with an edit prompt.
+"""CLIP/X-CLIP diagnostic scoring for generated videos.
 
-Uses X-CLIP (microsoft/xclip-base-patch32) which applies cross-frame attention
-so the video embedding is temporally aware, unlike standard CLIP which scores
-each frame independently.
+Used only for reporting diagnostic similarity scores after optimization — it is
+NOT part of the training loss.  The actual optimization signal comes from
+Qwen2.5-VL (see qwen_loss.py).
 
-Used as the primary optimization objective for all three experiment modes:
-  - text token optimization
-  - audio latent optimization
-  - joint (both)
+Supports both standard CLIP (frame-by-frame) and X-CLIP
+(microsoft/xclip-base-patch32, temporally-aware cross-frame attention).
 """
 from __future__ import annotations
 

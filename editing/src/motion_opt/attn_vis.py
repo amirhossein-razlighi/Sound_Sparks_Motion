@@ -9,7 +9,7 @@ Two complementary views:
        - attn2               : text embedding tokens → video latent tokens
 
 All extraction is done under torch.no_grad() and is only triggered at
-visualize_every_iters steps to keep H100 memory pressure low.
+visualize_every_iters steps to keep memory pressure low.
 """
 from __future__ import annotations
 

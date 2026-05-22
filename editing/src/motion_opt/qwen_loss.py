@@ -1,14 +1,14 @@
-"""Qwen2.5-VL video-text alignment loss.
+"""Qwen2.5-VL video-text alignment loss — the primary optimization signal.
 
-Replaces the X-CLIP loss with a large generative video-language model.
-The loss measures: how likely is Qwen2.5-VL to answer "yes" when asked
-"Does this video show: {edit_prompt}?"
+Measures how likely Qwen2.5-VL (Qwen/Qwen2.5-VL-7B-Instruct) is to answer
+"yes" when asked "Does this video show: {edit_prompt}?":
 
-    loss = 1 - P("yes" | video_frames, question)
+    loss = -log P("yes" | video_frames, question)
 
 Gradient flows through Qwen2.5-VL's visual encoder back to the pixel values,
 which are computed differentiably (resize → normalize → patchify) from the
-generated frames.
+generated frames, and further back through the LTX-2 video decoder to whichever
+conditioning parameter is being optimized (audio latent, text delta, or both).
 
 Pixel format follows Qwen2VLImageProcessor._preprocess exactly:
   - Normalise: (x - 0.5) / 0.5   (frames_chw is assumed to be in [0, 1])

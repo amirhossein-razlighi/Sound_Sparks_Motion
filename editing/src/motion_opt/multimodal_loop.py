@@ -1,22 +1,18 @@
-"""Unified gradient optimization loop for three experiment modes.
+"""Shared rendering and encoding utilities for the motion editing pipeline.
 
-Modes
------
-text  : optimize a soft delta on the Gemma text embedding (video_encoding).
-audio : optimize the audio latent (same parameter as the existing flow-loss
-        pipeline, but now using a CLIP alignment loss).
-both  : jointly optimize text delta + audio latent.
+This module provides the core differentiable rendering infrastructure used by
+the Qwen-supervised optimization loop (multimodal_loop_qwen.py):
 
-Loss
-----
-Primary: CLIP alignment — 1 - cosine_sim(CLIP(gen_frames), CLIP(edit_prompt))
-Optional addons:
-  - L2 regularization on the audio latent (keep it close to source audio)
-  - L2 regularization on the text delta (keep perturbation small)
+  - pre_encode_base_contexts  : run Gemma once to cache text embeddings
+  - render_with_injected_latents : differentiable Retake forward pass with
+                                   gradient flowing through the last N denoising
+                                   steps to audio and/or text parameters
+  - render_baseline_video     : render the source conditioning without any
+                                 learned perturbation (for comparison)
+  - render_final_video        : render the best-found conditioning to disk
 """
 from __future__ import annotations
 
-import csv
 import gc
 import logging
 from dataclasses import replace
@@ -29,7 +25,6 @@ from ltx_core.text_encoders.gemma.embeddings_processor import EmbeddingsProcesso
 import ltx_pipelines.retake as _retake_module
 import ltx_pipelines.utils.samplers as _samplers_module
 
-from .clip_loss import compute_clip_video_loss
 from .core import flatten_video_chunks
 
 log = logging.getLogger(__name__)
@@ -203,204 +198,6 @@ def render_with_injected_latents(
         pipeline.model_ledger.audio_encoder = orig_audio_encoder_getter
         if inject_text_context:
             _retake_module.encode_prompts = orig_encode_prompts
-
-
-# ---------------------------------------------------------------------------
-# Main optimization loop
-# ---------------------------------------------------------------------------
-
-def gradient_optimize_multimodal(
-    *,
-    mode: str,  # "text" | "audio" | "both"
-    args,
-    is_main: bool,
-    output_dir: Path,
-    # Text optimization inputs
-    base_pos_context: EmbeddingsProcessorOutput,
-    base_neg_context: EmbeddingsProcessorOutput,
-    # Audio optimization inputs
-    base_audio_latent: torch.Tensor,
-    base_audio_latent_fp32: torch.Tensor,
-    # Shared rendering inputs
-    cached_video_latent: torch.Tensor,
-    retake_input_video: str,
-    pipeline,
-    retake_kwargs: dict,
-    # CLIP loss
-    clip_model,
-    text_embedding: torch.Tensor,
-    eval_sample_start: int,
-) -> dict:
-    """Run gradient optimization for one of three modes and return best result.
-
-    Returns a dict with keys:
-        "clip_loss"      : best total loss value (lower is better)
-        "clip_score"     : 1 - clip_loss (higher is better, [0, 1])
-        "delta_v"        : best text delta tensor (or None if mode=="audio")
-        "audio_latent"   : best audio latent tensor (or None if mode=="text")
-        "mode"           : the optimization mode string
-    """
-    if mode not in ("text", "audio", "both"):
-        raise ValueError(f"Unknown mode: {mode!r}. Expected 'text', 'audio', or 'both'.")
-
-    optimize_text = mode in ("text", "both")
-    optimize_audio = mode in ("audio", "both")
-
-    # ---- Build parameters ----
-    params: list[torch.nn.Parameter] = []
-    delta_v: torch.nn.Parameter | None = None
-    audio_latent: torch.nn.Parameter | None = None
-
-    if optimize_text:
-        delta_v = torch.nn.Parameter(
-            torch.zeros_like(base_pos_context.video_encoding.float())
-        )
-        params.append(delta_v)
-        log.info(
-            "[%s] Text delta shape: %s, %.1fK params",
-            mode, tuple(delta_v.shape), delta_v.numel() / 1e3,
-        )
-
-    if optimize_audio:
-        audio_latent = torch.nn.Parameter(base_audio_latent_fp32.clone())
-        params.append(audio_latent)
-        log.info(
-            "[%s] Audio latent shape: %s, %.1fK params",
-            mode, tuple(audio_latent.shape), audio_latent.numel() / 1e3,
-        )
-
-    optimizer = torch.optim.Adam(params, lr=args.lr)
-
-    # ---- Resume from checkpoint ----
-    best_latent_path = output_dir / f"best_audio_latent_{mode}.pt"
-    best_delta_path = output_dir / f"best_text_delta_{mode}.pt"
-    num_iters = args.iterations
-
-    best: dict = {
-        "clip_loss": float("inf"),
-        "clip_score": float("-inf"),
-        "delta_v": delta_v.detach().clone() if delta_v is not None else None,
-        "audio_latent": audio_latent.detach().clone() if audio_latent is not None else None,
-        "mode": mode,
-    }
-
-    if getattr(args, "resume", False):
-        if optimize_audio and best_latent_path.exists():
-            loaded = torch.load(best_latent_path, map_location="cpu")
-            audio_latent.data.copy_(loaded.to(audio_latent.device, dtype=audio_latent.dtype))
-            best["audio_latent"] = audio_latent.detach().clone()
-            log.info("[%s] Resumed audio latent from %s", mode, best_latent_path)
-        if optimize_text and best_delta_path.exists():
-            loaded = torch.load(best_delta_path, map_location="cpu")
-            delta_v.data.copy_(loaded.to(delta_v.device, dtype=delta_v.dtype))
-            best["delta_v"] = delta_v.detach().clone()
-            log.info("[%s] Resumed text delta from %s", mode, best_delta_path)
-        num_iters = 0  # skip optimization, just do final render
-
-    # ---- CSV log ----
-    csv_path = output_dir / f"optimization_log_{mode}.csv"
-    csv_file = csv_path.open("w", newline="") if is_main else open("/dev/null", "w", newline="")
-    writer = csv.writer(csv_file)
-    if is_main:
-        writer.writerow(["iter", "clip_loss", "clip_score", "audio_reg", "text_reg", "total_loss", "grad_norm", "is_best"])
-
-    try:
-        for it in range(1, num_iters + 1):
-            optimizer.zero_grad(set_to_none=True)
-
-            # Build the positive context for this iteration
-            if optimize_text and delta_v is not None:
-                pos_ctx_iter = EmbeddingsProcessorOutput(
-                    video_encoding=base_pos_context.video_encoding + delta_v.to(dtype=base_pos_context.video_encoding.dtype),
-                    audio_encoding=base_pos_context.audio_encoding,
-                    attention_mask=base_pos_context.attention_mask,
-                )
-            else:
-                pos_ctx_iter = base_pos_context
-
-            # Audio latent to inject
-            audio_for_render = (
-                audio_latent.to(dtype=base_audio_latent.dtype)
-                if audio_latent is not None
-                else base_audio_latent
-            )
-
-            gen_frames = render_with_injected_latents(
-                pipeline=pipeline,
-                src_video=retake_input_video,
-                injected_audio_latent=audio_for_render,
-                cached_video_latent=cached_video_latent,
-                retake_kwargs=retake_kwargs,
-                max_frames=args.max_eval_frames,
-                frame_stride=args.frame_stride,
-                resize_to=None,
-                audio_opt_last_steps=args.audio_opt_last_steps,
-                eval_sample_start=eval_sample_start,
-                pos_context=pos_ctx_iter,
-                neg_context=base_neg_context,
-                inject_text_context=optimize_text,
-            )
-
-            if gen_frames.shape[0] < 1:
-                raise RuntimeError("Generated video has no frames.")
-
-            # CLIP alignment loss
-            clip_loss_t = compute_clip_video_loss(
-                frames_chw=gen_frames,
-                text_embedding=text_embedding,
-                clip_model=clip_model,
-                max_frames=args.clip_max_frames,
-            )
-
-            # Regularization
-            audio_reg_t = torch.tensor(0.0, device=clip_loss_t.device)
-            if optimize_audio and audio_latent is not None and args.latent_reg_weight > 0:
-                audio_reg_t = args.latent_reg_weight * torch.mean(
-                    (audio_latent - base_audio_latent_fp32) ** 2
-                )
-
-            text_reg_t = torch.tensor(0.0, device=clip_loss_t.device)
-            if optimize_text and delta_v is not None and args.text_reg_weight > 0:
-                text_reg_t = args.text_reg_weight * torch.mean(delta_v ** 2)
-
-            total_t = clip_loss_t + audio_reg_t + text_reg_t
-            total_t.backward()
-
-            grad_norm = 0.0
-            if args.grad_clip > 0:
-                grad_norm = float(torch.nn.utils.clip_grad_norm_(params, max_norm=args.grad_clip).item())
-            elif params[0].grad is not None:
-                grad_norm = float(sum(p.grad.norm().item() ** 2 for p in params if p.grad is not None) ** 0.5)
-
-            optimizer.step()
-
-            clip_loss = float(clip_loss_t.detach().item())
-            clip_score = 1.0 - clip_loss
-            audio_reg = float(audio_reg_t.detach().item())
-            text_reg = float(text_reg_t.detach().item())
-            total = float(total_t.detach().item())
-
-            is_best = total < best["clip_loss"]
-            if is_best:
-                best["clip_loss"] = total
-                best["clip_score"] = clip_score
-                if delta_v is not None:
-                    best["delta_v"] = delta_v.detach().clone()
-                if audio_latent is not None:
-                    best["audio_latent"] = audio_latent.detach().clone()
-
-            if is_main:
-                writer.writerow([it, clip_loss, clip_score, audio_reg, text_reg, total, grad_norm, int(is_best)])
-                csv_file.flush()
-                log.info(
-                    "[%s] iter %3d/%d  clip_loss=%.4f  clip_score=%.4f  total=%.4f  grad_norm=%.3f%s",
-                    mode, it, num_iters, clip_loss, clip_score, total, grad_norm,
-                    "  ★" if is_best else "",
-                )
-    finally:
-        csv_file.close()
-
-    return best
 
 
 # ---------------------------------------------------------------------------

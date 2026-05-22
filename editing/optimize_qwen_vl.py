@@ -1,14 +1,20 @@
 #!/usr/bin/env python3
-"""Gradient-based optimization using Qwen2.5-VL as the alignment loss.
+"""Main entry point for motion-driven video editing via gradient optimization.
 
-Identical experiment structure to optimize_multimodal.py (text / audio / both
-modes) but replaces X-CLIP with Qwen2.5-VL (Qwen/Qwen2.5-VL-7B-Instruct by
-default).
+Freezes the LTX-2 video generation model and optimizes text and/or audio
+conditioning embeddings so that the regenerated video matches a target motion
+description.  Qwen2.5-VL is used as the differentiable alignment signal:
 
-Loss: 1 - P("yes" | video, "Does this video show: {edit_prompt}?")
+    loss = -log P("yes" | video_frames, "Does this video show: {edit_prompt}?")
 
 Gradient flows through Qwen2.5-VL's visual encoder back through the
 differentiable video decoder to whichever parameter is being optimised.
+
+Optimization modes (--opt-mode)
+--------------------------------
+text  : optimize a soft delta on the Gemma text embedding
+audio : optimize the audio latent fed to the Retake pipeline
+both  : jointly optimize both (default, best quality)
 
 Usage
 -----
@@ -16,9 +22,9 @@ Usage
         --src-video /path/to/dog.mp4 \\
         --edit-prompt "A dog jumping energetically" \\
         --output-dir /path/to/output \\
-        --opt-mode audio
+        --opt-mode both
 
-Single H200 80GB: add --quantization fp8-cast --gradient-checkpointing
+Recommended: pass --quantization fp8-cast to reduce VRAM usage.
 """
 from __future__ import annotations
 

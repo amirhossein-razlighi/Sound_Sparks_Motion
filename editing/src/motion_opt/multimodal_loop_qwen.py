@@ -1,10 +1,23 @@
-"""Gradient optimization loop — Qwen2.5-VL variant.
+"""Main gradient optimization loop for audio-text conditioned video editing.
 
-Same three modes (text / audio / both) as multimodal_loop.py but uses
-compute_qwen_video_loss instead of compute_clip_video_loss.
+Supervises the optimization with Qwen2.5-VL as the alignment signal:
+  loss = -log P("yes" | video_frames, "Does this video show: {edit_prompt}?")
 
-Rendering helpers (render_with_injected_latents, pre_encode_base_contexts,
-render_final_video) are reused directly from multimodal_loop.
+Optimization modes
+------------------
+text  : learn a soft delta on the Gemma text embedding (video_encoding).
+audio : learn a perturbation of the audio latent fed to the Retake pipeline.
+both  : jointly optimize text delta + audio latent.
+
+Rendering infrastructure (differentiable Retake forward pass, text pre-encoding,
+final video export) lives in multimodal_loop.py and is imported from there.
+
+Optional addons
+---------------
+  - L2 regularization on the audio latent and/or text delta
+  - LPIPS / temporal consistency perceptual regularizer
+  - Cosine LR annealing, early stopping
+  - TensorBoard + W&B logging, per-iteration video/audio previews
 """
 from __future__ import annotations
 
