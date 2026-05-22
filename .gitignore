@@ -6,6 +6,7 @@ dist/
 wheels/
 checkpoints/
 *.egg-info
+.claude/
 
 # Virtual environments
 .venv
