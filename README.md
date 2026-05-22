@@ -5,16 +5,17 @@
 
 <div>
   <a href="https://amirhossein-razlighi.github.io" target="_blank">AmirHossein Naghi Razlighi</a><sup>1</sup>&emsp;
-  <a href="https://aryanmikaeili.github.io" target="_blank">Aryan Mikaeili</a><sup>1</sup>&emsp;
-  <a href="https://www.sfu.ca/~amahdavi" target="_blank">Ali Mahdavi-Amiri</a><sup>1</sup>&emsp;
-  <a href="https://danielcohenor.com" target="_blank">Daniel Cohen-Or</a><sup>2</sup>&emsp;
-  <a href="https://www.ucy.ac.cy/dir/en/component/comprofiler/userprofile/yiorgos" target="_blank">Yiorgos Chrysanthou</a><sup>3</sup>
+  <a href="https://aryanmikaeili.github.io" target="_blank">Aryan Mikaeili</a><sup>2</sup>&emsp;
+  <a href="https://www.sfu.ca/~amahdavi" target="_blank">Ali Mahdavi-Amiri</a><sup>2</sup>&emsp;
+  <a href="https://danielcohenor.com" target="_blank">Daniel Cohen-Or</a><sup>3</sup>&emsp;
+  <a href="https://www.ucy.ac.cy/dir/en/component/comprofiler/userprofile/yiorgos" target="_blank">Yiorgos Chrysanthou</a><sup>1,4</sup>
 </div>
 
 <div>
-  <sup>1</sup><b>Simon Fraser University</b>&emsp;
-  <sup>2</sup><b>Tel Aviv University</b>&emsp;
-  <sup>3</sup><b>University of Cyprus / CYENS Centre of Excellence</b>
+  <sup>1</sup><b>University of Cyprus</b>&emsp;
+  <sup>2</sup><b>Simon Fraser University</b>&emsp;
+  <sup>3</sup><b>Tel Aviv University</b>&emsp;
+  <sup>4</sup><b>CYENS Centre of Excellence</b>
 </div>
 
 <br/>
@@ -53,6 +54,8 @@ https://github.com/user-attachments/assets/00e68e53-48ab-4bb4-b0c0-e269766d0106
 ---
 
 ## 📋 Overview
+
+![Method Overview](static/teaser.png)
 
 Given a source video and an edit prompt, our method:
 
@@ -143,28 +146,24 @@ export GEMMA_ROOT=/path/to/gemma-3-12b-it-qat-q4_0-unquantized
 ### Single Experiment from a YAML Config
 
 ```bash
-bash editing/scripts/run.sh editing/configs/example_hummingbird.yaml
+bash editing/scripts/run.sh editing/configs/dog_yawning.yaml
 ```
 
 Edit the config to point to your own video and prompts:
 
 ```yaml
-src_video: "input_videos/my_video.mp4"
-edit_prompt: "The bird opens its wings."
-static_prompt: "A bird perched on a branch."
+src_video: "input_videos/dog_video.mp4"
+edit_prompt: "A dog yawning"
+static_prompt: "A dog sitting on a chair"
 opt_mode: "both"          # text | audio | both
-experiment_name: "bird_wings"
+experiment_name: "dog_yawning"
 ```
 
-See [`editing/configs/`](editing/configs/) for annotated examples covering all three modes.
-
-### Dry-run (no GPU required)
-
-```bash
-DRY_RUN=1 bash editing/scripts/run.sh editing/configs/example_hummingbird.yaml
-```
+See [`editing/configs/`](editing/configs/) for annotated examples covering all experiments.
 
 ### Transfer Optimized Latents to a New Video
+
+![Transfer Overview](static/transfer_with_extra2.jpg)
 
 After optimizing on a source video, apply the learned conditioning to a different target:
 
@@ -191,65 +190,34 @@ DRY_RUN=1 bash editing/scripts/sweep.sh
 
 ## 🔧 Configuration Reference
 
-| Config | Mode | Description |
-|--------|------|-------------|
-| [`example_hummingbird.yaml`](editing/configs/example_hummingbird.yaml) | `both` | Joint text + audio optimization |
-| [`example_turtle_neck.yaml`](editing/configs/example_turtle_neck.yaml) | `audio` | Audio-only optimization |
-| [`example_car_door.yaml`](editing/configs/example_car_door.yaml) | `text` | Text-only optimization |
-
 Key parameters:
 
-| Parameter | Default | Description |
+| Parameter | Example Value | Description |
 |-----------|---------|-------------|
 | `opt_mode` | `both` | What to optimize: `text`, `audio`, or `both` |
 | `iterations` | `30` | Optimization steps |
 | `lr` | `0.005` | Learning rate |
-| `retake_start_frames` | `5` | Conditioning window for the Retake pipeline |
+| `retake_start_frames` | `10` | Conditioning window for the Retake pipeline |
 | `qwen_max_frames` | `8` | Frames sampled per Qwen supervision call |
 | `qwen_grad_accum_steps` | `3` | Qwen forward passes averaged per optimizer step |
 | `lpips_weight` | `0.0` | LPIPS perceptual regularizer (0 = disabled) |
 | `temporal_weight` | `0.0` | Temporal consistency regularizer (0 = disabled) |
-| `quantization` | `fp8-cast` | Model quantization (required for ≤80 GB VRAM) |
+| `quantization` | `fp8-cast` | Model quantization |
 
 ---
 
 ## 🖥️ Hardware Requirements
 
-> [!IMPORTANT]
-> This project requires a high-memory GPU. The default configuration is tested on **NVIDIA H100 / H200 80 GB**.
-
-| Component | VRAM |
-|-----------|------|
-| LTX-2.3 (22B, fp8) | ~22 GB |
-| Qwen2.5-VL-7B (bf16) | ~14 GB |
-| Activations & buffers | ~30 GB |
-| **Total** | **~66 GB** |
-
-**Runtime:** ~30 min for 30 iterations with `opt_mode=both` (10–15 min average with early stopping).
+**Runtime:** ~10-20 min for 30 iterations with `opt_mode=both`with early stopping activated.
 
 > [!TIP]
-> If VRAM is tight: set `qwen_max_frames: 8`, reduce `qwen_grad_accum_steps` to `1`, or switch to `Qwen/Qwen2.5-VL-3B-Instruct` (~6 GB).
-
----
-
-## 🔬 Ablation Studies
-
-```bash
-# Regularizer ablation (no_reg / lpips_only / temporal_only / all_reg)
-SRC_VIDEO=input_videos/my_video.mp4 \
-EDIT_PROMPT="A rose blooming" \
-STATIC_PROMPT="A rose bud." \
-bash editing/scripts/ablations/run_regularizer_ablation.sh
-
-# Scorer ablation (Qwen vs CLIP vs X-CLIP)
-bash editing/scripts/ablations/run_scorer_ablation.sh
-```
+> If VRAM is tight: set `qwen_max_frames: 8`, reduce `qwen_grad_accum_steps` to `1`, or switch to `Qwen/Qwen2.5-VL-3B-Instruct` (~6 GB). Note that these may reduce the final quality of motion edits.
 
 ---
 
 ## 🏗️ Base Model
 
-This project builds on [LTX-2](https://huggingface.co/Lightricks/LTX-2.3) by Lightricks — a DiT-based audio-video foundation model. The base model code lives in `packages/` and is unchanged from the original repository.
+This project builds on [LTX-2.3](https://huggingface.co/Lightricks/LTX-2.3) by Lightricks — a DiT-based audio-video foundation model. The base model code lives in `packages/` and is unchanged from the original repository.
 
 ---
 
@@ -257,7 +225,7 @@ This project builds on [LTX-2](https://huggingface.co/Lightricks/LTX-2.3) by Lig
 
 - [x] Release code
 - [x] arXiv preprint
-- [ ] Release project page
+- [x] Release project page
 - [ ] Release pretrained optimized latents for paper examples
 - [ ] Add Gradio demo
 
