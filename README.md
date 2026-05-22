@@ -250,6 +250,7 @@ This project builds on [LTX-2.3](https://huggingface.co/Lightricks/LTX-2.3) by L
 - [x] arXiv preprint
 - [x] Release project page
 - [ ] Release pretrained optimized latents for paper examples
+- [ ] Create Hugging Face page and link from README
 - [ ] Add Gradio demo
 
 ---
