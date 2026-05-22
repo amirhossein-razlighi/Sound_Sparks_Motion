@@ -1,6 +1,6 @@
 <div align="center">
 
-<h1>🔊 Sound Sparks Motion</h1>
+<h1>✨ Sound Sparks Motion ✨</h1>
 <h3>Audio and Text Tuning for Video Editing</h3>
 
 <div>
@@ -44,7 +44,7 @@ https://github.com/user-attachments/assets/00e68e53-48ab-4bb4-b0c0-e269766d0106
 
 ---
 
-## ✨ Highlights
+##  Highlights
 
 - **Training-free** — the diffusion model weights are never updated
 - **Dual conditioning** — optimizes both text *and* audio latents for richer motion control
@@ -53,7 +53,7 @@ https://github.com/user-attachments/assets/00e68e53-48ab-4bb4-b0c0-e269766d0106
 
 ---
 
-## 📋 Overview
+##  Overview
 
 ![Method Overview](static/teaser.png)
 
@@ -65,7 +65,7 @@ Given a source video and an edit prompt, our method:
 
 ---
 
-## 🗂️ Repository Structure
+##  Repository Structure
 
 ```
 .
@@ -138,7 +138,7 @@ export GEMMA_ROOT=/path/to/gemma-3-12b-it-qat-q4_0-unquantized
 
 ---
 
-## ⚙️ Usage
+##  Usage
 
 ### Single Experiment from a YAML Config
 
@@ -185,7 +185,7 @@ DRY_RUN=1 bash editing/scripts/sweep.sh
 
 ---
 
-## 🔧 Configuration Reference
+##  Configuration Reference
 
 Key parameters:
 
@@ -203,7 +203,7 @@ Key parameters:
 
 ---
 
-## 🖥️ Hardware Requirements
+##  Hardware Requirements
 
 **Runtime:** ~10-20 min for 30 iterations with `opt_mode=both`with early stopping activated.
 
@@ -212,13 +212,13 @@ Key parameters:
 
 ---
 
-## 🏗️ Base Model
+##  Base Model
 
 This project builds on [LTX-2.3](https://huggingface.co/Lightricks/LTX-2.3) by Lightricks — a DiT-based audio-video foundation model. The base model code lives in `packages/` and is unchanged from the original repository.
 
 ---
 
-## ✅ TODO
+## TODO
 
 - [x] Release code
 - [x] arXiv preprint
@@ -228,7 +228,7 @@ This project builds on [LTX-2.3](https://huggingface.co/Lightricks/LTX-2.3) by L
 
 ---
 
-## 📄 Citation
+##  Citation
 
 If you find this work useful, please cite:
 
@@ -243,6 +243,6 @@ If you find this work useful, please cite:
 
 ---
 
-## 📜 License
+## License
 
 See [LICENSE](LICENSE).
