@@ -169,16 +169,36 @@ See [`editing/configs/`](editing/configs/) for annotated examples covering all e
 
 ![Transfer Overview](static/transfer_with_extra2.jpg)
 
-After optimizing on a source video, apply the learned conditioning to a different target:
+After optimizing on a source video, apply the learned conditioning to a different target. Use the provided config template:
 
 ```bash
-TARGET_VIDEO=/path/to/target.mp4 \
-OPT_DIR=/path/to/results/QwenVL/my_prompt/my_exp/mode_both \
-TRANSFER_MODE=both \
-EDIT_PROMPT="A cat yawning" \
-STATIC_PROMPT="A cat sitting still" \
-bash editing/scripts/transfer.sh
+bash editing/scripts/transfer.sh editing/configs/transfer/yours.yaml
 ```
+
+Fill in `yours.yaml` with your paths and prompts:
+
+```yaml
+target_video: "input_videos/my_new_video.mp4"
+opt_dir: "results/QwenVL/a_dog_yawning/.../mode_both"
+mode: "both"              # text | audio | both — must match what was optimized
+
+edit_prompt: "A cat yawning."
+static_prompt: "A cat sitting on a chair."
+experiment_name: "dog_to_cat_yawning"
+```
+
+See [`editing/configs/transfer/`](editing/configs/transfer/) for ready-made examples.
+
+> [!TIP]
+> You can also pass env vars directly for quick one-off transfers:
+> ```bash
+> TARGET_VIDEO=/path/to/target.mp4 \
+> OPT_DIR=/path/to/results/.../mode_both \
+> TRANSFER_MODE=both \
+> EDIT_PROMPT="A cat yawning" \
+> STATIC_PROMPT="A cat sitting still" \
+> bash editing/scripts/transfer.sh
+> ```
 
 ### Hyperparameter Sweep
 
