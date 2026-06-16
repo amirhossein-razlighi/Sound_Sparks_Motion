@@ -291,6 +291,30 @@ sup {
   color: #a8b8cc;
 }
 
+.anonymized-authors {
+  gap: 0.5rem;
+}
+
+.anonymized-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 5px 14px;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 100px;
+  background: rgba(255,255,255,0.05);
+  color: var(--text-1);
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.anonymized-note {
+  max-width: 420px;
+  color: #a8b8cc;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
 /* Buttons */
 .hero-buttons {
   display: flex;
@@ -902,6 +926,16 @@ figcaption {
   white-space: pre;
   overflow-x: auto;
   margin: 0;
+}
+
+.anonymized-citation {
+  padding: 1.5rem 1.75rem;
+}
+
+.bibtex-note {
+  color: var(--text-2);
+  font-size: 0.92rem;
+  line-height: 1.6;
 }
 
 .bibtex-copy {
