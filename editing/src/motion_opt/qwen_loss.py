@@ -205,8 +205,15 @@ def build_qwen_rubric_inputs(
     img_size: int,
     device: torch.device,
     motion_question: str | None = None,
+    gradient_rubric: str | None = None,
 ) -> tuple[dict, int, int]:
-    """Build cached Qwen yes/no inputs for the default 3-question rubric."""
+    """Build cached Qwen yes/no inputs for the default 3-question rubric.
+
+    `gradient_rubric` mirrors --qwen-gradient-rubric and is used only to log the
+    *effective* optimized weights. With a single rubric (e.g. "motion") the loss
+    is overridden downstream to that question at weight 1.0 and the others are
+    dropped (logged-only); with "full"/None the registry weights below are used.
+    """
     rubric_items = []
     yes_token_id = None
     no_token_id = None
@@ -253,9 +260,22 @@ def build_qwen_rubric_inputs(
     if "video_grid_thw" in primary:
         cached_rubric["video_grid_thw"] = primary["video_grid_thw"]
 
+    # Log the EFFECTIVE optimized weights, not the raw registry, so single-rubric
+    # runs (the default) don't look like they optimize entities/overall.
+    grad_rubric = gradient_rubric or "full"
+    if grad_rubric == "full":
+        effective = {item["name"]: item["weight"] for item in rubric_items}
+    else:
+        effective = {
+            item["name"]: (1.0 if item["name"] == grad_rubric else 0.0)
+            for item in rubric_items
+        }
+    note = "" if grad_rubric == "full" else "  (0.00 = logged-only, NOT optimized)"
     log.info(
-        "Qwen rubric inputs ready: %s",
-        ", ".join(f"{item['name']}={item['weight']:.2f}" for item in rubric_items),
+        "Qwen rubric (gradient=%s) — optimized weights: %s%s",
+        grad_rubric,
+        ", ".join(f"{n}={w:.2f}" for n, w in effective.items()),
+        note,
     )
     return cached_rubric, int(yes_token_id), int(no_token_id)
 

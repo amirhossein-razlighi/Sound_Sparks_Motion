@@ -425,6 +425,7 @@ def run(args: argparse.Namespace) -> None:
             img_size=args.qwen_img_size,
             device=device,
             motion_question=args.qwen_motion_question,
+            gradient_rubric=args.qwen_gradient_rubric,
         )
         log.info("yes_token_id=%d  no_token_id=%d", yes_token_id, no_token_id)
 
