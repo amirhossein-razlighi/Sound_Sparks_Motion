@@ -94,7 +94,7 @@ capacity?" via three flags on `optimize_qwen_vl.py` (**defaults reproduce the
 original behaviour exactly**):
 
 - `--audio-init {source,zero,random}` — init the audio latent from the encoded
-  source audio (default/ours), zeros, or scale-matched Gaussian noise.
+  source audio (default/ours), zeros, or standard-normal noise (no source info).
 - `--audio-reg-anchor {source,init,none}` — anchor for the L2 audio reg; `none`
   drops the audio reg term entirely.
 - `--audio-init-seed N` — seed for `random` init (defaults to `--seed`); lets the

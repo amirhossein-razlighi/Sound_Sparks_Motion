@@ -102,9 +102,9 @@ if optimize_audio:
     elif audio_init == "zero":
         init_tensor = torch.zeros_like(base_audio_latent_fp32)
     elif audio_init == "random":
-        # Capacity- AND scale-matched: same shape, same per-tensor std as source.
-        std = base_audio_latent_fp32.std().clamp_min(1e-6)
-        init_tensor = torch.randn_like(base_audio_latent_fp32) * std
+        # Standard-normal N(0,1), same shape as source. Uses NO source info
+        # (not even its scale) — a fully source-free control.
+        init_tensor = torch.randn_like(base_audio_latent_fp32)
     else:
         raise ValueError(f"Unknown audio_init: {audio_init!r}")
     audio_latent = torch.nn.Parameter(init_tensor)

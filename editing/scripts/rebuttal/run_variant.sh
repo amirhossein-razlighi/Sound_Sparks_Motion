@@ -56,6 +56,14 @@ SCENARIO="$(basename "${CONFIG_FILE}" .yaml)"
 RESULTS_ROOT="${RESULTS_ROOT:-${REPO_ROOT}/results/rebuttal}"
 OUTPUT_DIR="${RESULTS_ROOT}/${SCENARIO}/${VARIANT}"
 
+# Resume markers. A cell is "complete" when its final video exists and (eval is
+# off OR metrics.json exists); we then drop a .completed sentinel. Re-running is
+# idempotent: complete cells are skipped, a cell with a video but no metrics only
+# re-runs eval, and an interrupted cell redoes the optimization. FORCE=1 redoes.
+DONE_MARKER="${OUTPUT_DIR}/.completed"
+FINAL_VIDEO="${OUTPUT_DIR}/mode_both/best_optimized_video_both.mp4"
+FORCE="${FORCE:-0}"
+
 # ---------------------------------------------------------------------------
 # Variant -> override flags. opt-mode is BOTH for all (text+audio jointly);
 # only the audio init + reg anchor + init seed change.
@@ -119,6 +127,12 @@ if [[ "${DRY_RUN}" == "1" ]]; then
     exit 0
 fi
 
+# ---- Resume: skip this cell entirely if already complete -------------------
+if [[ "${FORCE}" != "1" && -f "${DONE_MARKER}" ]]; then
+    echo "  [skip] already complete: ${DONE_MARKER}  (set FORCE=1 to redo)"
+    exit 0
+fi
+
 # ---------------------------------------------------------------------------
 # GPU + environment (mirrors editing/scripts/run.sh).
 # ---------------------------------------------------------------------------
@@ -154,20 +168,37 @@ mkdir -p "${OUTPUT_DIR}" "${WANDB_DIR}" "${WANDB_CACHE_DIR}"
 cd "${REPO_ROOT}"
 
 # ---------------------------------------------------------------------------
-# 1) Optimize
+# 1) Optimize  (skip if the final video already exists and not forced)
 # ---------------------------------------------------------------------------
-"${PYTHON_BIN}" "${MAIN_SCRIPT}" "${BASE_ARGS[@]}" "${VARIANT_ARGS[@]}"
+if [[ "${FORCE}" != "1" && -f "${FINAL_VIDEO}" ]]; then
+    echo "---- optimized video already present; skipping optimization (FORCE=1 to redo) ----"
+else
+    "${PYTHON_BIN}" "${MAIN_SCRIPT}" "${BASE_ARGS[@]}" "${VARIANT_ARGS[@]}"
+fi
 
 # ---------------------------------------------------------------------------
 # 2) Critic-independent objective metrics -> <output>/metrics.json
+#    (skip if metrics.json already exists and not forced)
 # ---------------------------------------------------------------------------
 if [[ "${RUN_EVAL}" == "1" ]]; then
-    echo "---- computing objective metrics ----"
-    EVAL_ARGS=(--output-dir "${OUTPUT_DIR}" --mode both)
-    [[ -n "${RAFT_WEIGHTS:-}" ]] && EVAL_ARGS+=(--raft-weights "${RAFT_WEIGHTS}")
-    [[ -n "${EVAL_DEVICE:-}"  ]] && EVAL_ARGS+=(--device "${EVAL_DEVICE}")
-    "${PYTHON_BIN}" "${EVAL_SCRIPT}" "${EVAL_ARGS[@]}" || \
-        echo "WARN: eval_metrics.py failed for ${OUTPUT_DIR} (optimization output is still saved)."
+    if [[ "${FORCE}" != "1" && -f "${OUTPUT_DIR}/metrics.json" ]]; then
+        echo "---- metrics.json already present; skipping eval (FORCE=1 to redo) ----"
+    else
+        echo "---- computing objective metrics ----"
+        EVAL_ARGS=(--output-dir "${OUTPUT_DIR}" --mode both)
+        [[ -n "${RAFT_WEIGHTS:-}" ]] && EVAL_ARGS+=(--raft-weights "${RAFT_WEIGHTS}")
+        [[ -n "${EVAL_DEVICE:-}"  ]] && EVAL_ARGS+=(--device "${EVAL_DEVICE}")
+        "${PYTHON_BIN}" "${EVAL_SCRIPT}" "${EVAL_ARGS[@]}" || \
+            echo "WARN: eval_metrics.py failed for ${OUTPUT_DIR} (optimization output is still saved)."
+    fi
+fi
+
+# ---- Mark complete only if the deliverables are actually present -----------
+if [[ -f "${FINAL_VIDEO}" ]] && { [[ "${RUN_EVAL}" != "1" ]] || [[ -f "${OUTPUT_DIR}/metrics.json" ]]; }; then
+    touch "${DONE_MARKER}"
+    echo "  marked complete: ${DONE_MARKER}"
+else
+    echo "  NOT marked complete (missing video or metrics.json) — re-run will resume this cell." >&2
 fi
 
 echo "========================================================"

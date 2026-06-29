@@ -130,7 +130,7 @@ def gradient_optimize_multimodal_qwen(
         # --audio-init selects how the optimized audio latent is initialised.
         #   source : encoded source-audio latent (default; original behaviour, ours)
         #   zero   : zeros — capacity-matched control with no audio prior
-        #   random : Gaussian noise scale-matched to the source latent's std
+        #   random : standard-normal noise N(0,1), no source info (source-free)
         # --audio-reg-anchor selects the L2 reg anchor (source / init / none).
         audio_init = getattr(args, "audio_init", "source")
         if audio_init == "source":
@@ -138,23 +138,23 @@ def gradient_optimize_multimodal_qwen(
         elif audio_init == "zero":
             init_tensor = torch.zeros_like(base_audio_latent_fp32)
         elif audio_init == "random":
-            # Scale-matched, zero-mean Gaussian with same shape as the source
-            # latent. Seeded by --audio-init-seed (falls back to --seed) so the
-            # draw is reproducible and can be varied independently of the
-            # diffusion seed.
+            # Standard-normal noise N(0,1), same shape as the source latent.
+            # Uses NO information from the source audio — not its scale, mean, or
+            # structure (only the tensor shape, which is required geometry). This
+            # is a fully source-free control. Seeded by --audio-init-seed (falls
+            # back to --seed) so the draw is reproducible and varies independently
+            # of the diffusion seed.
             init_seed = getattr(args, "audio_init_seed", None)
             if init_seed is None:
                 init_seed = getattr(args, "seed", 42)
-            std = base_audio_latent_fp32.std().clamp_min(1e-6)
             gen = torch.Generator(device=base_audio_latent_fp32.device)
             gen.manual_seed(int(init_seed))
-            noise = torch.randn(
+            init_tensor = torch.randn(
                 base_audio_latent_fp32.shape,
                 generator=gen,
                 device=base_audio_latent_fp32.device,
                 dtype=base_audio_latent_fp32.dtype,
             )
-            init_tensor = noise * std
         else:
             raise ValueError(f"Unknown audio_init: {audio_init!r}. Expected source/zero/random.")
 

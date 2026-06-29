@@ -12,13 +12,19 @@ only `--audio-init-seed` (42/1/2), keeping the diffusion noise fixed.
 
 ## Variants (per scenario)
 
-| variant      | opt-mode | audio-init | audio-reg-anchor | audio-init-seed |
-|--------------|----------|------------|------------------|-----------------|
-| `source`     | both     | source     | source (reg ON)  | 42              |
-| `zero`       | both     | zero       | none (reg OFF)   | —               |
-| `random_s42` | both     | random     | none (reg OFF)   | 42              |
-| `random_s1`  | both     | random     | none (reg OFF)   | 1               |
-| `random_s2`  | both     | random     | none (reg OFF)   | 2               |
+| variant      | opt-mode | audio-init | audio-reg-anchor | audio-init-seed | run here? |
+|--------------|----------|------------|------------------|-----------------|-----------|
+| `source`     | both     | source     | source (reg ON)  | 42              | **no** — = ours, already have it |
+| `zero`       | both     | zero       | none (reg OFF)   | —               | yes |
+| `random_s42` | both     | random     | none (reg OFF)   | 42              | yes |
+| `random_s1`  | both     | random     | none (reg OFF)   | 1               | yes |
+| `random_s2`  | both     | random     | none (reg OFF)   | 2               | yes |
+
+`source` is **ours** (source-audio init, reg on, diffusion seed 42) — identical
+to the existing main-experiment runs, so it is NOT recomputed. The drivers run
+only the 4 zero/random controls (8 scenarios × 4 = **32 cells**). For the `ours`
+row in the metrics table, run `eval_metrics.py` on the existing `ours` output
+dirs (no re-optimization). To recompute `source` anyway, add it to `VARIANTS`.
 
 Scenarios (8): bugatti_lights_flash, dog_jumping, dog_yawning,
 falcon_bird_opening_wings, groom_raising_hand, man_pets_dog, red_car_door_opens,
@@ -31,8 +37,8 @@ You are on a login node — do **not** run these here. Use one of:
 **A) SLURM array (parallel across GPUs):**
 ```bash
 # edit the #SBATCH account/partition/time first, ensure CKPT_ROOT/QWEN_ROOT/GEMMA_ROOT
-sbatch editing/scripts/rebuttal/ablation.sbatch                 # all 40 cells
-sbatch --array=5-39 editing/scripts/rebuttal/ablation.sbatch    # skip 'source'
+sbatch editing/scripts/rebuttal/ablation.sbatch                 # all 32 control cells
+sbatch --array=0-3 editing/scripts/rebuttal/ablation.sbatch     # just the first scenario
 ```
 
 **B) Sequential, inside an `salloc` GPU shell:**
