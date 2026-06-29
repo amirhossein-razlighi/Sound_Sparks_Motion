@@ -37,6 +37,11 @@ VARIANT="${2:?Usage: run_variant.sh <config.yaml> <variant>}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="${REPO_ROOT:-$(cd "${SCRIPT_DIR}/../../.." && pwd)}"
+
+# Load model roots (CKPT_ROOT / QWEN_ROOT / GEMMA_ROOT) so this works even when
+# called directly. Already-exported values win (env.sh uses :- defaults).
+[[ -f "${SCRIPT_DIR}/env.sh" ]] && source "${SCRIPT_DIR}/env.sh"
+
 PARSE_SCRIPT="${REPO_ROOT}/editing/scripts/utils/parse_config.py"
 MAIN_SCRIPT="${REPO_ROOT}/editing/optimize_qwen_vl.py"
 EVAL_SCRIPT="${REPO_ROOT}/editing/scripts/eval_metrics.py"
@@ -78,9 +83,26 @@ VARIANT_ARGS+=(${EXTRA[@]+"${EXTRA[@]}"})
 # OUTPUT_DIR is exported so parse_config bakes it into --output-dir.
 # ---------------------------------------------------------------------------
 export OUTPUT_DIR
+
+# Fail loudly if model roots are missing — otherwise parse_config exits mid-emit
+# and the run would silently fall back to broken '${VAR}' literal defaults.
+for v in CKPT_ROOT QWEN_ROOT GEMMA_ROOT; do
+    if [[ -z "${!v:-}" ]]; then
+        echo "ERROR: ${v} is not set. Export it or edit ${SCRIPT_DIR}/env.sh." >&2
+        exit 1
+    fi
+done
+
+# Run parse_config to a temp file and CHECK its exit status (process
+# substitution would hide a failure and leave BASE_ARGS half-populated).
+PARSE_OUT="$(mktemp)"
+trap 'rm -f "${PARSE_OUT}"' EXIT
+if ! "${PYTHON_BIN}" "${PARSE_SCRIPT}" "${CONFIG_FILE}" "${REPO_ROOT}" > "${PARSE_OUT}"; then
+    echo "ERROR: parse_config.py failed for ${CONFIG_FILE} (see message above)." >&2
+    exit 1
+fi
 BASE_ARGS=()
-while IFS= read -r -d '' tok; do BASE_ARGS+=("${tok}"); done \
-    < <("${PYTHON_BIN}" "${PARSE_SCRIPT}" "${CONFIG_FILE}" "${REPO_ROOT}")
+while IFS= read -r -d '' tok; do BASE_ARGS+=("${tok}"); done < "${PARSE_OUT}"
 
 echo "========================================================"
 echo "  Rebuttal ablation — audio-init control"
