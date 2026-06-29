@@ -125,6 +125,16 @@ def main() -> None:
     e("--opt-mode", "opt_mode", "both")
     e("--seed",     "seed",     42)
 
+    # Audio-init ablation controls. Emitted ONLY when present in the config so
+    # existing configs/commands are byte-identical and main experiments are
+    # unaffected (the optimizer defaults to source/source regardless).
+    if "audio_init" in cfg:
+        e("--audio-init", "audio_init")
+    if "audio_reg_anchor" in cfg:
+        e("--audio-reg-anchor", "audio_reg_anchor")
+    if cfg.get("audio_init_seed") is not None:
+        e("--audio-init-seed", "audio_init_seed")
+
     # ------------------------------------------------------------------ video dims
 
     e("--height",     "height",     320)

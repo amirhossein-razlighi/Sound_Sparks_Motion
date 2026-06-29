@@ -667,6 +667,39 @@ def build_parser() -> argparse.ArgumentParser:
         help="Comma-separated list of modes: text, audio, both.",
     )
 
+    # Audio-latent initialization & regularization controls (capacity/specificity
+    # ablation). Defaults reproduce the original behaviour exactly.
+    p.add_argument(
+        "--audio-init",
+        default="source",
+        choices=["source", "zero", "random"],
+        help=(
+            "Initialization for the optimized audio latent. 'source' = encoded "
+            "source-audio latent (default, ours). 'zero'/'random' are "
+            "capacity-matched controls that carry no audio prior."
+        ),
+    )
+    p.add_argument(
+        "--audio-reg-anchor",
+        default="source",
+        choices=["source", "init", "none"],
+        help=(
+            "Anchor for the L2 audio regularizer. 'source' = anchor to source "
+            "latent (default, ours). 'init' = anchor to the init point "
+            "(symmetric control). 'none' = drop the audio reg term entirely."
+        ),
+    )
+    p.add_argument(
+        "--audio-init-seed",
+        type=int,
+        default=None,
+        help=(
+            "Seed for --audio-init random (defaults to --seed). Lets you vary "
+            "the random init across runs while keeping the diffusion seed fixed "
+            "so baselines stay identical and comparable."
+        ),
+    )
+
     # Qwen2.5-VL
     p.add_argument("--qwen-model", default=DEFAULT_QWEN_ROOT,
                    help="HF model ID or local path for Qwen2.5-VL.")
