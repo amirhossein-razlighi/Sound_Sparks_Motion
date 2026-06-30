@@ -22,6 +22,7 @@ import argparse
 import csv
 import json
 import math
+import re
 from pathlib import Path
 
 # Metrics surfaced in the markdown summary (CSV always carries everything).
@@ -35,7 +36,21 @@ HEADLINE = [
     ("final_qwen_yes_prob_critic", "Qwen-yes(critic)"),
 ]
 
-GROUPS = {"source": ["source"], "zero": ["zero"], "random": ["random_s42", "random_s1", "random_s2"]}
+# Variant dir name -> group. random_* pools its seeds; each LoRA *preset* is its
+# own group (lora_audio / lora_all / lora_a2v ...), pooling only its ranks.
+FIXED_ORDER = ["source", "zero", "random"]
+
+
+def _group_of(variant: str) -> str | None:
+    if variant == "source":
+        return "source"
+    if variant == "zero":
+        return "zero"
+    if variant.startswith("random"):
+        return "random"
+    if variant.startswith("lora"):
+        return re.sub(r"_r\d+$", "", variant)  # lora_audio_r64 -> lora_audio (pool ranks)
+    return None
 
 
 def _fmt(x: float | None, nd: int = 4) -> str:
@@ -89,29 +104,36 @@ def main() -> None:
             w.writerow([r["scenario"], r["variant"], *[r.get(c, "") for c in metric_cols]])
     print(f"Wrote {long_csv}  ({len(rows)} rows)")
 
-    # ---- summary by group (mean across scenarios; random pools 3 seeds) -----
+    # ---- summary by group (mean across scenarios; random/lora pool variants) -
     scenarios = sorted({r["scenario"] for r in rows})
-    lines: list[str] = []
-    lines.append("# Audio-init ablation — summary\n")
-    lines.append(f"Scenarios ({len(scenarios)}): {', '.join(scenarios)}\n")
-    lines.append("Means across scenarios. `random` pools seeds s42/s1/s2 (mean±std).\n")
+    # Groups present in the data: fixed order first, then any LoRA presets (sorted).
+    groups_in_data = {_group_of(r["variant"]) for r in rows if _group_of(r["variant"])}
+    lora_groups = sorted(g for g in groups_in_data if g.startswith("lora"))
+    present = [g for g in FIXED_ORDER if g in groups_in_data] + lora_groups
+    pooled = {"random", *lora_groups}  # pool multiple variants -> report mean±std
 
-    header = "| metric | " + " | ".join(GROUPS.keys()) + " |"
-    sep = "|" + "---|" * (len(GROUPS) + 1)
+    lines: list[str] = []
+    lines.append("# Rebuttal ablation — summary\n")
+    lines.append(f"Scenarios ({len(scenarios)}): {', '.join(scenarios)}\n")
+    lines.append("Means across scenarios. `random` pools its seeds and `lora` pools "
+                 "its ranks (mean±std).\n")
+
+    header = "| metric | " + " | ".join(present) + " |"
+    sep = "|" + "---|" * (len(present) + 1)
     lines.append(header)
     lines.append(sep)
 
-    by_gv: dict[str, dict[str, list[float]]] = {g: {} for g in GROUPS}
+    by_gv: dict[str, dict[str, list[float]]] = {g: {} for g in present}
     for key, _label in HEADLINE:
-        for g, variant_names in GROUPS.items():
-            vals = [r.get(key) for r in rows if r["variant"] in variant_names]
+        for g in present:
+            vals = [r.get(key) for r in rows if _group_of(r["variant"]) == g]
             by_gv[g][key] = [v for v in vals if isinstance(v, (int, float))]
 
     for key, label in HEADLINE:
         cells = []
-        for g in GROUPS:
+        for g in present:
             m, s = _mean_std(by_gv[g][key])
-            if g == "random" and m is not None:
+            if g in pooled and m is not None:
                 cells.append(f"{_fmt(m)} ± {_fmt(s)}")
             else:
                 cells.append(_fmt(m))

@@ -52,7 +52,9 @@ VARIANT="${SMOKE_VARS[$IDX]}"
 # only step counts / iterations / previews reduced. Results land in a separate
 # tree so they never get confused with real ablation outputs.
 export RESULTS_ROOT="${RESULTS_ROOT:-${REPO_ROOT}/results/rebuttal_smoke}"
-export EXTRA_ARGS="${SMOKE_EXTRA:---iterations 2 --early-stopping 0 --visualize-every-iters 0 --num-inference-steps 8 --retake-num-inference-steps 8 --final-retake-num-inference-steps 8 --qwen-max-frames 8 --qwen-grad-accum-steps 1 --max-eval-frames 33}"
+# Keep audio-opt-last-steps STRICTLY BELOW the denoising step count, otherwise the
+# differentiable grad window falls back to the no-grad loop and nothing trains.
+export EXTRA_ARGS="${SMOKE_EXTRA:---iterations 2 --early-stopping 0 --visualize-every-iters 0 --num-inference-steps 12 --retake-num-inference-steps 12 --final-retake-num-inference-steps 12 --audio-opt-last-steps 6 --qwen-max-frames 8 --qwen-grad-accum-steps 1 --max-eval-frames 33}"
 
 echo "[smoke ${IDX}] scenario=${SMOKE_SCENARIO} variant=${VARIANT} host=$(hostname)"
 echo "[smoke ${IDX}] RESULTS_ROOT=${RESULTS_ROOT}"

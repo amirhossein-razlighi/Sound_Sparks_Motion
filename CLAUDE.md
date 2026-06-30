@@ -104,6 +104,13 @@ Implemented in `multimodal_loop_qwen.py` (init selection + switchable reg
 anchor); `parse_config.py` emits these keys **only when present** in a config, so
 existing configs are byte-identical.
 
+A second, separate capacity control trains a **LoRA on the frozen DiT** with the
+same Qwen critic/losses but no learnable text/audio latents — entry point
+`editing/optimize_lora_critic.py` (+ `src/motion_opt/lora_critic.py`), runner
+`scripts/rebuttal/run_lora_variant.sh` / `lora.sbatch`. It reuses all
+setup/render/loss code and monkey-patches `model_ledger.transformer` to inject
+PEFT LoRA — main code untouched.
+
 Run the ablation (8 scenarios × {source, zero, random×3 seeds}):
 
 ```bash

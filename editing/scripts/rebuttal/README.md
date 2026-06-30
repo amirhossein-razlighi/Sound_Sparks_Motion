@@ -84,8 +84,45 @@ for context only, **not** independent evidence).
 python3 editing/scripts/rebuttal/aggregate_metrics.py --results-root results/rebuttal
 ```
 Writes `aggregate_long.csv` (every metric per cell) and `aggregate_summary.md`
-(per-group means: source vs zero vs random, with random pooled mean±std over the
-3 seeds) — the table to translate into the rebuttal response.
+(per-group means: source vs zero vs random vs lora — random pools its seeds and
+lora pools its ranks, mean±std) — the table to translate into the rebuttal
+response. Only groups actually present in the results appear.
+
+## Second ablation — LoRA capacity control
+
+Answers "is the gain just extra trainable parameters?" Trains a **LoRA on the
+frozen LTX DiT** with the **same Qwen motion critic, iterations, LR** (Qwen loss
+ONLY — no LPIPS/temporal/L2 reg), and **no learnable text/audio latents** — the
+only free params are the LoRA weights. If it can't reproduce the edit, raw
+capacity is not the explanation. Entry point: `editing/optimize_lora_critic.py`
+(additive; reuses all setup/render/loss code, injects PEFT LoRA and monkey-patches
+the transformer getter — main code untouched). Gradients reach the LoRA via the
+same last-`audio_opt_last_steps` differentiable window (keep
+`audio_opt_last_steps < num_inference_steps`).
+
+**Where the LoRA goes — `LORA_PRESET`** (output dir `lora_<preset>_r<rank>/`):
+- `audio` (**default, fair control**): LoRA on the audio self/cross + **audio→video**
+  attention — free params on exactly the audio-conditioning pathway. Strongest
+  apples-to-apples test vs optimizing the audio latent.
+- `all`: every attention (video+audio+a2v+v2a) in every block — a **max-capacity
+  upper bound** (hundreds of millions of params; changes the whole denoiser).
+- `a2v`: only the audio→video attention — the tightest scope.
+
+```bash
+# SLURM array (8 scenarios x PRESETS x RANKS; default PRESETS=(audio), RANKS=(64) -> 8 cells)
+sbatch editing/scripts/rebuttal/lora.sbatch
+sbatch --array=0-0 editing/scripts/rebuttal/lora.sbatch          # first cell / smoke
+
+# one cell directly (salloc GPU shell): the fair audio-pathway control, rank 64
+LORA_PRESET=audio bash editing/scripts/rebuttal/run_lora_variant.sh editing/configs/rebuttal/dog_yawning.yaml 64
+# the max-capacity upper bound:
+LORA_PRESET=all   bash editing/scripts/rebuttal/run_lora_variant.sh editing/configs/rebuttal/dog_yawning.yaml 64
+```
+To run both presets in the array: `PRESETS=(audio all)` in `lora.sbatch` and
+`--array=0-15`. Add ranks via `RANKS=(16 64 128)`. Override modules directly with
+`LORA_TARGETS="..."` (labelled `custom`). Knobs: `LORA_ALPHA`, `LORA_DROPOUT`.
+Resumable + `metrics.json` per cell. Each preset appears as its own column
+(`lora_audio`, `lora_all`, …) in `aggregate_summary.md`, pooling ranks (mean±std).
 
 ## What changed in the main code (additive only)
 

@@ -20,7 +20,7 @@ seed: 42
 audio_init: "source"
 audio_reg_anchor: "source"
 audio_init_seed: 42
-enhance_prompt: true
+enhance_prompt: false   # disabled for all ablations (no prompt rewriting)
 
 height: 320
 width:  512
