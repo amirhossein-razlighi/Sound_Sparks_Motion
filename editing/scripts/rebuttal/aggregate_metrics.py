@@ -38,7 +38,7 @@ HEADLINE = [
 
 # Variant dir name -> group. random_* pools its seeds; each LoRA *preset* is its
 # own group (lora_audio / lora_all / lora_a2v ...), pooling only its ranks.
-FIXED_ORDER = ["source", "zero", "random"]
+FIXED_ORDER = ["source", "zero", "random", "zvid"]
 
 
 def _group_of(variant: str) -> str | None:
@@ -48,6 +48,8 @@ def _group_of(variant: str) -> str | None:
         return "zero"
     if variant.startswith("random"):
         return "random"
+    if variant == "zvid" or variant.startswith("zvid"):
+        return "zvid"
     if variant.startswith("lora"):
         return re.sub(r"_r\d+$", "", variant)  # lora_audio_r64 -> lora_audio (pool ranks)
     return None

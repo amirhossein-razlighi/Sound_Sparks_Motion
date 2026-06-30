@@ -1,6 +1,6 @@
 # Usage:  bash editing/scripts/rebuttal/run_variant.sh editing/configs/rebuttal/dog_jumping.yaml <source|zero|random_s42|random_s1|random_s2>
 
-src_video: "input_videos/cook_spinach.mp4"
+src_video: "input_videos/cook_spinach_main.mp4"
 edit_prompt: "The dog jumps up into the air."
 static_prompt: "A man cooking in the kitchen, and a dog sitting on a chair."
 negative_prompt: "blurry, low quality, artifacts, distorted"
@@ -20,7 +20,7 @@ seed: 42
 audio_init: "source"
 audio_reg_anchor: "source"
 audio_init_seed: 42
-enhance_prompt: false   # disabled for all ablations (no prompt rewriting)
+enhance_prompt: true
 
 height: 320
 width:  512
@@ -59,7 +59,7 @@ clip_max_frames: 0
 clip_batch_size: 8
 max_eval_frames: 95
 frame_stride: 1
-visualize_every_iters: 5
+visualize_every_iters: 10
 
 quantization: "fp8-cast"
 low_memory_guidance: true

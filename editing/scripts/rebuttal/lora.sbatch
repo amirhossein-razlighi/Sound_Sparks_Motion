@@ -44,7 +44,7 @@ SCENARIOS=(
 # (scenario, preset, rank) grid. Default: the fair locus-matched 'audio' control
 # at rank 64 -> 8 cells (array 0-7). To also run the max-capacity upper bound, use
 # PRESETS=(audio all) and widen --array to 0-$((8*2-1)). 'a2v' is the tightest scope.
-PRESETS=(audio)            # one of: audio (fair control) | all (max capacity) | a2v
+PRESETS=(audio)            # any of: audio (fair control) | all (max capacity) | video (video-only) | a2v
 RANKS=(64)
 N_RANKS=${#RANKS[@]}
 N_PRESETS=${#PRESETS[@]}

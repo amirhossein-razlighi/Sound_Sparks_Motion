@@ -1,6 +1,6 @@
 # Usage:  bash editing/scripts/rebuttal/run_variant.sh editing/configs/rebuttal/bugatti_lights_flash.yaml <source|zero|random_s42|random_s1|random_s2>
 
-src_video: "input_videos/a_yellow_bugatti_in_a_garage_static.mp4"
+src_video: "input_videos/a_yellow_bugatti_in_a_garage_static_main.mp4"
 edit_prompt: "The car front lights turn on and off periodically."
 static_prompt: "A yellow car in a garage."
 negative_prompt: "blurry, low quality, artifacts, distorted"
@@ -20,7 +20,7 @@ seed: 42
 audio_init: "source"
 audio_reg_anchor: "source"
 audio_init_seed: 42
-enhance_prompt: false   # disabled for all ablations (no prompt rewriting)
+enhance_prompt: true
 
 height: 320
 width:  512
@@ -59,7 +59,7 @@ clip_max_frames: 0
 clip_batch_size: 8
 max_eval_frames: 95
 frame_stride: 1
-visualize_every_iters: 5
+visualize_every_iters: 10
 
 quantization: "fp8-cast"
 low_memory_guidance: true

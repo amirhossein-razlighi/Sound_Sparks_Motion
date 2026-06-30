@@ -94,6 +94,18 @@ def inject_lora_into_pipeline(
             "matched nothing in the transformer."
         )
 
+    # CRITICAL: RetakePipeline.__call__ runs `transformer.requires_grad_(False)` on
+    # every render (it normally optimizes only the input latents, so it freezes the
+    # net). That call would also freeze our LoRA params -> zero grad. Override the
+    # method on our instance so it always keeps LoRA params trainable while still
+    # freezing the base, regardless of what the pipeline requests.
+    def _requires_grad_keep_lora(mode: bool = True):
+        for name, p in peft_transformer.named_parameters():
+            p.requires_grad_(True if "lora_" in name else bool(mode))
+        return peft_transformer
+
+    peft_transformer.requires_grad_ = _requires_grad_keep_lora
+
     # Every render goes through model_ledger.transformer(); return our adapted
     # instance instead of building a fresh (adapter-less) one each call.
     orig_getter = pipeline.model_ledger.transformer

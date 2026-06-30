@@ -12,13 +12,93 @@ import torchaudio
 from .distributed import barrier
 from .metrics import decode_video_frames_rgb, frames_rgb_uint8_to_chw_float, load_raft_components, compute_raft_flows
 from .models import build_guiders
-from .core import decode_audio_from_file, decode_video_mask_frames, mask_frames_to_nchw_float, maybe_generate_target_video, write_temp_video_with_audio
+from .core import (
+    decode_audio_from_file,
+    decode_video_mask_frames,
+    get_videostream_metadata,
+    mask_frames_to_nchw_float,
+    maybe_generate_target_video,
+    write_temp_video_with_audio,
+)
 
 log = logging.getLogger(__name__)
 
 
+def _retake_ready_source_reason(
+    *,
+    src_video: Path,
+    height: int,
+    width: int,
+    num_frames: int,
+    frame_rate: float,
+    audio_sr: int,
+    duration: float,
+) -> tuple[bool, str]:
+    try:
+        src_fps, src_frames, src_width, src_height = get_videostream_metadata(str(src_video))
+    except Exception as exc:
+        return False, f"metadata probe failed: {exc}"
+
+    if src_width != width or src_height != height:
+        return False, f"size is {src_width}x{src_height}, expected {width}x{height}"
+    if src_frames != num_frames:
+        return False, f"frame count is {src_frames}, expected {num_frames}"
+    if abs(float(src_fps) - float(frame_rate)) > 1e-3:
+        return False, f"fps is {src_fps:.6g}, expected {frame_rate:.6g}"
+
+    src_audio = decode_audio_from_file(str(src_video), torch.device("cpu"), max_duration=duration)
+    if src_audio is None:
+        return False, "missing audio stream"
+    if int(src_audio.sampling_rate) != int(audio_sr):
+        return False, f"audio sr is {src_audio.sampling_rate}, expected {audio_sr}"
+
+    expected_samples = int(duration * audio_sr)
+    actual_samples = int(src_audio.waveform.shape[-1])
+    if actual_samples + 2 < expected_samples:
+        return False, f"audio has {actual_samples} samples, expected at least {expected_samples}"
+
+    return True, "matches retake-ready shape/audio"
+
+
+def _refresh_retake_input_link(*, src_video: Path, retake_input_video: Path) -> None:
+    try:
+        if retake_input_video.exists() or retake_input_video.is_symlink():
+            try:
+                if retake_input_video.samefile(src_video):
+                    return
+            except FileNotFoundError:
+                pass
+            if retake_input_video.is_dir():
+                log.warning("Cannot replace retake input artifact directory: %s", retake_input_video)
+                return
+            retake_input_video.unlink()
+        retake_input_video.symlink_to(src_video)
+    except OSError:
+        log.warning("Could not symlink retake input artifact to %s", src_video, exc_info=True)
+
+
 def prepare_retake_input_video(*, args, is_main: bool, output_dir: Path, height: int, width: int, num_frames: int, frame_rate: float) -> Path:
     duration = num_frames / frame_rate
+    src_video_path = Path(args.src_video).expanduser().resolve()
+    retake_input_video = output_dir / "retake_input_prepared.mp4"
+
+    is_ready, ready_reason = _retake_ready_source_reason(
+        src_video=src_video_path,
+        height=height,
+        width=width,
+        num_frames=num_frames,
+        frame_rate=frame_rate,
+        audio_sr=args.audio_sr,
+        duration=duration,
+    )
+    if is_ready:
+        if is_main:
+            _refresh_retake_input_link(src_video=src_video_path, retake_input_video=retake_input_video)
+            log.info("Source video is already retake-ready (%s); using without preprocessing: %s", ready_reason, src_video_path)
+        barrier()
+        return src_video_path
+    if is_main:
+        log.info("Preparing retake input video because source is not retake-ready (%s).", ready_reason)
 
     src_audio_for_input = decode_audio_from_file(args.src_video, torch.device("cpu"), max_duration=duration)
     if src_audio_for_input is None:
@@ -36,7 +116,6 @@ def prepare_retake_input_video(*, args, is_main: bool, output_dir: Path, height:
 
     src_wave = align_waveform_length(src_wave, int(duration * args.audio_sr))
 
-    retake_input_video = output_dir / "retake_input_prepared.mp4"
     if is_main:
         write_temp_video_with_audio(
             src_video_path=args.src_video,

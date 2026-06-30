@@ -1,26 +1,31 @@
 #!/usr/bin/env python3
-"""LoRA capacity-control ablation (rebuttal).
+"""Video-latent residual ablation (rebuttal).
 
-Trains a LoRA adapter on the FROZEN LTX-2 DiT using the SAME Qwen-VL critic,
-the SAME losses, iterations, LR, and schedules as our method — but with NO
-learnable text or audio conditioning latents. The only trainable parameters are
-the injected LoRA weights (extra free capacity bolted onto the diffusion model).
+Instead of optimizing the audio and/or text conditioning, optimize a learnable
+residual delta_z directly in the video VAE latent domain:
 
-Purpose: answer the reviewers' "is the gain just added capacity?" concern. If a
-capacity-matched (indeed, far larger) LoRA optimized identically cannot
-reproduce the motion edit that tuning the audio-conditioning latent achieves,
-then the audio pathway is providing structured control that raw free parameters
-do not.
+    z_vid_used = z_vid_source + delta_z          (delta_z init = 0)
 
-This entry point is ADDITIVE: it reuses the parser, setup, render, and loss code
-from optimize_qwen_vl.py / motion_opt without modifying any of it. Gradients
-reach the LoRA params through the same last-`audio_opt_last_steps` differentiable
-denoising window the audio/text optimization already uses.
+delta_z is updated by backprop from the Qwen-VL motion critic (the SAME loss as
+ours), with text and audio conditioning FROZEN. This probes a different control
+space: tuning the video latent itself — the most direct handle on the output —
+versus tuning the audio-conditioning pathway.
 
-Usage (same config flow as optimize_qwen_vl.py, plus --lora-* flags):
-    python editing/optimize_lora_critic.py \
-        --src-video ... --edit-prompt ... --output-dir results/rebuttal/<s>/lora_r64 \
-        --lora-rank 64 --lora-alpha 64
+This is structurally identical to the audio-latent method (an external learnable
+tensor added to an injected latent), so it needs none of the LoRA-specific
+machinery: the video latent is a grad-carrying INPUT to the frozen DiT, so
+gradients reach delta_z through the existing last-`audio_opt_last_steps`
+differentiable window, gradient checkpointing works, and the pipeline's
+`transformer.requires_grad_(False)` never touches delta_z (it lives outside the
+transformer).
+
+Additive entry point: reuses the parser, setup, render, and loss code from
+optimize_qwen_vl.py / motion_opt without modifying any of it.
+
+Usage (same config flow as optimize_qwen_vl.py, plus --zvid-* flags):
+    python editing/optimize_zvid_residual.py \
+        --src-video ... --edit-prompt ... --output-dir results/rebuttal/<s>/zvid \
+        [--zvid-reg-weight 0.0]
 """
 from __future__ import annotations
 
@@ -44,7 +49,6 @@ from motion_opt.core import (
     build_guiders_for_mode,
     compute_target_shape,
 )
-from motion_opt.lora_critic import inject_lora_into_pipeline, lora_state_dict, save_lora, set_lora_state
 from motion_opt.models import build_retake_pipeline, resolve_quantization_policy
 from motion_opt.multimodal_loop import (
     render_baseline_video,
@@ -52,6 +56,7 @@ from motion_opt.multimodal_loop import (
     render_with_injected_latents,
 )
 from motion_opt.multimodal_loop_qwen import pre_encode_base_contexts
+from motion_opt.perceptual_loss import adaptive_reg_weight
 from motion_opt.qwen_loss import build_qwen_model, build_qwen_rubric_inputs, compute_qwen_video_loss
 from motion_opt.runtime import build_retake_kwargs, prepare_retake_input_video
 
@@ -59,28 +64,27 @@ from ltx_pipelines.utils.constants import detect_params
 
 log = logging.getLogger(__name__)
 
-MODE = "lora"
+MODE = "zvid"
 
 
 def _rubric_overrides(args):
-    """Match the main loop: single-rubric runs optimize only that question."""
     gr = getattr(args, "qwen_gradient_rubric", "motion")
     if gr == "full":
         return None
     return {"motion": 0.0, "entities": 0.0, "overall": 0.0, gr: 1.0}
 
 
-def gradient_optimize_lora(
+def gradient_optimize_zvid(
     *,
     args,
     output_dir: Path,
     pipeline,
-    lora_params,
-    peft_transformer,
+    delta_z: torch.nn.Parameter,
+    base_video_latent_fp32: torch.Tensor,
+    video_dtype: torch.dtype,
     base_pos_context,
     base_neg_context,
     base_audio_latent,
-    cached_video_latent,
     retake_input_video: str,
     retake_kwargs: dict,
     qwen_model,
@@ -88,12 +92,9 @@ def gradient_optimize_lora(
     yes_token_id: int,
     no_token_id: int,
 ) -> dict:
-    """Optimize ONLY the LoRA params with the Qwen motion critic — the SAME main
-    loss our method uses, and nothing else. No LPIPS / temporal / L2 reg: this is a
-    pure test of whether extra free parameters + the motion critic can produce the
-    edit. Text and audio conditioning are frozen (base contexts + base source
-    audio latent)."""
-    optimizer = torch.optim.Adam(lora_params, lr=args.lr)
+    """Optimize delta_z (a residual on the source video latent) with the Qwen
+    motion critic. Text + audio conditioning are frozen."""
+    optimizer = torch.optim.Adam([delta_z], lr=args.lr)
     scheduler = None
     if getattr(args, "lr_schedule", "constant") == "cosine" and args.iterations > 1:
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
@@ -103,36 +104,33 @@ def gradient_optimize_lora(
     rubric_overrides = _rubric_overrides(args)
     qwen_grad_accum = max(1, int(getattr(args, "qwen_grad_accum_steps", 1)))
     base_sample_mode = getattr(args, "qwen_sample_mode", "linspace")
+    reg_weight = float(getattr(args, "zvid_reg_weight", 0.0) or 0.0)
+    reg_schedule = getattr(args, "reg_schedule", "constant")
 
     best = {
-        "qwen_loss": float("inf"), "qwen_score": float("-inf"),
-        "best_iter": 0, "lora_state": None,
-        # render_final_video reads these; None -> base text/audio (LoRA does the edit)
+        "qwen_loss": float("inf"), "qwen_score": float("-inf"), "best_iter": 0,
+        "delta_z": delta_z.detach().clone(),
+        # render_final_video reads these; None -> base audio/text (the residual does the edit)
         "delta_v": None, "audio_latent": None,
     }
 
     csv_path = output_dir / f"optimization_log_qwen_{MODE}.csv"
     csv_file = csv_path.open("w", newline="")
     writer = csv.writer(csv_file)
-    writer.writerow(["iter", "qwen_nll", "qwen_yes_prob", "grad_norm", "is_best"])
+    writer.writerow(["iter", "qwen_nll", "qwen_yes_prob", "zvid_reg", "total_loss", "grad_norm", "is_best"])
 
     try:
         for it in range(1, args.iterations + 1):
             optimizer.zero_grad(set_to_none=True)
 
-            # Mark the (still-frozen) audio latent as grad-requiring. It is NOT in
-            # the optimizer and is never stepped, so the audio conditioning stays
-            # frozen — requires_grad only gives the differentiable denoising steps a
-            # grad-carrying INPUT, which is what connects gen_frames to the autograd
-            # graph and lets gradients reach the LoRA params inside the DiT (this is
-            # exactly what makes the audio/text optimization's graph connect).
-            audio_in = base_audio_latent.detach().clone().requires_grad_(True)
+            # z_vid_used = source video latent + residual (compute in fp32, inject in model dtype)
+            z_in = (base_video_latent_fp32 + delta_z).to(video_dtype)
 
             gen_frames = render_with_injected_latents(
                 pipeline=pipeline,
                 src_video=retake_input_video,
-                injected_audio_latent=audio_in,               # frozen values, grad-enabled input
-                cached_video_latent=cached_video_latent,
+                injected_audio_latent=base_audio_latent,      # FROZEN source audio
+                cached_video_latent=z_in,                     # source + learnable residual
                 retake_kwargs=retake_kwargs,
                 max_frames=args.max_eval_frames,
                 frame_stride=args.frame_stride,
@@ -146,8 +144,7 @@ def gradient_optimize_lora(
             if gen_frames.shape[0] < 1:
                 raise RuntimeError("Generated video has no frames.")
 
-            # Qwen motion critic loss (single pass or grad accumulation) — the ONLY
-            # loss. No perceptual / preservation / L2 reg terms.
+            # Qwen motion critic loss (single pass or grad accumulation).
             if qwen_grad_accum == 1:
                 qwen_loss_t, _ = compute_qwen_video_loss(
                     frames_chw=gen_frames, qwen_model=qwen_model, cached_inputs=cached_qwen_inputs,
@@ -176,18 +173,24 @@ def gradient_optimize_lora(
                 if gf_det.grad is not None and gen_frames.grad_fn is not None:
                     gen_frames.backward(gradient=gf_det.grad)
 
+            # Optional L2 reg on the residual (anchor delta_z toward 0 == video latent
+            # toward source). Default 0; set --zvid-reg-weight to match the audio
+            # method's latent_reg_weight for an anchored, apples-to-apples comparison.
+            zvid_reg = 0.0
+            if reg_weight > 0:
+                w = adaptive_reg_weight(reg_weight, it, args.iterations, schedule=reg_schedule)
+                if w > 0:
+                    reg_t = w * torch.mean(delta_z ** 2)
+                    reg_t.backward()
+                    zvid_reg = float(reg_t.detach().item())
+
             if args.grad_clip > 0:
-                grad_norm = float(torch.nn.utils.clip_grad_norm_(lora_params, max_norm=args.grad_clip).item())
+                grad_norm = float(torch.nn.utils.clip_grad_norm_([delta_z], max_norm=args.grad_clip).item())
             else:
-                # Report the TRUE grad norm even without clipping, so grad_norm=0
-                # unambiguously means no gradient reached the LoRA (e.g. a bad
-                # audio_opt_last_steps window) rather than "clipping disabled".
-                sq = sum(float(p.grad.detach().norm().item()) ** 2 for p in lora_params if p.grad is not None)
-                grad_norm = sq ** 0.5
+                grad_norm = float(delta_z.grad.detach().norm().item()) if delta_z.grad is not None else 0.0
             if grad_norm == 0.0:
-                log.warning("[lora] grad_norm is 0 — no gradient reached the LoRA. "
-                            "Check that 0 < audio_opt_last_steps (%d) < denoising steps.",
-                            args.audio_opt_last_steps)
+                log.warning("[zvid] grad_norm is 0 — no gradient reached delta_z. "
+                            "Check 0 < audio_opt_last_steps (%d) < denoising steps.", args.audio_opt_last_steps)
 
             optimizer.step()
             if scheduler is not None:
@@ -195,18 +198,19 @@ def gradient_optimize_lora(
 
             qwen_loss = float(qwen_loss_t.detach().item())
             qwen_score = math.exp(-qwen_loss)
+            total = qwen_loss + zvid_reg
 
-            is_best = qwen_loss < best["qwen_loss"]
+            is_best = total < best["qwen_loss"]
             if is_best:
-                best.update(qwen_loss=qwen_loss, qwen_score=qwen_score, best_iter=it,
-                            lora_state=lora_state_dict(peft_transformer))
+                best.update(qwen_loss=total, qwen_score=qwen_score, best_iter=it,
+                            delta_z=delta_z.detach().clone())
 
-            writer.writerow([it, qwen_loss, qwen_score, grad_norm, int(is_best)])
+            writer.writerow([it, qwen_loss, qwen_score, zvid_reg, total, grad_norm, int(is_best)])
             csv_file.flush()
             no_improve = it - best["best_iter"]
-            log.info("[lora] iter %3d/%d  qwen_nll=%.4f  yes_prob=%.4f  grad_norm=%.3f  "
-                     "no_improve=%d%s", it, args.iterations, qwen_loss, qwen_score,
-                     grad_norm, no_improve, "  ★" if is_best else "")
+            log.info("[zvid] iter %3d/%d  qwen_nll=%.4f  yes_prob=%.4f  zvid_reg=%.4f  total=%.4f  "
+                     "grad_norm=%.3f  no_improve=%d%s", it, args.iterations, qwen_loss, qwen_score,
+                     zvid_reg, total, grad_norm, no_improve, "  ★" if is_best else "")
 
             del gen_frames, qwen_loss_t
             gc.collect()
@@ -215,7 +219,7 @@ def gradient_optimize_lora(
 
             early = getattr(args, "early_stopping", 0)
             if early > 0 and no_improve >= early:
-                log.info("[lora] Early stopping at iter %d (best iter %d).", it, best["best_iter"])
+                log.info("[zvid] Early stopping at iter %d (best iter %d).", it, best["best_iter"])
                 break
     finally:
         csv_file.close()
@@ -235,7 +239,6 @@ def run(args) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     _write_run_config(args, output_dir)
 
-    # ---- Shape / quantization / input video (identical to optimize_qwen_vl) ----
     height, width, num_frames, frame_rate = compute_target_shape(
         args.src_video, args.height, args.width, args.num_frames, args.frame_rate
     )
@@ -255,14 +258,6 @@ def run(args) -> None:
         args=args, params=params, use_low_memory_guidance=args.low_memory_guidance
     )
 
-    # Gradient checkpointing stays ON (it's what keeps the 19B DiT within memory).
-    # It DOES propagate gradients to the LoRA params here because we feed a
-    # grad-requiring audio input (`audio_in` in the loop): that gives every
-    # checkpointed block a grad-carrying input, so non-reentrant checkpoint
-    # recomputes and produces the block-parameter (LoRA) grads. Without that input,
-    # non-reentrant checkpoint drops the param grads (LoRA grad = 0) — which is
-    # exactly why the grad-requiring audio_in is essential. Turning checkpointing
-    # OFF instead OOMs on the full DiT, so we keep it ON.
     log.info("Loading RetakePipeline (checkpoint: %s)...", args.checkpoint_path)
     pipeline = build_retake_pipeline(
         checkpoint_path=args.checkpoint_path, gemma_root=args.gemma_root,
@@ -294,7 +289,6 @@ def run(args) -> None:
         video_guider_params=video_guider_params, audio_guider_params=audio_guider_params,
     )
 
-    # Final-render kwargs (full guidance), used for baseline + final optimized video.
     final_retake_kwargs = dict(retake_kwargs)
     if args.final_retake_num_inference_steps is not None:
         final_retake_kwargs["num_inference_steps"] = args.final_retake_num_inference_steps
@@ -302,9 +296,9 @@ def run(args) -> None:
     final_retake_kwargs["video_guider_params"] = final_vg
     final_retake_kwargs["audio_guider_params"] = final_ag
 
-    # ---- Baseline render BEFORE injecting LoRA (identical unedited reference) ----
+    # ---- Baseline render (delta_z = 0): pure base-LTX retake, identical to other variants ----
     if args.save_final_videos:
-        log.info("Rendering baseline video (no LoRA)...")
+        log.info("Rendering baseline video (delta_z = 0)...")
         render_baseline_video(
             pipeline=pipeline, src_video=str(retake_input_video),
             cached_video_latent=cached_video_latent, base_audio_latent=base_audio_latent,
@@ -313,62 +307,54 @@ def run(args) -> None:
             num_frames=num_frames, frame_rate=frame_rate, audio_sr=waveform_sr,
         )
 
-    # ---- Inject trainable LoRA and optimize it with the Qwen critic ----
+    # ---- Optimize the video-latent residual ----
     mode_dir = output_dir / f"mode_{MODE}"
     mode_dir.mkdir(parents=True, exist_ok=True)
 
-    peft_transformer, lora_params, restore_transformer = inject_lora_into_pipeline(
-        pipeline,
-        rank=args.lora_rank, alpha=args.lora_alpha, dropout=args.lora_dropout,
-        target_modules=[t.strip() for t in args.lora_targets.split(",") if t.strip()] or None,
+    base_video_latent_fp32 = cached_video_latent.float().detach()
+    delta_z = torch.nn.Parameter(torch.zeros_like(base_video_latent_fp32))
+    log.info("[zvid] Residual delta_z shape: %s, %.1fK params", tuple(delta_z.shape), delta_z.numel() / 1e3)
+
+    log.info("=" * 60)
+    log.info("Starting video-latent residual optimization (delta_z on z_vid)")
+    log.info("=" * 60)
+    best = gradient_optimize_zvid(
+        args=args, output_dir=mode_dir, pipeline=pipeline, delta_z=delta_z,
+        base_video_latent_fp32=base_video_latent_fp32, video_dtype=cached_video_latent.dtype,
+        base_pos_context=base_pos_context, base_neg_context=base_neg_context,
+        base_audio_latent=base_audio_latent, retake_input_video=str(retake_input_video),
+        retake_kwargs=retake_kwargs, qwen_model=qwen_model, cached_qwen_inputs=cached_qwen_inputs,
+        yes_token_id=yes_token_id, no_token_id=no_token_id,
     )
-    try:
-        log.info("=" * 60)
-        log.info("Starting LoRA capacity-control optimization (rank=%d, alpha=%d)", args.lora_rank, args.lora_alpha)
-        log.info("=" * 60)
-        best = gradient_optimize_lora(
-            args=args, output_dir=mode_dir, pipeline=pipeline,
-            lora_params=lora_params, peft_transformer=peft_transformer,
+
+    torch.save(best["delta_z"].cpu(), mode_dir / f"best_delta_z_{MODE}.pt")
+    torch.save({"mode": MODE, "qwen_loss": best["qwen_loss"], "qwen_score": best["qwen_score"],
+                "best_iter": best["best_iter"]}, mode_dir / f"best_params_{MODE}.pt")
+    log.info("[zvid] Best Qwen yes_prob: %.4f (total loss: %.4f) at iter %d",
+             best["qwen_score"], best["qwen_loss"], best["best_iter"])
+
+    # ---- Final render: source video latent + best residual, base text+audio ----
+    if args.save_final_videos:
+        z_best = (base_video_latent_fp32 + best["delta_z"].to(base_video_latent_fp32.device)).to(cached_video_latent.dtype)
+        log.info("[zvid] Rendering optimized video (z_vid + best residual, base text+audio)...")
+        render_final_video(
+            mode=MODE, best=best, pipeline=pipeline, src_video=str(retake_input_video),
+            cached_video_latent=z_best, base_audio_latent=base_audio_latent,
             base_pos_context=base_pos_context, base_neg_context=base_neg_context,
-            base_audio_latent=base_audio_latent, cached_video_latent=cached_video_latent,
-            retake_input_video=str(retake_input_video), retake_kwargs=retake_kwargs,
-            qwen_model=qwen_model, cached_qwen_inputs=cached_qwen_inputs,
-            yes_token_id=yes_token_id, no_token_id=no_token_id,
+            retake_kwargs=final_retake_kwargs, output_dir=mode_dir,
+            num_frames=num_frames, frame_rate=frame_rate, audio_sr=waveform_sr,
+            audio_opt_last_steps=args.audio_opt_last_steps, skip_baseline=True,
         )
-
-        # Restore best LoRA weights, save, and render the final optimized video.
-        set_lora_state(peft_transformer, best["lora_state"])
-        save_lora(peft_transformer, mode_dir / f"best_lora_{MODE}.pt")
-        torch.save({"mode": MODE, "qwen_loss": best["qwen_loss"], "qwen_score": best["qwen_score"],
-                    "best_iter": best["best_iter"], "lora_rank": args.lora_rank, "lora_alpha": args.lora_alpha},
-                   mode_dir / f"best_params_{MODE}.pt")
-        log.info("[lora] Best Qwen yes_prob: %.4f (total loss: %.4f) at iter %d",
-                 best["qwen_score"], best["qwen_loss"], best["best_iter"])
-
-        if args.save_final_videos:
-            log.info("[lora] Rendering optimized video (LoRA active, base text+audio)...")
-            render_final_video(
-                mode=MODE, best=best, pipeline=pipeline, src_video=str(retake_input_video),
-                cached_video_latent=cached_video_latent, base_audio_latent=base_audio_latent,
-                base_pos_context=base_pos_context, base_neg_context=base_neg_context,
-                retake_kwargs=final_retake_kwargs, output_dir=mode_dir,
-                num_frames=num_frames, frame_rate=frame_rate, audio_sr=waveform_sr,
-                audio_opt_last_steps=args.audio_opt_last_steps, skip_baseline=True,
-            )
-    finally:
-        restore_transformer()
 
     log.info("Outputs saved to: %s", output_dir)
 
 
 def main() -> None:
     parser = build_parser()
-    g = parser.add_argument_group("LoRA capacity-control ablation")
-    g.add_argument("--lora-rank", type=int, default=64, help="LoRA rank (capacity). Larger = more free params.")
-    g.add_argument("--lora-alpha", type=int, default=64, help="LoRA alpha scaling.")
-    g.add_argument("--lora-dropout", type=float, default=0.0, help="LoRA dropout.")
-    g.add_argument("--lora-targets", default="to_q,to_k,to_v,to_out.0",
-                   help="Comma-separated target module suffixes for LoRA.")
+    g = parser.add_argument_group("video-latent residual ablation")
+    g.add_argument("--zvid-reg-weight", type=float, default=0.0,
+                   help="L2 reg on the residual delta_z (anchor video latent to source). "
+                        "Default 0; set to e.g. --latent-reg-weight's value for a fair anchored run.")
     args = parser.parse_args()
 
     if args.qwen_max_frames % 2 != 0:
@@ -379,9 +365,8 @@ def main() -> None:
         args.retake_num_inference_steps = args.num_inference_steps
     args.ti2v_num_inference_steps = args.num_inference_steps
     args.clip_max_frames = args.qwen_max_frames
-    args.opt_mode = MODE  # informational; this entry point always optimizes LoRA
-    # The LoRA control must NEVER enhance the prompt — the final render (mode=lora
-    # does not inject the base text context) would otherwise rewrite it. Force off.
+    args.opt_mode = MODE
+    # Never enhance the prompt (final render of this mode doesn't inject base text).
     args.enhance_prompt = False
 
     run(args)

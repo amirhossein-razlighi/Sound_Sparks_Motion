@@ -1,86 +1,56 @@
 #!/bin/bash
 # =============================================================================
-# LoRA capacity-control ablation runner — one (scenario, rank) per call.
+# Video-latent residual ablation runner — one scenario per call.
 #
-# Trains a LoRA on the frozen LTX DiT with the SAME Qwen critic + losses as ours,
-# but NO learnable text/audio latents. Shows that raw extra free parameters
-# cannot match the audio-conditioning pathway. The diffusion seed stays 42 so the
-# baseline render is identical to the other ablation variants.
+# Optimizes a residual delta_z added to the source video VAE latent (z_vid),
+# updated by the SAME Qwen motion critic as ours, with text+audio FROZEN. Probes
+# tuning the video latent directly vs the audio-conditioning pathway. Diffusion
+# seed stays 42 so the baseline render matches the other ablation variants.
 #
 # Usage:
-#   LORA_PRESET=audio bash editing/scripts/rebuttal/run_lora_variant.sh <config.yaml> [rank]
+#   bash editing/scripts/rebuttal/run_zvid_variant.sh <config.yaml>
 #     <config.yaml> : an editing/configs/rebuttal/<scenario>.yaml
-#     [rank]        : LoRA rank (default 64). alpha defaults to rank.
-#     LORA_PRESET   : all (every attention; max capacity, default) | audio (audio
-#                     self/cross + audio->video; the fair locus-matched control) |
-#                     video (video self + video cross-to-text attention only; no
-#                     audio path touched) | a2v (only audio->video attention).
-#                     Output dir is lora_<preset>_r<rank> so presets don't collide.
 #
-# Output:  results/rebuttal/<scenario>/lora_r<rank>/
+# Output:  results/rebuttal/<scenario>/zvid/
 #   ├── baseline_video.mp4
-#   ├── mode_lora/best_optimized_video_lora.mp4  (+ best_lora.pt, csv, params)
+#   ├── mode_zvid/best_optimized_video_zvid.mp4  (+ best_delta_z.pt, csv, params)
 #   ├── run_config.json
 #   └── metrics.json
 #
-# Env knobs: RESULTS_ROOT, LORA_ALPHA, LORA_TARGETS, LORA_DROPOUT, RUN_EVAL=0,
-#   FORCE=1 (redo), RAFT_WEIGHTS, EVAL_DEVICE, DRY_RUN=1, plus CKPT_ROOT/QWEN_ROOT/GEMMA_ROOT.
-# Resumable: a .completed marker is dropped on success; re-running skips done cells.
+# Env knobs: RESULTS_ROOT, ZVID_REG (L2 on delta_z; default 0.0), RUN_EVAL=0,
+#   FORCE=1 (redo), RAFT_WEIGHTS, EVAL_DEVICE, DRY_RUN=1, plus CKPT/QWEN/GEMMA roots.
+# Resumable: drops a .completed marker on success; re-running skips done cells.
 # =============================================================================
 set -euo pipefail
 
-CONFIG_FILE="${1:?Usage: run_lora_variant.sh <config.yaml> [rank]}"
-RANK="${2:-64}"
+CONFIG_FILE="${1:?Usage: run_zvid_variant.sh <config.yaml>}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="${REPO_ROOT:-$(cd "${SCRIPT_DIR}/../../.." && pwd)}"
 [[ -f "${SCRIPT_DIR}/env.sh" ]] && source "${SCRIPT_DIR}/env.sh"
 
 PARSE_SCRIPT="${REPO_ROOT}/editing/scripts/utils/parse_config.py"
-MAIN_SCRIPT="${REPO_ROOT}/editing/optimize_lora_critic.py"
+MAIN_SCRIPT="${REPO_ROOT}/editing/optimize_zvid_residual.py"
 EVAL_SCRIPT="${REPO_ROOT}/editing/scripts/eval_metrics.py"
 PYTHON_BIN="${PYTHON_BIN:-python3}"
 DRY_RUN="${DRY_RUN:-0}"
 RUN_EVAL="${RUN_EVAL:-1}"
 FORCE="${FORCE:-0}"
-
-ALPHA="${LORA_ALPHA:-${RANK}}"
-DROPOUT="${LORA_DROPOUT:-0.0}"
-
-# LoRA target preset (LORA_PRESET): which modules get adapters.
-#   all   = every attention (video+audio+a2v+v2a) in every block — max capacity
-#   audio = audio self/cross + audio->video attention — the audio pathway (fair control)
-#   a2v   = only audio->video attention — the tightest analogue to the audio latent
-# LORA_TARGETS, if set, overrides the preset (and labels the run 'custom').
-PRESET="${LORA_PRESET:-all}"
-case "${PRESET}" in
-    all)   PRESET_TARGETS="to_q,to_k,to_v,to_out.0" ;;
-    a2v)   PRESET_TARGETS="audio_to_video_attn.to_q,audio_to_video_attn.to_k,audio_to_video_attn.to_v,audio_to_video_attn.to_out.0" ;;
-    audio) PRESET_TARGETS="audio_attn1.to_q,audio_attn1.to_k,audio_attn1.to_v,audio_attn1.to_out.0,audio_attn2.to_q,audio_attn2.to_k,audio_attn2.to_v,audio_attn2.to_out.0,audio_to_video_attn.to_q,audio_to_video_attn.to_k,audio_to_video_attn.to_v,audio_to_video_attn.to_out.0" ;;
-    video) PRESET_TARGETS="attn1.to_q,attn1.to_k,attn1.to_v,attn1.to_out.0,attn2.to_q,attn2.to_k,attn2.to_v,attn2.to_out.0" ;;
-    *) echo "ERROR: unknown LORA_PRESET '${PRESET}'. Use all|audio|video|a2v." >&2; exit 1 ;;
-esac
-if [[ -n "${LORA_TARGETS:-}" ]]; then
-    TARGETS="${LORA_TARGETS}"; LABEL="custom"
-else
-    TARGETS="${PRESET_TARGETS}"; LABEL="${PRESET}"
-fi
+ZVID_REG="${ZVID_REG:-0.0}"
 
 if [[ "${CONFIG_FILE}" != /* ]]; then CONFIG_FILE="${REPO_ROOT}/${CONFIG_FILE}"; fi
 [[ -f "${CONFIG_FILE}" ]] || { echo "ERROR: config not found: ${CONFIG_FILE}" >&2; exit 1; }
 
 SCENARIO="$(basename "${CONFIG_FILE}" .yaml)"
 RESULTS_ROOT="${RESULTS_ROOT:-${REPO_ROOT}/results/rebuttal}"
-OUTPUT_DIR="${RESULTS_ROOT}/${SCENARIO}/lora_${LABEL}_r${RANK}"
+OUTPUT_DIR="${RESULTS_ROOT}/${SCENARIO}/zvid"
 DONE_MARKER="${OUTPUT_DIR}/.completed"
-FINAL_VIDEO="${OUTPUT_DIR}/mode_lora/best_optimized_video_lora.mp4"
+FINAL_VIDEO="${OUTPUT_DIR}/mode_zvid/best_optimized_video_zvid.mp4"
 
-LORA_ARGS=(--lora-rank "${RANK}" --lora-alpha "${ALPHA}" --lora-targets "${TARGETS}" --lora-dropout "${DROPOUT}")
-
-# Optional free-form overrides appended LAST (e.g. EXTRA_ARGS for smoke shrink).
+ZVID_ARGS=(--zvid-reg-weight "${ZVID_REG}")
 EXTRA=()
 if [[ -n "${EXTRA_ARGS:-}" ]]; then read -ra EXTRA <<< "${EXTRA_ARGS}"; fi
-LORA_ARGS+=(${EXTRA[@]+"${EXTRA[@]}"})
+ZVID_ARGS+=(${EXTRA[@]+"${EXTRA[@]}"})
 
 export OUTPUT_DIR
 for v in CKPT_ROOT QWEN_ROOT GEMMA_ROOT; do
@@ -94,17 +64,16 @@ fi
 BASE_ARGS=(); while IFS= read -r -d '' tok; do BASE_ARGS+=("${tok}"); done < "${PARSE_OUT}"
 
 echo "========================================================"
-echo "  Rebuttal LoRA capacity control"
+echo "  Rebuttal video-latent residual (z_vid + delta_z)"
 echo "  Scenario : ${SCENARIO}"
-echo "  Preset   : ${LABEL}  (rank=${RANK}, alpha=${ALPHA})"
-echo "  Targets  : ${TARGETS}"
+echo "  zvid_reg : ${ZVID_REG}"
 echo "  Output   : ${OUTPUT_DIR}"
 echo "  DRY_RUN  : ${DRY_RUN}"
 echo "========================================================"
 
 if [[ "${DRY_RUN}" == "1" ]]; then
     echo "Command that would run:"
-    printf '  %q ' "${PYTHON_BIN}" "${MAIN_SCRIPT}" "${BASE_ARGS[@]}" "${LORA_ARGS[@]}"; printf '\n'
+    printf '  %q ' "${PYTHON_BIN}" "${MAIN_SCRIPT}" "${BASE_ARGS[@]}" "${ZVID_ARGS[@]}"; printf '\n'
     exit 0
 fi
 
@@ -129,19 +98,17 @@ export WANDB_MODE="${WANDB_MODE:-offline}"; export WANDB_DISABLE_GIT="${WANDB_DI
 
 mkdir -p "${OUTPUT_DIR}"; cd "${REPO_ROOT}"
 
-# 1) Optimize LoRA (skip if final video already present and not forced)
 if [[ "${FORCE}" != "1" && -f "${FINAL_VIDEO}" ]]; then
     echo "---- optimized video already present; skipping optimization (FORCE=1 to redo) ----"
 else
-    "${PYTHON_BIN}" "${MAIN_SCRIPT}" "${BASE_ARGS[@]}" "${LORA_ARGS[@]}"
+    "${PYTHON_BIN}" "${MAIN_SCRIPT}" "${BASE_ARGS[@]}" "${ZVID_ARGS[@]}"
 fi
 
-# 2) Objective metrics -> metrics.json (skip if present and not forced)
 if [[ "${RUN_EVAL}" == "1" ]]; then
     if [[ "${FORCE}" != "1" && -f "${OUTPUT_DIR}/metrics.json" ]]; then
         echo "---- metrics.json present; skipping eval ----"
     else
-        EVAL_ARGS=(--output-dir "${OUTPUT_DIR}" --mode lora)
+        EVAL_ARGS=(--output-dir "${OUTPUT_DIR}" --mode zvid)
         [[ -n "${RAFT_WEIGHTS:-}" ]] && EVAL_ARGS+=(--raft-weights "${RAFT_WEIGHTS}")
         [[ -n "${EVAL_DEVICE:-}"  ]] && EVAL_ARGS+=(--device "${EVAL_DEVICE}")
         "${PYTHON_BIN}" "${EVAL_SCRIPT}" "${EVAL_ARGS[@]}" || \

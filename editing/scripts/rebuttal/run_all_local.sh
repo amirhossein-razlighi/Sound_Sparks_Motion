@@ -31,7 +31,7 @@ SCENARIOS="${SCENARIOS:-bugatti_lights_flash dog_jumping dog_yawning falcon_bird
 # 'source' (ours) omitted by default — identical to the existing main runs, no
 # need to recompute. Add it back via VARIANTS="source zero ..." if you want a
 # fresh apples-to-apples source row.
-VARIANTS="${VARIANTS:-zero random_s42 random_s1 random_s2}"
+VARIANTS="${VARIANTS:-zero random_s42 random_s1}"
 
 echo "Scenarios: ${SCENARIOS}"
 echo "Variants : ${VARIANTS}"

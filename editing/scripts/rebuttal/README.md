@@ -106,6 +106,8 @@ same last-`audio_opt_last_steps` differentiable window (keep
   apples-to-apples test vs optimizing the audio latent.
 - `all`: every attention (video+audio+a2v+v2a) in every block — a **max-capacity
   upper bound** (hundreds of millions of params; changes the whole denoiser).
+- `video`: video self + video cross-to-text attention only (`attn1`,`attn2`) — the
+  **audio path is untouched**. Control for "free params purely on the video branch".
 - `a2v`: only the audio→video attention — the tightest scope.
 
 ```bash
@@ -123,6 +125,33 @@ To run both presets in the array: `PRESETS=(audio all)` in `lora.sbatch` and
 `LORA_TARGETS="..."` (labelled `custom`). Knobs: `LORA_ALPHA`, `LORA_DROPOUT`.
 Resumable + `metrics.json` per cell. Each preset appears as its own column
 (`lora_audio`, `lora_all`, …) in `aggregate_summary.md`, pooling ranks (mean±std).
+
+## Third ablation — video-latent residual (z_vid)
+
+A different control *space*: instead of audio/text, optimize a learnable residual
+`delta_z` added to the source **video VAE latent** (`z_vid_used = z_vid + delta_z`,
+`delta_z` init 0), updated by the **same Qwen motion critic**, with text+audio
+frozen. Tests whether tuning the video latent directly — the most direct handle on
+the output — matches/beats tuning the audio-conditioning pathway. Entry point:
+`editing/optimize_zvid_residual.py` (additive; reuses all setup/render/loss code,
+injects `z_vid + delta_z` as the video latent — main code untouched). Because the
+video latent is a grad-carrying *input* to the frozen DiT, gradients reach
+`delta_z` through the existing differentiable window with no LoRA-style tricks.
+
+```bash
+# SLURM array (8 scenarios -> array 0-7)
+sbatch editing/scripts/rebuttal/zvid.sbatch
+sbatch --array=0-0 editing/scripts/rebuttal/zvid.sbatch          # first scenario / smoke
+
+# one cell directly (salloc GPU shell):
+bash editing/scripts/rebuttal/run_zvid_variant.sh editing/configs/rebuttal/dog_yawning.yaml
+# anchored variant (L2 on delta_z; match the audio method's latent_reg_weight):
+ZVID_REG=0.01 bash editing/scripts/rebuttal/run_zvid_variant.sh editing/configs/rebuttal/dog_yawning.yaml
+```
+Output `results/rebuttal/<scenario>/zvid/` with `best_delta_z_zvid.pt`, the rendered
+video, and `metrics.json`. `ZVID_REG` (default 0) adds an L2 anchor on `delta_z`
+(toward 0 = video latent toward source). Resumable; appears as a `zvid` column in
+`aggregate_summary.md`.
 
 ## What changed in the main code (additive only)
 
