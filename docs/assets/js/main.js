@@ -88,15 +88,9 @@
       video.load();
 
       video.addEventListener('canplay', () => {
-        // Hide skeleton once BOTH videos in a vc-wrap are ready
-        const wrap = video.closest('.vc-wrap');
-        if (wrap) {
-          wrap._ready = (wrap._ready || 0) + 1;
-          if (wrap._ready >= 2) {
-            const sk = wrap.querySelector('.vc-skeleton');
-            if (sk) sk.classList.add('hidden');
-          }
-        }
+        const stage = video.closest('.spark-stage');
+        const sk = stage && stage.querySelector('.vc-skeleton');
+        if (sk) sk.classList.add('hidden');
       }, { once: true });
 
       obs.unobserve(video);
@@ -107,104 +101,169 @@
 })();
 
 
-/* ── Video comparison slider ─────────────────────────────────── */
-(function initVideoCompare() {
-  const wraps = document.querySelectorAll('.vc-wrap');
-  if (!wraps.length) return;
+/* ── Spark reveal: source video becomes the edited result in place ── */
+(function initSparkCards() {
+  const cards = document.querySelectorAll('.comparison-card');
+  if (!cards.length) return;
 
-  wraps.forEach(wrap => {
-    const lClip = wrap.querySelector('.vc-l-clip');
-    const lVid  = wrap.querySelector('.vc-l');
-    const rVid  = wrap.querySelector('.vc-r');
-    const line  = wrap.querySelector('.vc-line');
-    const btn   = wrap.querySelector('.vc-btn');
-    if (!lClip || !lVid || !rVid || !line) return;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    let pct = 50;
-    let dragging = false;
+  cards.forEach((card, idx) => {
+    const stage = card.querySelector('.spark-stage');
+    const vIn   = card.querySelector('.sv-in');
+    const vOut  = card.querySelector('.sv-out');
+    const btn   = card.querySelector('[data-spark]');
+    const txt   = card.querySelector('[data-spark-text]');
+    const hint  = card.querySelector('[data-spark-hint]');
+    const chip  = card.querySelector('[data-state-chip]');
+    if (!stage || !vIn || !vOut || !btn) return;
 
-    /* Keep left video full-width and update divider position */
-    function setPos(clientX) {
-      const rect = wrap.getBoundingClientRect();
-      pct = Math.max(3, Math.min(97, ((clientX - rect.left) / rect.width) * 100));
-      line.style.left         = pct + '%';
-      lClip.style.width       = pct + '%';
-      lVid.style.width        = wrap.offsetWidth + 'px';
+    const srcLabel = card.dataset.sourceLabel || 'Source';
+    const resLabel = card.dataset.resultLabel || 'Sparked';
+    const isTransfer = card.classList.contains('is-transfer');
+
+    let revealed = false;
+    let busy     = false;
+
+    /* Pull the result clip in only when it is actually needed. */
+    function ensureResult() {
+      if (vOut.dataset.outSrc) {
+        vOut.src = vOut.dataset.outSrc;
+        delete vOut.dataset.outSrc;
+        vOut.load();
+      }
+      if (vOut.readyState >= 3) return Promise.resolve();
+      return new Promise(resolve => {
+        let done = false;
+        const finish = () => { if (!done) { done = true; resolve(); } };
+        vOut.addEventListener('canplay', finish, { once: true });
+        setTimeout(finish, 5000);          // never block the interaction forever
+      });
     }
 
-    /* Reset left-video width after any layout change */
-    function syncWidth() {
-      lVid.style.width = wrap.offsetWidth + 'px';
-      line.style.left  = pct + '%';
-      lClip.style.width = pct + '%';
-    }
+    /* Warm the result up once the card has been on screen for a moment. */
+    const warmObs = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      warmObs.disconnect();
+      setTimeout(() => { if (vOut.dataset.outSrc) ensureResult(); }, 1200);
+    }, { threshold: 0.3 });
+    warmObs.observe(stage);
 
-    /* Keep videos in sync while playing */
-    function syncTime() {
-      if (!lVid.paused && Math.abs(rVid.currentTime - lVid.currentTime) > 0.12) {
-        lVid.currentTime = rVid.currentTime;
+    /* Only the visible layer plays. */
+    const playObs = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) (revealed ? vOut : vIn).play().catch(() => {});
+      else { vIn.pause(); vOut.pause(); }
+    }, { threshold: 0.25 });
+    playObs.observe(stage);
+
+    function setPhase(phase) {
+      if (phase === 'result') {
+        stage.classList.add('revealed');
+        card.classList.add('is-revealed');
+        if (chip) chip.textContent = resLabel;
+      } else {
+        stage.classList.remove('revealed');
+        card.classList.remove('is-revealed');
+        if (chip) chip.textContent = srcLabel;
       }
     }
 
-    function playBoth()  { rVid.play().catch(() => {}); lVid.play().catch(() => {}); }
-    function pauseBoth() { rVid.pause(); lVid.pause(); }
+    function reveal() {
+      busy = true;
+      btn.disabled = true;
+      btn.classList.remove('pulse');
+      if (txt) txt.textContent = isTransfer ? 'Transferring…' : 'Sparking…';
 
-    /* ── Mouse ── */
-    wrap.addEventListener('mousedown',  e => { dragging = true; setPos(e.clientX); e.preventDefault(); });
-    document.addEventListener('mousemove', e => { if (dragging) setPos(e.clientX); });
-    document.addEventListener('mouseup',   () => { dragging = false; });
+      ensureResult().then(() => {
+        /* Hand the result the source's playhead so the cut is invisible. */
+        const len = vOut.duration || vIn.duration || 0;
+        if (len) { try { vOut.currentTime = vIn.currentTime % len; } catch (e) {} }
+        vOut.play().catch(() => {});
 
-    /* ── Touch: only drag when starting near the divider line ── */
-    wrap.addEventListener('touchstart', e => {
-      const touch = e.touches[0];
-      const lineX = wrap.getBoundingClientRect().left + (wrap.offsetWidth * pct / 100);
-      if (Math.abs(touch.clientX - lineX) < 44) {   // 44px touch target
-        dragging = true;
-        setPos(touch.clientX);
-      }
-    }, { passive: true });
-
-    document.addEventListener('touchmove', e => {
-      if (!dragging) return;
-      e.preventDefault();          // stop page/carousel scroll while dragging
-      setPos(e.touches[0].clientX);
-    }, { passive: false });
-
-    document.addEventListener('touchend',   () => { dragging = false; });
-    document.addEventListener('touchcancel',() => { dragging = false; });
-
-    /* ── Play / pause: hover on desktop, auto-play-in-view on touch devices ── */
-    const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
-
-    if (isTouchDevice) {
-      /* Auto-play when card is ≥40% visible; pause when scrolled away */
-      const playObs = new IntersectionObserver(([entry]) => {
-        entry.isIntersecting ? playBoth() : pauseBoth();
-      }, { threshold: 0.4 });
-      playObs.observe(wrap);
-    } else {
-      wrap.addEventListener('mouseenter', playBoth);
-      wrap.addEventListener('mouseleave', pauseBoth);
+        stage.classList.add('sparking');
+        setTimeout(() => setPhase('result'), reduce ? 0 : 340);
+        setTimeout(() => {
+          stage.classList.remove('sparking');
+          vIn.pause();
+          revealed = true;
+          busy = false;
+          btn.disabled = false;
+          if (txt)  txt.textContent  = 'Show the source';
+          if (hint) hint.textContent = isTransfer
+            ? 'Controls learned elsewhere — applied here'
+            : 'Motion applied — nothing else moved';
+        }, reduce ? 420 : 1050);
+      });
     }
 
-    /* ── Tap to toggle play/pause on mobile ── */
-    let tapping = false;
-    wrap.addEventListener('touchstart', () => { tapping = true; }, { passive: true });
-    wrap.addEventListener('touchend', () => {
-      if (tapping && !dragging) {
-        rVid.paused ? playBoth() : pauseBoth();
-      }
-      tapping = false;
-    }, { passive: true });
+    function restore() {
+      busy = true;
+      btn.disabled = true;
+      const len = vIn.duration || vOut.duration || 0;
+      if (len) { try { vIn.currentTime = vOut.currentTime % len; } catch (e) {} }
+      vIn.play().catch(() => {});
 
-    /* ── Sync timestamps while playing ── */
-    rVid.addEventListener('timeupdate', syncTime);
+      stage.classList.add('reverting');
+      setPhase('source');
+      setTimeout(() => {
+        stage.classList.remove('reverting');
+        vOut.pause();
+        revealed = false;
+        busy = false;
+        btn.disabled = false;
+        if (txt)  txt.textContent  = isTransfer ? 'Transfer the motion!' : 'Spark the motion!';
+        if (hint) hint.textContent = 'Same clip — watch the motion appear';
+      }, reduce ? 400 : 720);
+    }
 
-    /* ── Init + keep width correct on resize ── */
-    syncWidth();
-    new ResizeObserver(syncWidth).observe(wrap);
-    rVid.addEventListener('loadedmetadata', syncWidth);
-    lVid.addEventListener('loadedmetadata', syncWidth);
+    if (isTransfer && txt) txt.textContent = 'Transfer the motion!';
+    if (idx === 0) btn.classList.add('pulse');
+
+    btn.addEventListener('click', () => {
+      if (busy) return;
+      revealed ? restore() : reveal();
+    });
+  });
+})();
+
+
+/* ── Evaluation bar charts ───────────────────────────────────── */
+(function initEvalCharts() {
+  const charts = document.querySelectorAll('[data-chart]');
+  if (!charts.length) return;
+
+  function countUp(el, target, delay) {
+    setTimeout(() => {
+      const dur = 1100;
+      const t0  = performance.now();
+      (function tick(now) {
+        const p = Math.min((now - t0) / dur, 1);
+        const e = 1 - Math.pow(1 - p, 3);
+        el.textContent = (target * e).toFixed(1) + '%';
+        if (p < 1) requestAnimationFrame(tick);
+      })(t0);
+    }, delay);
+  }
+
+  charts.forEach(chart => {
+    const fills = Array.from(chart.querySelectorAll('.bar-fill'));
+    const vals  = Array.from(chart.querySelectorAll('.bar-val'));
+    if (!fills.length) return;
+
+    /* Bars are scaled to the leader, exactly as in the paper figures. */
+    const max = Math.max.apply(null, fills.map(f => parseFloat(f.dataset.pct))) || 1;
+
+    const obs = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      obs.disconnect();
+      fills.forEach(f => {
+        const pct = parseFloat(f.dataset.pct) || 0;
+        f.style.width = (pct > 0 ? Math.max(pct / max * 100, 1.5) : 0.9) + '%';
+      });
+      vals.forEach((el, i) => countUp(el, parseFloat(el.dataset.val) || 0, i * 80));
+    }, { threshold: 0.3 });
+
+    obs.observe(chart);
   });
 })();
 
@@ -233,7 +292,7 @@
 /* ── Scroll-reveal ───────────────────────────────────────────── */
 (function initScrollReveal() {
   const targets = document.querySelectorAll(
-    '.comparison-card, .method-step, .abstract-text, .teaser-figure, .method-figure'
+    '.comparison-card, .method-step, .abstract-text, .teaser-figure, .method-figure, .eval-card, .eval-head'
   );
   if (!targets.length) return;
   const obs = new IntersectionObserver(entries => {

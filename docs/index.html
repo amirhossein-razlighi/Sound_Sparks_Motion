@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css?v=5">
+  <link rel="stylesheet" href="assets/css/style.css?v=6">
 </head>
 <body>
 
@@ -200,163 +200,254 @@
     <div class="container">
       <h2 class="section-title">Results</h2>
       <p class="section-lead">
-        Drag the slider to compare source and result. Scroll horizontally for all examples — <span class="transfer-inline-badge">Transfer</span> results show learned controls applied to unseen videos.
+        Every clip below starts as its untouched source. Hit <strong>Spark the motion!</strong> and the edit is applied in place — same shot, same framing, new motion. <span class="transfer-inline-badge">Transfer</span> results reuse controls learned on a different video.
       </p>
     </div>
 
     <div class="carousel-wrapper">
       <div class="results-carousel" id="results-carousel">
 
-        <!-- Bird -->
-        <div class="comparison-card" data-id="bird">
+        <div class="comparison-card" data-id="bird" data-source-label="Source" data-result-label="Sparked">
           <div class="card-header">
             <span class="card-prompt">"The bird opens its wings."</span>
+            <span class="state-chip" data-state-chip>Source</span>
           </div>
-          <div class="vc-wrap">
-            <video class="vc-r" data-src="assets/videos/bird_output.mp4" loop muted playsinline preload="none"></video>
-            <div class="vc-l-clip"><video class="vc-l" data-src="assets/videos/bird_input.mp4" loop muted playsinline preload="none"></video></div>
-            <span class="vc-tag vc-tag-l">Source</span>
-            <span class="vc-tag vc-tag-r">Ours</span>
-            <div class="vc-line"><button class="vc-btn" aria-label="Drag to compare"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M8 5L3 11l5 6M14 5l5 6-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/bird_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/bird_input.mp4" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span>
+              <span class="fx-ring"></span>
+              <span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
             <div class="vc-skeleton"></div>
           </div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg>
+              <span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint>Same clip — watch the motion appear</span>
+          </div>
         </div>
-
-        <!-- Rose -->
-        <div class="comparison-card" data-id="rose">
+        <div class="comparison-card" data-id="rose" data-source-label="Source" data-result-label="Sparked">
           <div class="card-header">
             <span class="card-prompt">"The rose blooms."</span>
+            <span class="state-chip" data-state-chip>Source</span>
           </div>
-          <div class="vc-wrap">
-            <video class="vc-r" data-src="assets/videos/rose_output.mp4" loop muted playsinline preload="none"></video>
-            <div class="vc-l-clip"><video class="vc-l" data-src="assets/videos/rose_input.mp4" loop muted playsinline preload="none"></video></div>
-            <span class="vc-tag vc-tag-l">Source</span>
-            <span class="vc-tag vc-tag-r">Ours</span>
-            <div class="vc-line"><button class="vc-btn" aria-label="Drag to compare"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M8 5L3 11l5 6M14 5l5 6-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/rose_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/rose_input.mp4" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span>
+              <span class="fx-ring"></span>
+              <span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
             <div class="vc-skeleton"></div>
           </div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg>
+              <span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint>Same clip — watch the motion appear</span>
+          </div>
         </div>
-
-        <!-- Dog -->
-        <div class="comparison-card" data-id="dog">
+        <div class="comparison-card" data-id="dog" data-source-label="Source" data-result-label="Sparked">
           <div class="card-header">
             <span class="card-prompt">"The dog yawns."</span>
+            <span class="state-chip" data-state-chip>Source</span>
           </div>
-          <div class="vc-wrap">
-            <video class="vc-r" data-src="assets/videos/dog_output.mp4" loop muted playsinline preload="none"></video>
-            <div class="vc-l-clip"><video class="vc-l" data-src="assets/videos/dog_input.mp4" loop muted playsinline preload="none"></video></div>
-            <span class="vc-tag vc-tag-l">Source</span>
-            <span class="vc-tag vc-tag-r">Ours</span>
-            <div class="vc-line"><button class="vc-btn" aria-label="Drag to compare"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M8 5L3 11l5 6M14 5l5 6-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/dog_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/dog_input.mp4" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span>
+              <span class="fx-ring"></span>
+              <span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
             <div class="vc-skeleton"></div>
           </div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg>
+              <span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint>Same clip — watch the motion appear</span>
+          </div>
         </div>
-
-        <!-- Goldfish -->
-        <div class="comparison-card" data-id="fish">
+        <div class="comparison-card" data-id="fish" data-source-label="Source" data-result-label="Sparked">
           <div class="card-header">
             <span class="card-prompt">"A goldfish jumps out of the tank."</span>
+            <span class="state-chip" data-state-chip>Source</span>
           </div>
-          <div class="vc-wrap">
-            <video class="vc-r" data-src="assets/videos/fish_output.mp4" loop muted playsinline preload="none"></video>
-            <div class="vc-l-clip"><video class="vc-l" data-src="assets/videos/fish_input.mp4" loop muted playsinline preload="none"></video></div>
-            <span class="vc-tag vc-tag-l">Source</span>
-            <span class="vc-tag vc-tag-r">Ours</span>
-            <div class="vc-line"><button class="vc-btn" aria-label="Drag to compare"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M8 5L3 11l5 6M14 5l5 6-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/fish_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/fish_input.mp4" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span>
+              <span class="fx-ring"></span>
+              <span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
             <div class="vc-skeleton"></div>
           </div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg>
+              <span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint>Same clip — watch the motion appear</span>
+          </div>
         </div>
-
-        <!-- Man raising hand -->
-        <div class="comparison-card" data-id="raise">
+        <div class="comparison-card" data-id="raise" data-source-label="Source" data-result-label="Sparked">
           <div class="card-header">
             <span class="card-prompt">"The man raises his right hand."</span>
+            <span class="state-chip" data-state-chip>Source</span>
           </div>
-          <div class="vc-wrap">
-            <video class="vc-r" data-src="assets/videos/raise_output.mp4" loop muted playsinline preload="none"></video>
-            <div class="vc-l-clip"><video class="vc-l" data-src="assets/videos/raise_input.mp4" loop muted playsinline preload="none"></video></div>
-            <span class="vc-tag vc-tag-l">Source</span>
-            <span class="vc-tag vc-tag-r">Ours</span>
-            <div class="vc-line"><button class="vc-btn" aria-label="Drag to compare"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M8 5L3 11l5 6M14 5l5 6-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/raise_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/raise_input.mp4" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span>
+              <span class="fx-ring"></span>
+              <span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
             <div class="vc-skeleton"></div>
           </div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg>
+              <span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint>Same clip — watch the motion appear</span>
+          </div>
         </div>
-
-        <!-- Car lights -->
-        <div class="comparison-card" data-id="carlights">
+        <div class="comparison-card" data-id="carlights" data-source-label="Source" data-result-label="Sparked">
           <div class="card-header">
             <span class="card-prompt">"The car's lights flash on."</span>
+            <span class="state-chip" data-state-chip>Source</span>
           </div>
-          <div class="vc-wrap">
-            <video class="vc-r" data-src="assets/videos/carlights_output.mp4" loop muted playsinline preload="none"></video>
-            <div class="vc-l-clip"><video class="vc-l" data-src="assets/videos/carlights_input.mp4" loop muted playsinline preload="none"></video></div>
-            <span class="vc-tag vc-tag-l">Source</span>
-            <span class="vc-tag vc-tag-r">Ours</span>
-            <div class="vc-line"><button class="vc-btn" aria-label="Drag to compare"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M8 5L3 11l5 6M14 5l5 6-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/carlights_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/carlights_input.mp4" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span>
+              <span class="fx-ring"></span>
+              <span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
             <div class="vc-skeleton"></div>
           </div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg>
+              <span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint>Same clip — watch the motion appear</span>
+          </div>
         </div>
-
-        <!-- Man pets dog -->
-        <div class="comparison-card" data-id="pets">
+        <div class="comparison-card" data-id="pets" data-source-label="Source" data-result-label="Sparked">
           <div class="card-header">
             <span class="card-prompt">"The man pets the dog."</span>
+            <span class="state-chip" data-state-chip>Source</span>
           </div>
-          <div class="vc-wrap">
-            <video class="vc-r" data-src="assets/videos/pets_output.mp4" loop muted playsinline preload="none"></video>
-            <div class="vc-l-clip"><video class="vc-l" data-src="assets/videos/pets_input.mp4" loop muted playsinline preload="none"></video></div>
-            <span class="vc-tag vc-tag-l">Source</span>
-            <span class="vc-tag vc-tag-r">Ours</span>
-            <div class="vc-line"><button class="vc-btn" aria-label="Drag to compare"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M8 5L3 11l5 6M14 5l5 6-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/pets_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/pets_input.mp4" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span>
+              <span class="fx-ring"></span>
+              <span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
             <div class="vc-skeleton"></div>
           </div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg>
+              <span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint>Same clip — watch the motion appear</span>
+          </div>
         </div>
-
-        <!-- Transfer: red bird -->
-        <div class="comparison-card is-transfer" data-id="t-bird">
+        <div class="comparison-card is-transfer" data-id="t-bird" data-source-label="New video" data-result-label="Transferred">
           <div class="card-header">
             <span class="card-prompt">"The bird opens its wings."</span>
             <span class="transfer-badge"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true"><path d="M1.5 5.5h8M6 2l3.5 3.5L6 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Transfer</span>
+            <span class="state-chip" data-state-chip>New video</span>
           </div>
-          <div class="vc-wrap">
-            <video class="vc-r" data-src="assets/videos/t_bird_output.mp4" loop muted playsinline preload="none"></video>
-            <div class="vc-l-clip"><video class="vc-l" data-src="assets/videos/t_bird_input.mp4" loop muted playsinline preload="none"></video></div>
-            <span class="vc-tag vc-tag-l">New Video</span>
-            <span class="vc-tag vc-tag-r transfer">Transferred</span>
-            <div class="vc-line transfer"><button class="vc-btn" aria-label="Drag to compare"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M8 5L3 11l5 6M14 5l5 6-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/t_bird_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/t_bird_input.mp4" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span>
+              <span class="fx-ring"></span>
+              <span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
             <div class="vc-skeleton"></div>
           </div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg>
+              <span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint>Same clip — watch the motion appear</span>
+          </div>
         </div>
-
-        <!-- Transfer: boy laughing -->
-        <div class="comparison-card is-transfer" data-id="t-boy">
+        <div class="comparison-card is-transfer" data-id="t-boy" data-source-label="New video" data-result-label="Transferred">
           <div class="card-header">
             <span class="card-prompt">"The boy laughs out loud."</span>
             <span class="transfer-badge"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true"><path d="M1.5 5.5h8M6 2l3.5 3.5L6 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Transfer</span>
+            <span class="state-chip" data-state-chip>New video</span>
           </div>
-          <div class="vc-wrap">
-            <video class="vc-r" data-src="assets/videos/t_boy_output.mp4" loop muted playsinline preload="none"></video>
-            <div class="vc-l-clip"><video class="vc-l" data-src="assets/videos/t_boy_input.mp4" loop muted playsinline preload="none"></video></div>
-            <span class="vc-tag vc-tag-l">New Video</span>
-            <span class="vc-tag vc-tag-r transfer">Transferred</span>
-            <div class="vc-line transfer"><button class="vc-btn" aria-label="Drag to compare"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M8 5L3 11l5 6M14 5l5 6-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/t_boy_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/t_boy_input.mp4" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span>
+              <span class="fx-ring"></span>
+              <span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
             <div class="vc-skeleton"></div>
           </div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg>
+              <span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint>Same clip — watch the motion appear</span>
+          </div>
         </div>
-
-        <!-- Transfer: cat yawning -->
-        <div class="comparison-card is-transfer" data-id="t-cat">
+        <div class="comparison-card is-transfer" data-id="t-cat" data-source-label="New video" data-result-label="Transferred">
           <div class="card-header">
             <span class="card-prompt">"The cat yawns."</span>
             <span class="transfer-badge"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true"><path d="M1.5 5.5h8M6 2l3.5 3.5L6 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Transfer</span>
+            <span class="state-chip" data-state-chip>New video</span>
           </div>
-          <div class="vc-wrap">
-            <video class="vc-r" data-src="assets/videos/t_cat_output.mp4" loop muted playsinline preload="none"></video>
-            <div class="vc-l-clip"><video class="vc-l" data-src="assets/videos/t_cat_input.mp4" loop muted playsinline preload="none"></video></div>
-            <span class="vc-tag vc-tag-l">New Video</span>
-            <span class="vc-tag vc-tag-r transfer">Transferred</span>
-            <div class="vc-line transfer"><button class="vc-btn" aria-label="Drag to compare"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M8 5L3 11l5 6M14 5l5 6-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/t_cat_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/t_cat_input.mp4" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span>
+              <span class="fx-ring"></span>
+              <span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
             <div class="vc-skeleton"></div>
+          </div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg>
+              <span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint>Same clip — watch the motion appear</span>
           </div>
         </div>
 
@@ -369,6 +460,123 @@
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M8 4l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </div><!-- /.carousel-wrapper -->
+
+    <div class="container eval-block">
+      <div class="eval-head">
+        <h3 class="eval-title">How it compares</h3>
+        <p class="eval-sub">
+          Measured against seven recent video-editing systems on the same 12 motion-edit scenarios — judged both by people and by a vision–language model.
+        </p>
+      </div>
+
+      <div class="eval-grid">
+
+        <figure class="eval-card" data-chart>
+          <figcaption class="eval-card-head">
+            <span class="eval-kicker">Human evaluation</span>
+            <h4>Win rate</h4>
+            <p class="eval-meta">21 participants · 12 scenarios · 252 judgements</p>
+          </figcaption>
+          <ul class="bars">
+            <li class="bar-row is-ours" style="--d:0ms">
+              <span class="bar-label">Sound Sparks Motion</span>
+              <span class="bar-track"><span class="bar-fill" data-pct="56.3"></span></span>
+              <span class="bar-val" data-val="56.3">0.0%</span>
+            </li>
+            <li class="bar-row" style="--d:80ms">
+              <span class="bar-label">LoRA-Edit</span>
+              <span class="bar-track"><span class="bar-fill" data-pct="21.4"></span></span>
+              <span class="bar-val" data-val="21.4">0.0%</span>
+            </li>
+            <li class="bar-row" style="--d:160ms">
+              <span class="bar-label">Runway-Aleph</span>
+              <span class="bar-track"><span class="bar-fill" data-pct="11.1"></span></span>
+              <span class="bar-val" data-val="11.1">0.0%</span>
+            </li>
+            <li class="bar-row" style="--d:240ms">
+              <span class="bar-label">LTX2.3 Retake</span>
+              <span class="bar-track"><span class="bar-fill" data-pct="10.3"></span></span>
+              <span class="bar-val" data-val="10.3">0.0%</span>
+            </li>
+            <li class="bar-row" style="--d:320ms">
+              <span class="bar-label">UniEdit</span>
+              <span class="bar-track"><span class="bar-fill" data-pct="0.8"></span></span>
+              <span class="bar-val" data-val="0.8">0.0%</span>
+            </li>
+            <li class="bar-row" style="--d:400ms">
+              <span class="bar-label">Kiwi-Edit</span>
+              <span class="bar-track"><span class="bar-fill" data-pct="0.0"></span></span>
+              <span class="bar-val" data-val="0.0">0.0%</span>
+            </li>
+            <li class="bar-row" style="--d:480ms">
+              <span class="bar-label">VACE-Wan</span>
+              <span class="bar-track"><span class="bar-fill" data-pct="0.0"></span></span>
+              <span class="bar-val" data-val="0.0">0.0%</span>
+            </li>
+            <li class="bar-row" style="--d:560ms">
+              <span class="bar-label">VACE-LTX</span>
+              <span class="bar-track"><span class="bar-fill" data-pct="0.0"></span></span>
+              <span class="bar-val" data-val="0.0">0.0%</span>
+            </li>
+          </ul>
+          <p class="eval-foot">Fraction of first-place selections.</p>
+          <div class="eval-delta"><strong>2.6×</strong><span>more first-place votes than the strongest baseline.</span></div>
+        </figure>
+
+        <figure class="eval-card" data-chart>
+          <figcaption class="eval-card-head">
+            <span class="eval-kicker">VLM evaluation</span>
+            <h4>Task success</h4>
+            <p class="eval-meta">GPT-5.5 as judge · 12 scenarios</p>
+          </figcaption>
+          <ul class="bars">
+            <li class="bar-row is-ours" style="--d:0ms">
+              <span class="bar-label">Sound Sparks Motion</span>
+              <span class="bar-track"><span class="bar-fill" data-pct="83.3"></span></span>
+              <span class="bar-val" data-val="83.3">0.0%</span>
+            </li>
+            <li class="bar-row" style="--d:80ms">
+              <span class="bar-label">LTX2.3 Retake</span>
+              <span class="bar-track"><span class="bar-fill" data-pct="50.0"></span></span>
+              <span class="bar-val" data-val="50.0">0.0%</span>
+            </li>
+            <li class="bar-row" style="--d:160ms">
+              <span class="bar-label">Runway-Aleph</span>
+              <span class="bar-track"><span class="bar-fill" data-pct="50.0"></span></span>
+              <span class="bar-val" data-val="50.0">0.0%</span>
+            </li>
+            <li class="bar-row" style="--d:240ms">
+              <span class="bar-label">LoRA-Edit</span>
+              <span class="bar-track"><span class="bar-fill" data-pct="33.3"></span></span>
+              <span class="bar-val" data-val="33.3">0.0%</span>
+            </li>
+            <li class="bar-row" style="--d:320ms">
+              <span class="bar-label">UniEdit</span>
+              <span class="bar-track"><span class="bar-fill" data-pct="33.3"></span></span>
+              <span class="bar-val" data-val="33.3">0.0%</span>
+            </li>
+            <li class="bar-row" style="--d:400ms">
+              <span class="bar-label">Kiwi-Edit</span>
+              <span class="bar-track"><span class="bar-fill" data-pct="16.7"></span></span>
+              <span class="bar-val" data-val="16.7">0.0%</span>
+            </li>
+            <li class="bar-row" style="--d:480ms">
+              <span class="bar-label">VACE-Wan</span>
+              <span class="bar-track"><span class="bar-fill" data-pct="8.3"></span></span>
+              <span class="bar-val" data-val="8.3">0.0%</span>
+            </li>
+            <li class="bar-row" style="--d:560ms">
+              <span class="bar-label">VACE-LTX</span>
+              <span class="bar-track"><span class="bar-fill" data-pct="8.3"></span></span>
+              <span class="bar-val" data-val="8.3">0.0%</span>
+            </li>
+          </ul>
+          <p class="eval-foot">Fraction of scenarios where the edit was achieved.</p>
+          <div class="eval-delta"><strong>+33.3</strong><span>points of task success over the strongest baseline.</span></div>
+        </figure>
+
+      </div>
+    </div>
   </section>
 
   <!-- ── BibTeX ────────────────────────────────────────────────── -->
@@ -409,6 +617,6 @@
     </div>
   </footer>
 
-  <script src="assets/js/main.js"></script>
+  <script src="assets/js/main.js?v=2"></script>
 </body>
 </html>
