@@ -119,12 +119,54 @@ def gradient_optimize_multimodal_qwen(
     # regularize toward the source latent).
     audio_reg_anchor: torch.Tensor | None = None
 
+    # --text-param selects how the text embedding is parameterized:
+    #   residual : optimize a delta added to the base prompt embedding (default,
+    #              ours). `delta_v` holds the residual; forward = base + delta_v;
+    #              reg = ||delta_v||^2 (anchors the embedding toward the prompt).
+    #   direct   : optimize the full embedding tensor itself (init from base).
+    #              `delta_v` holds the FULL embedding; forward = delta_v;
+    #              reg = ||delta_v - anchor||^2 with anchor in {base, init, none}.
+    # For rendering/checkpoint compatibility we always expose the *residual*
+    # (delta_v - base in direct mode) via best["delta_v"], so render_final_video
+    # (base + delta_v) reconstructs the intended embedding unchanged.
+    text_param_mode = getattr(args, "text_param", "residual")
+    text_direct = optimize_text and text_param_mode == "direct"
+    text_reg_anchor_mode = getattr(args, "text_reg_anchor", "base")
+    base_text_enc_fp32: torch.Tensor | None = None
+    text_reg_anchor: torch.Tensor | None = None
+
     if optimize_text:
-        delta_v = torch.nn.Parameter(
-            torch.zeros_like(base_pos_context.video_encoding.float())
-        )
+        base_text_enc_fp32 = base_pos_context.video_encoding.float().detach()
+        if text_direct:
+            delta_v = torch.nn.Parameter(base_text_enc_fp32.clone())
+            if text_reg_anchor_mode in ("base", "init"):
+                # init == base here, so 'base' and 'init' anchor to the same point.
+                text_reg_anchor = base_text_enc_fp32
+            elif text_reg_anchor_mode == "none":
+                text_reg_anchor = None
+            else:
+                raise ValueError(
+                    f"Unknown text_reg_anchor: {text_reg_anchor_mode!r}. Expected base/init/none."
+                )
+        else:
+            delta_v = torch.nn.Parameter(
+                torch.zeros_like(base_pos_context.video_encoding.float())
+            )
         params.append(delta_v)
-        log.info("[%s] Text delta shape: %s, %.1fK params", mode, tuple(delta_v.shape), delta_v.numel() / 1e3)
+        log.info(
+            "[%s] Text %s shape: %s, %.1fK params  (param=%s, reg_anchor=%s)",
+            mode, "embedding" if text_direct else "delta", tuple(delta_v.shape),
+            delta_v.numel() / 1e3, text_param_mode,
+            text_reg_anchor_mode if text_direct else "residual->0",
+        )
+
+    def _text_residual(p: torch.nn.Parameter | None) -> torch.Tensor | None:
+        """Return the residual (delta) form of a text param for render/save compat."""
+        if p is None:
+            return None
+        if text_direct and base_text_enc_fp32 is not None:
+            return (p.detach() - base_text_enc_fp32).clone()
+        return p.detach().clone()
 
     if optimize_audio:
         # --audio-init selects how the optimized audio latent is initialised.
@@ -196,7 +238,7 @@ def gradient_optimize_multimodal_qwen(
     best: dict = {
         "qwen_loss": float("inf"),
         "qwen_score": float("-inf"),
-        "delta_v": delta_v.detach().clone() if delta_v is not None else None,
+        "delta_v": _text_residual(delta_v),
         "audio_latent": audio_latent.detach().clone() if audio_latent is not None else None,
         "mode": mode,
         "best_iter": 0,
@@ -213,9 +255,16 @@ def gradient_optimize_multimodal_qwen(
             log.info("[%s] Resumed audio latent from %s", mode, best_latent_path)
         if optimize_text and best_delta_path.exists():
             loaded = torch.load(best_delta_path, map_location="cpu")
-            delta_v.data.copy_(loaded.to(delta_v.device, dtype=delta_v.dtype))
-            best["delta_v"] = delta_v.detach().clone()
-            log.info("[%s] Resumed text delta from %s", mode, best_delta_path)
+            # Saved checkpoints always store the residual form. In direct mode the
+            # parameter is the full embedding, so reconstruct it as base + residual.
+            loaded = loaded.to(delta_v.device, dtype=delta_v.dtype)
+            if text_direct and base_text_enc_fp32 is not None:
+                delta_v.data.copy_((base_text_enc_fp32.to(delta_v.dtype) + loaded))
+            else:
+                delta_v.data.copy_(loaded)
+            best["delta_v"] = _text_residual(delta_v)
+            log.info("[%s] Resumed text %s from %s", mode,
+                     "embedding" if text_direct else "delta", best_delta_path)
         num_iters = 0  # skip optimization, just do final render
 
     # ---- CSV log ----
@@ -288,10 +337,17 @@ def gradient_optimize_multimodal_qwen(
         for it in range(1, num_iters + 1):
             optimizer.zero_grad(set_to_none=True)
 
-            # Build the positive context for this iteration
+            # Build the positive context for this iteration.
+            #   residual : video_encoding = base + delta_v
+            #   direct   : video_encoding = delta_v  (the full embedding itself)
             if optimize_text and delta_v is not None:
+                delta_v_cast = delta_v.to(dtype=base_pos_context.video_encoding.dtype)
+                video_encoding = (
+                    delta_v_cast if text_direct
+                    else base_pos_context.video_encoding + delta_v_cast
+                )
                 pos_ctx_iter = EmbeddingsProcessorOutput(
-                    video_encoding=base_pos_context.video_encoding + delta_v.to(dtype=base_pos_context.video_encoding.dtype),
+                    video_encoding=video_encoding,
                     audio_encoding=base_pos_context.audio_encoding,
                     attention_mask=base_pos_context.attention_mask,
                 )
@@ -449,7 +505,13 @@ def gradient_optimize_multimodal_qwen(
 
             text_reg_t = torch.tensor(0.0, device=qwen_loss_t.device)
             if optimize_text and delta_v is not None and text_reg_w > 0:
-                text_reg_t = text_reg_w * torch.mean(delta_v ** 2)
+                if text_direct:
+                    # Anchor the full embedding toward the chosen point (or drop
+                    # the reg entirely when anchor=none → free/un-anchored drift).
+                    if text_reg_anchor is not None:
+                        text_reg_t = text_reg_w * torch.mean((delta_v - text_reg_anchor) ** 2)
+                else:
+                    text_reg_t = text_reg_w * torch.mean(delta_v ** 2)
 
             # perceptual_loss_t is detached (already backpropped); add for logging only
             total_t = qwen_loss_t + audio_reg_t + text_reg_t
@@ -483,7 +545,7 @@ def gradient_optimize_multimodal_qwen(
                 best["clip_score"] = qwen_score
                 best["best_iter"] = it
                 if delta_v is not None:
-                    best["delta_v"] = delta_v.detach().clone()
+                    best["delta_v"] = _text_residual(delta_v)
                 if audio_latent is not None:
                     best["audio_latent"] = audio_latent.detach().clone()
 

@@ -701,6 +701,34 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
 
+    # Text-parameterization ablation (residual vs direct). Answers the reviewer's
+    # question of why text is a residual on the base embedding while audio is
+    # optimized directly. Defaults reproduce the original behaviour exactly.
+    p.add_argument(
+        "--text-param",
+        default="residual",
+        choices=["residual", "direct"],
+        help=(
+            "How the text embedding is parameterized in text/both modes. "
+            "'residual' (default, ours) optimizes a delta added to the base "
+            "prompt embedding. 'direct' optimizes the full embedding tensor "
+            "itself, initialized from the base prompt embedding."
+        ),
+    )
+    p.add_argument(
+        "--text-reg-anchor",
+        default="base",
+        choices=["base", "init", "none"],
+        help=(
+            "Anchor for the L2 text regularizer in --text-param direct. 'base' "
+            "(default) = anchor to the base prompt embedding (equivalent to the "
+            "residual formulation). 'init' = anchor to the init point (= base "
+            "here). 'none' = drop the text reg term (free, un-anchored drift). "
+            "Ignored for --text-param residual (which always regularizes the "
+            "residual toward zero)."
+        ),
+    )
+
     # Qwen2.5-VL
     p.add_argument("--qwen-model", default=DEFAULT_QWEN_ROOT,
                    help="HF model ID or local path for Qwen2.5-VL.")

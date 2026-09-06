@@ -52,3 +52,16 @@ results/
 input*/
 *wandb/
 input_videos
+# probe folders (Ovi / MiniMax-H3 generality studies): code + small results only; media and checkpoints stay out
+ovi_probe/Ovi/
+ovi_probe/ckpts
+ovi_probe/__pycache__/
+ovi_probe/results/
+h3_probe/ckpt
+h3_probe/__pycache__/
+!h3_probe/results/
+h3_probe/results/**/*.mp4
+h3_probe/results/**/*.wav
+h3_probe/results/**/*.png
+h3_probe/results/**/*.pt
+h3_probe/results/**/*.npy

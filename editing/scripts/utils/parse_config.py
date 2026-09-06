@@ -135,6 +135,14 @@ def main() -> None:
     if cfg.get("audio_init_seed") is not None:
         e("--audio-init-seed", "audio_init_seed")
 
+    # Text-parameterization ablation (residual vs direct). Emitted ONLY when
+    # present so existing configs are byte-identical (optimizer defaults to
+    # residual/base regardless).
+    if "text_param" in cfg:
+        e("--text-param", "text_param")
+    if "text_reg_anchor" in cfg:
+        e("--text-reg-anchor", "text_reg_anchor")
+
     # ------------------------------------------------------------------ video dims
 
     e("--height",     "height",     320)
