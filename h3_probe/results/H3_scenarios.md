@@ -227,6 +227,19 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   (0.02/0.13, only walks), gen_woman_sneezes (0.006/0.23, hand to face late). Queued with the event recipe (any objective):
   dog_barks 20383015, man_sneezes 20383016, cat_meows 20383017 (2 GPUs). Horse/woman (full-size sources, 3 GPUs) held for now.
 
+### 2026-09-06 (night) - round 4 screening; 3-GPU memory fix; boy_splashes promising
+- gen_frog_jumps OOMed even on 3 GPUs: the default 3-GPU split puts all transformer blocks on GPUs 0/1 (31+31 GiB, 69 GB
+  peak each after the render) and only the critic/VAE on GPU 2 (26 GB). Resubmitted all full-size runs with
+  GPU_MEM_SPLIT=24,24,14: frog 20384601 -> woman_door 20384602 -> basketball 20384603; dog_wet 20384604 -> glass 20384605.
+- round-4 screening (320x512x124 sources): H3 succeeds on lion roar (0.95), duck flap (0.84), dog on rug barks (0.59/0.98),
+  girl blows out candles (0.71) -> skip. Fails: koi (swims, never jumps, 0.001), dolphin (fin only, 0.001), wolf (static,
+  0.02), woman at desk (no yawn, 0.04), man on couch (dark, small, 0.008), cow (0.12/0.38), goat (0.23/0.36),
+  rooster (silhouette, 0.25/0.65 partial), sea lion (mouth opens only at the end, 0.09/0.87 -> late).
+  Queued with the event recipe (any objective, 2 GPUs) in two chains behind the running 2-GPU jobs:
+  A: gen_woman_desk 20384606 -> gen_wolf_hill 20384607 -> gen_dolphin_sea 20384608 -> gen_rooster 20384609;
+  B: gen_koi_pond 20384610 -> gen_sealion 20384611 -> gen_cow_field 20384612 -> gen_goat_field 20384613. man_couch skipped (too dark/small).
+- boy_splashes (lin): critic 0.33 -> 0.91 at iters 9-10 (perceptual 0.18-0.19) - visual check next.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -266,10 +279,23 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | cat_meows | retake input | meows loudly | partial (brief early meow, 0.23/0.20) | any run 20383017 | opt |
 | gen_horse_neighs | H3 t2va | neighs, head raised | fail (only walks, 0.02/0.13) | held (3 GPUs) | hold |
 | gen_woman_sneezes | H3 t2va | sneezes | late/partial (hand to face, 0.006/0.23) | held (3 GPUs) | hold |
+| gen_lion_rock | H3 t2va (r4) | roars | success (0.95) | - | skip |
+| gen_duck_pond | H3 t2va (r4) | flaps and splashes | success (0.84) | - | skip |
+| gen_dog_rug | H3 t2va (r4) | barks | success (0.59/0.98) | - | skip |
+| gen_girl_cake | H3 t2va (r4) | blows out candles | success (0.71) | - | skip |
+| gen_koi_pond | H3 t2va (r4) | jumps out of water | fail (swims only, 0.001) | any run 20384610 | opt |
+| gen_dolphin_sea | H3 t2va (r4) | leaps out of water | fail (fin only, 0.001) | any run 20384608 | opt |
+| gen_wolf_hill | H3 t2va (r4) | howls, head up | fail (static, 0.02) | any run 20384607 | opt |
+| gen_woman_desk | H3 t2va (r4) | yawns widely | fail (no yawn, 0.04) | any run 20384606 | opt |
+| gen_sealion | H3 t2va (r4) | barks, head raised | late (mouth opens at the end, 0.09/0.87) | any run 20384611 | opt |
+| gen_cow_field | H3 t2va (r4) | moos | fail (static, 0.12/0.38) | any run 20384612 | opt |
+| gen_goat_field | H3 t2va (r4) | bleats | fail (static, 0.23/0.36) | any run 20384613 | opt |
+| gen_rooster | H3 t2va (r4) | crows, head back | partial (silhouette, 0.25/0.65) | any run 20384609 | opt |
+| gen_man_couch | H3 t2va (r4) | sneezes | fail (0.008) but dark and small | - | skip |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
 | gen_horse_rears | H3 t2va | rears up on hind legs | fail (0.0002, only walks) | cancelled (flat critic) | skip |
-| gen_frog_jumps | H3 t2va | jumps off the lily pad | late (leaves frame in last 2 frames, 0.016) | 2-GPU OOM; 3-GPU run 20379834 | opt |
+| gen_frog_jumps | H3 t2va | jumps off the lily pad | late (leaves frame in last 2 frames, 0.016) | 3-GPU (split fixed) 20384601 | opt |
 | gen_woman_stands | H3 t2va | stands up from bench | success (stands mid-clip) | - | skip |
 | gen_cat_jumps_down | H3 t2va | jumps down from windowsill | success (late but jumps) | - | skip |
 | gen_man_drinks | H3 t2va | drinks from mug | success (0.93/0.98) | - | skip |
@@ -277,12 +303,12 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_kid_swings | H3 t2va | starts swinging | unclear, subject tiny (0.55/0.99) | - | skip |
 | gen_pigeon_rail | H3 t2va (r2) | takes off and flies | success (0.98/1.0) | - | skip |
 | gen_pianist | H3 t2va (r2) | plays the piano | success (0.96/1.0) | - | skip |
-| gen_dog_wet | H3 t2va (r2) | shakes water off | fail (only turns, 0.09/0.23) | 3-GPU run 20379836 | opt |
-| gen_woman_door | H3 t2va (r2) | opens door, walks in | late (door opens in last frames, 0.32/0.28) | 3-GPU run 20379837 | opt |
-| gen_basketball | H3 t2va (r2) | bounces | partial (hovers in one frame, 0.17/0.23) | 3-GPU run 20379840 | opt |
+| gen_dog_wet | H3 t2va (r2) | shakes water off | fail (only turns, 0.09/0.23) | 3-GPU 20384604 | opt |
+| gen_woman_door | H3 t2va (r2) | opens door, walks in | late (door opens in last frames, 0.32/0.28) | 3-GPU 20384602 | opt |
+| gen_basketball | H3 t2va (r2) | bounces | partial (hovers in one frame, 0.17/0.23) | 3-GPU 20384603 | opt |
 | gen_woman_beach | H3 t2va (r2) | waves at camera | success (0.98/1.0) | - | skip |
 | gen_umbrella | H3 t2va (r2) | opens umbrella | success (0.98/0.99) | - | skip |
 | gen_candle | H3 t2va (r2) | flame blown out | fail (0.0009, steady flame) | held (flat critic) | hold |
 | gen_rowboat | H3 t2va (r2) | rocks side to side | fail (0.01, static) | held (flat critic) | hold |
 | gen_bell | H3 t2va (r2) | swings and rings | fail (0.06/0.10, barely moves) | held | hold |
-| gen_glass_table | H3 t2va (r2) | tips over, spills | late + distorted (glass morphs in last frames) | 3-GPU run 20379839 | opt |
+| gen_glass_table | H3 t2va (r2) | tips over, spills | late + distorted (glass morphs in last frames) | 3-GPU 20384605 | opt |
