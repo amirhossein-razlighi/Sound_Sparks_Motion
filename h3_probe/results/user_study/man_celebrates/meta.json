@@ -1,0 +1,12 @@
+{
+ "slug": "man_celebrates",
+ "edit": "The man raises both arms in celebration.",
+ "run": "/scratch/amirrz/H3_exp/outputs/us_man_celebrates_lin",
+ "iter": 4,
+ "note": "both arms raised fully above the head from mid-clip (frames ~50-90); baseline lifts the hands only slightly in the last frames. alt: iter 6 (arms up earlier, frames ~30-80)",
+ "steps": 16,
+ "extra": [],
+ "baseline_yes": 0.22617984909391475,
+ "baseline_yes_any": 0.04629495172015352,
+ "best_iter_by_critic": 4
+}

@@ -145,6 +145,13 @@ improves it. Same source video, prompt, noise and step count in A and B.
 - man_celebrates (lin): 0.24 -> 0.95 at iter 4 (perceptual 0.24, within the guard), iters 4-7 all > 0.65 -> promising,
   visual check pending.
 
+### 2026-09-06 (evening) - man_celebrates confirmed, full-size inputs OOM on 2 GPUs
+- man_celebrates (lin) verified on the iteration sheet: iter 4 raises both arms fully above the head from mid-clip and lowers
+  them again (iter 5/6 similar, iter 6 earlier); the baseline only lifts the hands slightly in the last 3 frames -> PACKAGED
+  (4 pairs now: goldfish, cat_yawns, man_shouts, man_celebrates).
+- gen_frog_jumps (lin) OOMed in Phase B on 2 GPUs: the H3-generated sources (448x768, 124 frames) give a longer reference
+  sequence than the retake inputs. All generated-source runs move to the 3-GPU sbatch.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -169,7 +176,7 @@ improves it. Same source video, prompt, noise and step count in A and B.
 | monkey_jumps_branch | retake input | jumps to another branch | fail (0.0004, only head turn) | cancelled (flat critic) | skip |
 | car_drives_out | retake input | drives out of the garage | late/weak (0.006, moves in last frames) | lin: flat, no change | failed |
 | cat_stretches | retake input | stretches front legs | static but critic says 0.77 lin | cancelled (critic saturated) | skip |
-| man_celebrates | retake input | raises both arms | late (last 3 frames, 0.21/0.06) | lin: 0.95 at iter 4, visual check pending | promising |
+| man_celebrates | retake input | raises both arms | late (last 3 frames, 0.21/0.06) | iter 4: both arms fully up mid-clip (alt iter 6) | PACKAGED |
 | rose_sways | retake input | sways in the wind | fail (0.016, static) | lin run 20370120 | opt |
 | turtle_walks | retake input | walks forward | fail (0.07, static) | lin run 20370121 | opt |
 | bird_hops | retake input | hops along the branch | fail (0.14/0.27, wing flutter only) | lin: 0.13 -> 0.31 at iter 4, visual check pending | weak |
