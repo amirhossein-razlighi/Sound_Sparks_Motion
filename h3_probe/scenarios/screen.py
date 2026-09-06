@@ -70,6 +70,13 @@ def main():
     rp = os.path.join(OUT, "screen_results.json")
     results = json.load(open(rp)) if os.path.exists(rp) else {}
 
+    def offload_all():
+        # the auto-offload hook only evicts other models when a component still has to be moved; after one render
+        # the transformer + text encoder stay resident and the next full-size render has no room for activations
+        for h in getattr(cm, "model_hooks", []):
+            h.offload()
+        torch.cuda.empty_cache()
+
     def score(vid, edit, question):
         fr = torch.from_numpy(np.ascontiguousarray(vid)).permute(0, 3, 1, 2).float().clamp(0, 1).to(dev)
         qwen.to(dev)
@@ -120,6 +127,8 @@ def main():
                 if wav.ndim == 2 and wav.shape[0] in (1, 2):
                     wav = wav.T
             _fm.save_av(vid, wav, int(state.values.get("sampling_rate", 32000) or 32000), path)
+            del state
+            offload_all()
             subprocess.run(["ffmpeg", "-y", "-v", "error", "-threads", "2", "-i", path, "-vf",
                             "select='not(mod(n\\,10))',scale=224:-1,tile=13x1", "-frames:v", "1", path[:-4] + "_sheet.png"], check=False)
             sc_out = score(vid, sc["edit"], sc["question"])

@@ -38,12 +38,35 @@ improves it. Same source video, prompt, noise and step count in A and B.
 ### 2026-09-06 - round 1 setup
 - generated-input job submitted (8 clips: jeep in jungle, woman on bench, horse in field, kid on swing, cat on windowsill,
   man with coffee mug, drummer, frog on lily pad)
-- candidate list r1 being assembled (existing inputs x new edits + generated inputs x edits); screening next
+- candidate list r1: 32 candidates (5 known fails, 19 new edits on existing inputs, 8 on generated inputs) - `h3_probe/scenarios/candidates_r1.json`
+- screening jobs: existing-input candidates 20360024 (19), generated-input candidates 20360025 (8, after gen job 20359619)
+- optimization batch 1 (known fails, both, D recipe, LPIPS 1.0/temporal 0.3): turtle_extends_neck 20360026 cat_yawns 20360027 boy_crouches 20360028 red_bird_opens_wings 20360029 
+
+### 2026-09-06 - screening results, batch 2
+- generated-input screening OOMed after its first candidate: diffusers' auto-offload hook only evicts other models when a
+  component still has to be moved, so after one full-size (448x768, 124 f) render the transformer and text encoder both stay
+  resident and the next render has no room for activations. Fix in `screen.py`: offload every component between candidates
+  (retake-size inputs never hit it). Rerun of the 7 missing generated candidates: job 20363955.
+- triage of the first existing-input results (contact sheets): child_jumps = clear fail (child stays seated, critic 0.0007);
+  man_covers_face = success; boy_splashes = unnatural (boy stands up out of the pool instead of splashing);
+  man_claps = partial (hands meet once, then drop); eagle_head_turn = eagle too small to judge; gen_jeep_drives = jeep
+  creeps forward (critic 0.04/0.11), weak candidate
+- batch 2 queued with dependencies so at most 4 optimization jobs run at once: child_jumps 20363983 (after turtle),
+  man_shouts 20363984 (after cat_yawns)
 
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
 |---|---|---|---|---|---|
 | goldfish | retake input | jumps out of the tank | fail (0.004) | clean leap (0.72 any) | DONE (D) |
-- screening jobs: existing-input candidates 20360024 (19), generated-input candidates 20360025 (8, after gen job 20359619)
-- optimization batch 1 (known fails, both, D recipe, LPIPS 1.0/temporal 0.3): turtle_extends_neck 20360026 cat_yawns 20360027 boy_crouches 20360028 red_bird_opens_wings 20360029 
+| turtle_extends_neck | retake input | extends neck out of shell | fail (known) | running 20360026 | opt |
+| cat_yawns | retake input | yawns widely | late/weak yawn (known) | running 20360027 | opt |
+| boy_crouches | retake input | crouches, touches water | fail (known) | running 20360028 | opt |
+| red_bird_opens_wings | retake input | opens wings | fail (known) | queued 20360029 | opt |
+| man_shouts | retake input | shouts loudly | fail (known) | queued 20363984 | opt |
+| child_jumps | retake input | jumps up and down | fail (0.0007, static) | queued 20363983 | opt |
+| man_covers_face | retake input | covers face with both hands | success (0.996) | - | skip |
+| boy_splashes | retake input | splashes water with both hands | unnatural (stands up, 0.38/0.63) | - | maybe |
+| man_claps | retake input | claps hands | partial (0.14/0.56) | - | maybe |
+| eagle_head_turn | retake input | turns head to camera | unclear, subject tiny (0.28/0.63) | - | skip |
+| gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
