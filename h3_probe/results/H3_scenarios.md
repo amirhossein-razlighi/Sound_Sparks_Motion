@@ -165,3 +165,8 @@ improves it. Same source video, prompt, noise and step count in A and B.
 | gen_man_drinks | H3 t2va | drinks from mug | success (0.93/0.98) | - | skip |
 | gen_drummer_plays | H3 t2va | plays drums | success (0.73/0.99) | - | skip |
 | gen_kid_swings | H3 t2va | starts swinging | unclear, subject tiny (0.55/0.99) | - | skip |
+| gen_pigeon_rail | H3 t2va (r2) | takes off and flies | success (0.98/1.0) | - | skip |
+| gen_pianist | H3 t2va (r2) | plays the piano | success (0.96/1.0) | - | skip |
+| gen_dog_wet | H3 t2va (r2) | shakes water off | fail (only turns, 0.09/0.23) | lin run 20371180 | opt |
+| gen_woman_door | H3 t2va (r2) | opens door, walks in | late (door opens in last frames, 0.32/0.28) | lin run 20371181 | opt |
+| gen_basketball | H3 t2va (r2) | bounces | ambiguous (hovers in one frame, 0.17/0.23) | - | maybe |
