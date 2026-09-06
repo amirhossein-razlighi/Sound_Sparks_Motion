@@ -80,6 +80,13 @@ improves it. Same source video, prompt, noise and step count in A and B.
   Generation job 20368202 (1 GPU), screening chained 20368203 (also re-screens dog_runs_off) -> outputs/screen_r2.
   `screen.py` now takes ':'-separated candidate files and OR-ed ONLY/GROUP filters.
 
+### 2026-09-06 - generated-input screening (round 1)
+- successes (skip): gen_woman_stands (stands up mid-clip; critic any-score 0.03 is a critic miss), gen_cat_jumps_down (late but
+  jumps), gen_man_drinks, gen_drummer_plays, gen_kid_swings (child too small to judge, critic 0.99).
+- fails: gen_horse_rears (walks a little, never rears, 0.0002), gen_frog_jumps (frog leaves the frame only in the last 2 frames,
+  0.016), gen_jeep_drives (creeps forward). Tier 3 queued: gen_horse_rears 20368483, gen_frog_jumps 20368484 (first full-size
+  448x768 x 124 f sources through Phase B - memory check).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -110,3 +117,10 @@ improves it. Same source video, prompt, noise and step count in A and B.
 | bird_hops | retake input | hops along the branch | fail (0.14/0.27, wing flutter only) | queued 20367790 | opt |
 | dog_runs_off | retake input | gets up and runs off | screening OOMed, rescreen r2 | - | pending |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
+| gen_horse_rears | H3 t2va | rears up on hind legs | fail (0.0002, only walks) | queued 20368483 | opt |
+| gen_frog_jumps | H3 t2va | jumps off the lily pad | late (leaves frame in last 2 frames, 0.016) | queued 20368484 | opt |
+| gen_woman_stands | H3 t2va | stands up from bench | success (stands mid-clip) | - | skip |
+| gen_cat_jumps_down | H3 t2va | jumps down from windowsill | success (late but jumps) | - | skip |
+| gen_man_drinks | H3 t2va | drinks from mug | success (0.93/0.98) | - | skip |
+| gen_drummer_plays | H3 t2va | plays drums | success (0.73/0.99) | - | skip |
+| gen_kid_swings | H3 t2va | starts swinging | unclear, subject tiny (0.55/0.99) | - | skip |
