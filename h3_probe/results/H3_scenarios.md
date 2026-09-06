@@ -73,6 +73,13 @@ improves it. Same source video, prompt, noise and step count in A and B.
 - helper: `scenarios/ab_sheet.sh` (multi-row frame sheets for A/B checks), `scenarios/render_ab.sbatch`,
   `scenarios/package_ab.py`
 
+### 2026-09-06 - round 2 sources
+- 11 new H3 t2va sources with one sound-linked edit each (dog shakes off water, woman opens door, basketball bounces,
+  pigeon takes off, man plays piano, candle blown out, woman waves, rowboat rocks, umbrella opens, bell swings, glass tips
+  over): prompts `scenarios/gen_inputs_r2.json`, candidates `scenarios/candidates_r2.json` (group generated_r2).
+  Generation job 20368202 (1 GPU), screening chained 20368203 (also re-screens dog_runs_off) -> outputs/screen_r2.
+  `screen.py` now takes ':'-separated candidate files and OR-ed ONLY/GROUP filters.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |

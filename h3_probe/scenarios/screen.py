@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Baseline screening for user-study candidates (1 GPU).
 
-For each candidate in the JSON (env CANDS; optional ONLY / GROUP filters): render H3's text-editing
+For each candidate in the JSON files (env CANDS, ':'-separated; optional ONLY / GROUP filters, OR-ed): render H3's text-editing
 baseline with the generic [video editing] grammar (seed 42, 16 steps, same settings as the method's
 baseline), save mp4 + wav + _av.mp4 + a contact sheet, and score it with the critic in the method's
 configuration (fp32 head, 224 px): the scenario's own "any frame" question (single window + noisy-OR
@@ -52,8 +52,10 @@ def main():
     from diffusers.modular_pipelines.minimax_h3 import MiniMaxH3AudioReference, MiniMaxH3VideoReference
     from motion_opt.qwen_loss import build_qwen_model, build_qwen_rubric_inputs, compute_qwen_video_loss
 
-    cands = {k: v for k, v in json.load(open(CANDS)).items() if not k.startswith("_")}
-    todo = [k for k, v in cands.items() if (not ONLY or k in ONLY) and (not GROUP or v.get("group") == GROUP)]
+    cands = {}
+    for f in CANDS.split(":"):   # several candidate files, ':'-separated
+        cands.update({k: v for k, v in json.load(open(f)).items() if not k.startswith("_")})
+    todo = [k for k, v in cands.items() if (not ONLY and not GROUP) or k in ONLY or (GROUP and v.get("group") == GROUP)]
     log.info("screening %d candidates: %s", len(todo), todo)
 
     cm = ComponentsManager()
