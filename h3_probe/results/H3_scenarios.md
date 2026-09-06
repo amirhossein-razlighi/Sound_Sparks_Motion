@@ -172,7 +172,7 @@ improves it. Same source video, prompt, noise and step count in A and B.
 | man_celebrates | retake input | raises both arms | late (last 3 frames, 0.21/0.06) | lin: 0.95 at iter 4, visual check pending | promising |
 | rose_sways | retake input | sways in the wind | fail (0.016, static) | lin run 20370120 | opt |
 | turtle_walks | retake input | walks forward | fail (0.07, static) | lin run 20370121 | opt |
-| bird_hops | retake input | hops along the branch | fail (0.14/0.27, wing flutter only) | lin run 20370118 | opt |
+| bird_hops | retake input | hops along the branch | fail (0.14/0.27, wing flutter only) | lin: 0.13 -> 0.31 at iter 4, visual check pending | weak |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
 | gen_horse_rears | H3 t2va | rears up on hind legs | fail (0.0002, only walks) | cancelled (flat critic) | skip |
