@@ -450,3 +450,46 @@ Runs launched with this: A (NGD .02/.5) and B (.03/.3) with the "even briefly"
 question on the linspace objective; C' (rich H3 prompt) and D (original) with
 the "any frame" question on the any-window objective. All 16 iterations,
 K=2, LPIPS 0.5 / temporal 0.2, no L2 anchors, 2 GPUs each.
+
+## 12. Goldfish activated from the failing prompt (2026-09-06, run B = job 20345844)
+
+Plain prompt ("The goldfish jumps out of the fish tank into the air.", the sentence H3 refuses),
+full method with true gradients, NGD 3 % relative step / momentum 0.3, K=2 differentiable steps,
+critic = Qwen2.5-VL, fp32 head, 224 px, question "Watch the whole clip. Does one of the goldfish
+jump up out of the water, even briefly?", single linspace window, LPIPS 0.5 / temporal 0.2, no L2.
+
+| iteration | critic yes (train window) | any-window yes | LPIPS term | what the preview shows |
+|---|---|---|---|---|
+| baseline | 0.0028 | 0.016 | 0 | fish swim, none leaves the water |
+| 2 | 0.011 | 0.037 | 0.03 | - |
+| 3 | 0.045 | 0.39 | 0.13 | fish leaps high out of the tank at ~3 s (tank edge warped) |
+| **4 (best)** | **0.195** | 0.058 | 0.06 | **fish clearly above the water at 2.1-3.3 s, rises over the rim, falls back** |
+| 5 | 0.0004 | 0.003 | 0.28 | overshoot: hallucinated multi-tank frame |
+| 6-14 | 0.002-0.005 | ~0.01 | 0.03-0.08 | wandering, early stop at 14 |
+
+Best = iteration 4 (pre-step latents, |dz_audio| = 4.0 = 5.5 % of |z_src|, |delta_text| = 2549 = 5 % of the
+embedding norm). Final render (same noise, 16 steps): yes 0.0028 -> 0.160 (any-window 0.016 -> 0.063,
+max-window 0.006 -> 0.040), mean frame change 0.040. Files: `results/fullmethod_goldfish_B/`
+(`baseline_av.mp4`, `optimized_final_av.mp4`, `iter_0N_av.mp4`, `opt_log.csv`).
+
+Refinement from the iteration-4 state (R1: 0.8 % steps, LPIPS 1.0; R2: 0.5 % steps, LPIPS 2.0): every
+step loses the jump (critic back to 0.003-0.03 within 1-2 iterations) - the jump is a narrow optimum and
+the perceptual anchor pulls back to the source. Both runs' best = the unchanged start state.
+
+Re-rendering the iteration-4 latents at more denoising steps (`--phase render`, plan rebuilt per step
+count and verified against the captured 16-step plan) keeps the jump and cleans the render:
+
+| steps | baseline yes lin / any | optimized yes lin / any / max-win | LPIPS opt vs baseline (same steps) |
+|---|---|---|---|
+| 16 | 0.0028 / 0.016 | 0.160 / 0.063 / 0.040 | 0.127 |
+| 24 | 0.0032 / 0.012 | 0.016 / 0.122 / 0.081 | 0.151 |
+| 32 | 0.0023 / 0.011 | 0.008 / 0.059 / 0.042 | 0.154 |
+
+Visually all three show the same leap (frames 44-92); 32 steps gives the crispest fish and tank edges
+(`results/fullmethod_goldfish_B/render_optimized_32_av.mp4` vs `render_baseline_32_av.mp4`); the linspace
+critic value falls at 24/32 because the sampled frames shift relative to the brief event while the
+any-window score rises - another reason to report brief events with the any-window/max-window scores.
+
+Take-away for the paper: on a case where H3's own text editing refuses the motion, optimizing the audio
+conditioning latent + a text residual against the motion critic activates it (baseline 0.003 -> 0.16 on the
+critic, clear leap in the video), i.e. the LTX result transfers to a second backbone.
