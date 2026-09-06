@@ -218,6 +218,15 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 - rose_sways and turtle_walks (lin): critic decreases from iter 1 onwards and every preview equals the baseline -> failed.
   Confirms the rule: static baseline + sustained small motion is not recoverable with this critic.
 
+### 2026-09-06 (night) - round 3 screening
+- H3 handles laugh/gasp/yawn on people well: man_laughs 0.95, man_gasps 0.82, child_laughs 0.75, man_yawns 0.94,
+  cartoon_boy_laughs 0.97, monkey_screams (mouth wide open mid-clip) -> all skip. So human facial events are not where H3
+  fails; animal vocalisations and less common events are.
+- fails/late: dog_barks (lin 0.008 / any 0.90: head turn + mouth only in the last frames -> "late" like the cat yawn),
+  man_sneezes (0.06/0.04: raises hands instead), cat_meows (brief early meow, 0.23/0.20 - partial), gen_horse_neighs
+  (0.02/0.13, only walks), gen_woman_sneezes (0.006/0.23, hand to face late). Queued with the event recipe (any objective):
+  dog_barks 20383015, man_sneezes 20383016, cat_meows 20383017 (2 GPUs). Horse/woman (full-size sources, 3 GPUs) held for now.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -246,6 +255,17 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | rose_sways | retake input | sways in the wind | fail (0.016, static) | lin: critic falls monotonically, no motion in any iteration | failed |
 | turtle_walks | retake input | walks forward | fail (0.07, static) | lin: no motion in any iteration (slight camera drift only) | failed |
 | bird_hops | retake input | hops along the branch | fail (0.14/0.27, wing flutter only) | lin: identical to baseline | failed |
+| man_laughs | retake input (groom) | laughs out loud | success (0.95/1.0) | - | skip |
+| man_gasps | retake input | gasps, mouth open | success (0.82/1.0) | - | skip |
+| child_laughs | retake input | laughs out loud | success (0.75/0.98) | - | skip |
+| man_yawns | retake input | yawns widely | success (0.94/1.0) | - | skip |
+| cartoon_boy_laughs | retake input | laughs out loud | success (0.97/1.0) | - | skip |
+| monkey_screams | retake input | opens mouth and screams | success (mid-clip scream) | - | skip |
+| dog_barks | retake input | barks loudly | late (mouth only in last frames, 0.008/0.90) | any run 20383015 | opt |
+| man_sneezes | retake input | sneezes | fail (raises hands instead, 0.06/0.04) | any run 20383016 | opt |
+| cat_meows | retake input | meows loudly | partial (brief early meow, 0.23/0.20) | any run 20383017 | opt |
+| gen_horse_neighs | H3 t2va | neighs, head raised | fail (only walks, 0.02/0.13) | held (3 GPUs) | hold |
+| gen_woman_sneezes | H3 t2va | sneezes | late/partial (hand to face, 0.006/0.23) | held (3 GPUs) | hold |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
 | gen_horse_rears | H3 t2va | rears up on hind legs | fail (0.0002, only walks) | cancelled (flat critic) | skip |
