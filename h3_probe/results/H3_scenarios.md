@@ -215,6 +215,9 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   Resubmitted at 320x512x124 (still ~half the reference tokens of the 448x768 sources, should fit 2 GPUs):
   r4 gen 20380816 -> screen 20380817; r5 gen 20380818 -> screen 20380819.
 
+- rose_sways and turtle_walks (lin): critic decreases from iter 1 onwards and every preview equals the baseline -> failed.
+  Confirms the rule: static baseline + sustained small motion is not recoverable with this critic.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -240,8 +243,8 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | car_drives_out | retake input | drives out of the garage | late/weak (0.006, moves in last frames) | lin: flat, no change | failed |
 | cat_stretches | retake input | stretches front legs | static but critic says 0.77 lin | cancelled (critic saturated) | skip |
 | man_celebrates | retake input | raises both arms | late (last 3 frames, 0.21/0.06) | iter 4: arms up but no expression - user: not convincing | rejected |
-| rose_sways | retake input | sways in the wind | fail (0.016, static) | lin run 20370120 | opt |
-| turtle_walks | retake input | walks forward | fail (0.07, static) | lin run 20370121 | opt |
+| rose_sways | retake input | sways in the wind | fail (0.016, static) | lin: critic falls monotonically, no motion in any iteration | failed |
+| turtle_walks | retake input | walks forward | fail (0.07, static) | lin: no motion in any iteration (slight camera drift only) | failed |
 | bird_hops | retake input | hops along the branch | fail (0.14/0.27, wing flutter only) | lin: identical to baseline | failed |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
