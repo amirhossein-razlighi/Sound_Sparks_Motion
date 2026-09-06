@@ -749,6 +749,7 @@ def main():
                 sw = score_windows(fr)
                 key = f"{tag}_{steps}"
                 save_av(fr.permute(0, 2, 3, 1).cpu().numpy(), wav, cap["audio_sr"], os.path.join(out_dir, f"render_{key}.mp4"))
+                attn_report(fr, key, {"baseline": 0, "optimized": 1}[tag] + 10 * steps)   # attn_iter_<10*steps+{0,1}>_stepNN.png
                 if tag == "baseline":
                     base_fr = fr.detach()
                     lp = 0.0
