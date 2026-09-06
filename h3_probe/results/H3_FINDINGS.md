@@ -575,3 +575,8 @@ alone can reach jump-like states (but both text-only examples are flawed), and t
 one clean leap (1 of 2). With n = 2 per mode and non-reproducible trajectories this cannot separate "both"
 from "text only"; a paired replicate study (new seeds, both vs text on the same noise, LPIPS 1.5 so the
 selection rejects degenerate frames) follows.
+
+Decision (2026-09-06): the paired replicate study (seeds 7/11/23 x {both, text}) was cancelled before
+running - the both-mode result D (clean leap over the rim, any-window 0.72, LPIPS 0.03) is visibly better
+than either text-only outcome (artifact / modest early hop), and audio-only is inert; that is the evidence
+reported: audio is not sufficient on H3 but it contributes on top of the text residual.
