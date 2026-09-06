@@ -201,6 +201,16 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   headlights flash + horn - `scenarios/gen_inputs_r5.json`, `scenarios/candidates_r5.json`. gen 20380390 (after r4 gen) ->
   screening 20380391 (outputs/screen_r5).
 
+### Conditional plan: Qwen3-VL critic (only if adversarial critic-fooling turns out to be the dominant failure)
+- user: if, after the current runs, many "successes" are adversarial answers that fool the Qwen2.5-VL critic, consider a
+  Qwen3-VL critic - only if memory and the rest of the pipeline allow it. Feasibility checked 2026-09-06 evening: the venv has
+  transformers 5.16.1 (Qwen3VLForConditionalGeneration available), torch 2.14; the login node has internet and /project has
+  ~326 GB free, so Qwen3-VL-8B-Instruct (~17 GB bf16, about the same footprint as Qwen2.5-VL-7B) can be downloaded to
+  /project/def-amahdavi/amirrz/HF/models/. Work needed: an additive critic module for the Qwen3-VL vision path (patch 16,
+  frame timestamps in the text stream) mirroring `compute_qwen_video_loss`, then a calibration pass like Sec. 11. Not started;
+  evidence so far: adversarial drift appeared in child_jumps (iters 11+), cat_yawns (iters 6/7/10 overlays), red_bird (iters
+  9-16) - always late and always caught by the perceptual guard, so the guard + early picks have been sufficient.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
