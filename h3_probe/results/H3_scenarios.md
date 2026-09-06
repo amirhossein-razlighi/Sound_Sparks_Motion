@@ -157,6 +157,15 @@ improves it. Same source video, prompt, noise and step count in A and B.
 - generated-source runs resubmitted on 3 GPUs (`full_method_3gpu.sbatch`, two chains so at most two 3-GPU jobs run):
   gen_frog_jumps 20379834 (capture reused) -> gen_woman_door 20379837 -> gen_basketball 20379840; gen_dog_wet 20379836 -> gen_glass_table 20379839.
 
+### 2026-09-06 (evening) - man_celebrates rejected, round 3 = face/mouth sound events
+- user verdict on man_celebrates: arms go up but no smile/laugh, not convincing -> removed from the study set (3 pairs).
+- what has worked so far are brief, unambiguous sound-linked events (leap, yawn, shout) with the any-window objective;
+  sustained/pose edits with the linspace objective have not produced a convincing pair yet. Round 3 therefore targets
+  face/mouth events on sources we already have: man_laughs (groom), man_sneezes (grey room), man_gasps (surprised man),
+  child_laughs, dog_barks, monkey_screams, cat_meows, man_yawns (clapping man), cartoon_boy_laughs, gen_horse_neighs,
+  gen_woman_sneezes - `scenarios/candidates_r3.json`. Screening: 20380263 (retake sources), 20380264 (generated) -> outputs/screen_r3.
+  Fails go to optimization with CRITIC_OBJ=any / SELECT_BY=any (the goldfish/cat/shout recipe) + PERC_MAX.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -181,7 +190,7 @@ improves it. Same source video, prompt, noise and step count in A and B.
 | monkey_jumps_branch | retake input | jumps to another branch | fail (0.0004, only head turn) | cancelled (flat critic) | skip |
 | car_drives_out | retake input | drives out of the garage | late/weak (0.006, moves in last frames) | lin: flat, no change | failed |
 | cat_stretches | retake input | stretches front legs | static but critic says 0.77 lin | cancelled (critic saturated) | skip |
-| man_celebrates | retake input | raises both arms | late (last 3 frames, 0.21/0.06) | iter 4: both arms fully up mid-clip (alt iter 6) | PACKAGED |
+| man_celebrates | retake input | raises both arms | late (last 3 frames, 0.21/0.06) | iter 4: arms up but no expression - user: not convincing | rejected |
 | rose_sways | retake input | sways in the wind | fail (0.016, static) | lin run 20370120 | opt |
 | turtle_walks | retake input | walks forward | fail (0.07, static) | lin run 20370121 | opt |
 | bird_hops | retake input | hops along the branch | fail (0.14/0.27, wing flutter only) | lin: identical to baseline | failed |

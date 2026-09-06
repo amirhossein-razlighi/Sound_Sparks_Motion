@@ -1,0 +1,91 @@
+{
+ "_comment": "Round-3 user-study candidates: brief sound-linked face/mouth events (laugh, sneeze, gasp, bark, scream, meow, yawn, neigh) on existing sources; events -> any-window critic objective. group r3 = retake-size sources (2 GPUs), r3_gen = H3-generated sources (3 GPUs).",
+ "man_laughs": {
+  "group": "r3",
+  "src": "results/videos/man_laugh/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/man_laugh.wav",
+  "edit": "The man laughs out loud.",
+  "scene": "a man facing the camera",
+  "question": "Does the man laugh out loud (open mouth, laughing expression) at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "man_sneezes": {
+  "group": "r3",
+  "src": "results/videos/transfers/man_shouts/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/man_shouts.wav",
+  "edit": "The man sneezes.",
+  "scene": "a man facing the camera",
+  "question": "Does the man sneeze at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "man_gasps": {
+  "group": "r3",
+  "src": "results/videos/surprised_man/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/surprised_man.wav",
+  "edit": "The man gasps in surprise with his mouth wide open.",
+  "scene": "a man facing the camera",
+  "question": "Does the man gasp or open his mouth wide in surprise at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "child_laughs": {
+  "group": "r3",
+  "src": "results/videos/child_waving_hand/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/child_waving_hand.wav",
+  "edit": "The child laughs out loud.",
+  "scene": "a child facing the camera",
+  "question": "Does the child laugh out loud (open mouth, laughing) at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "dog_barks": {
+  "group": "r3",
+  "src": "results/videos/dog_yawn/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/dog_yawn.wav",
+  "edit": "The dog barks loudly.",
+  "scene": "a golden retriever in sunglasses sitting on a wooden garden chair",
+  "question": "Does the dog bark (open its mouth to bark) at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "monkey_screams": {
+  "group": "r3",
+  "src": "results/videos/monkey_reaching_for_fruit/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/monkey_reaching_for_fruit.wav",
+  "edit": "The monkey opens its mouth wide and screams.",
+  "scene": "a monkey on a tree branch",
+  "question": "Does the monkey open its mouth wide and scream at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "cat_meows": {
+  "group": "r3",
+  "src": "results/videos/transfers/cat_yawns/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/cat_yawns.wav",
+  "edit": "The cat meows loudly.",
+  "scene": "a cat sitting",
+  "question": "Does the cat open its mouth and meow at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "man_yawns": {
+  "group": "r3",
+  "src": "results/videos/man_raises_hand_real/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/man_raises_hand_real.wav",
+  "edit": "The man yawns widely.",
+  "scene": "a man standing, facing the camera",
+  "question": "Does the man yawn with a wide open mouth at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "cartoon_boy_laughs": {
+  "group": "r3",
+  "src": "results/videos/transfers/boy_laughing_outloud/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/boy_laughing_outloud.wav",
+  "edit": "The boy laughs out loud.",
+  "scene": "a cartoon boy in a yellow t-shirt standing in front of a shop",
+  "question": "Does the boy laugh out loud (open mouth, laughing) at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_horse_neighs": {
+  "group": "r3_gen",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_horse_field__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_horse_field_h3sound.wav",
+  "edit": "The horse neighs loudly with its head raised.",
+  "scene": "a brown horse standing in a sunny grass field",
+  "question": "Does the horse neigh (open its mouth, raise its head) at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_woman_sneezes": {
+  "group": "r3_gen",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_woman_bench__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_woman_bench_h3sound.wav",
+  "edit": "The woman sneezes.",
+  "scene": "a young woman sitting on a wooden park bench",
+  "question": "Does the woman sneeze at any point in this video? Answer only 'yes' or 'no'."
+ }
+}
