@@ -35,7 +35,7 @@ Where it does not work (drop quickly):
   wave, cover face, raise arms) -> no room to save anything.
 
 Consequences for finding scenarios: prefer animal vocalisations and sudden events (bark, roar, neigh, sneeze, yawn,
-laugh, leap, splash, blow-out) on single centred subjects; generate sources at retake size (320x512x89) so runs fit on 2 GPUs.
+laugh, leap, splash, blow-out) on single centred subjects; generate sources at reduced size (320x512, 124 frames = H3's 5 s minimum) so runs fit on 2 GPUs.
 
 ## Pipeline
 
@@ -188,7 +188,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   Fails go to optimization with CRITIC_OBJ=any / SELECT_BY=any (the goldfish/cat/shout recipe) + PERC_MAX.
 
 ### 2026-09-06 (night) - round 4: designed-to-fail event sources at retake size
-- 13 new t2va sources generated at 320x512x89 (GEN_H/GEN_W/GEN_FRAMES overrides in t2va_sounds.py, default unchanged):
+- 13 new t2va sources generated at 320x512 (124 frames) (GEN_H/GEN_W/GEN_FRAMES overrides in t2va_sounds.py, default unchanged):
   dog on rug (barks), lion (roars), rooster (crows), wolf (howls), cow (moos), duck (flaps+splashes), dolphin (leaps),
   koi (jumps), man on couch (sneezes), woman at desk (yawns), girl with cake (blows out candles), sea lion (barks),
   goat (bleats) - `scenarios/gen_inputs_r4.json`, `scenarios/candidates_r4.json`. gen 20380356 -> screening 20380357 (outputs/screen_r4).
@@ -210,6 +210,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   frame timestamps in the text stream) mirroring `compute_qwen_video_loss`, then a calibration pass like Sec. 11. Not started;
   evidence so far: adversarial drift appeared in child_jumps (iters 11+), cat_yawns (iters 6/7/10 overlays), red_bird (iters
   9-16) - always late and always caught by the perceptual guard, so the guard + early picks have been sufficient.
+
+- round 4/5 generation at 89 frames failed: H3 generates 5-15 s only (num_frames rounded to 17n+5 must be in 120..360).
+  Resubmitted at 320x512x124 (still ~half the reference tokens of the 448x768 sources, should fit 2 GPUs):
+  r4 gen 20380816 -> screen 20380817; r5 gen 20380818 -> screen 20380819.
 
 ## Scenario table (updated as results land)
 
