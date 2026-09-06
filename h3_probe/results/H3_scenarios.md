@@ -54,19 +54,52 @@ improves it. Same source video, prompt, noise and step count in A and B.
 - batch 2 queued with dependencies so at most 4 optimization jobs run at once: child_jumps 20363983 (after turtle),
   man_shouts 20363984 (after cat_yawns)
 
+### 2026-09-06 - batch 1 outcome, screening complete, batch 3
+- existing-input screening done (18/19; dog_runs_off OOMed before the offload fix, re-screened with round 2).
+  Successes (skip): man_covers_face, car_hood_opens, robot_both_arms, cartoon_boy_jumps (jump happens early).
+  Fails/unnatural: child_jumps, monkey_jumps_branch, dog_stands_up, car_drives_out (moves only in the last frames),
+  rose_sways, turtle_walks, man_celebrates (arms up only in the last 3 frames), bird_hops, man_nods, dog_tilts_head,
+  cat_stretches, boy_splashes (stands up instead), man_claps (partial), eagle_head_turn (subject too small).
+- batch 1: turtle_extends_neck - no visible change (critic any 0.08 -> 0.20 at best iter 3, oscillates after), the head is
+  already out in the source and the edit is too subtle for the critic -> dropped. cat_yawns - baseline already yawns in
+  the last frames (critic any 0.78); the critic flips between 0.99 and 0.07 across iterations on near-identical frames,
+  best iter is visually identical to the baseline -> dropped (a "make it earlier" objective would be needed).
+  boy_crouches - with the scenario question the baseline already scores 0.76 any, so the best checkpoint stayed at the
+  baseline (dz=0); the earlier run `fullmethod_boy_crouches_both_ngd` (default question, lin objective, 0.22 -> 0.68,
+  boy looks down and touches the water) is used for the study pair instead.
+- batch 3 (both, D recipe) chained in two tiers of four so at most 4 run at once:
+  tier 1 dog_stands_up 20367783, monkey_jumps_branch 20367784, car_drives_out 20367785, cat_stretches 20367786;
+  tier 2 man_celebrates 20367787, rose_sways 20367788, turtle_walks 20367789, bird_hops 20367790
+- helper: `scenarios/ab_sheet.sh` (multi-row frame sheets for A/B checks), `scenarios/render_ab.sbatch`,
+  `scenarios/package_ab.py`
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
 |---|---|---|---|---|---|
 | goldfish | retake input | jumps out of the tank | fail (0.004) | clean leap (0.72 any) | DONE (D) |
-| turtle_extends_neck | retake input | extends neck out of shell | fail (known) | running 20360026 | opt |
-| cat_yawns | retake input | yawns widely | late/weak yawn (known) | running 20360027 | opt |
-| boy_crouches | retake input | crouches, touches water | fail (known) | running 20360028 | opt |
-| red_bird_opens_wings | retake input | opens wings | fail (known) | queued 20360029 | opt |
-| man_shouts | retake input | shouts loudly | fail (known) | queued 20363984 | opt |
-| child_jumps | retake input | jumps up and down | fail (0.0007, static) | queued 20363983 | opt |
+| turtle_extends_neck | retake input | extends neck out of shell | fail (known, 0.08 any) | no visible change (0.20 any) | dropped |
+| cat_yawns | retake input | yawns widely | late yawn (0.78 any) | identical to baseline | dropped |
+| boy_crouches | retake input | crouches, touches water | fail (0.22 default-q) | earlier run: looks down, touches water (0.68) | render |
+| red_bird_opens_wings | retake input | opens wings | fail (known) | running 20360029 | opt |
+| man_shouts | retake input | shouts loudly | fail (known) | running 20363984 | opt |
+| child_jumps | retake input | jumps up and down | fail (0.0007, static) | running 20363983 | opt |
 | man_covers_face | retake input | covers face with both hands | success (0.996) | - | skip |
+| car_hood_opens | retake input | hood opens | success (0.81/0.99) | - | skip |
+| robot_both_arms | retake input | raises both arms | success (0.97/1.0) | - | skip |
+| cartoon_boy_jumps | retake input | jumps into the air | success (jumps early, 0.12/0.83) | - | skip |
 | boy_splashes | retake input | splashes water with both hands | unnatural (stands up, 0.38/0.63) | - | maybe |
 | man_claps | retake input | claps hands | partial (0.14/0.56) | - | maybe |
 | eagle_head_turn | retake input | turns head to camera | unclear, subject tiny (0.28/0.63) | - | skip |
+| man_nods | retake input | nods head | not visible (0.22/0.67) | - | maybe |
+| dog_tilts_head | retake input | tilts head | static (0.46/0.51) | - | maybe |
+| dog_stands_up | retake input | stands up on all fours | fail (0.001, stays seated) | queued 20367783 | opt |
+| monkey_jumps_branch | retake input | jumps to another branch | fail (0.0004, only head turn) | queued 20367784 | opt |
+| car_drives_out | retake input | drives out of the garage | late/weak (0.006, moves in last frames) | queued 20367785 | opt |
+| cat_stretches | retake input | stretches front legs | fail (static) | queued 20367786 | opt |
+| man_celebrates | retake input | raises both arms | late (last 3 frames, 0.21/0.06) | queued 20367787 | opt |
+| rose_sways | retake input | sways in the wind | fail (0.016, static) | queued 20367788 | opt |
+| turtle_walks | retake input | walks forward | fail (0.07, static) | queued 20367789 | opt |
+| bird_hops | retake input | hops along the branch | fail (0.14/0.27, wing flutter only) | queued 20367790 | opt |
+| dog_runs_off | retake input | gets up and runs off | screening OOMed, rescreen r2 | - | pending |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
