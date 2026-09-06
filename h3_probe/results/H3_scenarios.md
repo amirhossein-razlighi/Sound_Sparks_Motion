@@ -164,7 +164,7 @@ improves it. Same source video, prompt, noise and step count in A and B.
 | rose_sways | retake input | sways in the wind | fail (0.016, static) | lin run 20370120 | opt |
 | turtle_walks | retake input | walks forward | fail (0.07, static) | lin run 20370121 | opt |
 | bird_hops | retake input | hops along the branch | fail (0.14/0.27, wing flutter only) | lin run 20370118 | opt |
-| dog_runs_off | retake input | gets up and runs off | screening OOMed, rescreen r2 | - | pending |
+| dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
 | gen_horse_rears | H3 t2va | rears up on hind legs | fail (0.0002, only walks) | cancelled (flat critic) | skip |
 | gen_frog_jumps | H3 t2va | jumps off the lily pad | late (leaves frame in last 2 frames, 0.016) | lin run 20370119 | opt |
@@ -178,3 +178,9 @@ improves it. Same source video, prompt, noise and step count in A and B.
 | gen_dog_wet | H3 t2va (r2) | shakes water off | fail (only turns, 0.09/0.23) | lin run 20371180 | opt |
 | gen_woman_door | H3 t2va (r2) | opens door, walks in | late (door opens in last frames, 0.32/0.28) | lin run 20371181 | opt |
 | gen_basketball | H3 t2va (r2) | bounces | ambiguous (hovers in one frame, 0.17/0.23) | - | maybe |
+| gen_woman_beach | H3 t2va (r2) | waves at camera | success (0.98/1.0) | - | skip |
+| gen_umbrella | H3 t2va (r2) | opens umbrella | success (0.98/0.99) | - | skip |
+| gen_candle | H3 t2va (r2) | flame blown out | fail (0.0009, steady flame) | held (flat critic) | hold |
+| gen_rowboat | H3 t2va (r2) | rocks side to side | fail (0.01, static) | held (flat critic) | hold |
+| gen_bell | H3 t2va (r2) | swings and rings | fail (0.06/0.10, barely moves) | held | hold |
+| gen_glass_table | H3 t2va (r2) | tips over, spills | late + distorted (glass morphs in last frames) | lin run 20372556 | opt |
