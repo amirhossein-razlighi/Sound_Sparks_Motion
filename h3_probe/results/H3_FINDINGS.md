@@ -507,3 +507,16 @@ result: the any-window objective put 85 % of its gradient weight on the window t
 nascent event at iteration 2 and reached P(event) = 0.69 at iteration 3; the tank geometry stays intact.
 Both B and D activate the jump from the prompt that H3 refuses; |dz_audio| ~ 3.7-4.0 (5 % of the audio
 latent norm), |delta_text| ~ 2000-2500 (4-5 % of the embedding norm).
+
+### 12c. Reproducibility note (replay of B, job 20347391)
+
+Re-running B's exact configuration on another node (transformer sharded the same way, same seed and
+captured noise) gave a different trajectory: baseline critic nll 5.988 vs 5.866, iteration-4 critic yes
+0.0024 vs 0.195, no jump within 8 iterations (best yes 0.007 at iteration 2). The 33B bf16 forward is not
+bit-reproducible across nodes (cuBLAS/SDPA kernel selection), the differences are amplified over 15
+denoising steps and by the optimizer, and the jump is a narrow optimum (Sec. 12) - so activation runs
+should be reported as "N of M seeds/nodes" rather than as a deterministic outcome. The attention maps
+captured on that replay therefore describe a non-jumping trajectory: audio-reference mass 0.33 % of the
+attention, its change across iterations uncorrelated with where new motion appears (|corr| < 0.05; the
+conditioner's vision rows +0.1-0.35). Attention on the actual jump latents is captured separately by
+re-rendering them (`--phase render` with ATTN_VIS=1, jobs 20349975/20349976).
