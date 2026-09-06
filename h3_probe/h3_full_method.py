@@ -70,7 +70,7 @@ SCEN = {k: v for k, v in json.load(open(os.path.join(_HERE, "pin_all_scenarios.j
 
 def parse_args():
     p = argparse.ArgumentParser()
-    p.add_argument("--phase", default="all", choices=["all", "a", "b"],
+    p.add_argument("--phase", default="all", choices=["all", "a", "b", "render"],
                    help="a: stock pipeline baseline + state capture -> capture.pt; b: gradient method from capture.pt")
     p.add_argument("--slug", default=os.environ.get("SLUG", "boy_crouches"))
     p.add_argument("--out-dir", default=os.environ.get("OUT_DIR", ""))
@@ -134,6 +134,8 @@ def parse_args():
                    help="per-iteration attention-mass maps (audio-ref / text / vision / reference-video -> generated video)")
     p.add_argument("--attn-steps", default=os.environ.get("ATTN_STEPS", "14"),
                    help="denoising-step indices (0-based model evals) at which the attention mass is captured")
+    p.add_argument("--render-steps", default=os.environ.get("RENDER_STEPS", "16"),
+                   help="phase=render: step counts at which baseline and --init-latents are re-rendered and scored")
     p.add_argument("--init-latents", default=os.environ.get("INIT_LATENTS", ""),
                    help="latents.pt from a previous run: start z_audio/delta_text from its best_z/best_d (refinement run); "
                         "the L2 anchors and LPIPS source stay the ORIGINAL source/baseline")
@@ -445,22 +447,40 @@ class H3Grad:
         return dmap
 
     # -- one transformer evaluation --------------------------------------------------------
-    def _eval(self, latents, audio_latents, enc, i):
-        uts, tidx = self.plan[i]
+    def _eval(self, latents, audio_latents, enc, i, plan=None):
+        uts, tidx = (plan or self.plan)[i]
         out = self.tr(hidden_states=latents[None], audio_hidden_states=audio_latents[None], encoder_hidden_states=enc,
                       timestep=uts, timestep_indices=tidx, attention_kwargs=self.attention_kwargs, return_dict=False,
                       **self.layout)
         return out[0], out[1]
 
+    KEYFRAME_NOISE_AUG = 0.999   # MiniMaxH3ModularPipeline.keyframe_noise_aug (verified against the captured plan)
+
+    def _plan_for(self, steps: int):
+        """(row_timestep_plan, timesteps, audio_timesteps) for an arbitrary step count, rebuilt exactly as the
+        pipeline's SetTimesteps block does; the captured plan is used (and the rebuild verified) for --steps."""
+        from diffusers.modular_pipelines.minimax_h3.before_denoise import MiniMaxH3SetTimestepsStep as S
+        self.sched.set_timesteps(steps, device=self.dev0)
+        self.asched.set_timesteps(steps, device=self.dev0)
+        ts, ats = self.sched.timesteps, self.asched.timesteps
+        vi, ai = self.layout["video_indices"].cpu(), self.layout["audio_indices"].cpu()
+        n_text = int(self.layout["text_indices"].numel())
+        plan = [tuple(x.to(self.dev0) for x in S.build_row_timesteps(vi, ai, self.ncv, self.nca, n_text, float(t), float(at),
+                                                                      max(float(t), self.KEYFRAME_NOISE_AUG), 1.0))
+                for t, at in zip(ts, ats)]
+        if steps == self.args.steps:
+            ok = len(plan) == len(self.plan) and all(torch.allclose(a[0].float(), b[0].float()) and torch.equal(a[1], b[1])
+                                                     for a, b in zip(plan, self.plan))
+            assert ok, "rebuilt row-timestep plan differs from the captured one"
+            return self.plan, self.timesteps, self.audio_timesteps
+        return plan, ts, ats
+
     def render(self, z_audio, delta_text, grad_steps: int, steps: int | None = None):
         """Returns (video_rows [N_gen_rows, C*p] on dev0, audio_rows [N_gen_aud, 32] detached).
         The last `grad_steps` model evaluations are differentiable w.r.t. z_audio / delta_text."""
         steps = steps or self.args.steps
-        if steps != self.args.steps:  # different schedule: rebuild plan from the schedulers (same layout)
-            raise NotImplementedError("final_steps != steps not supported in this build (plan is captured for --steps)")
-        self.sched.set_timesteps(steps, device=self.dev0)
-        self.asched.set_timesteps(steps, device=self.dev0)
-        n_eval = len(self.timesteps)
+        plan, timesteps, audio_timesteps = self._plan_for(steps)
+        n_eval = len(timesteps)
         latents = self.latents0
         aud_gen = self.audio0[self.nca:]
         self.last_attn = {}
@@ -476,13 +496,13 @@ class H3Grad:
                 if cap_attn:
                     import h3_attn
                     h3_attn.begin()
-                v_pred, a_pred = self._eval(latents, audio_latents, enc, i)
+                v_pred, a_pred = self._eval(latents, audio_latents, enc, i, plan)
                 if cap_attn:
                     res = h3_attn.end()
                     if res is not None:
                         self.last_attn[i] = res
-                new_vid = self.sched.step(v_pred[0, self.ncv:].float(), self.timesteps[i], latents[self.ncv:], return_dict=False)[0]
-                new_aud = self.asched.step(a_pred[0, self.nca:].float(), self.audio_timesteps[i], aud_gen, return_dict=False)[0]
+                new_vid = self.sched.step(v_pred[0, self.ncv:].float(), timesteps[i], latents[self.ncv:], return_dict=False)[0]
+                new_aud = self.asched.step(a_pred[0, self.nca:].float(), audio_timesteps[i], aud_gen, return_dict=False)[0]
                 latents = torch.cat([latents[:self.ncv], new_vid], dim=0)
                 aud_gen = new_aud
             if not grad_on:
@@ -714,6 +734,36 @@ def main():
         except Exception as e:
             log.warning("attention report failed: %s", e)
         H.last_attn = {}
+
+    if args.phase == "render":
+        # re-render baseline (source conditioning) and the --init-latents at several step counts; score + save
+        assert args.init_latents, "phase=render needs --init-latents"
+        out = {}
+        for steps in [int(x) for x in args.render_steps.replace(";", ",").split(",") if x.strip()]:
+            for tag, zz, dd in (("baseline", z_src, torch.zeros_like(delta_text)), ("optimized", z_audio.detach(), delta_text.detach())):
+                t0 = time.time()
+                with torch.no_grad():
+                    rows, aud = H.render(zz, dd, grad_steps=0, steps=steps)
+                    fr = H.decode_video(rows)
+                    wav = H.decode_audio(aud)
+                sw = score_windows(fr)
+                key = f"{tag}_{steps}"
+                save_av(fr.permute(0, 2, 3, 1).cpu().numpy(), wav, cap["audio_sr"], os.path.join(out_dir, f"render_{key}.mp4"))
+                if tag == "baseline":
+                    base_fr = fr.detach()
+                    lp = 0.0
+                else:
+                    lp = float(compute_perceptual_quality_loss(gen_frames=fr, src_frames=base_fr, lpips_weight=1.0, temporal_weight=0.0,
+                                                               backbone=args.lpips_backbone, max_lpips_frames=24, max_temporal_pairs=1,
+                                                               backward=False)[0])
+                out[key] = {"steps": steps, "nll_lin": sw["lin"], "yes_lin": math.exp(-sw["lin"]), "yes_any": math.exp(-sw["any"]),
+                            "yes_maxwin": math.exp(-sw["max"]), "yes_4win": math.exp(-sw["4win"]), "lpips_vs_baseline_same_steps": lp,
+                            "sec": round(time.time() - t0)}
+                log.info("[render] %-16s yes lin=%.4f any=%.4f max-win=%.4f 4win=%.4f lpips=%.4f (%.0fs)", key, out[key]["yes_lin"],
+                         out[key]["yes_any"], out[key]["yes_maxwin"], out[key]["yes_4win"], lp, out[key]["sec"])
+                json.dump(out, open(os.path.join(out_dir, "render_results.json"), "w"), indent=1)
+        log.info("RENDER PHASE DONE")
+        return
 
     # ---- CHECK 1: our loop (no grad) reproduces the pipeline ----
     t0 = time.time()
