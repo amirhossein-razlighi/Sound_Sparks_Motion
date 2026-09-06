@@ -87,6 +87,15 @@ improves it. Same source video, prompt, noise and step count in A and B.
   0.016), gen_jeep_drives (creeps forward). Tier 3 queued: gen_horse_rears 20368483, gen_frog_jumps 20368484 (first full-size
   448x768 x 124 f sources through Phase B - memory check).
 
+### 2026-09-06 - batch 2 first results: objective must match the failure type
+- red_bird_opens_wings: with the scenario question the baseline already scores 0.97 any (the bird half-opens its wings in
+  the last frames), so the any-window objective is saturated and the best checkpoint stays at the baseline (dz=0) - same
+  pattern as boy_crouches/cat_yawns. Late/partial cases need the linspace objective (rewards the motion across the whole
+  clip; baseline lin yes 0.11): resubmitted as `us_red_bird_opens_wings_lin` (20368915, CRITIC_OBJ=lin SELECT_BY=lin, reusing
+  the capture).
+- child_jumps: critic flat at 0.002 for 10 iterations while the latents move (perceptual 0.05) - H3 does not start a jump
+  from this seated pose; man_shouts hovers at 0.15-0.18. Waiting for tier 1 before deciding on the other "flat" cases.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -95,7 +104,7 @@ improves it. Same source video, prompt, noise and step count in A and B.
 | turtle_extends_neck | retake input | extends neck out of shell | fail (known, 0.08 any) | no visible change (0.20 any) | dropped |
 | cat_yawns | retake input | yawns widely | late yawn (0.78 any) | identical to baseline | dropped |
 | boy_crouches | retake input | crouches, touches water | fail (0.22 default-q) | earlier run: looks down, touches water (0.68) | render |
-| red_bird_opens_wings | retake input | opens wings | fail (known) | running 20360029 | opt |
+| red_bird_opens_wings | retake input | opens wings | partial, late (0.11 lin / 0.97 any) | any-obj: kept baseline; lin rerun 20368915 | opt |
 | man_shouts | retake input | shouts loudly | fail (known) | running 20363984 | opt |
 | child_jumps | retake input | jumps up and down | fail (0.0007, static) | running 20363983 | opt |
 | man_covers_face | retake input | covers face with both hands | success (0.996) | - | skip |
