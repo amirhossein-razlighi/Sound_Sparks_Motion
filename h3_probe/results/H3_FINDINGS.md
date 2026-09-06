@@ -520,3 +520,42 @@ captured on that replay therefore describe a non-jumping trajectory: audio-refer
 attention, its change across iterations uncorrelated with where new motion appears (|corr| < 0.05; the
 conditioner's vision rows +0.1-0.35). Attention on the actual jump latents is captured separately by
 re-rendering them (`--phase render` with ATTN_VIS=1, jobs 20349975/20349976).
+
+## 13. Attention-mass maps on H3: what drives the activated jump? (2026-09-06)
+
+`h3_probe/h3_attn.py`: for every generated video token, the exact softmax mass on the six key groups of
+the packed sequence (all 56 heads x 50 layers, at model evals 7 / 11 / 14 of 15), for the baseline and the
+jump latents rendered with the SAME noise (`--phase render`, jobs 20349975 D / 20349976 B). Maps and
+overlays: `results/fullmethod_goldfish_{D,B}attn/attn_iter_16{0,1}_stepNN.{png,json}` (160 = baseline,
+161 = optimized; rows = frame, motion energy, audio-ref, text, conditioner-vision, reference-video).
+
+Global mass per generated video token (D, step 11): audio-ref 0.33 %, generated audio 0.5 %, text 6.0 %,
+conditioner vision 3.6 %, reference video 16.5 % -> 12.3 % after optimization, self 73 % -> 77 %.
+
+Where the new motion appears (top-5 % tokens by increase in motion energy = the leap), mass relative to the
+rest of the frame, optimized [baseline], run D:
+
+| key group | step 7 | step 11 | step 14 | reading |
+|---|---|---|---|---|
+| audio_ref (our audio latent) | 0.76 [0.84] | 0.72 [0.83] | 0.73 [0.86] | *less* audio attention on the leap than elsewhere, and it drops further after optimization |
+| audio_gen | 0.80 [0.88] | 0.69 [0.85] | 0.66 [0.85] | same |
+| text_txt (text residual lives here) | 0.98 [0.97] | 1.00 [0.98] | 1.03 [0.99] | flat -> slightly up on the leap |
+| text_vis (conditioner's view of the source) | 0.98 [0.95] | 1.06 [0.95] | **1.20 [1.00]** | gains most on the leap late in denoising |
+| video_ref (source clip rows) | 0.86 [0.98] | 0.82 [0.95] | 0.85 [0.97] | the model stops copying the source exactly where the fish leaves the water |
+| video_gen (self) | 1.03 [1.01] | 1.03 [1.02] | 1.01 [1.01] | - |
+
+Run B (its own leap, later in the clip) gives the same pattern (audio_ref 0.75-0.81 [0.91-0.92]; text_vis
+1.08-1.20 [0.91-0.94]; video_ref 0.81-0.85 [0.95-0.98]). Correlation of the optimized-minus-baseline
+attention change with the motion change: audio_ref -0.10..-0.22, text +0.03..+0.19, vision +0.14..+0.37,
+video_ref -0.20..-0.29 (D and B, all steps). Audio's share of (audio+text) mass on the leap tokens is
+0.04-0.05 and does not increase.
+
+Conclusion: on H3 the LTX picture (audio attention concentrating on the moving subject and its trajectory,
+text on the semantic objects) does NOT replicate. H3's audio rows are a diffuse, low-mass channel (0.3 % of
+attention, weakest exactly where the new motion is), and the activated motion is carried by the text /
+conditioner rows (where the text residual acts) and by a release of the reference-video copying at the
+leap location. This matches every other H3 observation (audio-only optimization moves the video by 0.003;
+pinned/reference sounds barely change frames; |delta_text| does the work): H3 treats audio as a soundtrack
+to be made consistent with the video, whereas LTX-2's Retake pipeline makes the audio latent a first-class
+motion condition. The method transfers (it activates the jump from the failing prompt), the audio-specific
+attention mechanism does not.
