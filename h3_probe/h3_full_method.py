@@ -130,6 +130,10 @@ def parse_args():
                    help="override the critic's motion question template (may contain {edit_prompt}); empty = library default")
     p.add_argument("--prompt-edit", default=_env_or_file("PROMPT_EDIT"),
                    help="override the edit sentence used in the H3 grammar prompt (critic question stays the scenario's)")
+    p.add_argument("--attn-vis", type=int, default=int(os.environ.get("ATTN_VIS", "1")),
+                   help="per-iteration attention-mass maps (audio-ref / text / vision / reference-video -> generated video)")
+    p.add_argument("--attn-steps", default=os.environ.get("ATTN_STEPS", "14"),
+                   help="denoising-step indices (0-based model evals) at which the attention mass is captured")
     p.add_argument("--init-latents", default=os.environ.get("INIT_LATENTS", ""),
                    help="latents.pt from a previous run: start z_audio/delta_text from its best_z/best_d (refinement run); "
                         "the L2 anchors and LPIPS source stay the ORIGINAL source/baseline")
@@ -383,6 +387,9 @@ class H3Grad:
         assert n_gen_rows == (self.nlf // pt_) * (self.lh // ph_) * (self.lw // pw_), (n_gen_rows, self.nlf, self.lh, self.lw)
         assert self.audio0.shape[0] - self.nca == self.n_aud * cap["audio_channels"], (self.audio0.shape, self.n_aud)
         self.attention_kwargs = st.get("attention_kwargs", None)
+        self.text_token_tags = st.get("text_token_tags", None)
+        self.attn_steps: set = set()
+        self.last_attn: dict = {}
         self.patch = tuple(cap["patch_size"])
         self.C = cap["vae_latent_channels"]
         # scheduler consistency with the pipeline
@@ -456,6 +463,7 @@ class H3Grad:
         n_eval = len(self.timesteps)
         latents = self.latents0
         aud_gen = self.audio0[self.nca:]
+        self.last_attn = {}
         for i in range(n_eval):
             grad_on = i >= n_eval - grad_steps
             ctx = torch.enable_grad() if grad_on else torch.no_grad()
@@ -464,7 +472,15 @@ class H3Grad:
                 d = delta_text if grad_on else delta_text.detach()
                 audio_latents = torch.cat([z.to(aud_gen.dtype), aud_gen], dim=0)
                 enc = self.prompt_embeds.to(torch.float32) + d
+                cap_attn = i in self.attn_steps
+                if cap_attn:
+                    import h3_attn
+                    h3_attn.begin()
                 v_pred, a_pred = self._eval(latents, audio_latents, enc, i)
+                if cap_attn:
+                    res = h3_attn.end()
+                    if res is not None:
+                        self.last_attn[i] = res
                 new_vid = self.sched.step(v_pred[0, self.ncv:].float(), self.timesteps[i], latents[self.ncv:], return_dict=False)[0]
                 new_aud = self.asched.step(a_pred[0, self.nca:].float(), self.audio_timesteps[i], aud_gen, return_dict=False)[0]
                 latents = torch.cat([latents[:self.ncv], new_vid], dim=0)
@@ -572,6 +588,12 @@ def main():
     # ================= Phase B =================
     reset_peaks()
     H = H3Grad(args, cap)
+    if args.attn_vis and H.text_token_tags is not None:
+        sys.path.insert(0, _HERE)
+        import h3_attn
+        h3_attn.install({k: v.cpu() for k, v in H.layout.items()}, H.text_token_tags, H.ncv, H.nca)
+        H.attn_steps = {int(x) for x in args.attn_steps.replace(";", ",").split(",") if x.strip()}
+        log.info("[B] attention-mass capture at model evals %s (groups: %s)", sorted(H.attn_steps), h3_attn.GROUPS)
     from motion_opt.qwen_loss import build_qwen_model, build_qwen_rubric_inputs, compute_qwen_video_loss
     from motion_opt.perceptual_loss import adaptive_reg_weight, compute_perceptual_quality_loss
     qwen, proc = build_qwen_model(QWEN, device=H.aux_dev, gradient_checkpointing=True)
@@ -671,6 +693,28 @@ def main():
     log.info("[B] params: audio latent %s (|z|=%.1f, std %.3f), text residual %s (base std %.3f); mode=%s",
              tuple(z_audio.shape), float(z_src.norm()), float(z_src.std()), tuple(delta_text.shape), text_std, args.opt_mode)
 
+    def attn_report(frames, tag, it):
+        """Render + log the attention-mass maps captured during the last H.render (never raises)."""
+        if not H.last_attn:
+            return
+        try:
+            import h3_attn
+            for step_i, res in sorted(H.last_attn.items()):
+                png = os.path.join(out_dir, f"attn_iter_{it:02d}_step{step_i:02d}.png")
+                st = h3_attn.render(res, frames, H.nlf, H.lh, H.lw, H.patch, png, tag=f"{tag} step {step_i}")
+                maps = h3_attn.maps_from_mass(res["mass"], H.nlf, H.lh, H.lw, H.patch)
+                np.savez_compressed(png[:-4] + ".npz", maps=maps.astype(np.float16), groups=np.array(h3_attn.GROUPS))
+                json.dump(st, open(png[:-4] + ".json", "w"), indent=1)
+                mm, cr = st["mean_mass"], st["corr_with_motion"]
+                log.info("   attn@%d %s: mass audio_ref=%.4f audio_gen=%.4f text=%.4f vision=%.4f video_ref=%.3f self=%.3f | "
+                         "corr(motion): audio_ref=%+.2f text=%+.2f vision=%+.2f video_ref=%+.2f%s", step_i, tag,
+                         mm["audio_ref"], mm["audio_gen"], mm["text_txt"], mm["text_vis"], mm["video_ref"], mm["video_gen"],
+                         cr["audio_ref"], cr["text_txt"], cr["text_vis"], cr["video_ref"],
+                         f"  (capture error: {st['err']})" if st.get("err") else "")
+        except Exception as e:
+            log.warning("attention report failed: %s", e)
+        H.last_attn = {}
+
     # ---- CHECK 1: our loop (no grad) reproduces the pipeline ----
     t0 = time.time()
     rows_b, aud_b = H.render(z_src, torch.zeros_like(delta_text), grad_steps=0)   # always the SOURCE conditioning
@@ -688,6 +732,7 @@ def main():
     wav_b = H.decode_audio(aud_b)
     save_av(frames_b.permute(0, 2, 3, 1).cpu().numpy(), wav_b, cap["audio_sr"], os.path.join(out_dir, "baseline.mp4"))
     cached_src_frames = frames_b.detach()
+    attn_report(frames_b, "baseline", 0)
     del rows_b, diff, pf
     torch.cuda.empty_cache()
 
@@ -713,6 +758,10 @@ def main():
                 log.warning("preview save failed: %s", e)
         log.info("   render done (%s) ; decode grad chunks=%s/%s ; peak after decode %s", mem_after_render,
                  "all" if gchunks is None else sorted(gchunks), n_ch, gpu_mem_str())
+        if it > 0:
+            attn_report(frames.detach(), f"iter {it}", it)
+        else:
+            H.last_attn = {}
         assert frames.requires_grad, "decoded frames carry no graph - gradient path broken"
         metrics = {}
         # perceptual (LTX order: first, retain graph)
