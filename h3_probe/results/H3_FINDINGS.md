@@ -580,3 +580,12 @@ Decision (2026-09-06): the paired replicate study (seeds 7/11/23 x {both, text})
 running - the both-mode result D (clean leap over the rim, any-window 0.72, LPIPS 0.03) is visibly better
 than either text-only outcome (artifact / modest early hop), and audio-only is inert; that is the evidence
 reported: audio is not sufficient on H3 but it contributes on top of the text residual.
+
+### Retained goldfish artifacts (cleanup 2026-09-06)
+
+Kept (scratch `H3_exp/outputs/` and repo `h3_probe/results/`): `fullmethod_goldfish_D` (best "both" run,
+with `render/` = 16/24/32-step re-renders and `attn/` = attention-mass maps of baseline vs jump),
+`fullmethod_goldfish_D_text1`, `fullmethod_goldfish_D_text2` (text-only ablation), `fullmethod_goldfish_C`
+(rich-prompt run whose baseline already jumps; see its README). Deleted: the first blind-critic run, A, B and
+its replay/re-render/attention folders, R1/R2, audio-only, both2, and the unused seed-replicate folders;
+their numbers remain in Sec. 12-14 above.
