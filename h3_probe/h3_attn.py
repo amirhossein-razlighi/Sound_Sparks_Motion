@@ -82,6 +82,8 @@ def end() -> dict | None:
 def _capture(attn, h, rotary_emb, tm) -> None:
     """Replicates the processor's q/k path, then accumulates per-query attention mass per key group."""
     h = h.detach()
+    if h.shape[1] != STATE["group_id"].numel():
+        return  # not the packed sequence (e.g. the token refiner attends over the text rows only)
     if getattr(attn, "fused_projections", False):
         q, k, _ = attn.to_qkv(h).chunk(3, dim=-1)
     else:
@@ -226,6 +228,7 @@ def selftest() -> None:
     h = torch.randn(1, S, Ht * D)
     _capture(attn, h, None, tm)
     _capture(attn, h, None, tm)
+    _capture(attn, torch.randn(1, 10, Ht * D), None, tm)   # refiner-like short sequence: must be ignored
     res = end()
     m = res["mass"]
     assert m.shape == (44 - ncv, 6), m.shape
