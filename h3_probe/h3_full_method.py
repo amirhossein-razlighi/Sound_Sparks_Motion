@@ -969,6 +969,8 @@ def main():
         m = loss_and_backward(it, args.iterations)
         # snapshot the parameters that PRODUCED this loss, before the optimizer moves them (best-checkpoint fix)
         z_pre, d_pre = z_audio.detach().clone(), delta_text.detach().clone()
+        # per-iteration latents (the state that produced iter_XX.mp4) so any iteration can be re-rendered with --init-latents
+        torch.save({"best_z": z_pre.cpu(), "best_d": d_pre.cpu(), "best_iter": it}, os.path.join(out_dir, f"iter_{it:02d}_latents.pt"))
         ga = float(z_audio.grad.norm()) if (opt_audio and z_audio.grad is not None) else 0.0
         gt = float(delta_text.grad.norm()) if (opt_text and delta_text.grad is not None) else 0.0
         if args.optimizer == "ngd":
