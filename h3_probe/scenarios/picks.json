@@ -6,12 +6,6 @@
   "note": "clean leap out of the tank; baseline never jumps",
   "edit": "The goldfish jumps out of the fish tank into the air."
  },
- "boy_crouches": {
-  "run": "/scratch/amirrz/H3_exp/outputs/fullmethod_boy_crouches_both_ngd",
-  "iter": "final",
-  "note": "boy looks down and touches the water; baseline stays upright",
-  "edit": "The boy crouches slightly and touches the water."
- },
  "cat_yawns": {
   "run": "/scratch/amirrz/H3_exp/outputs/us_cat_yawns",
   "iter": 3,

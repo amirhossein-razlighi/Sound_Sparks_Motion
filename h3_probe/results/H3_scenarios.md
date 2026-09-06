@@ -128,6 +128,14 @@ improves it. Same source video, prompt, noise and step count in A and B.
   the dog only turns) and gen_woman_door opens the door only in the last frames (0.32/0.28) -> both queued next with the
   linspace objective; gen_basketball is ambiguous (ball hovers in one early frame).
 
+### 2026-09-06 - boy_crouches removed from the study set
+- frame-by-frame check of every boy_crouches run (user flagged it): the ngd run only makes the boy look down and bring a
+  hand to his face; the any-objective run produces jump cuts (boy standing with hands at the surface in the first frames,
+  then the baseline pose) or a different shot (crouching on the pool edge); noreg/acc3 runs equal the baseline. No water
+  touch anywhere -> removed from picks. The edit does not fit the source (the boy is already chest-deep in the pool).
+  The splash edit on the same source (boy_splashes, baseline stands up out of the pool instead) is queued with the
+  linspace objective (20372392).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -135,7 +143,7 @@ improves it. Same source video, prompt, noise and step count in A and B.
 | goldfish | retake input | jumps out of the tank | fail (0.004) | clean leap (0.72 any) | PACKAGED |
 | turtle_extends_neck | retake input | extends neck out of shell | fail (known, 0.08 any) | no visible change (0.20 any) | dropped |
 | cat_yawns | retake input | yawns widely | late yawn (last frame, 0.78 any) | iter 3: wide early yawn | PACKAGED |
-| boy_crouches | retake input | crouches, touches water | fail (0.22 default-q) | earlier run: looks down, touches water (0.68) | PACKAGED |
+| boy_crouches | retake input | crouches, touches water | fail (0.22 default-q) | no run touches the water (looks down / jump cuts) | dropped |
 | red_bird_opens_wings | retake input | opens wings | partial, late (0.11 lin / 0.97 any) | any-obj: kept baseline; lin rerun 20368915 | opt |
 | man_shouts | retake input | shouts loudly | partial, late hands (0.73 any) | iter 3: hands up + open-mouth shout | PACKAGED |
 | child_jumps | retake input | jumps up and down | fail (0.0007, static) | no activation, adversarial drift at iter 11+ | failed |
@@ -143,7 +151,7 @@ improves it. Same source video, prompt, noise and step count in A and B.
 | car_hood_opens | retake input | hood opens | success (0.81/0.99) | - | skip |
 | robot_both_arms | retake input | raises both arms | success (0.97/1.0) | - | skip |
 | cartoon_boy_jumps | retake input | jumps into the air | success (jumps early, 0.12/0.83) | - | skip |
-| boy_splashes | retake input | splashes water with both hands | unnatural (stands up, 0.38/0.63) | - | maybe |
+| boy_splashes | retake input | splashes water with both hands | unnatural (stands up, 0.38/0.63) | lin run 20372392 | opt |
 | man_claps | retake input | claps hands | partial (0.14/0.56) | - | maybe |
 | eagle_head_turn | retake input | turns head to camera | unclear, subject tiny (0.28/0.63) | - | skip |
 | man_nods | retake input | nods head | not visible (0.22/0.67) | - | maybe |
