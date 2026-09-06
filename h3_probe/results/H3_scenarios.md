@@ -136,6 +136,15 @@ improves it. Same source video, prompt, noise and step count in A and B.
   The splash edit on the same source (boy_splashes, baseline stands up out of the pool instead) is queued with the
   linspace objective (20372392).
 
+### 2026-09-06 - first linspace results
+- red_bird_opens_wings (lin): critic 0.11 -> 0.42 at iter 8 (iters 9-16 drift, perceptual > 0.58, excluded by the guard).
+  Automated frame analysis (silhouette width / colour area / CLIP wing probe, run because the image viewer was blocked)
+  finds no wing spread in any iteration: iters 1-6 re-time frames 3-5, iter 7 has a transient glitch, iter 8 changes texture
+  only. Visual confirmation pending.
+- car_drives_out (lin): flat at 0.005 for 16 iterations - the linspace sampling never sees the late movement -> failed.
+- man_celebrates (lin): 0.24 -> 0.95 at iter 4 (perceptual 0.24, within the guard), iters 4-7 all > 0.65 -> promising,
+  visual check pending.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -144,7 +153,7 @@ improves it. Same source video, prompt, noise and step count in A and B.
 | turtle_extends_neck | retake input | extends neck out of shell | fail (known, 0.08 any) | no visible change (0.20 any) | dropped |
 | cat_yawns | retake input | yawns widely | late yawn (last frame, 0.78 any) | iter 3: wide early yawn | PACKAGED |
 | boy_crouches | retake input | crouches, touches water | fail (0.22 default-q) | no run touches the water (looks down / jump cuts) | dropped |
-| red_bird_opens_wings | retake input | opens wings | partial, late (0.11 lin / 0.97 any) | any-obj: kept baseline; lin rerun 20368915 | opt |
+| red_bird_opens_wings | retake input | opens wings | partial, late (0.11 lin / 0.97 any) | lin: 0.42 at iter 8 but no wing spread measurable | likely failed |
 | man_shouts | retake input | shouts loudly | partial, late hands (0.73 any) | iter 3: hands up + open-mouth shout | PACKAGED |
 | child_jumps | retake input | jumps up and down | fail (0.0007, static) | no activation, adversarial drift at iter 11+ | failed |
 | man_covers_face | retake input | covers face with both hands | success (0.996) | - | skip |
@@ -158,9 +167,9 @@ improves it. Same source video, prompt, noise and step count in A and B.
 | dog_tilts_head | retake input | tilts head | static (0.46/0.51) | - | maybe |
 | dog_stands_up | retake input | stands up on all fours | fail (0.001, stays seated) | flat critic, no change in 8 iters | failed |
 | monkey_jumps_branch | retake input | jumps to another branch | fail (0.0004, only head turn) | cancelled (flat critic) | skip |
-| car_drives_out | retake input | drives out of the garage | late/weak (0.006, moves in last frames) | lin run 20370116 | opt |
+| car_drives_out | retake input | drives out of the garage | late/weak (0.006, moves in last frames) | lin: flat, no change | failed |
 | cat_stretches | retake input | stretches front legs | static but critic says 0.77 lin | cancelled (critic saturated) | skip |
-| man_celebrates | retake input | raises both arms | late (last 3 frames, 0.21/0.06) | lin run 20370117 | opt |
+| man_celebrates | retake input | raises both arms | late (last 3 frames, 0.21/0.06) | lin: 0.95 at iter 4, visual check pending | promising |
 | rose_sways | retake input | sways in the wind | fail (0.016, static) | lin run 20370120 | opt |
 | turtle_walks | retake input | walks forward | fail (0.07, static) | lin run 20370121 | opt |
 | bird_hops | retake input | hops along the branch | fail (0.14/0.27, wing flutter only) | lin run 20370118 | opt |
