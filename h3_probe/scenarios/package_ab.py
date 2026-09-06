@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Package finished user-study scenarios as A/B pairs (login node, no GPU).
+"""Package user-study A/B pairs from scenarios/picks.json (login node, no GPU).
 
-For each slug (argv, or all us_* with render_results.json): copy the 16- and 32-step renders of the
-baseline (A) and ours (B) into h3_probe/results/user_study/<slug>/ together with the scores and the
-scenario text, and (re)write user_study/INDEX.md.  Videos are git-ignored; the index and json are tracked.
+A = <run>/baseline_av.mp4 (H3 baseline, 16 steps), B = <run>/iter_<iter>_av.mp4 or optimized_final_av.mp4 (ours, same
+noise and step count).  32-step re-renders (render_*_32_av.mp4, from render_ab.sbatch) are copied too when present.
+Output: h3_probe/results/user_study/<slug>/{A_baseline,B_ours}_av.mp4 (+ _32steps), meta.json, and INDEX.md.
+Videos are git-ignored; picks.json, meta.json and INDEX.md are tracked.
 """
 import json
 import os
@@ -11,8 +12,8 @@ import shutil
 import sys
 
 REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
-OUTS = "/scratch/amirrz/H3_exp/outputs"
 DST = os.path.join(REPO, "h3_probe/results/user_study")
+PICKS = {k: v for k, v in json.load(open(os.path.join(REPO, "h3_probe/scenarios/picks.json"))).items() if not k.startswith("_")}
 CANDS = {}
 for f in ("candidates_r1.json", "candidates_r2.json"):
     p = os.path.join(REPO, "h3_probe/scenarios", f)
@@ -21,46 +22,43 @@ for f in ("candidates_r1.json", "candidates_r2.json"):
 
 
 def main():
-    slugs = sys.argv[1:] or sorted(d[3:] for d in os.listdir(OUTS) if d.startswith("us_") and
-                                   os.path.exists(os.path.join(OUTS, d, "render_results.json")))
+    slugs = sys.argv[1:] or sorted(PICKS)
     rows = []
     for s in slugs:
-        src = os.path.join(OUTS, "us_" + s)
-        rr = json.load(open(os.path.join(src, "render_results.json")))
-        res = json.load(open(os.path.join(src, "results.json"))) if os.path.exists(os.path.join(src, "results.json")) else {}
+        pk = PICKS[s]
+        run, it = pk["run"], pk["iter"]
+        b = os.path.join(run, "optimized_final_av.mp4" if it == "final" else f"iter_{int(it):02d}_av.mp4")
+        a = os.path.join(run, "baseline_av.mp4")
+        if not (os.path.exists(a) and os.path.exists(b)):
+            print(f"[skip] {s}: missing {a if not os.path.exists(a) else b}")
+            continue
         d = os.path.join(DST, s)
         os.makedirs(d, exist_ok=True)
-        for steps in sorted({v["steps"] for v in rr.values()}):
-            for tag, name in (("baseline", "A_baseline"), ("optimized", "B_ours")):
-                f = os.path.join(src, f"render_{tag}_{steps}_av.mp4")
-                if os.path.exists(f):
-                    shutil.copy2(f, os.path.join(d, f"{name}_{steps}steps_av.mp4"))
-        sc = CANDS.get(s, {})
-        meta = {"slug": s, "edit": sc.get("edit"), "question": sc.get("question"), "src": sc.get("src"), "render": rr,
-                "best_iter": res.get("best_iter"), "baseline_yes_any": res.get("baseline", {}).get("yes_any"),
-                "optimized_yes_any": res.get("optimized", {}).get("yes_any")}
+        shutil.copy2(a, os.path.join(d, "A_baseline_av.mp4"))
+        shutil.copy2(b, os.path.join(d, "B_ours_av.mp4"))
+        extra = []
+        for tag, name in (("baseline", "A_baseline"), ("optimized", "B_ours")):
+            f = next((x for x in (os.path.join(run, f"render_{tag}_32_av.mp4"), os.path.join(run, "render", f"render_{tag}_32_av.mp4"))
+                      if os.path.exists(x)), None)
+            if f:
+                shutil.copy2(f, os.path.join(d, f"{name}_32steps_av.mp4"))
+                extra.append(name + "_32steps")
+        res = json.load(open(os.path.join(run, "results.json"))) if os.path.exists(os.path.join(run, "results.json")) else {}
+        edit = pk.get("edit") or CANDS.get(s, {}).get("edit") or res.get("edit") or ""
+        meta = {"slug": s, "edit": edit, "run": run, "iter": it, "note": pk.get("note", ""), "steps": 16, "extra": extra,
+                "baseline_yes": res.get("baseline_yes"), "baseline_yes_any": res.get("baseline_yes_any"),
+                "best_iter_by_critic": res.get("best_iter")}
         json.dump(meta, open(os.path.join(d, "meta.json"), "w"), indent=1)
-        b16, o16 = rr.get("baseline_16", {}), rr.get("optimized_16", {})
-        b32, o32 = rr.get("baseline_32", {}), rr.get("optimized_32", {})
-        rows.append(f"| {s} | {sc.get('edit', '')} | {b16.get('yes_any', float('nan')):.3f} -> {o16.get('yes_any', float('nan')):.3f} "
-                    f"| {b32.get('yes_any', float('nan')):.3f} -> {o32.get('yes_any', float('nan')):.3f} | {o32.get('lpips_vs_baseline_same_steps', float('nan')):.3f} |")
+        rows.append(f"| {s} | {edit} | {it} | {pk.get('note', '')} |")
         print(rows[-1])
-    idx = os.path.join(DST, "INDEX.md")
-    old = {}
-    if os.path.exists(idx):
-        for line in open(idx):
-            if line.startswith("| ") and not line.startswith("| slug") and not line.startswith("|---"):
-                old[line.split("|")[1].strip()] = line.rstrip("\n")
-    for r in rows:
-        old[r.split("|")[1].strip()] = r
-    with open(idx, "w") as f:
-        f.write("# User-study A/B pairs (A = H3 baseline, B = ours; same source, prompt, noise, steps)\n\n"
-                "Files per scenario: `A_baseline_<steps>steps_av.mp4`, `B_ours_<steps>steps_av.mp4`, `meta.json`.\n"
-                "Critic yes-any = noisy-OR over 6 windows of the scenario question (in-loop critic, not evidence).\n\n"
-                "| slug | edit | yes-any 16 steps (A -> B) | yes-any 32 steps (A -> B) | LPIPS(B,A) 32 |\n|---|---|---|---|---|\n")
-        for k in sorted(old):
-            f.write(old[k] + "\n")
-    print("wrote", idx)
+    with open(os.path.join(DST, "INDEX.md"), "w") as f:
+        f.write("# User-study A/B pairs (A = H3 baseline, B = ours; same source, prompt, noise and 16 steps)\n\n"
+                "Files per scenario: `A_baseline_av.mp4`, `B_ours_av.mp4` (+ `_32steps` re-renders when available), `meta.json`.\n"
+                "B is the iteration picked by visual inspection of all previews (`scenarios/picks.json`).\n\n"
+                "| slug | edit | picked iter | what changes |\n|---|---|---|---|\n")
+        for r in rows:
+            f.write(r + "\n")
+    print("wrote", os.path.join(DST, "INDEX.md"))
 
 
 if __name__ == "__main__":

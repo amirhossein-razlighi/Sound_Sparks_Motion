@@ -109,16 +109,27 @@ improves it. Same source video, prompt, noise and step count in A and B.
   car_drives_out 20370116, man_celebrates 20370117, bird_hops 20370118, gen_frog_jumps 20370119, rose_sways 20370120, turtle_walks 20370121.
   dog_stands_up (any objective, running) stays as the second data point for flat cases.
 
+### 2026-09-06 - visual inspection of every iteration (rule change)
+- The critic's best checkpoint is not the showcase: for each run all iteration previews are now put on one sheet
+  (`ab_sheet.sh`, one row per iteration, CROP to zoom on the subject) and inspected.  Findings:
+  cat_yawns iter 3 = wide early yawn (baseline yawns only in the last frame) -> usable (alt iter 9); iters 6/7/10 show
+  overlay artifacts (drift); man_shouts iter 3 = hands up from mid-clip + open-mouth shout in natural framing (iter 4 is a
+  dramatic shout but the shot changes to a face close-up); turtle_extends_neck = no change in any iteration.
+- picks are recorded in `scenarios/picks.json` (slug -> run dir + iteration); `package_ab.py` builds
+  `results/user_study/<slug>/{A_baseline,B_ours}_av.mp4` from them (16 steps, same noise).  Per-iteration latents are now
+  saved by the method script (`iter_XX_latents.pt`) so future picks can be re-rendered at 32 steps.
+- packaged so far: goldfish, boy_crouches, cat_yawns (iter 3), man_shouts (iter 3).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
 |---|---|---|---|---|---|
-| goldfish | retake input | jumps out of the tank | fail (0.004) | clean leap (0.72 any) | DONE (D) |
+| goldfish | retake input | jumps out of the tank | fail (0.004) | clean leap (0.72 any) | PACKAGED |
 | turtle_extends_neck | retake input | extends neck out of shell | fail (known, 0.08 any) | no visible change (0.20 any) | dropped |
-| cat_yawns | retake input | yawns widely | late yawn (0.78 any) | identical to baseline | dropped |
-| boy_crouches | retake input | crouches, touches water | fail (0.22 default-q) | earlier run: looks down, touches water (0.68) | render |
+| cat_yawns | retake input | yawns widely | late yawn (last frame, 0.78 any) | iter 3: wide early yawn | PACKAGED |
+| boy_crouches | retake input | crouches, touches water | fail (0.22 default-q) | earlier run: looks down, touches water (0.68) | PACKAGED |
 | red_bird_opens_wings | retake input | opens wings | partial, late (0.11 lin / 0.97 any) | any-obj: kept baseline; lin rerun 20368915 | opt |
-| man_shouts | retake input | shouts loudly | partial, late hands (0.73 any) | iter 2: hands earlier, shout unchanged (0.99) | reserve |
+| man_shouts | retake input | shouts loudly | partial, late hands (0.73 any) | iter 3: hands up + open-mouth shout | PACKAGED |
 | child_jumps | retake input | jumps up and down | fail (0.0007, static) | no activation, adversarial drift at iter 11+ | failed |
 | man_covers_face | retake input | covers face with both hands | success (0.996) | - | skip |
 | car_hood_opens | retake input | hood opens | success (0.81/0.99) | - | skip |
