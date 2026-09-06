@@ -66,6 +66,8 @@ def _load(name):
 _bs = _load("baseline_sweep")
 CKPT, QWEN = _bs.CKPT, _bs.QWEN
 SCEN = {k: v for k, v in json.load(open(os.path.join(_HERE, "pin_all_scenarios.json"))).items() if not k.startswith("_")}
+for _extra in [p for p in os.environ.get("SCEN_JSON", "").split(":") if p]:   # extra scenario files (user-study candidates)
+    SCEN.update({k: v for k, v in json.load(open(_extra)).items() if not k.startswith("_")})
 
 
 def parse_args():
@@ -628,8 +630,8 @@ def main():
     log.info("[B] critic: img_size=%d crop=%s fp32_head=%s select_by=%s", args.qwen_img_size, CROP, bool(args.critic_fp32_head), args.select_by)
     ci, yes_id, no_id = build_qwen_rubric_inputs(processor=proc, edit_prompt=sc["edit"], num_frames=args.qwen_max_frames,
                                                  img_size=args.qwen_img_size, device=H.aux_dev,
-                                                 motion_question=(args.motion_question or None), gradient_rubric="motion")
-    log.info("[B] critic motion question: %s", args.motion_question or "<library default>")
+                                                 motion_question=(args.motion_question or sc.get("question") or None), gradient_rubric="motion")
+    log.info("[B] critic motion question: %s", args.motion_question or sc.get("question") or "<library default>")
     ov = {"motion": 1.0, "entities": 0.0, "overall": 0.0} if args.qwen_gradient_rubric == "motion" else None  # None -> rubric defaults
     ov_report = {"motion": 1.0, "entities": 0.0, "overall": 0.0}   # reporting stays motion-only (comparable to all H3 tables)
     log.info("[B] models ready; gradient rubric=%s; peak mem %s", args.qwen_gradient_rubric, gpu_mem_str())
