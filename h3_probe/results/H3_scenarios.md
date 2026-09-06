@@ -238,7 +238,8 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   Queued with the event recipe (any objective, 2 GPUs) in two chains behind the running 2-GPU jobs:
   A: gen_woman_desk 20384606 -> gen_wolf_hill 20384607 -> gen_dolphin_sea 20384608 -> gen_rooster 20384609;
   B: gen_koi_pond 20384610 -> gen_sealion 20384611 -> gen_cow_field 20384612 -> gen_goat_field 20384613. man_couch skipped (too dark/small).
-- boy_splashes (lin): critic 0.33 -> 0.91 at iters 9-10 (perceptual 0.18-0.19) - visual check next.
+- boy_splashes (lin): critic 0.33 -> 0.91 at iters 9-10; sheets confirm a real two-handed splash with spray in iters 7-10
+  (iter 9 clearest) while the baseline only stands up -> PACKAGED (4 pairs: goldfish, cat_yawns, man_shouts, boy_splashes).
 
 ## Scenario table (updated as results land)
 
@@ -255,7 +256,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | car_hood_opens | retake input | hood opens | success (0.81/0.99) | - | skip |
 | robot_both_arms | retake input | raises both arms | success (0.97/1.0) | - | skip |
 | cartoon_boy_jumps | retake input | jumps into the air | success (jumps early, 0.12/0.83) | - | skip |
-| boy_splashes | retake input | splashes water with both hands | unnatural (stands up, 0.38/0.63) | lin run 20372392 | opt |
+| boy_splashes | retake input | splashes water with both hands | unnatural (stands up, 0.38/0.63) | iter 9: clear two-handed splash mid-clip (alt 7/8/10) | PACKAGED |
 | man_claps | retake input | claps hands | partial (hands meet once, 0.14/0.56) | lin run 20379582 | opt |
 | eagle_head_turn | retake input | turns head to camera | unclear, subject tiny (0.28/0.63) | - | skip |
 | man_nods | retake input | nods head | not visible (0.22/0.67) | - | maybe |

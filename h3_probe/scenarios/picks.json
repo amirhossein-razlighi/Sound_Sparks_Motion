@@ -15,5 +15,11 @@
   "run": "/scratch/amirrz/H3_exp/outputs/us_man_shouts",
   "iter": 3,
   "note": "hands come up from mid-clip and an open-mouth shout; baseline raises hands only in the last frames"
+ },
+ "boy_splashes": {
+  "run": "/scratch/amirrz/H3_exp/outputs/us_boy_splashes_lin",
+  "iter": 9,
+  "edit": "The boy splashes the water with both hands.",
+  "note": "two-handed splash with water spraying up mid-clip (frames ~40-65); baseline only stands up out of the water. alt: iters 7, 8, 10"
  }
 }
