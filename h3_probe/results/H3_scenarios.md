@@ -120,6 +120,14 @@ improves it. Same source video, prompt, noise and step count in A and B.
   saved by the method script (`iter_XX_latents.pt`) so future picks can be re-rendered at 32 steps.
 - packaged so far: goldfish, boy_crouches, cat_yawns (iter 3), man_shouts (iter 3).
 
+### 2026-09-06 - dog_stands_up cancelled; flat-critic rule
+- dog_stands_up: 8 iterations, critic flat at 0.005, every preview identical to the baseline (dog stays seated) -> cancelled
+  at iter 8. With child_jumps this makes the rule: if the baseline critic score is ~0 and the baseline shows no precursor of
+  the motion, the gradient carries no usable direction and the run either stays put or drifts. Such cells are skipped.
+- round-2 screening so far: gen_pigeon_rail and gen_pianist succeed at baseline (skip); gen_dog_wet never shakes (0.09/0.23,
+  the dog only turns) and gen_woman_door opens the door only in the last frames (0.32/0.28) -> both queued next with the
+  linspace objective; gen_basketball is ambiguous (ball hovers in one early frame).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -140,7 +148,7 @@ improves it. Same source video, prompt, noise and step count in A and B.
 | eagle_head_turn | retake input | turns head to camera | unclear, subject tiny (0.28/0.63) | - | skip |
 | man_nods | retake input | nods head | not visible (0.22/0.67) | - | maybe |
 | dog_tilts_head | retake input | tilts head | static (0.46/0.51) | - | maybe |
-| dog_stands_up | retake input | stands up on all fours | fail (0.001, stays seated) | running 20367783 (any) | opt |
+| dog_stands_up | retake input | stands up on all fours | fail (0.001, stays seated) | flat critic, no change in 8 iters | failed |
 | monkey_jumps_branch | retake input | jumps to another branch | fail (0.0004, only head turn) | cancelled (flat critic) | skip |
 | car_drives_out | retake input | drives out of the garage | late/weak (0.006, moves in last frames) | lin run 20370116 | opt |
 | cat_stretches | retake input | stretches front legs | static but critic says 0.77 lin | cancelled (critic saturated) | skip |
