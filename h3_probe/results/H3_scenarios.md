@@ -152,6 +152,11 @@ improves it. Same source video, prompt, noise and step count in A and B.
 - gen_frog_jumps (lin) OOMed in Phase B on 2 GPUs: the H3-generated sources (448x768, 124 frames) give a longer reference
   sequence than the retake inputs. All generated-source runs move to the 3-GPU sbatch.
 
+- red_bird_opens_wings and bird_hops (lin) verified on the sheets: every iteration equals the baseline (late flutter only),
+  no wing spread, no hop -> both failed. The parrot source is exhausted.
+- generated-source runs resubmitted on 3 GPUs (`full_method_3gpu.sbatch`, two chains so at most two 3-GPU jobs run):
+  gen_frog_jumps 20379834 (capture reused) -> gen_woman_door 20379837 -> gen_basketball 20379840; gen_dog_wet 20379836 -> gen_glass_table 20379839.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -160,7 +165,7 @@ improves it. Same source video, prompt, noise and step count in A and B.
 | turtle_extends_neck | retake input | extends neck out of shell | fail (known, 0.08 any) | no visible change (0.20 any) | dropped |
 | cat_yawns | retake input | yawns widely | late yawn (last frame, 0.78 any) | iter 3: wide early yawn | PACKAGED |
 | boy_crouches | retake input | crouches, touches water | fail (0.22 default-q) | no run touches the water (looks down / jump cuts) | dropped |
-| red_bird_opens_wings | retake input | opens wings | partial, late (0.11 lin / 0.97 any) | lin: 0.42 at iter 8 but no wing spread measurable | likely failed |
+| red_bird_opens_wings | retake input | opens wings | partial, late (0.11 lin / 0.97 any) | lin: no wing spread in any iteration | failed |
 | man_shouts | retake input | shouts loudly | partial, late hands (0.73 any) | iter 3: hands up + open-mouth shout | PACKAGED |
 | child_jumps | retake input | jumps up and down | fail (0.0007, static) | no activation, adversarial drift at iter 11+ | failed |
 | man_covers_face | retake input | covers face with both hands | success (0.996) | - | skip |
@@ -179,11 +184,11 @@ improves it. Same source video, prompt, noise and step count in A and B.
 | man_celebrates | retake input | raises both arms | late (last 3 frames, 0.21/0.06) | iter 4: both arms fully up mid-clip (alt iter 6) | PACKAGED |
 | rose_sways | retake input | sways in the wind | fail (0.016, static) | lin run 20370120 | opt |
 | turtle_walks | retake input | walks forward | fail (0.07, static) | lin run 20370121 | opt |
-| bird_hops | retake input | hops along the branch | fail (0.14/0.27, wing flutter only) | lin: 0.13 -> 0.31 at iter 4, visual check pending | weak |
+| bird_hops | retake input | hops along the branch | fail (0.14/0.27, wing flutter only) | lin: identical to baseline | failed |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
 | gen_horse_rears | H3 t2va | rears up on hind legs | fail (0.0002, only walks) | cancelled (flat critic) | skip |
-| gen_frog_jumps | H3 t2va | jumps off the lily pad | late (leaves frame in last 2 frames, 0.016) | lin run 20370119 | opt |
+| gen_frog_jumps | H3 t2va | jumps off the lily pad | late (leaves frame in last 2 frames, 0.016) | 2-GPU OOM; 3-GPU run 20379834 | opt |
 | gen_woman_stands | H3 t2va | stands up from bench | success (stands mid-clip) | - | skip |
 | gen_cat_jumps_down | H3 t2va | jumps down from windowsill | success (late but jumps) | - | skip |
 | gen_man_drinks | H3 t2va | drinks from mug | success (0.93/0.98) | - | skip |
@@ -191,12 +196,12 @@ improves it. Same source video, prompt, noise and step count in A and B.
 | gen_kid_swings | H3 t2va | starts swinging | unclear, subject tiny (0.55/0.99) | - | skip |
 | gen_pigeon_rail | H3 t2va (r2) | takes off and flies | success (0.98/1.0) | - | skip |
 | gen_pianist | H3 t2va (r2) | plays the piano | success (0.96/1.0) | - | skip |
-| gen_dog_wet | H3 t2va (r2) | shakes water off | fail (only turns, 0.09/0.23) | lin run 20371180 | opt |
-| gen_woman_door | H3 t2va (r2) | opens door, walks in | late (door opens in last frames, 0.32/0.28) | lin run 20371181 | opt |
-| gen_basketball | H3 t2va (r2) | bounces | partial (hovers in one frame, 0.17/0.23) | lin run 20379583 | opt |
+| gen_dog_wet | H3 t2va (r2) | shakes water off | fail (only turns, 0.09/0.23) | 3-GPU run 20379836 | opt |
+| gen_woman_door | H3 t2va (r2) | opens door, walks in | late (door opens in last frames, 0.32/0.28) | 3-GPU run 20379837 | opt |
+| gen_basketball | H3 t2va (r2) | bounces | partial (hovers in one frame, 0.17/0.23) | 3-GPU run 20379840 | opt |
 | gen_woman_beach | H3 t2va (r2) | waves at camera | success (0.98/1.0) | - | skip |
 | gen_umbrella | H3 t2va (r2) | opens umbrella | success (0.98/0.99) | - | skip |
 | gen_candle | H3 t2va (r2) | flame blown out | fail (0.0009, steady flame) | held (flat critic) | hold |
 | gen_rowboat | H3 t2va (r2) | rocks side to side | fail (0.01, static) | held (flat critic) | hold |
 | gen_bell | H3 t2va (r2) | swings and rings | fail (0.06/0.10, barely moves) | held | hold |
-| gen_glass_table | H3 t2va (r2) | tips over, spills | late + distorted (glass morphs in last frames) | lin run 20372556 | opt |
+| gen_glass_table | H3 t2va (r2) | tips over, spills | late + distorted (glass morphs in last frames) | 3-GPU run 20379839 | opt |
