@@ -559,3 +559,19 @@ pinned/reference sounds barely change frames; |delta_text| does the work): H3 tr
 to be made consistent with the video, whereas LTX-2's Retake pipeline makes the audio latent a first-class
 motion condition. The method transfers (it activates the jump from the failing prompt), the audio-specific
 attention mechanism does not.
+
+## 14. Mode ablation on the best recipe (goldfish, D settings, seed 42, 2026-09-06)
+
+| run | mode | best iter | any-window yes (best) | max-win | LPIPS term | visual |
+|---|---|---|---|---|---|---|
+| D | both | 3 | 0.69 (final render 0.72) | 0.68 | 0.03 | clean leap over the rim (Sec. 12b) |
+| both2 | both | 8 | 0.9996 | 0.98 | 0.32 | degenerate: scene re-composed (tank moved, fish floating outside) - selection fooled |
+| text1 | text only | 3 | 0.39 | 0.31 | 0.04 | large translucent artifact above the tank, not a fish |
+| text2 | text only | 5 | 0.67 | 0.65 | 0.04 | fish over the rim at 0-1 s, plausible but early/modest |
+| audio1 | audio only | 3 | 0.042 (baseline 0.041) | 0.009 | 0.0003 | nothing; frame change 0.001 |
+
+Reading: on H3 the audio latent alone is inert (|dz| = 3.8 moves the video by 0.001), the text residual
+alone can reach jump-like states (but both text-only examples are flawed), and the joint run produced the
+one clean leap (1 of 2). With n = 2 per mode and non-reproducible trajectories this cannot separate "both"
+from "text only"; a paired replicate study (new seeds, both vs text on the same noise, LPIPS 1.5 so the
+selection rejects degenerate frames) follows.
