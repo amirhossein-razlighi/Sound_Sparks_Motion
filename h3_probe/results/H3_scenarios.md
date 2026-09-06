@@ -193,6 +193,14 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   koi (jumps), man on couch (sneezes), woman at desk (yawns), girl with cake (blows out candles), sea lion (barks),
   goat (bleats) - `scenarios/gen_inputs_r4.json`, `scenarios/candidates_r4.json`. gen 20380356 -> screening 20380357 (outputs/screen_r4).
 
+### 2026-09-06 (night) - round 5: variety beyond mouth events
+- user: vary the motion types (cars, doors, dances, falling, shattering, breaking), not only mouths. Round 5 = 14 generated
+  sources at retake size + 2 edits on existing car sources: glass falls and shatters, vase topples, dominoes topple, block
+  tower collapses, balloon pops, ice cracks, door slams, elevator doors open, ceiling fan spins, woman dances/spins, man
+  dances, stone splashes into pond, car door swings open (generated + the red-car retake source), windmill turns, car
+  headlights flash + horn - `scenarios/gen_inputs_r5.json`, `scenarios/candidates_r5.json`. gen 20380390 (after r4 gen) ->
+  screening 20380391 (outputs/screen_r5).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
