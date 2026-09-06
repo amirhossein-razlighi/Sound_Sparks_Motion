@@ -136,6 +136,9 @@ def parse_args():
                    help="per-iteration attention-mass maps (audio-ref / text / vision / reference-video -> generated video)")
     p.add_argument("--attn-steps", default=os.environ.get("ATTN_STEPS", "14"),
                    help="denoising-step indices (0-based model evals) at which the attention mass is captured")
+    p.add_argument("--perc-max", type=float, default=float(os.environ.get("PERC_MAX", "inf")),
+                   help="checkpoints whose perceptual term (LPIPS+temporal) exceeds this are never selected as best "
+                        "(guards against late adversarial drift, e.g. caption-like textures); default: no limit")
     p.add_argument("--render-steps", default=os.environ.get("RENDER_STEPS", "16"),
                    help="phase=render: step counts at which baseline and --init-latents are re-rendered and scored")
     p.add_argument("--init-latents", default=os.environ.get("INIT_LATENTS", ""),
@@ -977,7 +980,7 @@ def main():
             if lr_sched is not None:
                 lr_sched.step()
             cur_lr = optimizer.param_groups[0]["lr"]
-        is_best = m["sel"] < best["sel"]
+        is_best = m["sel"] < best["sel"] and m.get("perceptual", 0.0) <= args.perc_max
         if is_best:
             best = {"total": m["total"], "sel": m["sel"], "qwen_nll": m["qwen_nll"], "iter": it, "z": z_pre, "d": d_pre}
             no_improve = 0

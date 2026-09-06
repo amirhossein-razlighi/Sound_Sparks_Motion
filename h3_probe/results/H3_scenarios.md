@@ -96,6 +96,19 @@ improves it. Same source video, prompt, noise and step count in A and B.
 - child_jumps: critic flat at 0.002 for 10 iterations while the latents move (perceptual 0.05) - H3 does not start a jump
   from this seated pose; man_shouts hovers at 0.15-0.18. Waiting for tier 1 before deciding on the other "flat" cases.
 
+### 2026-09-06 - batch 2 done: drift guard, queue re-planned
+- child_jumps: critic flat (0.002) for 10 iterations, then at iter 11-13 the latents drift into caption-like white text
+  panels that the critic scores 0.14 - adversarial drift, the total loss (nll + LPIPS 0.5) still preferred it. Unusable.
+  Added `--perc-max` / PERC_MAX to h3_full_method.py (default off): checkpoints whose perceptual term exceeds it are never
+  selected. All new runs use PERC_MAX=0.25.
+- man_shouts: best iter 2 (any 0.73 -> 0.99, small change): hands come up a little earlier; the shout itself is not
+  clearly stronger -> weak pair, keep as reserve.
+- re-plan: "flat" cases (critic ~0 and no motion precursor: monkey_jumps_branch, gen_horse_rears) and critic-saturated
+  cat_stretches are cancelled. Late/partial/sustained cases are resubmitted with the linspace objective (rewards the motion
+  across the whole clip instead of one window) as `us_<slug>_lin`, reusing captures where Phase A already ran:
+  car_drives_out 20370116, man_celebrates 20370117, bird_hops 20370118, gen_frog_jumps 20370119, rose_sways 20370120, turtle_walks 20370121.
+  dog_stands_up (any objective, running) stays as the second data point for flat cases.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -105,8 +118,8 @@ improves it. Same source video, prompt, noise and step count in A and B.
 | cat_yawns | retake input | yawns widely | late yawn (0.78 any) | identical to baseline | dropped |
 | boy_crouches | retake input | crouches, touches water | fail (0.22 default-q) | earlier run: looks down, touches water (0.68) | render |
 | red_bird_opens_wings | retake input | opens wings | partial, late (0.11 lin / 0.97 any) | any-obj: kept baseline; lin rerun 20368915 | opt |
-| man_shouts | retake input | shouts loudly | fail (known) | running 20363984 | opt |
-| child_jumps | retake input | jumps up and down | fail (0.0007, static) | running 20363983 | opt |
+| man_shouts | retake input | shouts loudly | partial, late hands (0.73 any) | iter 2: hands earlier, shout unchanged (0.99) | reserve |
+| child_jumps | retake input | jumps up and down | fail (0.0007, static) | no activation, adversarial drift at iter 11+ | failed |
 | man_covers_face | retake input | covers face with both hands | success (0.996) | - | skip |
 | car_hood_opens | retake input | hood opens | success (0.81/0.99) | - | skip |
 | robot_both_arms | retake input | raises both arms | success (0.97/1.0) | - | skip |
@@ -116,18 +129,18 @@ improves it. Same source video, prompt, noise and step count in A and B.
 | eagle_head_turn | retake input | turns head to camera | unclear, subject tiny (0.28/0.63) | - | skip |
 | man_nods | retake input | nods head | not visible (0.22/0.67) | - | maybe |
 | dog_tilts_head | retake input | tilts head | static (0.46/0.51) | - | maybe |
-| dog_stands_up | retake input | stands up on all fours | fail (0.001, stays seated) | queued 20367783 | opt |
-| monkey_jumps_branch | retake input | jumps to another branch | fail (0.0004, only head turn) | queued 20367784 | opt |
-| car_drives_out | retake input | drives out of the garage | late/weak (0.006, moves in last frames) | queued 20367785 | opt |
-| cat_stretches | retake input | stretches front legs | fail (static) | queued 20367786 | opt |
-| man_celebrates | retake input | raises both arms | late (last 3 frames, 0.21/0.06) | queued 20367787 | opt |
-| rose_sways | retake input | sways in the wind | fail (0.016, static) | queued 20367788 | opt |
-| turtle_walks | retake input | walks forward | fail (0.07, static) | queued 20367789 | opt |
-| bird_hops | retake input | hops along the branch | fail (0.14/0.27, wing flutter only) | queued 20367790 | opt |
+| dog_stands_up | retake input | stands up on all fours | fail (0.001, stays seated) | running 20367783 (any) | opt |
+| monkey_jumps_branch | retake input | jumps to another branch | fail (0.0004, only head turn) | cancelled (flat critic) | skip |
+| car_drives_out | retake input | drives out of the garage | late/weak (0.006, moves in last frames) | lin run 20370116 | opt |
+| cat_stretches | retake input | stretches front legs | static but critic says 0.77 lin | cancelled (critic saturated) | skip |
+| man_celebrates | retake input | raises both arms | late (last 3 frames, 0.21/0.06) | lin run 20370117 | opt |
+| rose_sways | retake input | sways in the wind | fail (0.016, static) | lin run 20370120 | opt |
+| turtle_walks | retake input | walks forward | fail (0.07, static) | lin run 20370121 | opt |
+| bird_hops | retake input | hops along the branch | fail (0.14/0.27, wing flutter only) | lin run 20370118 | opt |
 | dog_runs_off | retake input | gets up and runs off | screening OOMed, rescreen r2 | - | pending |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
-| gen_horse_rears | H3 t2va | rears up on hind legs | fail (0.0002, only walks) | queued 20368483 | opt |
-| gen_frog_jumps | H3 t2va | jumps off the lily pad | late (leaves frame in last 2 frames, 0.016) | queued 20368484 | opt |
+| gen_horse_rears | H3 t2va | rears up on hind legs | fail (0.0002, only walks) | cancelled (flat critic) | skip |
+| gen_frog_jumps | H3 t2va | jumps off the lily pad | late (leaves frame in last 2 frames, 0.016) | lin run 20370119 | opt |
 | gen_woman_stands | H3 t2va | stands up from bench | success (stands mid-clip) | - | skip |
 | gen_cat_jumps_down | H3 t2va | jumps down from windowsill | success (late but jumps) | - | skip |
 | gen_man_drinks | H3 t2va | drinks from mug | success (0.93/0.98) | - | skip |
