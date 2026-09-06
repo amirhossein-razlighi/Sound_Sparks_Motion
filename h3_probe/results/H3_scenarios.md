@@ -161,7 +161,7 @@ improves it. Same source video, prompt, noise and step count in A and B.
 | robot_both_arms | retake input | raises both arms | success (0.97/1.0) | - | skip |
 | cartoon_boy_jumps | retake input | jumps into the air | success (jumps early, 0.12/0.83) | - | skip |
 | boy_splashes | retake input | splashes water with both hands | unnatural (stands up, 0.38/0.63) | lin run 20372392 | opt |
-| man_claps | retake input | claps hands | partial (0.14/0.56) | - | maybe |
+| man_claps | retake input | claps hands | partial (hands meet once, 0.14/0.56) | lin run 20379582 | opt |
 | eagle_head_turn | retake input | turns head to camera | unclear, subject tiny (0.28/0.63) | - | skip |
 | man_nods | retake input | nods head | not visible (0.22/0.67) | - | maybe |
 | dog_tilts_head | retake input | tilts head | static (0.46/0.51) | - | maybe |
@@ -186,7 +186,7 @@ improves it. Same source video, prompt, noise and step count in A and B.
 | gen_pianist | H3 t2va (r2) | plays the piano | success (0.96/1.0) | - | skip |
 | gen_dog_wet | H3 t2va (r2) | shakes water off | fail (only turns, 0.09/0.23) | lin run 20371180 | opt |
 | gen_woman_door | H3 t2va (r2) | opens door, walks in | late (door opens in last frames, 0.32/0.28) | lin run 20371181 | opt |
-| gen_basketball | H3 t2va (r2) | bounces | ambiguous (hovers in one frame, 0.17/0.23) | - | maybe |
+| gen_basketball | H3 t2va (r2) | bounces | partial (hovers in one frame, 0.17/0.23) | lin run 20379583 | opt |
 | gen_woman_beach | H3 t2va (r2) | waves at camera | success (0.98/1.0) | - | skip |
 | gen_umbrella | H3 t2va (r2) | opens umbrella | success (0.98/0.99) | - | skip |
 | gen_candle | H3 t2va (r2) | flame blown out | fail (0.0009, steady flame) | held (flat critic) | hold |
