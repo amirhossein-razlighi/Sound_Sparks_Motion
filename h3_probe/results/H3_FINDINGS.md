@@ -493,3 +493,17 @@ any-window score rises - another reason to report brief events with the any-wind
 Take-away for the paper: on a case where H3's own text editing refuses the motion, optimizing the audio
 conditioning latent + a text residual against the motion critic activates it (baseline 0.003 -> 0.16 on the
 critic, clear leap in the video), i.e. the LTX result transfers to a second backbone.
+
+### 12b. Runs A and D (same failing prompt, 2026-09-06)
+
+| run | optimizer | critic objective / question | best iter | yes lin base -> opt | any-window base -> opt | max-win | frame diff | verdict |
+|---|---|---|---|---|---|---|---|---|
+| A | NGD 2 % / mom 0.5 | linspace, "even briefly" | 4 | 0.0028 -> 0.034 | 0.016 -> 0.26 | 0.24 | 0.015 | weaker leap |
+| B | NGD 3 % / mom 0.3 | linspace, "even briefly" | 4 | 0.0028 -> 0.160 | 0.016 -> 0.063 | 0.040 | 0.040 | clear leap at 2.1-3.3 s |
+| **D** | NGD 3 % / mom 0.3 | **noisy-OR any-window, "in the air in any frame"** | 3 | 0.0040 -> **0.365** | 0.041 -> **0.72** | **0.68** | 0.052 | **big clean leap over the rim at 0.4-1.5 s** |
+
+D (`results/fullmethod_goldfish_D/optimized_final_av.mp4` vs `baseline_av.mp4`) is the best goldfish
+result: the any-window objective put 85 % of its gradient weight on the window that contained the
+nascent event at iteration 2 and reached P(event) = 0.69 at iteration 3; the tank geometry stays intact.
+Both B and D activate the jump from the prompt that H3 refuses; |dz_audio| ~ 3.7-4.0 (5 % of the audio
+latent norm), |delta_text| ~ 2000-2500 (4-5 % of the embedding norm).
