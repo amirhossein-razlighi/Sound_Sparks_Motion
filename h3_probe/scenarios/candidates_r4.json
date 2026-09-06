@@ -1,0 +1,107 @@
+{
+ "_comment": "Round-4 candidates: H3 t2va sources generated at retake size (320x512, 89 f, so Phase B fits on 2 GPUs); brief sound-linked events (vocalisations, leaps, splash, blow-out) on single centred subjects. group r4.",
+ "gen_dog_rug": {
+  "group": "r4",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_dog_rug__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_dog_rug_h3sound.wav",
+  "edit": "The dog barks loudly.",
+  "scene": "a beagle lying on a living-room rug",
+  "question": "Does the dog bark (open its mouth to bark) at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_lion_rock": {
+  "group": "r4",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_lion_rock__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_lion_rock_h3sound.wav",
+  "edit": "The lion roars with its mouth wide open.",
+  "scene": "a male lion lying on a rock in the savanna",
+  "question": "Does the lion roar with its mouth wide open at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_rooster": {
+  "group": "r4",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_rooster__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_rooster_h3sound.wav",
+  "edit": "The rooster crows with its head thrown back.",
+  "scene": "a rooster standing on a wooden fence",
+  "question": "Does the rooster crow (head back, beak open) at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_wolf_hill": {
+  "group": "r4",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_wolf_hill__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_wolf_hill_h3sound.wav",
+  "edit": "The wolf howls with its head tilted up.",
+  "scene": "a grey wolf standing on a snowy hill",
+  "question": "Does the wolf howl with its head tilted up at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_cow_field": {
+  "group": "r4",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_cow_field__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_cow_field_h3sound.wav",
+  "edit": "The cow moos loudly.",
+  "scene": "a cow standing in a green pasture",
+  "question": "Does the cow moo (open its mouth) at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_duck_pond": {
+  "group": "r4",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_duck_pond__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_duck_pond_h3sound.wav",
+  "edit": "The duck flaps its wings and splashes the water.",
+  "scene": "a mallard duck floating on a still pond",
+  "question": "Does the duck flap its wings and splash at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_dolphin_sea": {
+  "group": "r4",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_dolphin_sea__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_dolphin_sea_h3sound.wav",
+  "edit": "The dolphin leaps out of the water.",
+  "scene": "a dolphin swimming just below the surface of a calm sea",
+  "question": "Does the dolphin leap out of the water at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_koi_pond": {
+  "group": "r4",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_koi_pond__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_koi_pond_h3sound.wav",
+  "edit": "The koi jumps out of the water.",
+  "scene": "a large orange koi near the surface of a garden pond",
+  "question": "Does the koi fish jump out of the water at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_man_couch": {
+  "group": "r4",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_man_couch__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_man_couch_h3sound.wav",
+  "edit": "The man sneezes.",
+  "scene": "a man sitting on a couch reading a book",
+  "question": "Does the man sneeze at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_woman_desk": {
+  "group": "r4",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_woman_desk__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_woman_desk_h3sound.wav",
+  "edit": "The woman yawns widely.",
+  "scene": "a young woman sitting at an office desk with a laptop",
+  "question": "Does the woman yawn with a wide open mouth at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_girl_cake": {
+  "group": "r4",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_girl_cake__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_girl_cake_h3sound.wav",
+  "edit": "The girl blows out the candles.",
+  "scene": "a girl at a table in front of a birthday cake with lit candles",
+  "question": "Does the girl blow out the candles (candles go out) at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_sealion": {
+  "group": "r4",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_sealion__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_sealion_h3sound.wav",
+  "edit": "The sea lion barks with its head raised.",
+  "scene": "a sea lion resting on coastal rocks",
+  "question": "Does the sea lion open its mouth and bark at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_goat_field": {
+  "group": "r4",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_goat_field__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_goat_field_h3sound.wav",
+  "edit": "The goat bleats loudly.",
+  "scene": "a white goat standing in a meadow",
+  "question": "Does the goat open its mouth and bleat at any point in this video? Answer only 'yes' or 'no'."
+ }
+}

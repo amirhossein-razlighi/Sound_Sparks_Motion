@@ -16,6 +16,27 @@ improves it. Same source video, prompt, noise and step count in A and B.
 - budget: baseline screening on 1 GPU (~4 min per candidate, batched); optimization ~1 h on 2 GPUs per scenario; run <= 4
   optimization jobs concurrently; cancel early on degenerate trajectories
 
+## What we have learned (updated as we go)
+
+Where H3 fails and ours saves it (the 3 confirmed pairs: goldfish leap, cat yawn, man shout):
+- single, centred subject in a medium or close shot; the motion is a **brief event** with a clear visual signature and a
+  natural sound (splash, yawn, shout); H3's baseline either does nothing or does it late/weakly.
+- the any-window critic objective + NGD 3 % + LPIPS 1.0/temporal 0.3 + drift guard; the showcase iteration is picked by eye
+  from the per-iteration previews (often iter 2-4, before drift).
+
+Where it does not work (drop quickly):
+- **flat critic** (baseline ~0, no precursor) on whole-body pose changes from a static pose (child jumps, dog stands up,
+  monkey jumps, horse rears): nothing moves for 10 iterations, then adversarial drift. Exception: goldfish (strong prior).
+- **small motions** (neck, nod, head tilt, hop, sway): critic cannot guide, and too subtle for a user study anyway.
+- **edit that does not fit the source** (crouch and touch water when already chest-deep) or **tiny subject** (eagle, kid on swing).
+- **sustained/pose edits with the linspace objective** (celebrate, wings, walk): at best a partial pose change without the
+  expression that makes it convincing (man_celebrates rejected by the user).
+- H3 already succeeds on common actions with clear text semantics (stand up, take off, open umbrella, play piano, drink,
+  wave, cover face, raise arms) -> no room to save anything.
+
+Consequences for finding scenarios: prefer animal vocalisations and sudden events (bark, roar, neigh, sneeze, yawn,
+laugh, leap, splash, blow-out) on single centred subjects; generate sources at retake size (320x512x89) so runs fit on 2 GPUs.
+
 ## Pipeline
 
 1. `h3_probe/scenarios/candidates_r1.json` - candidates (slug, src, wav, edit, scene, question)
@@ -165,6 +186,12 @@ improves it. Same source video, prompt, noise and step count in A and B.
   child_laughs, dog_barks, monkey_screams, cat_meows, man_yawns (clapping man), cartoon_boy_laughs, gen_horse_neighs,
   gen_woman_sneezes - `scenarios/candidates_r3.json`. Screening: 20380263 (retake sources), 20380264 (generated) -> outputs/screen_r3.
   Fails go to optimization with CRITIC_OBJ=any / SELECT_BY=any (the goldfish/cat/shout recipe) + PERC_MAX.
+
+### 2026-09-06 (night) - round 4: designed-to-fail event sources at retake size
+- 13 new t2va sources generated at 320x512x89 (GEN_H/GEN_W/GEN_FRAMES overrides in t2va_sounds.py, default unchanged):
+  dog on rug (barks), lion (roars), rooster (crows), wolf (howls), cow (moos), duck (flaps+splashes), dolphin (leaps),
+  koi (jumps), man on couch (sneezes), woman at desk (yawns), girl with cake (blows out candles), sea lion (barks),
+  goat (bleats) - `scenarios/gen_inputs_r4.json`, `scenarios/candidates_r4.json`. gen 20380356 -> screening 20380357 (outputs/screen_r4).
 
 ## Scenario table (updated as results land)
 

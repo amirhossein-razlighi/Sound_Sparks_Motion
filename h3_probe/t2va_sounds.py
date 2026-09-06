@@ -29,6 +29,8 @@ _bs = _load("baseline_sweep")
 _pt = _load("pin_test")
 CKPT, SW = _bs.CKPT, _bs.SW
 STEPS, SEED, NUM_FRAMES, HEIGHT, WIDTH = _bs.STEPS, _bs.SEED, _bs.NUM_FRAMES, _bs.HEIGHT, _bs.WIDTH
+# optional overrides (e.g. retake-size sources 320x512x89 so later Phase B fits on 2 GPUs)
+NUM_FRAMES = int(os.environ.get("GEN_FRAMES", NUM_FRAMES)); HEIGHT = int(os.environ.get("GEN_H", HEIGHT)); WIDTH = int(os.environ.get("GEN_W", WIDTH))
 OUT = os.environ.get("OUT_DIR", "/scratch/amirrz/H3_exp/outputs/t2va_sounds")
 ONLY = [s for s in os.environ.get("ONLY", "").split(",") if s]
 
