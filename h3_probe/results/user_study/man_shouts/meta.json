@@ -1,0 +1,12 @@
+{
+ "slug": "man_shouts",
+ "edit": "The man shouts loudly.",
+ "run": "/scratch/amirrz/H3_exp/outputs/us_man_shouts",
+ "iter": 3,
+ "note": "hands come up from mid-clip and an open-mouth shout; baseline raises hands only in the last frames",
+ "steps": 16,
+ "extra": [],
+ "baseline_yes": 0.38817446537951605,
+ "baseline_yes_any": 0.7256844394050761,
+ "best_iter_by_critic": 2
+}

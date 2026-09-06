@@ -1,0 +1,91 @@
+{
+ "_comment": "Round-2 user-study candidates: H3 t2va sources (inputs/gen/gen_inputs_r2.json), one sound-linked edit each, group generated_r2.",
+ "gen_dog_wet": {
+  "group": "generated_r2",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_dog_wet__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_dog_wet_h3sound.wav",
+  "edit": "The dog shakes the water off its fur.",
+  "scene": "a wet golden retriever standing on a lawn beside a lake",
+  "question": "Does the dog shake its body to shake off water at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_woman_door": {
+  "group": "generated_r2",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_woman_door__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_woman_door_h3sound.wav",
+  "edit": "The woman opens the door and walks inside.",
+  "scene": "a woman standing in front of a closed wooden front door",
+  "question": "Does the woman open the door at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_basketball": {
+  "group": "generated_r2",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_basketball__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_basketball_h3sound.wav",
+  "edit": "The basketball bounces up and down on the court.",
+  "scene": "a basketball on an empty outdoor court",
+  "question": "Does the basketball bounce off the ground at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_pigeon_rail": {
+  "group": "generated_r2",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_pigeon_rail__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_pigeon_rail_h3sound.wav",
+  "edit": "The pigeon takes off and flies away.",
+  "scene": "a pigeon standing on a metal railing of a bridge",
+  "question": "Does the pigeon take off or fly at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_pianist": {
+  "group": "generated_r2",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_pianist__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_pianist_h3sound.wav",
+  "edit": "The man plays the piano.",
+  "scene": "a man sitting at an upright piano with his hands on the keys",
+  "question": "Does the man play the piano (move his fingers on the keys) at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_candle": {
+  "group": "generated_r2",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_candle__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_candle_h3sound.wav",
+  "edit": "The candle flame is blown out.",
+  "scene": "a lit candle on a wooden table in a dark room",
+  "question": "Is the candle flame blown out or extinguished at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_woman_beach": {
+  "group": "generated_r2",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_woman_beach__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_woman_beach_h3sound.wav",
+  "edit": "The woman waves her hand at the camera.",
+  "scene": "a woman standing on a beach facing the camera",
+  "question": "Does the woman wave her hand at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_rowboat": {
+  "group": "generated_r2",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_rowboat__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_rowboat_h3sound.wav",
+  "edit": "The boat rocks strongly from side to side.",
+  "scene": "an empty wooden rowboat on a calm lake tied to a pier",
+  "question": "Does the boat rock or tilt from side to side at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_umbrella": {
+  "group": "generated_r2",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_umbrella__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_umbrella_h3sound.wav",
+  "edit": "The man opens the umbrella.",
+  "scene": "a man on a sidewalk holding a closed black umbrella",
+  "question": "Does the man open the umbrella at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_bell": {
+  "group": "generated_r2",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_bell__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_bell_h3sound.wav",
+  "edit": "The bell swings and rings.",
+  "scene": "a large bronze bell hanging in a stone bell tower",
+  "question": "Does the bell swing at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_glass_table": {
+  "group": "generated_r2",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_glass_table__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_glass_table_h3sound.wav",
+  "edit": "The glass tips over and spills the water.",
+  "scene": "a full glass of water on a wooden kitchen table",
+  "question": "Does the glass tip over or spill at any point in this video? Answer only 'yes' or 'no'."
+ }
+}
