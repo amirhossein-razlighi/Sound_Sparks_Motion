@@ -349,7 +349,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_sealion | H3 t2va (r4) | barks, head raised | late (mouth opens at the end, 0.09/0.87) | user: iter 2 best, iter 3 candidate; run finished: critic best iter 4 (0.94) added as candidate | PACKAGED |
 | gen_cow_field | H3 t2va (r4) | moos | fail with the 124-f clip (0.12/0.38); trimmed-source baseline scores 0.88 (moos) | user: iters 3, 4, 7 ok/good (iter 3 primary) | PACKAGED |
 | gen_goat_field | H3 t2va (r4) | bleats | fail (static, 0.23/0.36) | any run 20384613 | opt |
-| gen_rooster | H3 t2va (r4) | crows, head back | partial (silhouette, 0.25/0.65) | any run 20384609 | opt |
+| gen_rooster | H3 t2va (r4) | crows, head back | partial (silhouette, 0.25/0.65) | any: best iter 2 (0.63) but frames ~unchanged (diff 0.009); drift after iter 7; sheet kept for review | weak |
 | gen_man_couch | H3 t2va (r4) | sneezes | fail (0.008) but dark and small | - | skip |
 | gen_vase_shelf | H3 t2va (r5) | topples and breaks | success (0.87) | - | skip |
 | gen_ceiling_fan | H3 t2va (r5) | starts spinning | success (0.92) | - | skip |
