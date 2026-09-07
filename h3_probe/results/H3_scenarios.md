@@ -294,6 +294,11 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 - lesson: the critic can also miss real motion (koi: flat 0.003 while the jump is visible to a human), so "flat critic"
   runs still deserve a look at the previews before being called failed - the drift guard keeps them cheap to keep.
 
+- gen_dolphin_sea finished: iter 2 is a full dolphin leap with splash (perceptual 0.29, just above the guard so the script
+  never called it "best"); iters 3-4 replace the dolphin with a bird / a dog leaping out of the sea (identity drift, a new
+  failure mode to watch for), iter 9 a weaker leap. Only iter 9 kept as candidate. The perceptual guard at 0.25 was slightly
+  too strict here - worth remembering when a large motion legitimately changes many pixels.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -338,7 +343,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_dog_rug | H3 t2va (r4) | barks | success (0.59/0.98) | - | skip |
 | gen_girl_cake | H3 t2va (r4) | blows out candles | success (0.71) | - | skip |
 | gen_koi_pond | H3 t2va (r4) | jumps out of water | fail (swims only, 0.001) | user: best (iter 6 latents) is good, iters 4/6 candidates - critic stayed flat (critic miss) | PACKAGED |
-| gen_dolphin_sea | H3 t2va (r4) | leaps out of water | fail (fin only, 0.001) | user: iter 2 is really good; run finished: iters 3 and 9 (critic best) added as candidates | PACKAGED |
+| gen_dolphin_sea | H3 t2va (r4) | leaps out of water | fail (fin only, 0.001) | user: iter 2 = full leap with splash; iter 9 weaker candidate; iters 3-4 drift to a bird / a dog (wrong animal) | PACKAGED |
 | gen_wolf_hill | H3 t2va (r4) | howls, head up | fail with the 124-f clip (0.02); trimmed 89-f source: baseline howls in a closer shot (0.99) | baseline succeeds | skip |
 | gen_woman_desk | H3 t2va (r4) | yawns widely | fail with the 124-f clip (0.04); trimmed-source baseline scored 0.91 | user: iter 2 is good | PACKAGED |
 | gen_sealion | H3 t2va (r4) | barks, head raised | late (mouth opens at the end, 0.09/0.87) | user: iter 2 best, iter 3 candidate; run finished: critic best iter 4 (0.94) added as candidate | PACKAGED |
