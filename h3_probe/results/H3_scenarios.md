@@ -329,7 +329,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_duck_pond | H3 t2va (r4) | flaps and splashes | success (0.84) | - | skip |
 | gen_dog_rug | H3 t2va (r4) | barks | success (0.59/0.98) | - | skip |
 | gen_girl_cake | H3 t2va (r4) | blows out candles | success (0.71) | - | skip |
-| gen_koi_pond | H3 t2va (r4) | jumps out of water | fail (swims only, 0.001) | any run 20384610 | opt |
+| gen_koi_pond | H3 t2va (r4) | jumps out of water | fail (swims only, 0.001) | any: flat 0.003 for 16 iters | failed |
 | gen_dolphin_sea | H3 t2va (r4) | leaps out of water | fail (fin only, 0.001) | any run 20384608 | opt |
 | gen_wolf_hill | H3 t2va (r4) | howls, head up | fail (static, 0.02) | any run 20384607 | opt |
 | gen_woman_desk | H3 t2va (r4) | yawns widely | fail with the 124-f clip (0.04); the trimmed 89-f source yawns at baseline (0.91) | baseline succeeds | skip |
