@@ -6,7 +6,7 @@ Critic yes = in-loop Qwen yes-probability at the selected checkpoint (indicative
 | slug | edit | both (iter) | baseline yes | both best yes | text-only best yes (iter) | audio-only best yes (iter) |
 |---|---|---|---|---|---|---|
 | goldfish | The goldfish jumps out of the fish tank into the air. | final | 0.004 | 0.365 | 0.039 (4) | 0.004 (15) |
-| cat_yawns | None | 3 | 0.936 | 0.953 | pending | pending |
+| cat_yawns | None | 3 | 0.936 | 0.953 | 0.954 (4) | pending |
 | man_shouts | None | 3 | 0.388 | 0.546 | pending | pending |
 | boy_splashes | The boy splashes the water with both hands. | 9 | 0.327 | 0.915 | pending | pending |
 | car_door_opens | The car door swings open. | 4 | 0.024 | 0.9 | pending | pending |
@@ -16,6 +16,6 @@ Critic yes = in-loop Qwen yes-probability at the selected checkpoint (indicative
 | gen_woman_desk | The woman yawns widely. | 2 | 0.911 | 0.911 | pending | pending |
 | gen_cow_field | The cow moos loudly. | 3 | 0.884 | 0.884 | pending | pending |
 | gen_woman_door | The woman opens the door and walks inside. | 4 | 0.098 | 0.24 | pending | pending |
-| gen_frog_jumps | The frog jumps off the lily pad into the water. | 3 | 0.01 | 0.414 | pending | pending |
+| gen_frog_jumps | The frog jumps off the lily pad into the water. | 3 | 0.01 | 0.414 | 0.018 (2) | pending |
 | gen_glass_table | The glass tips over and spills the water. | 4 | 0.096 | 0.023 | pending | pending |
 | gen_glass_edge | The glass falls off the table and shatters on the floor. | 3 | 0.082 | 0.495 | pending | pending |
