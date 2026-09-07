@@ -386,4 +386,4 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_candle | H3 t2va (r2) | flame blown out | fail (0.0009, steady flame) | held (flat critic) | hold |
 | gen_rowboat | H3 t2va (r2) | rocks side to side | fail (0.01, static) | held (flat critic) | hold |
 | gen_bell | H3 t2va (r2) | swings and rings | fail (0.06/0.10, barely moves) | held | hold |
-| gen_glass_table | H3 t2va (r2) | tips over, spills | late + distorted (glass morphs in last frames) | small-source run 20403376 | opt |
+| gen_glass_table | H3 t2va (r2) | tips over, spills | late + distorted (glass morphs in last frames) | small: critic flat, heavy drift from iter 3 (perceptual 0.4-0.7); sheet kept | failed |
