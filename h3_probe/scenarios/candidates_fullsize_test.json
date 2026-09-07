@@ -1,0 +1,11 @@
+{
+ "_comment": "full-size (448x768x124) frog source for the 3-GPU memory test",
+ "gen_frog_jumps_full": {
+  "group": "generated",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_frog_lilypad__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_frog_lilypad_h3sound.wav",
+  "edit": "The frog jumps off the lily pad into the water.",
+  "scene": "a green frog sitting on a lily pad in a pond",
+  "question": "Does the frog jump off the lily pad at any point in this video? Answer only 'yes' or 'no'."
+ }
+}

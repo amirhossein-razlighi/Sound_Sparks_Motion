@@ -329,7 +329,7 @@ class H3Grad:
         st = cap["state"]
         # ---- devices / sharding plan ----
         if args.gpu_mem_split:
-            budget = [float(x) for x in args.gpu_mem_split.split(",")]
+            budget = [float(x) for x in args.gpu_mem_split.replace(";", ",").split(",") if x.strip()]   # ";" survives sbatch --export
         elif n_gpu == 1:
             budget = [70.0]
         elif n_gpu == 2:

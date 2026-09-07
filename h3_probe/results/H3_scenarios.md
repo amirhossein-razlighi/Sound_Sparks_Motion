@@ -272,6 +272,11 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   glass 20403376 -> basketball 20403377 (any) -> dog_wet 20403378 (lin). 3-GPU chain cancelled. Lesson: keep all sources at the retake
   geometry (320x512, 89 f).
 
+- root cause of the 3-GPU OOMs found: `--export=ALL,GPU_MEM_SPLIT=24,24,14` is split on the commas by sbatch, so the script
+  saw budget [24] and put all 50 blocks on GPU 0 (61.7 GB weights). Fixed: the flag now also accepts ";" separators. One
+  full-size 3-GPU test resubmitted with `GPU_MEM_SPLIT=24;24;14` (frog, 20403410, `us_gen_frog_jumps_full3`) to learn whether
+  448x768x124 sources are viable at all; the small-source 2-GPU chain stays the main path.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
