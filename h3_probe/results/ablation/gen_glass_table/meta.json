@@ -1,0 +1,9 @@
+{
+ "slug": "gen_glass_table",
+ "edit": "The glass tips over and spills the water.",
+ "both_iter": 4,
+ "baseline_yes": 0.09634119756879023,
+ "both_best_yes": 0.0229816189138029,
+ "text_only": null,
+ "audio_only": null
+}

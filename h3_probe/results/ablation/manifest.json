@@ -154,5 +154,18 @@
    "out": "/scratch/amirrz/H3_exp/outputs/ablation/gen_frog_jumps/audio_only",
    "job": "20413699"
   }
+ },
+ "gen_glass_table": {
+  "both_run": "/scratch/amirrz/H3_exp/outputs/us_gen_glass_table_small",
+  "both_iter": 4,
+  "edit": "The glass tips over and spills the water.",
+  "text_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/gen_glass_table/text_only",
+   "job": "20413815"
+  },
+  "audio_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/gen_glass_table/audio_only",
+   "job": "20413816"
+  }
  }
 }

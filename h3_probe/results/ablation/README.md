@@ -17,3 +17,4 @@ Critic yes = in-loop Qwen yes-probability at the selected checkpoint (indicative
 | gen_cow_field | The cow moos loudly. | 3 | 0.884 | 0.884 | pending | pending |
 | gen_woman_door | The woman opens the door and walks inside. | 4 | 0.098 | 0.24 | pending | pending |
 | gen_frog_jumps | The frog jumps off the lily pad into the water. | 3 | 0.01 | 0.414 | pending | pending |
+| gen_glass_table | The glass tips over and spills the water. | 4 | 0.096 | 0.023 | pending | pending |

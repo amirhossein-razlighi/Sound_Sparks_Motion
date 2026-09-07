@@ -35,6 +35,9 @@ ORDER = ["goldfish", "cat_yawns", "man_shouts", "boy_splashes", "car_door_opens"
 def main():
     picks = {k: v for k, v in json.load(open(os.path.join(SCN, "picks.json"))).items() if not k.startswith("_")}
     slugs = [s for s in ORDER if s in picks] + [s for s in picks if s not in ORDER and "RESERVE" not in picks[s].get("note", "")]
+    only = [x for x in os.environ.get("ONLY", "").replace(";", ",").split(",") if x]   # ONLY=slug1,slug2 -> submit just these
+    if only:
+        slugs = [s for s in slugs if s in only]
     mp = os.path.join(REPO, "h3_probe/results/ablation/manifest.json")
     manifest = json.load(open(mp)) if os.path.exists(mp) else {}
     dep = {}   # line index -> last job id
