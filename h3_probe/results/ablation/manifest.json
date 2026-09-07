@@ -167,5 +167,18 @@
    "out": "/scratch/amirrz/H3_exp/outputs/ablation/gen_glass_table/audio_only",
    "job": "20413816"
   }
+ },
+ "gen_glass_edge": {
+  "both_run": "/scratch/amirrz/H3_exp/outputs/us_gen_glass_edge",
+  "both_iter": 3,
+  "edit": "The glass falls off the table and shatters on the floor.",
+  "text_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/gen_glass_edge/text_only",
+   "job": "20414972"
+  },
+  "audio_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/gen_glass_edge/audio_only",
+   "job": "20414973"
+  }
  }
 }

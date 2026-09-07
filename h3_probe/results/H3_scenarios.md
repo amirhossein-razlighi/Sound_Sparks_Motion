@@ -311,6 +311,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   jobs; frog full-size on 3 GPUs). Manifest: \`results/ablation/manifest.json\`. Packaging into
   \`results/ablation/<slug>/{both,text_only,audio_only}\` with a comparison sheet follows when the runs finish.
 
+### 2026-09-07 07:00 - glass at the table edge saved
+- gen_glass_edge (any, trimmed source): iter 3 makes the glass tip off the edge and shatter into fragments on the floor, where the
+  baseline just makes it vanish -> PACKAGED (14 pairs + 1 reserve); ablation runs added for it.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -369,7 +373,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_dominoes | H3 t2va (r5) | topple | success (topple early; critic 0.03 missed it) | - | skip |
 | gen_man_busstop | H3 t2va (r5) | starts dancing | success (moves/dances; critic 0.015 missed it) | - | skip |
 | gen_pond_stone | H3 t2va (r5) | stone splashes | partial success (0.39/0.81) | - | skip |
-| gen_glass_edge | H3 t2va (r5) | falls and shatters | partial/unnatural (tips, then vanishes, 0.16/0.14) | any run 20392356 | opt |
+| gen_glass_edge | H3 t2va (r5) | falls and shatters | partial/unnatural (tips, then vanishes, 0.16/0.14) | iter 3: falls and visibly shatters into fragments (alt iter 8, earlier but duplicated glasses); iters 5/7 drift | PACKAGED |
 | gen_blocks_tower | H3 t2va (r5) | tower collapses | fail with the 124-f clip (0.04); trimmed-source baseline scores 0.78/0.92 (collapses) | baseline succeeds; sheet kept | skip |
 | gen_balloon_kid | H3 t2va (r5) | balloon pops | fail (0.003) | any: flat 0.01-0.02, one drift spike at iter 8; sheet kept | failed |
 | gen_ice_lake | H3 t2va (r5) | ice cracks | fail (0.006) but too subtle | - | skip |

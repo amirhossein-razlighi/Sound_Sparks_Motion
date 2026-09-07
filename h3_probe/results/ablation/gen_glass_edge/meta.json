@@ -1,0 +1,9 @@
+{
+ "slug": "gen_glass_edge",
+ "edit": "The glass falls off the table and shatters on the floor.",
+ "both_iter": 3,
+ "baseline_yes": 0.08174026451823702,
+ "both_best_yes": 0.49507965690894484,
+ "text_only": null,
+ "audio_only": null
+}

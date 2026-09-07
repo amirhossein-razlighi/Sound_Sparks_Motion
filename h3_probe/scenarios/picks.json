@@ -111,5 +111,14 @@
   "iter": 4,
   "edit": "The glass tips over and spills the water.",
   "note": "user pick: iter 4 is good (downscaled 320x512x89 source); critic stayed flat (0.004 at iter 4) - critic miss; later iterations drift."
+ },
+ "gen_glass_edge": {
+  "run": "/scratch/amirrz/H3_exp/outputs/us_gen_glass_edge",
+  "iter": 3,
+  "alts": [
+   8
+  ],
+  "edit": "The glass falls off the table and shatters on the floor.",
+  "note": "iter 3: the glass tips off the edge (frame ~70) and visibly shatters into fragments on the floor; baseline makes the glass vanish with a few drops. iter 8 candidate: shatters earlier (frame ~25) but with duplicated-glass artifacts; iters 5/7 drift (a person's legs appear)."
  }
 }
