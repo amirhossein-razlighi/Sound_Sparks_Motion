@@ -277,6 +277,11 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   full-size 3-GPU test resubmitted with `GPU_MEM_SPLIT=24;24;14` (frog, 20403410, `us_gen_frog_jumps_full3`) to learn whether
   448x768x124 sources are viable at all; the small-source 2-GPU chain stays the main path.
 
+### 2026-09-07 (early) - car_door_opens saved
+- car_door_opens (any): critic 0.02 -> 0.95 at iter 4 (perceptual 0.12); the driver door of the car on the lift swings open
+  mid-clip in iters 2-5 with the rest of the scene intact; from iter 6 extra people/tyres appear (drift) -> iter 4 PACKAGED.
+  First non-body-motion pair (object/sound event). 5 pairs + 1 reserve.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -343,7 +348,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_elevator | H3 t2va (r5) | elevator doors open | fail (stay shut, 0.03) | any run 20392352 | opt |
 | gen_woman_studio | H3 t2va (r5) | dances, spins | fail (0.003) but subject small | - | skip |
 | gen_windmill | H3 t2va (r5) | blades start turning | fail (static, 0.14/0.63) | lin run 20392357 | opt |
-| car_door_opens | retake input (workshop) | car door swings open | fail (0.04/0.24) | any run 20392354 | opt |
+| car_door_opens | retake input (workshop) | car door swings open | fail (0.04/0.24) | iter 4: door swings open mid-clip, clean (alt 3/5) | PACKAGED |
 | car_lights_flash | retake input (garage) | headlights flash, horn | fail (0.005) | any run 20392355 | opt |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |

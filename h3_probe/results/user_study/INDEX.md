@@ -6,6 +6,7 @@ B is the iteration picked by visual inspection of all previews (`scenarios/picks
 | slug | edit | picked iter | what changes |
 |---|---|---|---|
 | boy_splashes | The boy splashes the water with both hands. | 9 | two-handed splash with water spraying up mid-clip (frames ~40-65); baseline only stands up out of the water. alt: iters 7, 8, 10 |
+| car_door_opens | The car door swings open. | 4 | the driver door of the car on the lift swings open mid-clip (from frame ~45) and stays open, scene otherwise unchanged; baseline door never opens. alt: iters 3, 5. iters 6+ add extra people/objects (drift). |
 | cat_yawns | The cat yawns widely. | 3 | wide early yawn (frames ~30-50); baseline yawns only in the last frame. alt: iter 9 |
 | goldfish | The goldfish jumps out of the fish tank into the air. | final | clean leap out of the tank; baseline never jumps |
 | man_claps | The man claps his hands. | 2 | RESERVE - clear sustained clapping (frames ~20-110) but H3 zooms out to a wider shot to show the hands (baseline is a tight face shot where hands meet once for ~3 frames). alt: iter 3. Framing change = weaker preservation. |

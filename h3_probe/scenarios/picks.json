@@ -27,5 +27,11 @@
   "iter": 2,
   "edit": "The man claps his hands.",
   "note": "RESERVE - clear sustained clapping (frames ~20-110) but H3 zooms out to a wider shot to show the hands (baseline is a tight face shot where hands meet once for ~3 frames). alt: iter 3. Framing change = weaker preservation."
+ },
+ "car_door_opens": {
+  "run": "/scratch/amirrz/H3_exp/outputs/us_car_door_opens",
+  "iter": 4,
+  "edit": "The car door swings open.",
+  "note": "the driver door of the car on the lift swings open mid-clip (from frame ~45) and stays open, scene otherwise unchanged; baseline door never opens. alt: iters 3, 5. iters 6+ add extra people/objects (drift)."
  }
 }
