@@ -256,6 +256,15 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   claps continuously - a real clap, same man and studio, but a framing change (the tight face shot cannot show hands);
   iter 4 swaps the person (identity drift, then collapse). Packaged as RESERVE with the caveat in the note; user decides.
 
+### 2026-09-07 (early) - 320x512x124 sources still OOM on 2 GPUs -> trimmed to 89 frames
+- gen_woman_desk OOMed on 2 GPUs (78 GB on GPU 0): 124 reference frames are 1.4x the retake inputs' 89. All round-4/5 generated
+  sources are now trimmed to 89 frames / 3.7 s (`*_89f.mp4`, `*_89f.wav`, originals kept), i.e. exactly the retake geometry
+  that fits; candidates_r4/r5 point to the trimmed files (screening used the 124-frame clips, so the run's own Phase-A
+  baseline is the reference for each pair). Chains resubmitted (REUSE_CAPTURE=0 so no stale capture is reused):
+  A: woman_desk 20400034 -> wolf 20400035 -> dolphin 20400036 -> rooster 20400037 -> balloon 20400038 -> door 20400039 -> elevator 20400040;
+  B: koi 20400041 -> sealion 20400042 -> cow 20400043 -> goat 20400044 -> blocks 20400045 -> glass_edge 20400046 -> windmill 20400047 (lin).
+  car_door_opens / car_lights_flash (retake sources) keep their jobs.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |

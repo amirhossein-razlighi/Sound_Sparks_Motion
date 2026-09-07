@@ -1,116 +1,130 @@
 {
- "_comment": "Round-5 candidates: non-mouth events for variety - falling, shattering, breaking, collapsing, popping, doors, machines, dancing, splash, car door. Generated sources at retake size (group r5); two edits on existing retake sources (group r5_rv).",
+ "_comment": "Round-5 candidates: non-mouth events for variety - falling, shattering, breaking, collapsing, popping, doors, machines, dancing, splash, car door. Generated sources at retake size (group r5); two edits on existing retake sources (group r5_rv). Generated sources trimmed to 89 frames (_89f) on 2026-09-07 so Phase B fits on 2 GPUs (124-frame refs OOM).",
  "gen_glass_edge": {
   "group": "r5",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_glass_edge__t2va.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_glass_edge_h3sound.wav",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_glass_edge__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_glass_edge_h3sound_89f.wav",
   "edit": "The glass falls off the table and shatters on the floor.",
   "scene": "a drinking glass at the edge of a kitchen table",
-  "question": "Does the glass fall off the table or shatter at any point in this video? Answer only 'yes' or 'no'."
+  "question": "Does the glass fall off the table or shatter at any point in this video? Answer only 'yes' or 'no'.",
+  "note": "source trimmed to 89 frames (3.7 s) for 2-GPU Phase B; screening used the 124-frame clip"
  },
  "gen_vase_shelf": {
   "group": "r5",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_vase_shelf__t2va.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_vase_shelf_h3sound.wav",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_vase_shelf__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_vase_shelf_h3sound_89f.wav",
   "edit": "The vase topples off the shelf and breaks on the floor.",
   "scene": "a ceramic vase on a wall shelf",
-  "question": "Does the vase fall off the shelf or break at any point in this video? Answer only 'yes' or 'no'."
+  "question": "Does the vase fall off the shelf or break at any point in this video? Answer only 'yes' or 'no'.",
+  "note": "source trimmed to 89 frames (3.7 s) for 2-GPU Phase B; screening used the 124-frame clip"
  },
  "gen_dominoes": {
   "group": "r5",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_dominoes__t2va.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_dominoes_h3sound.wav",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_dominoes__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_dominoes_h3sound_89f.wav",
   "edit": "The dominoes topple one after another.",
   "scene": "a row of dominoes standing on a table",
-  "question": "Do the dominoes fall over at any point in this video? Answer only 'yes' or 'no'."
+  "question": "Do the dominoes fall over at any point in this video? Answer only 'yes' or 'no'.",
+  "note": "source trimmed to 89 frames (3.7 s) for 2-GPU Phase B; screening used the 124-frame clip"
  },
  "gen_blocks_tower": {
   "group": "r5",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_blocks_tower__t2va.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_blocks_tower_h3sound.wav",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_blocks_tower__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_blocks_tower_h3sound_89f.wav",
   "edit": "The tower of blocks collapses.",
   "scene": "a tall tower of wooden blocks on the floor",
-  "question": "Does the tower of blocks collapse or fall at any point in this video? Answer only 'yes' or 'no'."
+  "question": "Does the tower of blocks collapse or fall at any point in this video? Answer only 'yes' or 'no'.",
+  "note": "source trimmed to 89 frames (3.7 s) for 2-GPU Phase B; screening used the 124-frame clip"
  },
  "gen_balloon_kid": {
   "group": "r5",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_balloon_kid__t2va.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_balloon_kid_h3sound.wav",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_balloon_kid__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_balloon_kid_h3sound_89f.wav",
   "edit": "The balloon pops.",
   "scene": "a child holding a red balloon in a park",
-  "question": "Does the balloon pop or burst at any point in this video? Answer only 'yes' or 'no'."
+  "question": "Does the balloon pop or burst at any point in this video? Answer only 'yes' or 'no'.",
+  "note": "source trimmed to 89 frames (3.7 s) for 2-GPU Phase B; screening used the 124-frame clip"
  },
  "gen_ice_lake": {
   "group": "r5",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_ice_lake__t2va.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_ice_lake_h3sound.wav",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_ice_lake__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_ice_lake_h3sound_89f.wav",
   "edit": "The ice cracks and breaks apart.",
   "scene": "the frozen surface of a lake",
-  "question": "Does the ice crack or break apart at any point in this video? Answer only 'yes' or 'no'."
+  "question": "Does the ice crack or break apart at any point in this video? Answer only 'yes' or 'no'.",
+  "note": "source trimmed to 89 frames (3.7 s) for 2-GPU Phase B; screening used the 124-frame clip"
  },
  "gen_door_hall": {
   "group": "r5",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_door_hall__t2va.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_door_hall_h3sound.wav",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_door_hall__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_door_hall_h3sound_89f.wav",
   "edit": "The door slams shut.",
   "scene": "an open wooden door in a hallway",
-  "question": "Does the door swing shut at any point in this video? Answer only 'yes' or 'no'."
+  "question": "Does the door swing shut at any point in this video? Answer only 'yes' or 'no'.",
+  "note": "source trimmed to 89 frames (3.7 s) for 2-GPU Phase B; screening used the 124-frame clip"
  },
  "gen_elevator": {
   "group": "r5",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_elevator__t2va.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_elevator_h3sound.wav",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_elevator__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_elevator_h3sound_89f.wav",
   "edit": "The elevator doors open.",
   "scene": "closed elevator doors in a lobby",
-  "question": "Do the elevator doors open at any point in this video? Answer only 'yes' or 'no'."
+  "question": "Do the elevator doors open at any point in this video? Answer only 'yes' or 'no'.",
+  "note": "source trimmed to 89 frames (3.7 s) for 2-GPU Phase B; screening used the 124-frame clip"
  },
  "gen_ceiling_fan": {
   "group": "r5",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_ceiling_fan__t2va.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_ceiling_fan_h3sound.wav",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_ceiling_fan__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_ceiling_fan_h3sound_89f.wav",
   "edit": "The ceiling fan starts spinning fast.",
   "scene": "a ceiling fan at rest",
-  "question": "Does the ceiling fan spin at any point in this video? Answer only 'yes' or 'no'."
+  "question": "Does the ceiling fan spin at any point in this video? Answer only 'yes' or 'no'.",
+  "note": "source trimmed to 89 frames (3.7 s) for 2-GPU Phase B; screening used the 124-frame clip"
  },
  "gen_woman_studio": {
   "group": "r5",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_woman_studio__t2va.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_woman_studio_h3sound.wav",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_woman_studio__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_woman_studio_h3sound_89f.wav",
   "edit": "The woman starts dancing and spins around.",
   "scene": "a woman standing in a dance studio",
-  "question": "Does the woman dance or spin around at any point in this video? Answer only 'yes' or 'no'."
+  "question": "Does the woman dance or spin around at any point in this video? Answer only 'yes' or 'no'.",
+  "note": "source trimmed to 89 frames (3.7 s) for 2-GPU Phase B; screening used the 124-frame clip"
  },
  "gen_man_busstop": {
   "group": "r5",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_man_busstop__t2va.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_man_busstop_h3sound.wav",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_man_busstop__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_man_busstop_h3sound_89f.wav",
   "edit": "The man starts dancing energetically.",
   "scene": "a man standing at a bus stop",
-  "question": "Does the man dance at any point in this video? Answer only 'yes' or 'no'."
+  "question": "Does the man dance at any point in this video? Answer only 'yes' or 'no'.",
+  "note": "source trimmed to 89 frames (3.7 s) for 2-GPU Phase B; screening used the 124-frame clip"
  },
  "gen_pond_stone": {
   "group": "r5",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_pond_stone__t2va.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_pond_stone_h3sound.wav",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_pond_stone__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_pond_stone_h3sound_89f.wav",
   "edit": "A stone falls into the pond with a big splash.",
   "scene": "a still garden pond",
-  "question": "Is there a splash in the pond at any point in this video? Answer only 'yes' or 'no'."
+  "question": "Is there a splash in the pond at any point in this video? Answer only 'yes' or 'no'.",
+  "note": "source trimmed to 89 frames (3.7 s) for 2-GPU Phase B; screening used the 124-frame clip"
  },
  "gen_car_street": {
   "group": "r5",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_car_street__t2va.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_car_street_h3sound.wav",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_car_street__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_car_street_h3sound_89f.wav",
   "edit": "The car door swings open.",
   "scene": "a red car parked on a residential street",
-  "question": "Does the car door open at any point in this video? Answer only 'yes' or 'no'."
+  "question": "Does the car door open at any point in this video? Answer only 'yes' or 'no'.",
+  "note": "source trimmed to 89 frames (3.7 s) for 2-GPU Phase B; screening used the 124-frame clip"
  },
  "gen_windmill": {
   "group": "r5",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_windmill__t2va.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_windmill_h3sound.wav",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_windmill__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_windmill_h3sound_89f.wav",
   "edit": "The windmill blades start turning.",
   "scene": "an old wooden windmill on a hill",
-  "question": "Do the windmill blades turn at any point in this video? Answer only 'yes' or 'no'."
+  "question": "Do the windmill blades turn at any point in this video? Answer only 'yes' or 'no'.",
+  "note": "source trimmed to 89 frames (3.7 s) for 2-GPU Phase B; screening used the 124-frame clip"
  },
  "car_door_opens": {
   "group": "r5_rv",
