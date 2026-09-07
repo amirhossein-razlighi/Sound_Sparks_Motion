@@ -394,7 +394,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_kid_swings | H3 t2va | starts swinging | unclear, subject tiny (0.55/0.99) | - | skip |
 | gen_pigeon_rail | H3 t2va (r2) | takes off and flies | success (0.98/1.0) | - | skip |
 | gen_pianist | H3 t2va (r2) | plays the piano | success (0.96/1.0) | - | skip |
-| gen_dog_wet | H3 t2va (r2) | shakes water off | fail (only turns, 0.09/0.23) | small-source lin run 20403378 | opt |
+| gen_dog_wet | H3 t2va (r2) | shakes water off | fail (only turns, 0.09/0.23) | small (lin): critic flat 0.02-0.07, frames barely change; sheet kept for review | likely failed |
 | gen_woman_door | H3 t2va (r2) | opens door, walks in | late (door opens in last frames, 0.32/0.28) | user: iter 4 ok-ish (door opens wider); iter 6+ add extra people (drift) | PACKAGED (ok-ish) |
 | gen_basketball | H3 t2va (r2) | bounces | partial (hovers in one frame, 0.17/0.23) | small: critic 0.13 -> 0.47 at iter 7 but frames ~unchanged (diff 0.008); sheet kept | weak |
 | gen_woman_beach | H3 t2va (r2) | waves at camera | success (0.98/1.0) | - | skip |
