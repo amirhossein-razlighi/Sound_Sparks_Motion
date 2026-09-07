@@ -353,7 +353,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_woman_studio | H3 t2va (r5) | dances, spins | fail (0.003) but subject small | - | skip |
 | gen_windmill | H3 t2va (r5) | blades start turning | fail (static, 0.14/0.63) | lin run 20392357 | opt |
 | car_door_opens | retake input (workshop) | car door swings open | fail (0.04/0.24) | iter 4: door swings open mid-clip, clean (alt 3/5) | PACKAGED |
-| car_lights_flash | retake input (garage) | headlights flash, horn | fail (0.005) | any run 20392355 | opt |
+| car_lights_flash | retake input (garage) | headlights flash, horn | fail (0.005) | any: flat 0.03, drift after iter 10 | failed |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
 | gen_horse_rears | H3 t2va | rears up on hind legs | fail (0.0002, only walks) | cancelled (flat critic) | skip |
