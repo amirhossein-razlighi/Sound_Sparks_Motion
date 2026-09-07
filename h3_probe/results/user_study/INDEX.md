@@ -10,7 +10,7 @@ B is the iteration picked by visual inspection of all previews (`scenarios/picks
 | cat_yawns | The cat yawns widely. | 3 (alt: 9) | wide early yawn (frames ~30-50); baseline yawns only in the last frame. alt: iter 9 |
 | gen_dolphin_sea | The dolphin leaps out of the water. | 2 | user pick: iter 2 (run still in progress when picked; revisit later iterations when done). |
 | gen_koi_pond | The koi jumps out of the water. | final (alt: 4, 6) | user pick: best (final = iter 6 latents) with iters 4 and 6 as candidates; critic stayed flat at 0.003 - a critic miss, the jump is visible to a human. |
-| gen_sealion | The sea lion barks with its head raised. | 2 (alt: 3) | user pick: iter 2 best, iter 3 candidate; baseline opens the mouth only at the very end (run still in progress when picked). |
+| gen_sealion | The sea lion barks with its head raised. | 2 (alt: 3, 4) | user pick: iter 2 best, iter 3 candidate; iter 4 added as candidate (critic best, 0.94); baseline opens the mouth only at the very end. |
 | gen_woman_desk | The woman yawns widely. | 2 | user pick: iter 2 (wide yawn). Note: the run's own baseline also scored 0.91 on the critic. |
 | goldfish | The goldfish jumps out of the fish tank into the air. | final | clean leap out of the tank; baseline never jumps |
 | man_claps | The man claps his hands. | 2 (alt: 3) | RESERVE - clear sustained clapping (frames ~20-110) but H3 zooms out to a wider shot to show the hands (baseline is a tight face shot where hands meet once for ~3 frames). alt: iter 3. Framing change = weaker preservation. |

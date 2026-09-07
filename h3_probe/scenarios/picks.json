@@ -59,10 +59,11 @@
   "run": "/scratch/amirrz/H3_exp/outputs/us_gen_sealion",
   "iter": 2,
   "alts": [
-   3
+   3,
+   4
   ],
   "edit": "The sea lion barks with its head raised.",
-  "note": "user pick: iter 2 best, iter 3 candidate; baseline opens the mouth only at the very end (run still in progress when picked)."
+  "note": "user pick: iter 2 best, iter 3 candidate; iter 4 added as candidate (critic best, 0.94); baseline opens the mouth only at the very end."
  },
  "gen_koi_pond": {
   "run": "/scratch/amirrz/H3_exp/outputs/us_gen_koi_pond",
