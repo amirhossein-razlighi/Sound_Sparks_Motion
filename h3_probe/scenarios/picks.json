@@ -105,5 +105,11 @@
   "iter": 3,
   "edit": "The frog jumps off the lily pad into the water.",
   "note": "user pick: iter 3 (full-size 448x768x124 source, 3-GPU run) - the frog jumps; critic stayed flat (another critic miss). baseline: frog leaves the frame only in the last frames."
+ },
+ "gen_glass_table": {
+  "run": "/scratch/amirrz/H3_exp/outputs/us_gen_glass_table_small",
+  "iter": 4,
+  "edit": "The glass tips over and spills the water.",
+  "note": "user pick: iter 4 is good (downscaled 320x512x89 source); critic stayed flat (0.004 at iter 4) - critic miss; later iterations drift."
  }
 }
