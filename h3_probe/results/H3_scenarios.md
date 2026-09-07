@@ -299,6 +299,11 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   failure mode to watch for), iter 9 a weaker leap. Only iter 9 kept as candidate. The perceptual guard at 0.25 was slightly
   too strict here - worth remembering when a large motion legitimately changes many pixels.
 
+- 3-GPU full-size test (gen_frog_jumps_full3, GPU_MEM_SPLIT=24;24;14): runs to completion - so 448x768x124 sources are
+  viable on 3 GPUs once the split is parsed correctly (memory finding for the paper). The frog itself: critic flat
+  (0.03 at iter 2, then 0.001), frames barely change (diff 0.017); the final re-render scores 0.41 (render nondeterminism).
+  Sheet kept (\`us_gen_frog_jumps_full3/iters_sheet_a.jpg\`).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
