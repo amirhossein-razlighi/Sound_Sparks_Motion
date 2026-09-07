@@ -241,6 +241,17 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 - boy_splashes (lin): critic 0.33 -> 0.91 at iters 9-10; sheets confirm a real two-handed splash with spray in iters 7-10
   (iter 9 clearest) while the baseline only stands up -> PACKAGED (4 pairs: goldfish, cat_yawns, man_shouts, boy_splashes).
 
+### 2026-09-06 (night) - round 5 screening (variety)
+- H3 succeeds: vase topples (0.87), ceiling fan spins (0.92), generated car door opens (0.96), dominoes topple early
+  (critic missed it), man at bus stop dances (critic missed it), stone splash partial (0.39/0.81) -> skip.
+- fails: glass at edge tips but vanishes instead of shattering (0.16/0.14), block tower static (0.04), balloon never pops
+  (0.003), ice barely cracks (0.006, too subtle), hallway door stays open (0.02/0.12), elevator doors stay shut (0.03),
+  woman in studio static and small (0.003), windmill blades static (0.14/0.63), workshop car door stays shut (0.04/0.24),
+  headlights never flash (0.005).
+- queued (2 GPUs) appended to the round-4 chains: A: gen_balloon_kid 20392350 -> gen_door_hall 20392351 -> gen_elevator 20392352 ->
+  gen_blocks_tower 20392353 (any); B: car_door_opens 20392354 -> car_lights_flash 20392355 -> gen_glass_edge 20392356 (any) -> gen_windmill 20392357 (lin,
+  sustained rotation). Skipped: ice (too subtle), woman_studio (subject too small).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -293,6 +304,22 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_goat_field | H3 t2va (r4) | bleats | fail (static, 0.23/0.36) | any run 20384613 | opt |
 | gen_rooster | H3 t2va (r4) | crows, head back | partial (silhouette, 0.25/0.65) | any run 20384609 | opt |
 | gen_man_couch | H3 t2va (r4) | sneezes | fail (0.008) but dark and small | - | skip |
+| gen_vase_shelf | H3 t2va (r5) | topples and breaks | success (0.87) | - | skip |
+| gen_ceiling_fan | H3 t2va (r5) | starts spinning | success (0.92) | - | skip |
+| gen_car_street | H3 t2va (r5) | car door swings open | success (0.96) | - | skip |
+| gen_dominoes | H3 t2va (r5) | topple | success (topple early; critic 0.03 missed it) | - | skip |
+| gen_man_busstop | H3 t2va (r5) | starts dancing | success (moves/dances; critic 0.015 missed it) | - | skip |
+| gen_pond_stone | H3 t2va (r5) | stone splashes | partial success (0.39/0.81) | - | skip |
+| gen_glass_edge | H3 t2va (r5) | falls and shatters | partial/unnatural (tips, then vanishes, 0.16/0.14) | any run 20392356 | opt |
+| gen_blocks_tower | H3 t2va (r5) | tower collapses | fail (static, 0.04) | any run 20392353 | opt |
+| gen_balloon_kid | H3 t2va (r5) | balloon pops | fail (0.003) | any run 20392350 | opt |
+| gen_ice_lake | H3 t2va (r5) | ice cracks | fail (0.006) but too subtle | - | skip |
+| gen_door_hall | H3 t2va (r5) | door slams shut | fail (stays open, 0.02/0.12) | any run 20392351 | opt |
+| gen_elevator | H3 t2va (r5) | elevator doors open | fail (stay shut, 0.03) | any run 20392352 | opt |
+| gen_woman_studio | H3 t2va (r5) | dances, spins | fail (0.003) but subject small | - | skip |
+| gen_windmill | H3 t2va (r5) | blades start turning | fail (static, 0.14/0.63) | lin run 20392357 | opt |
+| car_door_opens | retake input (workshop) | car door swings open | fail (0.04/0.24) | any run 20392354 | opt |
+| car_lights_flash | retake input (garage) | headlights flash, horn | fail (0.005) | any run 20392355 | opt |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
 | gen_horse_rears | H3 t2va | rears up on hind legs | fail (0.0002, only walks) | cancelled (flat critic) | skip |
