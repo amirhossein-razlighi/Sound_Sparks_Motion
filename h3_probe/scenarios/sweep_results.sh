@@ -1,7 +1,7 @@
 #!/bin/bash
 # Poll until a NEW results.json appears under outputs/us_* (or no h3-full* jobs remain), print its summary, exit.
 # State file lists results.json paths already reported.  Usage: sweep_results.sh [poll_seconds]
-O=/scratch/amirrz/H3_exp/outputs; ST=/scratch/amirrz/H3_exp/outputs/.sweep_seen; touch $ST; P=${1:-300}
+shopt -s nullglob; O=/scratch/amirrz/H3_exp/outputs; ST=/scratch/amirrz/H3_exp/outputs/.sweep_seen; touch $ST; P=${1:-300}
 while :; do
   new=0
   for r in $O/us_*/results.json $O/ablation/*/*/results.json; do
