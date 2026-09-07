@@ -21,5 +21,11 @@
   "iter": 9,
   "edit": "The boy splashes the water with both hands.",
   "note": "two-handed splash with water spraying up mid-clip (frames ~40-65); baseline only stands up out of the water. alt: iters 7, 8, 10"
+ },
+ "man_claps": {
+  "run": "/scratch/amirrz/H3_exp/outputs/us_man_claps_lin",
+  "iter": 2,
+  "edit": "The man claps his hands.",
+  "note": "RESERVE - clear sustained clapping (frames ~20-110) but H3 zooms out to a wider shot to show the hands (baseline is a tight face shot where hands meet once for ~3 frames). alt: iter 3. Framing change = weaker preservation."
  }
 }

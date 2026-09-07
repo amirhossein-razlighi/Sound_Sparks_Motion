@@ -252,6 +252,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   gen_blocks_tower 20392353 (any); B: car_door_opens 20392354 -> car_lights_flash 20392355 -> gen_glass_edge 20392356 (any) -> gen_windmill 20392357 (lin,
   sustained rotation). Skipped: ice (too subtle), woman_studio (subject too small).
 
+- man_claps (lin): iters 2-3 reach 0.89/0.80 but with perceptual 0.52-0.56: H3 zooms out to a wider shot in which the man
+  claps continuously - a real clap, same man and studio, but a framing change (the tight face shot cannot show hands);
+  iter 4 swaps the person (identity drift, then collapse). Packaged as RESERVE with the caveat in the note; user decides.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -268,7 +272,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | robot_both_arms | retake input | raises both arms | success (0.97/1.0) | - | skip |
 | cartoon_boy_jumps | retake input | jumps into the air | success (jumps early, 0.12/0.83) | - | skip |
 | boy_splashes | retake input | splashes water with both hands | unnatural (stands up, 0.38/0.63) | iter 9: clear two-handed splash mid-clip (alt 7/8/10) | PACKAGED |
-| man_claps | retake input | claps hands | partial (hands meet once, 0.14/0.56) | lin run 20379582 | opt |
+| man_claps | retake input | claps hands | partial (hands meet once, 0.14/0.56) | iter 2: sustained clapping but shot zooms out (perc 0.52); iter 4 changes identity | RESERVE |
 | eagle_head_turn | retake input | turns head to camera | unclear, subject tiny (0.28/0.63) | - | skip |
 | man_nods | retake input | nods head | not visible (0.22/0.67) | - | maybe |
 | dog_tilts_head | retake input | tilts head | static (0.46/0.51) | - | maybe |
