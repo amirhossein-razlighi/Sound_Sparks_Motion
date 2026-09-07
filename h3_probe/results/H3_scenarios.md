@@ -365,7 +365,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
 | gen_horse_rears | H3 t2va | rears up on hind legs | fail (0.0002, only walks) | cancelled (flat critic) | skip |
-| gen_frog_jumps | H3 t2va | jumps off the lily pad | late (leaves frame in last 2 frames, 0.016) | 3-GPU OOM twice; small-source run 20403374 | opt |
+| gen_frog_jumps | H3 t2va | jumps off the lily pad | late (leaves frame in last 2 frames, 0.016) | small source: critic flat 0.01, previews left for review (iters_sheet_a.jpg) | likely failed |
 | gen_woman_stands | H3 t2va | stands up from bench | success (stands mid-clip) | - | skip |
 | gen_cat_jumps_down | H3 t2va | jumps down from windowsill | success (late but jumps) | - | skip |
 | gen_man_drinks | H3 t2va | drinks from mug | success (0.93/0.98) | - | skip |
