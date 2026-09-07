@@ -373,7 +373,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_blocks_tower | H3 t2va (r5) | tower collapses | fail with the 124-f clip (0.04); trimmed-source baseline scores 0.78/0.92 (collapses) | baseline succeeds; sheet kept | skip |
 | gen_balloon_kid | H3 t2va (r5) | balloon pops | fail (0.003) | any: flat 0.01-0.02, one drift spike at iter 8; sheet kept | failed |
 | gen_ice_lake | H3 t2va (r5) | ice cracks | fail (0.006) but too subtle | - | skip |
-| gen_door_hall | H3 t2va (r5) | door slams shut | fail (stays open, 0.02/0.12) | any run 20392351 | opt |
+| gen_door_hall | H3 t2va (r5) | door slams shut | fail (stays open, 0.02/0.12) | trimmed source: baseline 0.37, no improvement, drift from iter 4; sheet kept | failed |
 | gen_elevator | H3 t2va (r5) | elevator doors open | fail (stay shut, 0.03) | any run 20392352 | opt |
 | gen_woman_studio | H3 t2va (r5) | dances, spins | fail (0.003) but subject small | - | skip |
 | gen_windmill | H3 t2va (r5) | blades start turning | fail (static, 0.14/0.63) | lin run 20392357 | opt |
