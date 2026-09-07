@@ -304,6 +304,13 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   (0.03 at iter 2, then 0.001), frames barely change (diff 0.017); the final re-render scores 0.41 (render nondeterminism).
   Sheet kept (\`us_gen_frog_jumps_full3/iters_sheet_a.jpg\`).
 
+### 2026-09-07 05:30 - mode ablation for the packaged pairs
+- user: show that text-only and audio-only are not as good as both. \`scenarios/ablate.py\` rebuilds each winning run's
+  exact environment from its run_config.json (same objective, question, recipe, seed), reuses its Phase-A capture and
+  submits OPT_MODE=text and OPT_MODE=audio to \`outputs/ablation/<slug>/{text_only,audio_only}\` (3 chained lines of 2-GPU
+  jobs; frog full-size on 3 GPUs). Manifest: \`results/ablation/manifest.json\`. Packaging into
+  \`results/ablation/<slug>/{both,text_only,audio_only}\` with a comparison sheet follows when the runs finish.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |

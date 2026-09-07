@@ -4,10 +4,10 @@
 O=/scratch/amirrz/H3_exp/outputs; ST=/scratch/amirrz/H3_exp/outputs/.sweep_seen; touch $ST; P=${1:-300}
 while :; do
   new=0
-  for r in $O/us_*/results.json; do
+  for r in $O/us_*/results.json $O/ablation/*/*/results.json; do
     grep -qxF "$r" $ST && continue
     echo "$r" >> $ST; new=1; d=$(dirname $r); s=$(basename $d)
-    echo "=== NEW RESULT: $s ==="
+    echo "=== NEW RESULT: $(basename $(dirname $d))/$s ==="
     awk -F, 'NR>1{printf "it%s y=%.3f p=%.2f b=%s; ",$1,$3,$9,$18}' $d/opt_log.csv; echo
     python3 -c "
 import json; r=json.load(open('$r')); print({k:(round(v,4) if isinstance(v,float) else v) for k,v in r.items() if k in ('baseline_yes','final_yes','best_iter','frame_diff_vs_baseline','select_by')})"

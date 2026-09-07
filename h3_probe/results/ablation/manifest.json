@@ -1,0 +1,158 @@
+{
+ "goldfish": {
+  "both_run": "/scratch/amirrz/H3_exp/outputs/fullmethod_goldfish_D",
+  "both_iter": "final",
+  "edit": "The goldfish jumps out of the fish tank into the air.",
+  "text_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/goldfish/text_only",
+   "job": "20413676"
+  },
+  "audio_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/goldfish/audio_only",
+   "job": "20413677"
+  }
+ },
+ "cat_yawns": {
+  "both_run": "/scratch/amirrz/H3_exp/outputs/us_cat_yawns",
+  "both_iter": 3,
+  "edit": null,
+  "text_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/cat_yawns/text_only",
+   "job": "20413678"
+  },
+  "audio_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/cat_yawns/audio_only",
+   "job": "20413679"
+  }
+ },
+ "man_shouts": {
+  "both_run": "/scratch/amirrz/H3_exp/outputs/us_man_shouts",
+  "both_iter": 3,
+  "edit": null,
+  "text_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/man_shouts/text_only",
+   "job": "20413680"
+  },
+  "audio_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/man_shouts/audio_only",
+   "job": "20413681"
+  }
+ },
+ "boy_splashes": {
+  "both_run": "/scratch/amirrz/H3_exp/outputs/us_boy_splashes_lin",
+  "both_iter": 9,
+  "edit": "The boy splashes the water with both hands.",
+  "text_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/boy_splashes/text_only",
+   "job": "20413682"
+  },
+  "audio_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/boy_splashes/audio_only",
+   "job": "20413683"
+  }
+ },
+ "car_door_opens": {
+  "both_run": "/scratch/amirrz/H3_exp/outputs/us_car_door_opens",
+  "both_iter": 4,
+  "edit": "The car door swings open.",
+  "text_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/car_door_opens/text_only",
+   "job": "20413684"
+  },
+  "audio_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/car_door_opens/audio_only",
+   "job": "20413685"
+  }
+ },
+ "gen_dolphin_sea": {
+  "both_run": "/scratch/amirrz/H3_exp/outputs/us_gen_dolphin_sea",
+  "both_iter": 2,
+  "edit": "The dolphin leaps out of the water.",
+  "text_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/gen_dolphin_sea/text_only",
+   "job": "20413686"
+  },
+  "audio_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/gen_dolphin_sea/audio_only",
+   "job": "20413687"
+  }
+ },
+ "gen_koi_pond": {
+  "both_run": "/scratch/amirrz/H3_exp/outputs/us_gen_koi_pond",
+  "both_iter": "final",
+  "edit": "The koi jumps out of the water.",
+  "text_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/gen_koi_pond/text_only",
+   "job": "20413688"
+  },
+  "audio_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/gen_koi_pond/audio_only",
+   "job": "20413689"
+  }
+ },
+ "gen_sealion": {
+  "both_run": "/scratch/amirrz/H3_exp/outputs/us_gen_sealion",
+  "both_iter": 2,
+  "edit": "The sea lion barks with its head raised.",
+  "text_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/gen_sealion/text_only",
+   "job": "20413690"
+  },
+  "audio_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/gen_sealion/audio_only",
+   "job": "20413691"
+  }
+ },
+ "gen_woman_desk": {
+  "both_run": "/scratch/amirrz/H3_exp/outputs/us_gen_woman_desk",
+  "both_iter": 2,
+  "edit": "The woman yawns widely.",
+  "text_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/gen_woman_desk/text_only",
+   "job": "20413692"
+  },
+  "audio_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/gen_woman_desk/audio_only",
+   "job": "20413693"
+  }
+ },
+ "gen_cow_field": {
+  "both_run": "/scratch/amirrz/H3_exp/outputs/us_gen_cow_field",
+  "both_iter": 3,
+  "edit": "The cow moos loudly.",
+  "text_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/gen_cow_field/text_only",
+   "job": "20413694"
+  },
+  "audio_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/gen_cow_field/audio_only",
+   "job": "20413695"
+  }
+ },
+ "gen_woman_door": {
+  "both_run": "/scratch/amirrz/H3_exp/outputs/us_gen_woman_door_small",
+  "both_iter": 4,
+  "edit": "The woman opens the door and walks inside.",
+  "text_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/gen_woman_door/text_only",
+   "job": "20413696"
+  },
+  "audio_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/gen_woman_door/audio_only",
+   "job": "20413697"
+  }
+ },
+ "gen_frog_jumps": {
+  "both_run": "/scratch/amirrz/H3_exp/outputs/us_gen_frog_jumps_full3",
+  "both_iter": 3,
+  "edit": "The frog jumps off the lily pad into the water.",
+  "text_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/gen_frog_jumps/text_only",
+   "job": "20413698"
+  },
+  "audio_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/gen_frog_jumps/audio_only",
+   "job": "20413699"
+  }
+ }
+}
