@@ -9,7 +9,10 @@
  "cat_yawns": {
   "run": "/scratch/amirrz/H3_exp/outputs/us_cat_yawns",
   "iter": 3,
-  "note": "wide early yawn (frames ~30-50); baseline yawns only in the last frame. alt: iter 9"
+  "note": "wide early yawn (frames ~30-50); baseline yawns only in the last frame. alt: iter 9",
+  "alts": [
+   9
+  ]
  },
  "man_shouts": {
   "run": "/scratch/amirrz/H3_exp/outputs/us_man_shouts",
@@ -20,18 +23,61 @@
   "run": "/scratch/amirrz/H3_exp/outputs/us_boy_splashes_lin",
   "iter": 9,
   "edit": "The boy splashes the water with both hands.",
-  "note": "two-handed splash with water spraying up mid-clip (frames ~40-65); baseline only stands up out of the water. alt: iters 7, 8, 10"
+  "note": "two-handed splash with water spraying up mid-clip (frames ~40-65); baseline only stands up out of the water. alt: iters 7, 8, 10",
+  "alts": [
+   7,
+   8,
+   10
+  ]
  },
  "man_claps": {
   "run": "/scratch/amirrz/H3_exp/outputs/us_man_claps_lin",
   "iter": 2,
   "edit": "The man claps his hands.",
-  "note": "RESERVE - clear sustained clapping (frames ~20-110) but H3 zooms out to a wider shot to show the hands (baseline is a tight face shot where hands meet once for ~3 frames). alt: iter 3. Framing change = weaker preservation."
+  "note": "RESERVE - clear sustained clapping (frames ~20-110) but H3 zooms out to a wider shot to show the hands (baseline is a tight face shot where hands meet once for ~3 frames). alt: iter 3. Framing change = weaker preservation.",
+  "alts": [
+   3
+  ]
  },
  "car_door_opens": {
   "run": "/scratch/amirrz/H3_exp/outputs/us_car_door_opens",
   "iter": 4,
   "edit": "The car door swings open.",
-  "note": "the driver door of the car on the lift swings open mid-clip (from frame ~45) and stays open, scene otherwise unchanged; baseline door never opens. alt: iters 3, 5. iters 6+ add extra people/objects (drift)."
+  "note": "the driver door of the car on the lift swings open mid-clip (from frame ~45) and stays open, scene otherwise unchanged; baseline door never opens. alt: iters 3, 5. iters 6+ add extra people/objects (drift).",
+  "alts": [
+   3,
+   5
+  ]
+ },
+ "gen_woman_desk": {
+  "run": "/scratch/amirrz/H3_exp/outputs/us_gen_woman_desk",
+  "iter": 2,
+  "edit": "The woman yawns widely.",
+  "note": "user pick: iter 2 (wide yawn). Note: the run's own baseline also scored 0.91 on the critic."
+ },
+ "gen_sealion": {
+  "run": "/scratch/amirrz/H3_exp/outputs/us_gen_sealion",
+  "iter": 2,
+  "alts": [
+   3
+  ],
+  "edit": "The sea lion barks with its head raised.",
+  "note": "user pick: iter 2 best, iter 3 candidate; baseline opens the mouth only at the very end (run still in progress when picked)."
+ },
+ "gen_koi_pond": {
+  "run": "/scratch/amirrz/H3_exp/outputs/us_gen_koi_pond",
+  "iter": "final",
+  "alts": [
+   4,
+   6
+  ],
+  "edit": "The koi jumps out of the water.",
+  "note": "user pick: best (final = iter 6 latents) with iters 4 and 6 as candidates; critic stayed flat at 0.003 - a critic miss, the jump is visible to a human."
+ },
+ "gen_dolphin_sea": {
+  "run": "/scratch/amirrz/H3_exp/outputs/us_gen_dolphin_sea",
+  "iter": 2,
+  "edit": "The dolphin leaps out of the water.",
+  "note": "user pick: iter 2 (run still in progress when picked; revisit later iterations when done)."
  }
 }

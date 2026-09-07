@@ -37,6 +37,11 @@ def main():
         shutil.copy2(a, os.path.join(d, "A_baseline_av.mp4"))
         shutil.copy2(b, os.path.join(d, "B_ours_av.mp4"))
         extra = []
+        for alt in pk.get("alts", []):   # alternates the user may prefer: B_candidate_iterNN_av.mp4 (or _final)
+            fa = os.path.join(run, "optimized_final_av.mp4" if alt == "final" else f"iter_{int(alt):02d}_av.mp4")
+            if os.path.exists(fa):
+                na = "B_candidate_final" if alt == "final" else f"B_candidate_iter{int(alt):02d}"
+                shutil.copy2(fa, os.path.join(d, na + "_av.mp4")); extra.append(na)
         for tag, name in (("baseline", "A_baseline"), ("optimized", "B_ours")):
             f = next((x for x in (os.path.join(run, f"render_{tag}_32_av.mp4"), os.path.join(run, "render", f"render_{tag}_32_av.mp4"))
                       if os.path.exists(x)), None)
@@ -49,11 +54,12 @@ def main():
                 "baseline_yes": res.get("baseline_yes"), "baseline_yes_any": res.get("baseline_yes_any"),
                 "best_iter_by_critic": res.get("best_iter")}
         json.dump(meta, open(os.path.join(d, "meta.json"), "w"), indent=1)
-        rows.append(f"| {s} | {edit} | {it} | {pk.get('note', '')} |")
+        alts = ", ".join(str(a) for a in pk.get("alts", []))
+        rows.append(f"| {s} | {edit} | {it}{' (alt: ' + alts + ')' if alts else ''} | {pk.get('note', '')} |")
         print(rows[-1])
     with open(os.path.join(DST, "INDEX.md"), "w") as f:
         f.write("# User-study A/B pairs (A = H3 baseline, B = ours; same source, prompt, noise and 16 steps)\n\n"
-                "Files per scenario: `A_baseline_av.mp4`, `B_ours_av.mp4` (+ `_32steps` re-renders when available), `meta.json`.\n"
+                "Files per scenario: `A_baseline_av.mp4`, `B_ours_av.mp4` (+ `B_candidate_iterNN_av.mp4` alternates, `_32steps` re-renders when available), `meta.json`.\n"
                 "B is the iteration picked by visual inspection of all previews (`scenarios/picks.json`).\n\n"
                 "| slug | edit | picked iter | what changes |\n|---|---|---|---|\n")
         for r in rows:

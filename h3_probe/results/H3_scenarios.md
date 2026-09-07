@@ -26,7 +26,8 @@ Where H3 fails and ours saves it (the 3 confirmed pairs: goldfish leap, cat yawn
 
 Where it does not work (drop quickly):
 - **flat critic** (baseline ~0, no precursor) on whole-body pose changes from a static pose (child jumps, dog stands up,
-  monkey jumps, horse rears): nothing moves for 10 iterations, then adversarial drift. Exception: goldfish (strong prior).
+  monkey jumps, horse rears): nothing moves for 10 iterations, then adversarial drift. Exceptions: goldfish and koi (the
+  critic stayed flat on the koi although the jump is visible) - always look at the previews before dropping a run.
 - **small motions** (neck, nod, head tilt, hop, sway): critic cannot guide, and too subtle for a user study anyway.
 - **edit that does not fit the source** (crouch and touch water when already chest-deep) or **tiny subject** (eagle, kid on swing).
 - **sustained/pose edits with the linspace objective** (celebrate, wings, walk): at best a partial pose change without the
@@ -286,6 +287,13 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   between the 124-frame and the 89-frame reference. Nothing to save -> skip. (Screening verdicts on 124-frame clips are only
   indicative for the trimmed runs; each run's own baseline decides.)
 
+### 2026-09-07 03:00 - user review of the overnight runs
+- user picks from the iteration previews: gen_woman_desk iter 2, gen_sealion iter 2 (iter 3 candidate), gen_koi_pond best
+  (iters 4/6 candidates), gen_dolphin_sea iter 2 (run still in progress). Packaged; alternates are stored as
+  \`B_candidate_iterNN_av.mp4\` next to \`B_ours_av.mp4\` (package_ab.py \`alts\`). Study set: 9 pairs + 1 reserve.
+- lesson: the critic can also miss real motion (koi: flat 0.003 while the jump is visible to a human), so "flat critic"
+  runs still deserve a look at the previews before being called failed - the drift guard keeps them cheap to keep.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -329,11 +337,11 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_duck_pond | H3 t2va (r4) | flaps and splashes | success (0.84) | - | skip |
 | gen_dog_rug | H3 t2va (r4) | barks | success (0.59/0.98) | - | skip |
 | gen_girl_cake | H3 t2va (r4) | blows out candles | success (0.71) | - | skip |
-| gen_koi_pond | H3 t2va (r4) | jumps out of water | fail (swims only, 0.001) | any: flat 0.003 for 16 iters | failed |
-| gen_dolphin_sea | H3 t2va (r4) | leaps out of water | fail (fin only, 0.001) | any run 20384608 | opt |
+| gen_koi_pond | H3 t2va (r4) | jumps out of water | fail (swims only, 0.001) | user: best (iter 6 latents) is good, iters 4/6 candidates - critic stayed flat (critic miss) | PACKAGED |
+| gen_dolphin_sea | H3 t2va (r4) | leaps out of water | fail (fin only, 0.001) | user: iter 2 is really good (run in progress) | PACKAGED |
 | gen_wolf_hill | H3 t2va (r4) | howls, head up | fail with the 124-f clip (0.02); trimmed 89-f source: baseline howls in a closer shot (0.99) | baseline succeeds | skip |
-| gen_woman_desk | H3 t2va (r4) | yawns widely | fail with the 124-f clip (0.04); the trimmed 89-f source yawns at baseline (0.91) | baseline succeeds | skip |
-| gen_sealion | H3 t2va (r4) | barks, head raised | late (mouth opens at the end, 0.09/0.87) | any run 20384611 | opt |
+| gen_woman_desk | H3 t2va (r4) | yawns widely | fail with the 124-f clip (0.04); trimmed-source baseline scored 0.91 | user: iter 2 is good | PACKAGED |
+| gen_sealion | H3 t2va (r4) | barks, head raised | late (mouth opens at the end, 0.09/0.87) | user: iter 2 best, iter 3 candidate (run in progress) | PACKAGED |
 | gen_cow_field | H3 t2va (r4) | moos | fail (static, 0.12/0.38) | any run 20384612 | opt |
 | gen_goat_field | H3 t2va (r4) | bleats | fail (static, 0.23/0.36) | any run 20384613 | opt |
 | gen_rooster | H3 t2va (r4) | crows, head back | partial (silhouette, 0.25/0.65) | any run 20384609 | opt |
