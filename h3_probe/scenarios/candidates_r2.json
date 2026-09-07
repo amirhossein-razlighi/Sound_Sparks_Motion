@@ -2,27 +2,30 @@
  "_comment": "Round-2 user-study candidates: H3 t2va sources (inputs/gen/gen_inputs_r2.json), one sound-linked edit each, group generated_r2.",
  "gen_dog_wet": {
   "group": "generated_r2",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_dog_wet__t2va.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_dog_wet_h3sound.wav",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_dog_wet__t2va_89f_small.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_dog_wet_h3sound_89f.wav",
   "edit": "The dog shakes the water off its fur.",
   "scene": "a wet golden retriever standing on a lawn beside a lake",
-  "question": "Does the dog shake its body to shake off water at any point in this video? Answer only 'yes' or 'no'."
+  "question": "Does the dog shake its body to shake off water at any point in this video? Answer only 'yes' or 'no'.",
+  "note": "source downscaled to 320x512 and trimmed to 89 frames for 2-GPU Phase B (448x768x124 OOMs even on 3 GPUs); screening used the full clip"
  },
  "gen_woman_door": {
   "group": "generated_r2",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_woman_door__t2va.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_woman_door_h3sound.wav",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_woman_door__t2va_89f_small.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_woman_door_h3sound_89f.wav",
   "edit": "The woman opens the door and walks inside.",
   "scene": "a woman standing in front of a closed wooden front door",
-  "question": "Does the woman open the door at any point in this video? Answer only 'yes' or 'no'."
+  "question": "Does the woman open the door at any point in this video? Answer only 'yes' or 'no'.",
+  "note": "source downscaled to 320x512 and trimmed to 89 frames for 2-GPU Phase B (448x768x124 OOMs even on 3 GPUs); screening used the full clip"
  },
  "gen_basketball": {
   "group": "generated_r2",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_basketball__t2va.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_basketball_h3sound.wav",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_basketball__t2va_89f_small.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_basketball_h3sound_89f.wav",
   "edit": "The basketball bounces up and down on the court.",
   "scene": "a basketball on an empty outdoor court",
-  "question": "Does the basketball bounce off the ground at any point in this video? Answer only 'yes' or 'no'."
+  "question": "Does the basketball bounce off the ground at any point in this video? Answer only 'yes' or 'no'.",
+  "note": "source downscaled to 320x512 and trimmed to 89 frames for 2-GPU Phase B (448x768x124 OOMs even on 3 GPUs); screening used the full clip"
  },
  "gen_pigeon_rail": {
   "group": "generated_r2",
@@ -82,10 +85,11 @@
  },
  "gen_glass_table": {
   "group": "generated_r2",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_glass_table__t2va.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_glass_table_h3sound.wav",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_glass_table__t2va_89f_small.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_glass_table_h3sound_89f.wav",
   "edit": "The glass tips over and spills the water.",
   "scene": "a full glass of water on a wooden kitchen table",
-  "question": "Does the glass tip over or spill at any point in this video? Answer only 'yes' or 'no'."
+  "question": "Does the glass tip over or spill at any point in this video? Answer only 'yes' or 'no'.",
+  "note": "source downscaled to 320x512 and trimmed to 89 frames for 2-GPU Phase B (448x768x124 OOMs even on 3 GPUs); screening used the full clip"
  }
 }

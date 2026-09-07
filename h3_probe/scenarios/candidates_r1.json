@@ -1,102 +1,260 @@
 {
-  "_comment": "Round-1 user-study candidates. src relative to the repo or absolute; wav = 32 kHz mono source audio; question = critic 'any frame' question; group = known_fail | existing | generated. RV=results/videos, SW=/scratch/amirrz/H3_exp/inputs/sweep, GEN=/scratch/amirrz/H3_exp/inputs/gen",
-
-  "turtle_extends_neck": {"group": "known_fail", "src": "results/videos/turtle_extends_neck/retake_input_prepared.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/turtle_extends_neck.wav",
-    "edit": "The turtle extends its neck forward out of its shell.", "scene": "a turtle",
-    "question": "Does the turtle stretch its neck out of its shell at any point in this video? Answer only 'yes' or 'no'."},
-  "cat_yawns": {"group": "known_fail", "src": "results/videos/transfers/cat_yawns/retake_input_prepared.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/cat_yawns.wav",
-    "edit": "The cat yawns widely.", "scene": "a cat sitting",
-    "question": "Does the cat open its mouth wide in a yawn at any point in this video? Answer only 'yes' or 'no'."},
-  "boy_crouches": {"group": "known_fail", "src": "results/videos/boy_crouches/retake_input_prepared.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/boy_crouches.wav",
-    "edit": "The boy crouches slightly and touches the water.", "scene": "a boy standing near water",
-    "question": "Does the boy crouch down and touch the water with his hands at any point in this video? Answer only 'yes' or 'no'."},
-  "red_bird_opens_wings": {"group": "known_fail", "src": "results/videos/transfers/red_bird_opens_wings/retake_input_prepared.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/red_bird_opens_wings.wav",
-    "edit": "The red bird opens its wings.", "scene": "a red bird perched",
-    "question": "Does the red bird spread its wings open at any point in this video? Answer only 'yes' or 'no'."},
-  "man_shouts": {"group": "known_fail", "src": "results/videos/transfers/man_shouts/retake_input_prepared.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/man_shouts.wav",
-    "edit": "The man shouts loudly.", "scene": "a man facing the camera",
-    "question": "Does the man shout with his mouth wide open at any point in this video? Answer only 'yes' or 'no'."},
-
-  "eagle_head_turn": {"group": "existing", "src": "results/videos/bird_opens_wing_real/retake_input_prepared.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/bird_opens_wing_real.wav",
-    "edit": "The eagle turns its head to look straight at the camera.", "scene": "an eagle perched, seen against the sky",
-    "question": "Does the eagle turn its head to face the camera at any point in this video? Answer only 'yes' or 'no'."},
-  "boy_splashes": {"group": "existing", "src": "results/videos/boy_crouches/retake_input_prepared.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/boy_crouches.wav",
-    "edit": "The boy splashes the water with both hands.", "scene": "a boy standing in a swimming pool",
-    "question": "Does the boy splash water with his hands at any point in this video? Answer only 'yes' or 'no'."},
-  "child_jumps": {"group": "existing", "src": "results/videos/child_waving_hand/retake_input_prepared.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/child_waving_hand.wav",
-    "edit": "The child jumps up and down.", "scene": "a child facing the camera",
-    "question": "Does the child jump up off the ground at any point in this video? Answer only 'yes' or 'no'."},
-  "man_covers_face": {"group": "existing", "src": "results/videos/man_laugh/retake_input_prepared.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/man_laugh.wav",
-    "edit": "The man covers his face with both hands.", "scene": "a man facing the camera",
-    "question": "Does the man cover his face with his hands at any point in this video? Answer only 'yes' or 'no'."},
-  "man_claps": {"group": "existing", "src": "results/videos/man_raises_hand_real/retake_input_prepared.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/man_raises_hand_real.wav",
-    "edit": "The man claps his hands.", "scene": "a man standing, facing the camera",
-    "question": "Does the man clap his hands together at any point in this video? Answer only 'yes' or 'no'."},
-  "monkey_jumps_branch": {"group": "existing", "src": "results/videos/monkey_reaching_for_fruit/retake_input_prepared.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/monkey_reaching_for_fruit.wav",
-    "edit": "The monkey jumps to another branch.", "scene": "a monkey on a tree branch",
-    "question": "Does the monkey jump or leap from its branch at any point in this video? Answer only 'yes' or 'no'."},
-  "car_hood_opens": {"group": "existing", "src": "results/videos/red_car_door_real/retake_input_prepared.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/red_car_door_real.wav",
-    "edit": "The car's hood opens.", "scene": "a car raised on a lift in a workshop with a mechanic nearby",
-    "question": "Does the car's hood open at any point in this video? Answer only 'yes' or 'no'."},
-  "robot_both_arms": {"group": "existing", "src": "results/videos/robot_waives/retake_input_prepared.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/robot_waives.wav",
-    "edit": "The robot raises both arms above its head.", "scene": "a humanoid robot facing the camera",
-    "question": "Does the robot raise both of its arms above its head at any point in this video? Answer only 'yes' or 'no'."},
-  "man_nods": {"group": "existing", "src": "results/videos/surprised_man/retake_input_prepared.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/surprised_man.wav",
-    "edit": "The man nods his head up and down.", "scene": "a man facing the camera",
-    "question": "Does the man nod his head up and down at any point in this video? Answer only 'yes' or 'no'."},
-  "turtle_walks": {"group": "existing", "src": "results/videos/turtle_extends_neck/retake_input_prepared.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/turtle_extends_neck.wav",
-    "edit": "The turtle walks forward.", "scene": "a turtle",
-    "question": "Does the turtle walk forward at any point in this video? Answer only 'yes' or 'no'."},
-  "dog_stands_up": {"group": "existing", "src": "results/videos/dog_yawn/retake_input_prepared.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/dog_yawn.wav",
-    "edit": "The dog stands up on all four legs.", "scene": "a golden retriever in sunglasses sitting on a wooden garden chair",
-    "question": "Does the dog stand up from its sitting position at any point in this video? Answer only 'yes' or 'no'."},
-  "dog_tilts_head": {"group": "existing", "src": "results/videos/dog_yawn/retake_input_prepared.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/dog_yawn.wav",
-    "edit": "The dog tilts its head to one side.", "scene": "a golden retriever in sunglasses sitting on a wooden garden chair",
-    "question": "Does the dog tilt its head sideways at any point in this video? Answer only 'yes' or 'no'."},
-  "dog_runs_off": {"group": "existing", "src": "results/videos/dog_jumps/retake_input_prepared.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/dog_jumps.wav",
-    "edit": "The white dog gets up and runs out of the frame.", "scene": "a man in an apron cooking at a kitchen counter with a white dog sitting on the left",
-    "question": "Does the white dog get up and run away at any point in this video? Answer only 'yes' or 'no'."},
-  "car_drives_out": {"group": "existing", "src": "results/videos/car_lights/retake_input_prepared.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/car_lights.wav",
-    "edit": "The car drives forward out of the garage.", "scene": "a yellow sports car parked in a garage",
-    "question": "Does the car drive forward at any point in this video? Answer only 'yes' or 'no'."},
-  "cat_stretches": {"group": "existing", "src": "results/videos/transfers/cat_yawns/retake_input_prepared.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/cat_yawns.wav",
-    "edit": "The cat stretches its front legs forward.", "scene": "a cat sitting",
-    "question": "Does the cat stretch its front legs forward at any point in this video? Answer only 'yes' or 'no'."},
-  "cartoon_boy_jumps": {"group": "existing", "src": "results/videos/transfers/boy_laughing_outloud/retake_input_prepared.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/boy_laughing_outloud.wav",
-    "edit": "The boy jumps up into the air.", "scene": "a cartoon boy in a yellow t-shirt standing in front of a shop",
-    "question": "Does the boy jump up into the air at any point in this video? Answer only 'yes' or 'no'."},
-  "man_celebrates": {"group": "existing", "src": "results/videos/transfers/man_shouts/retake_input_prepared.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/man_shouts.wav",
-    "edit": "The man raises both arms in celebration.", "scene": "a man in a grey t-shirt standing in a plain room",
-    "question": "Does the man raise both arms above his head at any point in this video? Answer only 'yes' or 'no'."},
-  "bird_hops": {"group": "existing", "src": "results/videos/transfers/red_bird_opens_wings/retake_input_prepared.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/red_bird_opens_wings.wav",
-    "edit": "The red bird hops along the branch.", "scene": "a red bird perched on a branch",
-    "question": "Does the red bird hop or move along the branch at any point in this video? Answer only 'yes' or 'no'."},
-  "rose_sways": {"group": "existing", "src": "results/videos/red_rose_bloom/retake_input_prepared.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/red_rose_bloom.wav",
-    "edit": "The rose sways strongly in the wind.", "scene": "a red rose bud on a stem in a grass field",
-    "question": "Does the rose sway or bend in the wind at any point in this video? Answer only 'yes' or 'no'."},
-
-  "gen_jeep_drives": {"group": "generated", "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_jeep_jungle__t2va.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_jeep_jungle_h3sound.wav",
-    "edit": "The jeep drives forward down the dirt road.", "scene": "a green jeep parked on a dirt road in a dense jungle",
-    "question": "Does the jeep drive forward at any point in this video? Answer only 'yes' or 'no'."},
-  "gen_woman_stands": {"group": "generated", "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_woman_bench__t2va.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_woman_bench_h3sound.wav",
-    "edit": "The woman stands up from the bench.", "scene": "a young woman sitting on a wooden park bench",
-    "question": "Does the woman stand up from the bench at any point in this video? Answer only 'yes' or 'no'."},
-  "gen_horse_rears": {"group": "generated", "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_horse_field__t2va.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_horse_field_h3sound.wav",
-    "edit": "The horse rears up on its hind legs.", "scene": "a brown horse standing in a sunny grass field",
-    "question": "Does the horse rear up on its hind legs at any point in this video? Answer only 'yes' or 'no'."},
-  "gen_kid_swings": {"group": "generated", "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_kid_swing__t2va.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_kid_swing_h3sound.wav",
-    "edit": "The child starts swinging back and forth on the swing.", "scene": "a child sitting on a playground swing",
-    "question": "Does the child swing back and forth at any point in this video? Answer only 'yes' or 'no'."},
-  "gen_cat_jumps_down": {"group": "generated", "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_cat_windowsill__t2va.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_cat_windowsill_h3sound.wav",
-    "edit": "The cat gets up and jumps down from the windowsill.", "scene": "a tabby cat lying on a sunny windowsill",
-    "question": "Does the cat jump down from the windowsill at any point in this video? Answer only 'yes' or 'no'."},
-  "gen_man_drinks": {"group": "generated", "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_man_kitchen_cup__t2va.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_man_kitchen_cup_h3sound.wav",
-    "edit": "The man lifts the mug to his mouth and drinks from it.", "scene": "a man standing at a kitchen counter holding a coffee mug",
-    "question": "Does the man drink from the mug at any point in this video? Answer only 'yes' or 'no'."},
-  "gen_drummer_plays": {"group": "generated", "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_drummer__t2va.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_drummer_h3sound.wav",
-    "edit": "The drummer starts playing the drums energetically.", "scene": "a drummer sitting behind a drum kit in a rehearsal room",
-    "question": "Does the drummer hit the drums with the sticks at any point in this video? Answer only 'yes' or 'no'."},
-  "gen_frog_jumps": {"group": "generated", "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_frog_lilypad__t2va.mp4", "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_frog_lilypad_h3sound.wav",
-    "edit": "The frog jumps off the lily pad into the water.", "scene": "a green frog sitting on a lily pad in a pond",
-    "question": "Does the frog jump off the lily pad at any point in this video? Answer only 'yes' or 'no'."}
+ "_comment": "Round-1 user-study candidates. src relative to the repo or absolute; wav = 32 kHz mono source audio; question = critic 'any frame' question; group = known_fail | existing | generated. RV=results/videos, SW=/scratch/amirrz/H3_exp/inputs/sweep, GEN=/scratch/amirrz/H3_exp/inputs/gen",
+ "turtle_extends_neck": {
+  "group": "known_fail",
+  "src": "results/videos/turtle_extends_neck/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/turtle_extends_neck.wav",
+  "edit": "The turtle extends its neck forward out of its shell.",
+  "scene": "a turtle",
+  "question": "Does the turtle stretch its neck out of its shell at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "cat_yawns": {
+  "group": "known_fail",
+  "src": "results/videos/transfers/cat_yawns/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/cat_yawns.wav",
+  "edit": "The cat yawns widely.",
+  "scene": "a cat sitting",
+  "question": "Does the cat open its mouth wide in a yawn at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "boy_crouches": {
+  "group": "known_fail",
+  "src": "results/videos/boy_crouches/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/boy_crouches.wav",
+  "edit": "The boy crouches slightly and touches the water.",
+  "scene": "a boy standing near water",
+  "question": "Does the boy crouch down and touch the water with his hands at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "red_bird_opens_wings": {
+  "group": "known_fail",
+  "src": "results/videos/transfers/red_bird_opens_wings/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/red_bird_opens_wings.wav",
+  "edit": "The red bird opens its wings.",
+  "scene": "a red bird perched",
+  "question": "Does the red bird spread its wings open at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "man_shouts": {
+  "group": "known_fail",
+  "src": "results/videos/transfers/man_shouts/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/man_shouts.wav",
+  "edit": "The man shouts loudly.",
+  "scene": "a man facing the camera",
+  "question": "Does the man shout with his mouth wide open at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "eagle_head_turn": {
+  "group": "existing",
+  "src": "results/videos/bird_opens_wing_real/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/bird_opens_wing_real.wav",
+  "edit": "The eagle turns its head to look straight at the camera.",
+  "scene": "an eagle perched, seen against the sky",
+  "question": "Does the eagle turn its head to face the camera at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "boy_splashes": {
+  "group": "existing",
+  "src": "results/videos/boy_crouches/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/boy_crouches.wav",
+  "edit": "The boy splashes the water with both hands.",
+  "scene": "a boy standing in a swimming pool",
+  "question": "Does the boy splash water with his hands at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "child_jumps": {
+  "group": "existing",
+  "src": "results/videos/child_waving_hand/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/child_waving_hand.wav",
+  "edit": "The child jumps up and down.",
+  "scene": "a child facing the camera",
+  "question": "Does the child jump up off the ground at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "man_covers_face": {
+  "group": "existing",
+  "src": "results/videos/man_laugh/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/man_laugh.wav",
+  "edit": "The man covers his face with both hands.",
+  "scene": "a man facing the camera",
+  "question": "Does the man cover his face with his hands at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "man_claps": {
+  "group": "existing",
+  "src": "results/videos/man_raises_hand_real/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/man_raises_hand_real.wav",
+  "edit": "The man claps his hands.",
+  "scene": "a man standing, facing the camera",
+  "question": "Does the man clap his hands together at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "monkey_jumps_branch": {
+  "group": "existing",
+  "src": "results/videos/monkey_reaching_for_fruit/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/monkey_reaching_for_fruit.wav",
+  "edit": "The monkey jumps to another branch.",
+  "scene": "a monkey on a tree branch",
+  "question": "Does the monkey jump or leap from its branch at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "car_hood_opens": {
+  "group": "existing",
+  "src": "results/videos/red_car_door_real/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/red_car_door_real.wav",
+  "edit": "The car's hood opens.",
+  "scene": "a car raised on a lift in a workshop with a mechanic nearby",
+  "question": "Does the car's hood open at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "robot_both_arms": {
+  "group": "existing",
+  "src": "results/videos/robot_waives/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/robot_waives.wav",
+  "edit": "The robot raises both arms above its head.",
+  "scene": "a humanoid robot facing the camera",
+  "question": "Does the robot raise both of its arms above its head at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "man_nods": {
+  "group": "existing",
+  "src": "results/videos/surprised_man/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/surprised_man.wav",
+  "edit": "The man nods his head up and down.",
+  "scene": "a man facing the camera",
+  "question": "Does the man nod his head up and down at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "turtle_walks": {
+  "group": "existing",
+  "src": "results/videos/turtle_extends_neck/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/turtle_extends_neck.wav",
+  "edit": "The turtle walks forward.",
+  "scene": "a turtle",
+  "question": "Does the turtle walk forward at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "dog_stands_up": {
+  "group": "existing",
+  "src": "results/videos/dog_yawn/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/dog_yawn.wav",
+  "edit": "The dog stands up on all four legs.",
+  "scene": "a golden retriever in sunglasses sitting on a wooden garden chair",
+  "question": "Does the dog stand up from its sitting position at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "dog_tilts_head": {
+  "group": "existing",
+  "src": "results/videos/dog_yawn/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/dog_yawn.wav",
+  "edit": "The dog tilts its head to one side.",
+  "scene": "a golden retriever in sunglasses sitting on a wooden garden chair",
+  "question": "Does the dog tilt its head sideways at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "dog_runs_off": {
+  "group": "existing",
+  "src": "results/videos/dog_jumps/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/dog_jumps.wav",
+  "edit": "The white dog gets up and runs out of the frame.",
+  "scene": "a man in an apron cooking at a kitchen counter with a white dog sitting on the left",
+  "question": "Does the white dog get up and run away at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "car_drives_out": {
+  "group": "existing",
+  "src": "results/videos/car_lights/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/car_lights.wav",
+  "edit": "The car drives forward out of the garage.",
+  "scene": "a yellow sports car parked in a garage",
+  "question": "Does the car drive forward at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "cat_stretches": {
+  "group": "existing",
+  "src": "results/videos/transfers/cat_yawns/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/cat_yawns.wav",
+  "edit": "The cat stretches its front legs forward.",
+  "scene": "a cat sitting",
+  "question": "Does the cat stretch its front legs forward at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "cartoon_boy_jumps": {
+  "group": "existing",
+  "src": "results/videos/transfers/boy_laughing_outloud/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/boy_laughing_outloud.wav",
+  "edit": "The boy jumps up into the air.",
+  "scene": "a cartoon boy in a yellow t-shirt standing in front of a shop",
+  "question": "Does the boy jump up into the air at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "man_celebrates": {
+  "group": "existing",
+  "src": "results/videos/transfers/man_shouts/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/man_shouts.wav",
+  "edit": "The man raises both arms in celebration.",
+  "scene": "a man in a grey t-shirt standing in a plain room",
+  "question": "Does the man raise both arms above his head at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "bird_hops": {
+  "group": "existing",
+  "src": "results/videos/transfers/red_bird_opens_wings/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/red_bird_opens_wings.wav",
+  "edit": "The red bird hops along the branch.",
+  "scene": "a red bird perched on a branch",
+  "question": "Does the red bird hop or move along the branch at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "rose_sways": {
+  "group": "existing",
+  "src": "results/videos/red_rose_bloom/retake_input_prepared.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/red_rose_bloom.wav",
+  "edit": "The rose sways strongly in the wind.",
+  "scene": "a red rose bud on a stem in a grass field",
+  "question": "Does the rose sway or bend in the wind at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_jeep_drives": {
+  "group": "generated",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_jeep_jungle__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_jeep_jungle_h3sound.wav",
+  "edit": "The jeep drives forward down the dirt road.",
+  "scene": "a green jeep parked on a dirt road in a dense jungle",
+  "question": "Does the jeep drive forward at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_woman_stands": {
+  "group": "generated",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_woman_bench__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_woman_bench_h3sound.wav",
+  "edit": "The woman stands up from the bench.",
+  "scene": "a young woman sitting on a wooden park bench",
+  "question": "Does the woman stand up from the bench at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_horse_rears": {
+  "group": "generated",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_horse_field__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_horse_field_h3sound.wav",
+  "edit": "The horse rears up on its hind legs.",
+  "scene": "a brown horse standing in a sunny grass field",
+  "question": "Does the horse rear up on its hind legs at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_kid_swings": {
+  "group": "generated",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_kid_swing__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_kid_swing_h3sound.wav",
+  "edit": "The child starts swinging back and forth on the swing.",
+  "scene": "a child sitting on a playground swing",
+  "question": "Does the child swing back and forth at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_cat_jumps_down": {
+  "group": "generated",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_cat_windowsill__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_cat_windowsill_h3sound.wav",
+  "edit": "The cat gets up and jumps down from the windowsill.",
+  "scene": "a tabby cat lying on a sunny windowsill",
+  "question": "Does the cat jump down from the windowsill at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_man_drinks": {
+  "group": "generated",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_man_kitchen_cup__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_man_kitchen_cup_h3sound.wav",
+  "edit": "The man lifts the mug to his mouth and drinks from it.",
+  "scene": "a man standing at a kitchen counter holding a coffee mug",
+  "question": "Does the man drink from the mug at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_drummer_plays": {
+  "group": "generated",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_drummer__t2va.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_drummer_h3sound.wav",
+  "edit": "The drummer starts playing the drums energetically.",
+  "scene": "a drummer sitting behind a drum kit in a rehearsal room",
+  "question": "Does the drummer hit the drums with the sticks at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_frog_jumps": {
+  "group": "generated",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_frog_lilypad__t2va_89f_small.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_frog_lilypad_h3sound_89f.wav",
+  "edit": "The frog jumps off the lily pad into the water.",
+  "scene": "a green frog sitting on a lily pad in a pond",
+  "question": "Does the frog jump off the lily pad at any point in this video? Answer only 'yes' or 'no'.",
+  "note": "source downscaled to 320x512 and trimmed to 89 frames for 2-GPU Phase B (448x768x124 OOMs even on 3 GPUs); screening used the full clip"
+ }
 }

@@ -265,6 +265,13 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   B: koi 20400041 -> sealion 20400042 -> cow 20400043 -> goat 20400044 -> blocks 20400045 -> glass_edge 20400046 -> windmill 20400047 (lin).
   car_door_opens / car_lights_flash (retake sources) keep their jobs.
 
+### 2026-09-07 (early) - full-size sources OOM even on 3 GPUs -> downscaled copies
+- gen_frog_jumps with GPU_MEM_SPLIT=24,24,14 still OOMed on GPU 0 (77.8 GB): the 448x768x124 reference simply does not fit
+  the K=2 differentiable render. The five round-2 generated sources are converted to 320x512x89 copies (`*_89f_small.mp4`,
+  originals kept) and run on 2 GPUs as `us_<slug>_small` in one chain behind cat_meows: frog 20403374 -> woman_door 20403375 ->
+  glass 20403376 -> basketball 20403377 (any) -> dog_wet 20403378 (lin). 3-GPU chain cancelled. Lesson: keep all sources at the retake
+  geometry (320x512, 89 f).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -336,7 +343,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
 | gen_horse_rears | H3 t2va | rears up on hind legs | fail (0.0002, only walks) | cancelled (flat critic) | skip |
-| gen_frog_jumps | H3 t2va | jumps off the lily pad | late (leaves frame in last 2 frames, 0.016) | 3-GPU (split fixed) 20384601 | opt |
+| gen_frog_jumps | H3 t2va | jumps off the lily pad | late (leaves frame in last 2 frames, 0.016) | 3-GPU OOM twice; small-source run 20403374 | opt |
 | gen_woman_stands | H3 t2va | stands up from bench | success (stands mid-clip) | - | skip |
 | gen_cat_jumps_down | H3 t2va | jumps down from windowsill | success (late but jumps) | - | skip |
 | gen_man_drinks | H3 t2va | drinks from mug | success (0.93/0.98) | - | skip |
@@ -344,12 +351,12 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_kid_swings | H3 t2va | starts swinging | unclear, subject tiny (0.55/0.99) | - | skip |
 | gen_pigeon_rail | H3 t2va (r2) | takes off and flies | success (0.98/1.0) | - | skip |
 | gen_pianist | H3 t2va (r2) | plays the piano | success (0.96/1.0) | - | skip |
-| gen_dog_wet | H3 t2va (r2) | shakes water off | fail (only turns, 0.09/0.23) | 3-GPU 20384604 | opt |
-| gen_woman_door | H3 t2va (r2) | opens door, walks in | late (door opens in last frames, 0.32/0.28) | 3-GPU 20384602 | opt |
-| gen_basketball | H3 t2va (r2) | bounces | partial (hovers in one frame, 0.17/0.23) | 3-GPU 20384603 | opt |
+| gen_dog_wet | H3 t2va (r2) | shakes water off | fail (only turns, 0.09/0.23) | small-source lin run 20403378 | opt |
+| gen_woman_door | H3 t2va (r2) | opens door, walks in | late (door opens in last frames, 0.32/0.28) | small-source run 20403375 | opt |
+| gen_basketball | H3 t2va (r2) | bounces | partial (hovers in one frame, 0.17/0.23) | small-source run 20403377 | opt |
 | gen_woman_beach | H3 t2va (r2) | waves at camera | success (0.98/1.0) | - | skip |
 | gen_umbrella | H3 t2va (r2) | opens umbrella | success (0.98/0.99) | - | skip |
 | gen_candle | H3 t2va (r2) | flame blown out | fail (0.0009, steady flame) | held (flat critic) | hold |
 | gen_rowboat | H3 t2va (r2) | rocks side to side | fail (0.01, static) | held (flat critic) | hold |
 | gen_bell | H3 t2va (r2) | swings and rings | fail (0.06/0.10, barely moves) | held | hold |
-| gen_glass_table | H3 t2va (r2) | tips over, spills | late + distorted (glass morphs in last frames) | 3-GPU 20384605 | opt |
+| gen_glass_table | H3 t2va (r2) | tips over, spills | late + distorted (glass morphs in last frames) | small-source run 20403376 | opt |
