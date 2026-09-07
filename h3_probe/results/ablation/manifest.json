@@ -180,5 +180,31 @@
    "out": "/scratch/amirrz/H3_exp/outputs/ablation/gen_glass_edge/audio_only",
    "job": "20414973"
   }
+ },
+ "gen_windmill": {
+  "both_run": "/scratch/amirrz/H3_exp/outputs/us_gen_windmill_lin",
+  "both_iter": 3,
+  "edit": "The windmill blades start turning.",
+  "text_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/gen_windmill/text_only",
+   "job": "20425764"
+  },
+  "audio_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/gen_windmill/audio_only",
+   "job": "20425765"
+  }
+ },
+ "gen_wolf_hill": {
+  "both_run": "/scratch/amirrz/H3_exp/outputs/us_gen_wolf_hill",
+  "both_iter": 3,
+  "edit": "The wolf howls with its head tilted up.",
+  "text_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/gen_wolf_hill/text_only",
+   "job": "20425766"
+  },
+  "audio_only": {
+   "out": "/scratch/amirrz/H3_exp/outputs/ablation/gen_wolf_hill/audio_only",
+   "job": "20425767"
+  }
  }
 }

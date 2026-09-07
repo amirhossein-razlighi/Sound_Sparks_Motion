@@ -1,0 +1,16 @@
+{
+ "slug": "boy_splashes",
+ "edit": "The boy splashes the water with both hands.",
+ "run": "/scratch/amirrz/H3_exp/outputs/us_boy_splashes_lin",
+ "iter": 9,
+ "note": "two-handed splash with water spraying up mid-clip (frames ~40-65); baseline only stands up out of the water. alt: iters 7, 8, 10",
+ "steps": 16,
+ "extra": [
+  "B_candidate_iter07",
+  "B_candidate_iter08",
+  "B_candidate_iter10"
+ ],
+ "baseline_yes": 0.32734149912075006,
+ "baseline_yes_any": 0.6396794957101494,
+ "best_iter_by_critic": 10
+}

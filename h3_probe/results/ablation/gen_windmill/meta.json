@@ -1,0 +1,9 @@
+{
+ "slug": "gen_windmill",
+ "edit": "The windmill blades start turning.",
+ "both_iter": 3,
+ "baseline_yes": 0.5418236364786917,
+ "both_best_yes": 0.8780847842739612,
+ "text_only": null,
+ "audio_only": null
+}

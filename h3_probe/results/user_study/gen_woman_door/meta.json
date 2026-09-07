@@ -1,0 +1,12 @@
+{
+ "slug": "gen_woman_door",
+ "edit": "The woman opens the door and walks inside.",
+ "run": "/scratch/amirrz/H3_exp/outputs/us_gen_woman_door_small",
+ "iter": 4,
+ "note": "user: iter 4 is ok-ish (door opens wider near the end than the baseline); later iterations add extra people (drift). Downscaled 320x512x89 source.",
+ "steps": 16,
+ "extra": [],
+ "baseline_yes": 0.09765767466250659,
+ "baseline_yes_any": 0.051136583564657445,
+ "best_iter_by_critic": 15
+}

@@ -1,0 +1,12 @@
+{
+ "slug": "gen_wolf_hill",
+ "edit": "The wolf howls with its head tilted up.",
+ "run": "/scratch/amirrz/H3_exp/outputs/us_gen_wolf_hill",
+ "iter": 3,
+ "note": "user: iter 3 is good. Note: the trimmed-source baseline also howls in a closer shot (critic 0.99); judge the videos.",
+ "steps": 16,
+ "extra": [],
+ "baseline_yes": 0.9865885374187546,
+ "baseline_yes_any": 0.9999999958147657,
+ "best_iter_by_critic": 1
+}

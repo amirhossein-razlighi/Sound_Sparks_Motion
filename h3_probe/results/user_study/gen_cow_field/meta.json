@@ -1,0 +1,15 @@
+{
+ "slug": "gen_cow_field",
+ "edit": "The cow moos loudly.",
+ "run": "/scratch/amirrz/H3_exp/outputs/us_gen_cow_field",
+ "iter": 3,
+ "note": "user: iters 3, 4, 7 are ok/good; iter 3 primary. Note: the run's own baseline also scores 0.88 on the critic.",
+ "steps": 16,
+ "extra": [
+  "B_candidate_iter04",
+  "B_candidate_iter07"
+ ],
+ "baseline_yes": 0.8844724337762319,
+ "baseline_yes_any": 0.9934566760226893,
+ "best_iter_by_critic": 1
+}

@@ -1,0 +1,12 @@
+{
+ "slug": "gen_glass_table",
+ "edit": "The glass tips over and spills the water.",
+ "run": "/scratch/amirrz/H3_exp/outputs/us_gen_glass_table_small",
+ "iter": 4,
+ "note": "user pick: iter 4 is good (downscaled 320x512x89 source); critic stayed flat (0.004 at iter 4) - critic miss; later iterations drift.",
+ "steps": 16,
+ "extra": [],
+ "baseline_yes": 0.09634119756879023,
+ "baseline_yes_any": 0.008227288344911932,
+ "best_iter_by_critic": 2
+}

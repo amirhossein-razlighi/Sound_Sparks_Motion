@@ -19,3 +19,5 @@ Critic yes = in-loop Qwen yes-probability at the selected checkpoint (indicative
 | gen_frog_jumps | The frog jumps off the lily pad into the water. | 3 | 0.01 | 0.414 | 0.018 (2) | 0.009 (13) |
 | gen_glass_table | The glass tips over and spills the water. | 4 | 0.096 | 0.023 | 0.096 (1) | 0.379 (16) |
 | gen_glass_edge | The glass falls off the table and shatters on the floor. | 3 | 0.082 | 0.495 | 0.431 (4) | 0.082 (1) |
+| gen_windmill | The windmill blades start turning. | 3 | 0.542 | 0.878 | pending | pending |
+| gen_wolf_hill | The wolf howls with its head tilted up. | 3 | 0.987 | 0.987 | pending | pending |

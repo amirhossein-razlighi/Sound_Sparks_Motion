@@ -1,6 +1,6 @@
 # User-study A/B pairs (A = H3 baseline, B = ours; same source, prompt, noise and 16 steps)
 
-Files per scenario: `A_baseline_av.mp4`, `B_ours_av.mp4` (+ `B_candidate_iterNN_av.mp4` alternates, `_32steps` re-renders when available), `meta.json`.
+Files per scenario: `source_input_av.mp4` (the model input) + `source_audio.wav`, `prompts.txt` (edit sentence, full H3 prompt, critic question), `A_baseline_av.mp4`, `B_ours_av.mp4` (+ `B_candidate_iterNN_av.mp4` alternates), `meta.json`.
 B is the iteration picked by visual inspection of all previews (`scenarios/picks.json`).
 
 | slug | edit | picked iter | what changes |
@@ -15,6 +15,8 @@ B is the iteration picked by visual inspection of all previews (`scenarios/picks
 | gen_glass_table | The glass tips over and spills the water. | 4 | user pick: iter 4 is good (downscaled 320x512x89 source); critic stayed flat (0.004 at iter 4) - critic miss; later iterations drift. |
 | gen_koi_pond | The koi jumps out of the water. | final (alt: 4, 6) | user pick: best (final = iter 6 latents) with iters 4 and 6 as candidates; critic stayed flat at 0.003 - a critic miss, the jump is visible to a human. |
 | gen_sealion | The sea lion barks with its head raised. | 2 (alt: 3, 4) | user pick: iter 2 best, iter 3 candidate; iter 4 added as candidate (critic best, 0.94); baseline opens the mouth only at the very end. |
+| gen_windmill | The windmill blades start turning. | 3 (alt: 14) | user: iters 3 and 14 are ok (iter 3 primary). lin objective, trimmed source. |
+| gen_wolf_hill | The wolf howls with its head tilted up. | 3 | user: iter 3 is good. Note: the trimmed-source baseline also howls in a closer shot (critic 0.99); judge the videos. |
 | gen_woman_desk | The woman yawns widely. | 2 | user pick: iter 2 (wide yawn). Note: the run's own baseline also scored 0.91 on the critic. |
 | gen_woman_door | The woman opens the door and walks inside. | 4 | user: iter 4 is ok-ish (door opens wider near the end than the baseline); later iterations add extra people (drift). Downscaled 320x512x89 source. |
 | goldfish | The goldfish jumps out of the fish tank into the air. | final | clean leap out of the tank; baseline never jumps |

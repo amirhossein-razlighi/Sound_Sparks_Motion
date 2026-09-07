@@ -1,0 +1,15 @@
+{
+ "slug": "gen_koi_pond",
+ "edit": "The koi jumps out of the water.",
+ "run": "/scratch/amirrz/H3_exp/outputs/us_gen_koi_pond",
+ "iter": "final",
+ "note": "user pick: best (final = iter 6 latents) with iters 4 and 6 as candidates; critic stayed flat at 0.003 - a critic miss, the jump is visible to a human.",
+ "steps": 16,
+ "extra": [
+  "B_candidate_iter04",
+  "B_candidate_iter06"
+ ],
+ "baseline_yes": 0.0014582328167240155,
+ "baseline_yes_any": 0.0032179449507026,
+ "best_iter_by_critic": 6
+}

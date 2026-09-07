@@ -1,0 +1,14 @@
+{
+ "slug": "gen_glass_edge",
+ "edit": "The glass falls off the table and shatters on the floor.",
+ "run": "/scratch/amirrz/H3_exp/outputs/us_gen_glass_edge",
+ "iter": 3,
+ "note": "iter 3: the glass tips off the edge (frame ~70) and visibly shatters into fragments on the floor; baseline makes the glass vanish with a few drops. iter 8 candidate: shatters earlier (frame ~25) but with duplicated-glass artifacts; iters 5/7 drift (a person's legs appear).",
+ "steps": 16,
+ "extra": [
+  "B_candidate_iter08"
+ ],
+ "baseline_yes": 0.08174026451823702,
+ "baseline_yes_any": 0.09539948878810645,
+ "best_iter_by_critic": 8
+}

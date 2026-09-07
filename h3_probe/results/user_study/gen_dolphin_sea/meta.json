@@ -1,0 +1,14 @@
+{
+ "slug": "gen_dolphin_sea",
+ "edit": "The dolphin leaps out of the water.",
+ "run": "/scratch/amirrz/H3_exp/outputs/us_gen_dolphin_sea",
+ "iter": 2,
+ "note": "user pick: iter 2 - full dolphin leap with splash (frames ~30-70); baseline shows only the fin. iter 9 = weaker leap (candidate). iters 3-4 drift to the wrong animal (a bird / a dog leaping) - not candidates.",
+ "steps": 16,
+ "extra": [
+  "B_candidate_iter09"
+ ],
+ "baseline_yes": 0.000686796163621058,
+ "baseline_yes_any": 0.0028726453246089583,
+ "best_iter_by_critic": 9
+}

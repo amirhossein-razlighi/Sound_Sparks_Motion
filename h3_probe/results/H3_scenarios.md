@@ -315,6 +315,13 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 - gen_glass_edge (any, trimmed source): iter 3 makes the glass tip off the edge and shatter into fragments on the floor, where the
   baseline just makes it vanish -> PACKAGED (14 pairs + 1 reserve); ablation runs added for it.
 
+### 2026-09-07 12:00 - user picks (windmill, wolf); study folders now carry the model input and prompts
+- user picks: gen_windmill iter 3 (iter 14 candidate), gen_wolf_hill iter 3; gen_glass_edge iter 3 confirmed. 16 pairs + 1 reserve.
+  Ablation runs added for windmill and wolf.
+- every \`results/user_study/<slug>/\` now also contains \`source_input_av.mp4\` (the raw video given to the model, with its
+  audio), \`source_audio.wav\`, and \`prompts.txt\` (edit sentence, scene, the full H3 prompt shared by A and B, the critic
+  question, mode/objective/picked iteration). package_ab.py builds these from each run's run_config.json.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -360,7 +367,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_girl_cake | H3 t2va (r4) | blows out candles | success (0.71) | - | skip |
 | gen_koi_pond | H3 t2va (r4) | jumps out of water | fail (swims only, 0.001) | user: best (iter 6 latents) is good, iters 4/6 candidates - critic stayed flat (critic miss) | PACKAGED |
 | gen_dolphin_sea | H3 t2va (r4) | leaps out of water | fail (fin only, 0.001) | user: iter 2 = full leap with splash; iter 9 weaker candidate; iters 3-4 drift to a bird / a dog (wrong animal) | PACKAGED |
-| gen_wolf_hill | H3 t2va (r4) | howls, head up | fail with the 124-f clip (0.02); trimmed 89-f source: baseline howls in a closer shot (0.99) | baseline succeeds | skip |
+| gen_wolf_hill | H3 t2va (r4) | howls, head up | user: iter 3 is good (trimmed-source baseline also howls; judge the videos) | PACKAGED |
 | gen_woman_desk | H3 t2va (r4) | yawns widely | fail with the 124-f clip (0.04); trimmed-source baseline scored 0.91 | user: iter 2 is good | PACKAGED |
 | gen_sealion | H3 t2va (r4) | barks, head raised | late (mouth opens at the end, 0.09/0.87) | user: iter 2 best, iter 3 candidate; run finished: critic best iter 4 (0.94) added as candidate | PACKAGED |
 | gen_cow_field | H3 t2va (r4) | moos | fail with the 124-f clip (0.12/0.38); trimmed-source baseline scores 0.88 (moos) | user: iters 3, 4, 7 ok/good (iter 3 primary) | PACKAGED |
@@ -380,7 +387,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_door_hall | H3 t2va (r5) | door slams shut | fail (stays open, 0.02/0.12) | trimmed source: baseline 0.37, no improvement, drift from iter 4; sheet kept | failed |
 | gen_elevator | H3 t2va (r5) | elevator doors open | fail (stay shut, 0.03) | any: flat 0.03-0.11, no change; sheet kept | failed |
 | gen_woman_studio | H3 t2va (r5) | dances, spins | fail (0.003) but subject small | - | skip |
-| gen_windmill | H3 t2va (r5) | blades start turning | fail (static, 0.14/0.63) | lin (trimmed source): baseline 0.54, best iter 11 (0.88, perceptual 0.12); critic oscillates 0.07-0.88 - needs a visual check (iters_sheet_a.jpg) | review |
+| gen_windmill | H3 t2va (r5) | blades start turning | fail (static, 0.14/0.63) | user: iters 3 and 14 ok (iter 3 primary) | PACKAGED |
 | car_door_opens | retake input (workshop) | car door swings open | fail (0.04/0.24) | iter 4: door swings open mid-clip, clean (alt 3/5) | PACKAGED |
 | car_lights_flash | retake input (garage) | headlights flash, horn | fail (0.005) | any: flat 0.03, drift after iter 10 | failed |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |

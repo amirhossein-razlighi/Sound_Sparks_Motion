@@ -1,0 +1,9 @@
+{
+ "slug": "gen_wolf_hill",
+ "edit": "The wolf howls with its head tilted up.",
+ "both_iter": 3,
+ "baseline_yes": 0.9865885374187546,
+ "both_best_yes": 0.9865885374187546,
+ "text_only": null,
+ "audio_only": null
+}

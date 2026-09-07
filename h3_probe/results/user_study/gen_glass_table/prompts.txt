@@ -1,0 +1,28 @@
+scenario: gen_glass_table
+edit sentence (the only thing the user asks for): The glass tips over and spills the water.
+scene description used in the prompt: a full glass of water on a wooden kitchen table
+critic question (Qwen2.5-VL, our method only): Does the glass tip over or spill at any point in this video? Answer only 'yes' or 'no'.
+mode: both   critic objective: any   picked iteration: 4
+source video: /scratch/amirrz/H3_exp/inputs/gen/gen_glass_table__t2va_89f_small.mp4
+source audio: /scratch/amirrz/H3_exp/inputs/sweep/gen_glass_table_h3sound_89f.wav
+
+full H3 prompt (identical for A and B; A = H3 with this prompt, B = ours with this prompt + optimized audio/text latents):
+subject_definitions:
+<Video 1> is the source video to edit: a fixed-camera shot of a full glass of water on a wooden kitchen table.
+<Subject 1> is the main subject of <Video 1>: a full glass of water on a wooden kitchen table.
+<Audio 2> is the soundtrack accompanying the target video.
+
+summary:
+[video editing] The target video is an edited version of <Video 1>. The camera position, framing, scene, lighting, and pacing of <Video 1> are kept identical. The only change: The glass tips over and spills the water.
+
+retention_analysis:
+<Audio 2>: reference - the target video's sound follows the content and timing of <Audio 2>; on-screen actions stay synchronized with it.
+<Video 1> (camera, framing, scene layout, lighting, and temporal structure): fully_preserved - the fixed camera, background, lighting, and overall pacing are kept identical to the source.
+<Subject 1> (appears throughout): partially_preserved - appearance and position are identical to <Video 1>; only its action changes: The glass tips over and spills the water.
+
+detailed_description:
+[Shot 1] Fixed camera, framing identical to <Video 1>. The scene of <Video 1>: a full glass of water on a wooden kitchen table. Within the first second, The glass tips over and spills the water; the motion is clear and fully visible, and continues naturally through the shot. Everything else - the background, the lighting, the framing - remains exactly as in <Video 1>.
+
+overall_soundscape: The soundscape follows <Audio 2>, with the natural sounds of the described action.
+
+non_diegetic_music: None.

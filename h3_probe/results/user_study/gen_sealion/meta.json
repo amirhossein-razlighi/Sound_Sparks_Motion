@@ -1,0 +1,15 @@
+{
+ "slug": "gen_sealion",
+ "edit": "The sea lion barks with its head raised.",
+ "run": "/scratch/amirrz/H3_exp/outputs/us_gen_sealion",
+ "iter": 2,
+ "note": "user pick: iter 2 best, iter 3 candidate; iter 4 added as candidate (critic best, 0.94); baseline opens the mouth only at the very end.",
+ "steps": 16,
+ "extra": [
+  "B_candidate_iter03",
+  "B_candidate_iter04"
+ ],
+ "baseline_yes": 0.0774474393167825,
+ "baseline_yes_any": 0.5992747668953902,
+ "best_iter_by_critic": 4
+}
