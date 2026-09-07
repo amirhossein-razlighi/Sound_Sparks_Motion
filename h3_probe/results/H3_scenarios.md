@@ -380,7 +380,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_door_hall | H3 t2va (r5) | door slams shut | fail (stays open, 0.02/0.12) | trimmed source: baseline 0.37, no improvement, drift from iter 4; sheet kept | failed |
 | gen_elevator | H3 t2va (r5) | elevator doors open | fail (stay shut, 0.03) | any: flat 0.03-0.11, no change; sheet kept | failed |
 | gen_woman_studio | H3 t2va (r5) | dances, spins | fail (0.003) but subject small | - | skip |
-| gen_windmill | H3 t2va (r5) | blades start turning | fail (static, 0.14/0.63) | lin run 20392357 | opt |
+| gen_windmill | H3 t2va (r5) | blades start turning | fail (static, 0.14/0.63) | lin (trimmed source): baseline 0.54, best iter 11 (0.88, perceptual 0.12); critic oscillates 0.07-0.88 - needs a visual check (iters_sheet_a.jpg) | review |
 | car_door_opens | retake input (workshop) | car door swings open | fail (0.04/0.24) | iter 4: door swings open mid-clip, clean (alt 3/5) | PACKAGED |
 | car_lights_flash | retake input (garage) | headlights flash, horn | fail (0.005) | any: flat 0.03, drift after iter 10 | failed |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
