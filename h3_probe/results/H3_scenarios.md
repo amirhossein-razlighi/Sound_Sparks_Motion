@@ -359,7 +359,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_pond_stone | H3 t2va (r5) | stone splashes | partial success (0.39/0.81) | - | skip |
 | gen_glass_edge | H3 t2va (r5) | falls and shatters | partial/unnatural (tips, then vanishes, 0.16/0.14) | any run 20392356 | opt |
 | gen_blocks_tower | H3 t2va (r5) | tower collapses | fail (static, 0.04) | any run 20392353 | opt |
-| gen_balloon_kid | H3 t2va (r5) | balloon pops | fail (0.003) | any run 20392350 | opt |
+| gen_balloon_kid | H3 t2va (r5) | balloon pops | fail (0.003) | any: flat 0.01-0.02, one drift spike at iter 8; sheet kept | failed |
 | gen_ice_lake | H3 t2va (r5) | ice cracks | fail (0.006) but too subtle | - | skip |
 | gen_door_hall | H3 t2va (r5) | door slams shut | fail (stays open, 0.02/0.12) | any run 20392351 | opt |
 | gen_elevator | H3 t2va (r5) | elevator doors open | fail (stay shut, 0.03) | any run 20392352 | opt |
