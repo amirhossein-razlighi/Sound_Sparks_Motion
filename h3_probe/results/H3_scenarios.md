@@ -347,7 +347,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_wolf_hill | H3 t2va (r4) | howls, head up | fail with the 124-f clip (0.02); trimmed 89-f source: baseline howls in a closer shot (0.99) | baseline succeeds | skip |
 | gen_woman_desk | H3 t2va (r4) | yawns widely | fail with the 124-f clip (0.04); trimmed-source baseline scored 0.91 | user: iter 2 is good | PACKAGED |
 | gen_sealion | H3 t2va (r4) | barks, head raised | late (mouth opens at the end, 0.09/0.87) | user: iter 2 best, iter 3 candidate; run finished: critic best iter 4 (0.94) added as candidate | PACKAGED |
-| gen_cow_field | H3 t2va (r4) | moos | fail with the 124-f clip (0.12/0.38); trimmed-source baseline scores 0.88 (moos) | baseline succeeds; sheet kept | skip |
+| gen_cow_field | H3 t2va (r4) | moos | fail with the 124-f clip (0.12/0.38); trimmed-source baseline scores 0.88 (moos) | user: iters 3, 4, 7 ok/good (iter 3 primary) | PACKAGED |
 | gen_goat_field | H3 t2va (r4) | bleats | fail (static, 0.23/0.36) | any run 20384613 | opt |
 | gen_rooster | H3 t2va (r4) | crows, head back | partial (silhouette, 0.25/0.65) | any run 20384609 | opt |
 | gen_man_couch | H3 t2va (r4) | sneezes | fail (0.008) but dark and small | - | skip |
@@ -379,7 +379,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_pigeon_rail | H3 t2va (r2) | takes off and flies | success (0.98/1.0) | - | skip |
 | gen_pianist | H3 t2va (r2) | plays the piano | success (0.96/1.0) | - | skip |
 | gen_dog_wet | H3 t2va (r2) | shakes water off | fail (only turns, 0.09/0.23) | small-source lin run 20403378 | opt |
-| gen_woman_door | H3 t2va (r2) | opens door, walks in | late (door opens in last frames, 0.32/0.28) | small: iters 2-4 = baseline, iter 6+ add a second/third person entering (drift); door opens more but unnatural | failed |
+| gen_woman_door | H3 t2va (r2) | opens door, walks in | late (door opens in last frames, 0.32/0.28) | user: iter 4 ok-ish (door opens wider); iter 6+ add extra people (drift) | PACKAGED (ok-ish) |
 | gen_basketball | H3 t2va (r2) | bounces | partial (hovers in one frame, 0.17/0.23) | small-source run 20403377 | opt |
 | gen_woman_beach | H3 t2va (r2) | waves at camera | success (0.98/1.0) | - | skip |
 | gen_umbrella | H3 t2va (r2) | opens umbrella | success (0.98/0.99) | - | skip |
