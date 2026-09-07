@@ -10,6 +10,7 @@ B is the iteration picked by visual inspection of all previews (`scenarios/picks
 | cat_yawns | The cat yawns widely. | 3 (alt: 9) | wide early yawn (frames ~30-50); baseline yawns only in the last frame. alt: iter 9 |
 | gen_cow_field | The cow moos loudly. | 3 (alt: 4, 7) | user: iters 3, 4, 7 are ok/good; iter 3 primary. Note: the run's own baseline also scores 0.88 on the critic. |
 | gen_dolphin_sea | The dolphin leaps out of the water. | 2 (alt: 9) | user pick: iter 2 - full dolphin leap with splash (frames ~30-70); baseline shows only the fin. iter 9 = weaker leap (candidate). iters 3-4 drift to the wrong animal (a bird / a dog leaping) - not candidates. |
+| gen_frog_jumps | The frog jumps off the lily pad into the water. | 3 | user pick: iter 3 (full-size 448x768x124 source, 3-GPU run) - the frog jumps; critic stayed flat (another critic miss). baseline: frog leaves the frame only in the last frames. |
 | gen_koi_pond | The koi jumps out of the water. | final (alt: 4, 6) | user pick: best (final = iter 6 latents) with iters 4 and 6 as candidates; critic stayed flat at 0.003 - a critic miss, the jump is visible to a human. |
 | gen_sealion | The sea lion barks with its head raised. | 2 (alt: 3, 4) | user pick: iter 2 best, iter 3 candidate; iter 4 added as candidate (critic best, 0.94); baseline opens the mouth only at the very end. |
 | gen_woman_desk | The woman yawns widely. | 2 | user pick: iter 2 (wide yawn). Note: the run's own baseline also scored 0.91 on the critic. |

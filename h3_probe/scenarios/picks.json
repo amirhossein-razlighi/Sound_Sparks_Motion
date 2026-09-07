@@ -99,5 +99,11 @@
   ],
   "edit": "The cow moos loudly.",
   "note": "user: iters 3, 4, 7 are ok/good; iter 3 primary. Note: the run's own baseline also scores 0.88 on the critic."
+ },
+ "gen_frog_jumps": {
+  "run": "/scratch/amirrz/H3_exp/outputs/us_gen_frog_jumps_full3",
+  "iter": 3,
+  "edit": "The frog jumps off the lily pad into the water.",
+  "note": "user pick: iter 3 (full-size 448x768x124 source, 3-GPU run) - the frog jumps; critic stayed flat (another critic miss). baseline: frog leaves the frame only in the last frames."
  }
 }
