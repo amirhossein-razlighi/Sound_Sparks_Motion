@@ -379,7 +379,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_pigeon_rail | H3 t2va (r2) | takes off and flies | success (0.98/1.0) | - | skip |
 | gen_pianist | H3 t2va (r2) | plays the piano | success (0.96/1.0) | - | skip |
 | gen_dog_wet | H3 t2va (r2) | shakes water off | fail (only turns, 0.09/0.23) | small-source lin run 20403378 | opt |
-| gen_woman_door | H3 t2va (r2) | opens door, walks in | late (door opens in last frames, 0.32/0.28) | small-source run 20403375 | opt |
+| gen_woman_door | H3 t2va (r2) | opens door, walks in | late (door opens in last frames, 0.32/0.28) | small: iters 2-4 = baseline, iter 6+ add a second/third person entering (drift); door opens more but unnatural | failed |
 | gen_basketball | H3 t2va (r2) | bounces | partial (hovers in one frame, 0.17/0.23) | small-source run 20403377 | opt |
 | gen_woman_beach | H3 t2va (r2) | waves at camera | success (0.98/1.0) | - | skip |
 | gen_umbrella | H3 t2va (r2) | opens umbrella | success (0.98/0.99) | - | skip |
