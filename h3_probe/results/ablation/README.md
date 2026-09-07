@@ -5,7 +5,7 @@ Critic yes = in-loop Qwen yes-probability at the selected checkpoint (indicative
 
 | slug | edit | both (iter) | baseline yes | both best yes | text-only best yes (iter) | audio-only best yes (iter) |
 |---|---|---|---|---|---|---|
-| goldfish | The goldfish jumps out of the fish tank into the air. | final | 0.004 | 0.365 | pending | pending |
+| goldfish | The goldfish jumps out of the fish tank into the air. | final | 0.004 | 0.365 | 0.039 (4) | pending |
 | cat_yawns | None | 3 | 0.936 | 0.953 | pending | pending |
 | man_shouts | None | 3 | 0.388 | 0.546 | pending | pending |
 | boy_splashes | The boy splashes the water with both hands. | 9 | 0.327 | 0.915 | pending | pending |
