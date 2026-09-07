@@ -300,7 +300,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | cartoon_boy_laughs | retake input | laughs out loud | success (0.97/1.0) | - | skip |
 | monkey_screams | retake input | opens mouth and screams | success (mid-clip scream) | - | skip |
 | dog_barks | retake input | barks loudly | late (mouth only in last frames, 0.008/0.90) | any: baseline already 0.89 any, iters 1-3 identical, then collapse | failed |
-| man_sneezes | retake input | sneezes | fail (raises hands instead, 0.06/0.04) | any run 20383016 | opt |
+| man_sneezes | retake input | sneezes | fail (raises hands instead, 0.06/0.04) | any: flat 0.03-0.05, frames unchanged (diff 0.014) | failed |
 | cat_meows | retake input | meows loudly | partial (brief early meow, 0.23/0.20) | any run 20383017 | opt |
 | gen_horse_neighs | H3 t2va | neighs, head raised | fail (only walks, 0.02/0.13) | held (3 GPUs) | hold |
 | gen_woman_sneezes | H3 t2va | sneezes | late/partial (hand to face, 0.006/0.23) | held (3 GPUs) | hold |
