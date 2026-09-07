@@ -1,0 +1,9 @@
+{
+ "slug": "gen_frog_jumps",
+ "edit": "The frog jumps off the lily pad into the water.",
+ "both_iter": 3,
+ "baseline_yes": 0.009908155739179024,
+ "both_best_yes": 0.4140749083170716,
+ "text_only": null,
+ "audio_only": null
+}

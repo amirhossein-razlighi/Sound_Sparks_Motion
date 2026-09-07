@@ -1,0 +1,9 @@
+{
+ "slug": "car_door_opens",
+ "edit": "The car door swings open.",
+ "both_iter": 4,
+ "baseline_yes": 0.02431123563363314,
+ "both_best_yes": 0.8996665494305931,
+ "text_only": null,
+ "audio_only": null
+}

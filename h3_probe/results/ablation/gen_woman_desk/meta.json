@@ -1,0 +1,9 @@
+{
+ "slug": "gen_woman_desk",
+ "edit": "The woman yawns widely.",
+ "both_iter": 2,
+ "baseline_yes": 0.911391735962326,
+ "both_best_yes": 0.911391735962326,
+ "text_only": null,
+ "audio_only": null
+}

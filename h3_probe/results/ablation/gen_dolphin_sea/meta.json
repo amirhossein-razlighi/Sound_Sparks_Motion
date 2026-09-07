@@ -1,0 +1,9 @@
+{
+ "slug": "gen_dolphin_sea",
+ "edit": "The dolphin leaps out of the water.",
+ "both_iter": 2,
+ "baseline_yes": 0.000686796163621058,
+ "both_best_yes": 0.013065800509415177,
+ "text_only": null,
+ "audio_only": null
+}

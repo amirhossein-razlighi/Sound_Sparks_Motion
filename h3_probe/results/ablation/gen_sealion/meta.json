@@ -1,0 +1,9 @@
+{
+ "slug": "gen_sealion",
+ "edit": "The sea lion barks with its head raised.",
+ "both_iter": 2,
+ "baseline_yes": 0.0774474393167825,
+ "both_best_yes": 0.779821336542273,
+ "text_only": null,
+ "audio_only": null
+}

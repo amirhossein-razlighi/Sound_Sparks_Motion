@@ -1,0 +1,9 @@
+{
+ "slug": "goldfish",
+ "edit": "The goldfish jumps out of the fish tank into the air.",
+ "both_iter": "final",
+ "baseline_yes": 0.004031831475254593,
+ "both_best_yes": 0.3651692139296606,
+ "text_only": null,
+ "audio_only": null
+}

@@ -1,0 +1,9 @@
+{
+ "slug": "boy_splashes",
+ "edit": "The boy splashes the water with both hands.",
+ "both_iter": 9,
+ "baseline_yes": 0.32734149912075006,
+ "both_best_yes": 0.9153429304028378,
+ "text_only": null,
+ "audio_only": null
+}

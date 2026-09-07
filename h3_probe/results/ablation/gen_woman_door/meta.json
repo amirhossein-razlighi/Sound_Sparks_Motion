@@ -1,0 +1,9 @@
+{
+ "slug": "gen_woman_door",
+ "edit": "The woman opens the door and walks inside.",
+ "both_iter": 4,
+ "baseline_yes": 0.09765767466250659,
+ "both_best_yes": 0.23975795593579302,
+ "text_only": null,
+ "audio_only": null
+}

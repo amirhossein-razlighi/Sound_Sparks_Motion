@@ -1,0 +1,9 @@
+{
+ "slug": "gen_cow_field",
+ "edit": "The cow moos loudly.",
+ "both_iter": 3,
+ "baseline_yes": 0.8844724337762319,
+ "both_best_yes": 0.8844724337762319,
+ "text_only": null,
+ "audio_only": null
+}

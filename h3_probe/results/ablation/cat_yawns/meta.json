@@ -1,0 +1,9 @@
+{
+ "slug": "cat_yawns",
+ "edit": null,
+ "both_iter": 3,
+ "baseline_yes": 0.9355320325464931,
+ "both_best_yes": 0.9527079469597572,
+ "text_only": null,
+ "audio_only": null
+}

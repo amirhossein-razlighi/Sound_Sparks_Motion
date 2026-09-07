@@ -1,0 +1,9 @@
+{
+ "slug": "gen_koi_pond",
+ "edit": "The koi jumps out of the water.",
+ "both_iter": "final",
+ "baseline_yes": 0.0014582328167240155,
+ "both_best_yes": 0.0027342961703676694,
+ "text_only": null,
+ "audio_only": null
+}
