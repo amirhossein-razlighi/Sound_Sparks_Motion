@@ -79,6 +79,10 @@
   "run": "/scratch/amirrz/H3_exp/outputs/us_gen_dolphin_sea",
   "iter": 2,
   "edit": "The dolphin leaps out of the water.",
-  "note": "user pick: iter 2 (run still in progress when picked; revisit later iterations when done)."
+  "note": "user pick: iter 2 (really good; perceptual 0.29 so the guard skipped it as 'best'); candidates iter 3 and iter 9 (critic best, 0.27 with perceptual 0.13).",
+  "alts": [
+   3,
+   9
+  ]
  }
 }

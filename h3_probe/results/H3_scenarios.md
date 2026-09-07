@@ -338,7 +338,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_dog_rug | H3 t2va (r4) | barks | success (0.59/0.98) | - | skip |
 | gen_girl_cake | H3 t2va (r4) | blows out candles | success (0.71) | - | skip |
 | gen_koi_pond | H3 t2va (r4) | jumps out of water | fail (swims only, 0.001) | user: best (iter 6 latents) is good, iters 4/6 candidates - critic stayed flat (critic miss) | PACKAGED |
-| gen_dolphin_sea | H3 t2va (r4) | leaps out of water | fail (fin only, 0.001) | user: iter 2 is really good (run in progress) | PACKAGED |
+| gen_dolphin_sea | H3 t2va (r4) | leaps out of water | fail (fin only, 0.001) | user: iter 2 is really good; run finished: iters 3 and 9 (critic best) added as candidates | PACKAGED |
 | gen_wolf_hill | H3 t2va (r4) | howls, head up | fail with the 124-f clip (0.02); trimmed 89-f source: baseline howls in a closer shot (0.99) | baseline succeeds | skip |
 | gen_woman_desk | H3 t2va (r4) | yawns widely | fail with the 124-f clip (0.04); trimmed-source baseline scored 0.91 | user: iter 2 is good | PACKAGED |
 | gen_sealion | H3 t2va (r4) | barks, head raised | late (mouth opens at the end, 0.09/0.87) | user: iter 2 best, iter 3 candidate; run finished: critic best iter 4 (0.94) added as candidate | PACKAGED |
