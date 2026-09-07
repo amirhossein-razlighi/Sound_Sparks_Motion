@@ -282,6 +282,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   mid-clip in iters 2-5 with the rest of the scene intact; from iter 6 extra people/tyres appear (drift) -> iter 4 PACKAGED.
   First non-body-motion pair (object/sound event). 5 pairs + 1 reserve.
 
+- gen_woman_desk (trimmed source): the run's own Phase-A baseline already yawns (any 0.91, lin 1.0) - H3's behaviour differs
+  between the 124-frame and the 89-frame reference. Nothing to save -> skip. (Screening verdicts on 124-frame clips are only
+  indicative for the trimmed runs; each run's own baseline decides.)
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -328,7 +332,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_koi_pond | H3 t2va (r4) | jumps out of water | fail (swims only, 0.001) | any run 20384610 | opt |
 | gen_dolphin_sea | H3 t2va (r4) | leaps out of water | fail (fin only, 0.001) | any run 20384608 | opt |
 | gen_wolf_hill | H3 t2va (r4) | howls, head up | fail (static, 0.02) | any run 20384607 | opt |
-| gen_woman_desk | H3 t2va (r4) | yawns widely | fail (no yawn, 0.04) | any run 20384606 | opt |
+| gen_woman_desk | H3 t2va (r4) | yawns widely | fail with the 124-f clip (0.04); the trimmed 89-f source yawns at baseline (0.91) | baseline succeeds | skip |
 | gen_sealion | H3 t2va (r4) | barks, head raised | late (mouth opens at the end, 0.09/0.87) | any run 20384611 | opt |
 | gen_cow_field | H3 t2va (r4) | moos | fail (static, 0.12/0.38) | any run 20384612 | opt |
 | gen_goat_field | H3 t2va (r4) | bleats | fail (static, 0.23/0.36) | any run 20384613 | opt |
