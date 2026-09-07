@@ -15,7 +15,7 @@
  "cat_yawns": {
   "both_run": "/scratch/amirrz/H3_exp/outputs/us_cat_yawns",
   "both_iter": 3,
-  "edit": null,
+  "edit": "The cat yawns widely.",
   "text_only": {
    "out": "/scratch/amirrz/H3_exp/outputs/ablation/cat_yawns/text_only",
    "job": "20413678"
@@ -28,7 +28,7 @@
  "man_shouts": {
   "both_run": "/scratch/amirrz/H3_exp/outputs/us_man_shouts",
   "both_iter": 3,
-  "edit": null,
+  "edit": "The man shouts loudly.",
   "text_only": {
    "out": "/scratch/amirrz/H3_exp/outputs/ablation/man_shouts/text_only",
    "job": "20413680"

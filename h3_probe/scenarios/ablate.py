@@ -34,6 +34,10 @@ ORDER = ["goldfish", "cat_yawns", "man_shouts", "boy_splashes", "car_door_opens"
 
 def main():
     picks = {k: v for k, v in json.load(open(os.path.join(SCN, "picks.json"))).items() if not k.startswith("_")}
+    cands = {}
+    for f in sorted(os.listdir(SCN)):
+        if f.startswith("candidates_") and f.endswith(".json"):
+            cands.update({k: v for k, v in json.load(open(os.path.join(SCN, f))).items() if not k.startswith("_")})
     slugs = [s for s in ORDER if s in picks] + [s for s in picks if s not in ORDER and "RESERVE" not in picks[s].get("note", "")]
     only = [x for x in os.environ.get("ONLY", "").replace(";", ",").split(",") if x]   # ONLY=slug1,slug2 -> submit just these
     if only:
@@ -72,7 +76,7 @@ def main():
             else:
                 jid = subprocess.run(cmd, capture_output=True, text=True, check=True).stdout.strip()
             dep[line] = jid; n += 1
-            manifest.setdefault(s, {"both_run": run, "both_iter": picks[s]["iter"], "edit": picks[s].get("edit")})[f"{mode}_only"] = {"out": out, "job": jid}
+            manifest.setdefault(s, {"both_run": run, "both_iter": picks[s]["iter"], "edit": picks[s].get("edit") or cands.get(s, {}).get("edit")})[f"{mode}_only"] = {"out": out, "job": jid}
             print(f"{s:18s} {mode}-only -> {jid} ({'3 GPUs' if three else '2 GPUs'}, line {line})")
     json.dump(manifest, open(mp, "w"), indent=1)
     print("manifest:", mp)

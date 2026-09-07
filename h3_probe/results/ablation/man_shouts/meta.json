@@ -1,6 +1,6 @@
 {
  "slug": "man_shouts",
- "edit": null,
+ "edit": "The man shouts loudly.",
  "both_iter": 3,
  "baseline_yes": 0.38817446537951605,
  "both_best_yes": 0.5463221670386071,
