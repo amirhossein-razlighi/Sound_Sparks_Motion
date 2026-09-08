@@ -1,0 +1,5 @@
+Qwen2.5-VL critic yes-probability of each stored video (in-loop score of that iteration's preview; yes_lin = linspace 24-frame window, yes_any = noisy-OR over 6 contiguous windows, yes_4win = mean over windows; perceptual = LPIPS+temporal term vs the baseline). Indicative only - the critic can be fooled and can miss motion.
+selection objective of these runs: lin
+
+B_audio_only_best_av.mp4           final(best=7)      yes_lin=0.4197  yes_any=0.7349  yes_4win=0.1641  perceptual=0.045  [best checkpoint = iter 7; final re-render yes(lin)=0.4200 yes(any)=0.7207]
+B_audio_only_iter09_av.mp4         iter 09            yes_lin=0.3549  yes_any=0.8625  yes_4win=0.1545  perceptual=0.046
