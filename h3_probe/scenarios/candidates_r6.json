@@ -1,37 +1,5 @@
 {
- "_comment": "Round-6 candidates (no water): sudden impulsive events with a sound and a visible state change on one centred subject in a calm source - breakage, falls, pops, a scream, a fist slam. Sources generated at 320x512x124 and trimmed to 89 frames (_89f) before screening and optimization.",
- "gen_plate_counter": {
-  "group": "r6",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_plate_counter__t2va_89f.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_plate_counter_h3sound_89f.wav",
-  "edit": "The plate slides off the counter and shatters on the floor.",
-  "scene": "a ceramic plate at the edge of a kitchen counter",
-  "question": "Does the plate fall off the counter or shatter at any point in this video? Answer only 'yes' or 'no'."
- },
- "gen_bottle_table": {
-  "group": "r6",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_bottle_table__t2va_89f.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_bottle_table_h3sound_89f.wav",
-  "edit": "The bottle falls off the table and shatters.",
-  "scene": "a glass bottle near the edge of a wooden table",
-  "question": "Does the bottle fall off the table or shatter at any point in this video? Answer only 'yes' or 'no'."
- },
- "gen_frame_wall": {
-  "group": "r6",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_frame_wall__t2va_89f.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_frame_wall_h3sound_89f.wav",
-  "edit": "The picture frame falls off the wall and breaks on the floor.",
-  "scene": "a framed picture hanging on a living-room wall",
-  "question": "Does the picture frame fall off the wall at any point in this video? Answer only 'yes' or 'no'."
- },
- "gen_car_window": {
-  "group": "r6",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_car_window__t2va_89f.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_car_window_h3sound_89f.wav",
-  "edit": "The car's side window shatters.",
-  "scene": "a parked grey sedan seen from the side",
-  "question": "Does the car window shatter or break at any point in this video? Answer only 'yes' or 'no'."
- },
+ "_comment": "Round-6 candidates chosen by the user (2026-09-08): champagne cork pops, toaster pops, beer poured until it overflows, woman screams, man slams fist on desk, books fall off the shelf. Sources 320x512x124 trimmed to 89 frames (_89f) before screening; optimization (both mode) only where the baseline leaves room.",
  "gen_champagne": {
   "group": "r6",
   "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_champagne__t2va_89f.mp4",
@@ -48,37 +16,13 @@
   "scene": "a chrome toaster with bread inside on a kitchen counter",
   "question": "Does the toast pop up out of the toaster at any point in this video? Answer only 'yes' or 'no'."
  },
- "gen_chair_old": {
+ "gen_beer_pour": {
   "group": "r6",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_chair_old__t2va_89f.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_chair_old_h3sound_89f.wav",
-  "edit": "The wooden chair breaks and collapses.",
-  "scene": "an old wooden chair in an empty room",
-  "question": "Does the chair break or collapse at any point in this video? Answer only 'yes' or 'no'."
- },
- "gen_branch": {
-  "group": "r6",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_branch__t2va_89f.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_branch_h3sound_89f.wav",
-  "edit": "The branch snaps and falls to the ground.",
-  "scene": "a thick low branch of an old oak tree",
-  "question": "Does the branch snap or fall at any point in this video? Answer only 'yes' or 'no'."
- },
- "gen_car_backfire": {
-  "group": "r6",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_car_backfire__t2va_89f.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_car_backfire_h3sound_89f.wav",
-  "edit": "The car backfires with a bang and a puff of smoke from the exhaust.",
-  "scene": "a vintage car seen from behind with its exhaust pipe visible",
-  "question": "Is there a puff of smoke or a backfire from the exhaust at any point in this video? Answer only 'yes' or 'no'."
- },
- "gen_jack_box": {
-  "group": "r6",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_jack_box__t2va_89f.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_jack_box_h3sound_89f.wav",
-  "edit": "The jack-in-the-box springs open.",
-  "scene": "a jack-in-the-box toy with its lid closed on a table",
-  "question": "Does the jack-in-the-box spring open (lid opens, figure pops out) at any point in this video? Answer only 'yes' or 'no'."
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_beer_pour__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_beer_pour_h3sound_89f.wav",
+  "edit": "The beer is poured into the glass until it overflows and foam spills over the rim.",
+  "scene": "a hand holding a beer bottle above a half-full glass of beer on a bar counter",
+  "question": "Does beer overflow or foam spill over the rim of the glass at any point in this video? Answer only 'yes' or 'no'."
  },
  "gen_woman_scream": {
   "group": "r6",
@@ -96,19 +40,11 @@
   "scene": "a man sitting at a desk with his hands resting on it",
   "question": "Does the man slam his fist on the desk at any point in this video? Answer only 'yes' or 'no'."
  },
- "gen_lamp_fall": {
-  "group": "r6",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_lamp_fall__t2va_89f.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_lamp_fall_h3sound_89f.wav",
-  "edit": "The floor lamp tips over and crashes to the floor.",
-  "scene": "a tall floor lamp standing in a living room",
-  "question": "Does the lamp tip over or fall at any point in this video? Answer only 'yes' or 'no'."
- },
  "gen_books_shelf": {
   "group": "r6",
   "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_books_shelf__t2va_89f.mp4",
   "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_books_shelf_h3sound_89f.wav",
-  "edit": "The books fall off the shelf.",
+  "edit": "The books fall off the shelf onto the ground.",
   "scene": "a row of books standing on a wall shelf",
   "question": "Do the books fall off the shelf at any point in this video? Answer only 'yes' or 'no'."
  }

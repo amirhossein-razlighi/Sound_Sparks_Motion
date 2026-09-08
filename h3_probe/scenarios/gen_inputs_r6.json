@@ -1,16 +1,8 @@
 {
- "gen_plate_counter": "A fixed camera shot of a ceramic dinner plate lying right at the edge of a kitchen counter, tiled floor visible below. Photorealistic.",
- "gen_bottle_table": "A fixed camera shot of a glass bottle standing near the edge of a wooden table, hardwood floor visible below. Photorealistic.",
- "gen_frame_wall": "A fixed camera shot of a framed picture hanging on a living-room wall above a hardwood floor, hanging slightly crooked. Photorealistic.",
- "gen_car_window": "A fixed camera shot of a parked grey sedan seen from the side on a quiet street, driver window intact. Photorealistic.",
  "gen_champagne": "A fixed camera shot of a champagne bottle standing on a table with the cork still in, festive background, nobody around. Photorealistic.",
  "gen_toaster": "A fixed camera shot of a chrome toaster on a kitchen counter with two slices of bread inside, waiting. Photorealistic.",
- "gen_chair_old": "A fixed camera shot of an old wooden chair standing alone in the middle of an empty room, wooden floor. Photorealistic.",
- "gen_branch": "A fixed camera shot of a thick low branch of an old oak tree, close-up, garden in the background, still air. Photorealistic.",
- "gen_car_backfire": "A fixed camera shot of a vintage car parked with the engine idling, seen from behind, exhaust pipe visible, quiet road. Photorealistic.",
- "gen_jack_box": "A fixed camera shot of a colourful jack-in-the-box toy with its lid closed, standing on a wooden table. Photorealistic.",
+ "gen_beer_pour": "A fixed camera shot of a hand holding a tilted beer bottle above a half-full glass of beer on a bar counter, not pouring yet. Photorealistic.",
  "gen_woman_scream": "A fixed camera shot of a young woman standing in a dim corridor, neutral expression, looking at the camera. Photorealistic.",
  "gen_man_desk": "A fixed camera shot of a man sitting at an office desk with both hands resting on it, neutral expression. Photorealistic.",
- "gen_lamp_fall": "A fixed camera shot of a tall floor lamp standing in a living room next to a sofa, switched on. Photorealistic.",
- "gen_books_shelf": "A fixed camera shot of a row of books standing upright on a wall shelf, seen from the front. Photorealistic."
+ "gen_books_shelf": "A fixed camera shot of a row of books standing upright on a wall shelf, seen from the front, floor visible below. Photorealistic."
 }
