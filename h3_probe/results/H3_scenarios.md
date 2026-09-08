@@ -331,6 +331,14 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   stays at the baseline or drifts, reaching a competitive critic score only late (dolphin iter 10, car door iter 11,
   windmill iter 4); both mode is the only one that produced the clean motion in each user-study pair.
 
+### 2026-09-08 - round 6: 3-4 more clear wins, no water
+- user: the clear wins are sudden impulsive events (leaps, splash, shatter, door); we need 3-4 more but without water.
+  Round 6 = 14 sources at 320x512 (trimmed to 89 f before screening so the screening baseline equals the run baseline):
+  plate slides off counter and shatters, bottle falls and shatters, picture frame falls off the wall, car side window
+  shatters, champagne cork pops, toaster pops, old chair collapses, oak branch snaps, car backfires with smoke,
+  jack-in-the-box springs open, woman screams, man slams fist on desk, floor lamp tips over, books fall off shelf.
+  `scenarios/gen_inputs_r6.json`, `scenarios/candidates_r6.json`, `scenarios/trim_sources.py`. gen job 20506367 -> trim -> screen.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
