@@ -9,7 +9,7 @@ Critic yes = in-loop Qwen yes-probability at the selected checkpoint (indicative
 | cat_yawns | The cat yawns widely. | 3 | 0.936 | 0.953 | 0.954 (4) | 0.944 (11) |
 | man_shouts | The man shouts loudly. | 3 | 0.388 | 0.546 | 0.483 (2) | 0.861 (13) |
 | boy_splashes | The boy splashes the water with both hands. | 9 | 0.327 | 0.915 | 0.697 (3) | 0.420 (7) |
-| car_door_opens | The car door swings open. | 4 | 0.024 | 0.9 | 0.674 (11) | pending |
+| car_door_opens | The car door swings open. | 4 | 0.024 | 0.9 | 0.674 (11) | 0.041 (7) |
 | gen_dolphin_sea | The dolphin leaps out of the water. | 2 | 0.001 | 0.013 | 0.661 (10) | pending |
 | gen_koi_pond | The koi jumps out of the water. | final | 0.001 | 0.003 | pending | pending |
 | gen_sealion | The sea lion barks with its head raised. | 2 | 0.077 | 0.78 | pending | pending |
@@ -20,4 +20,4 @@ Critic yes = in-loop Qwen yes-probability at the selected checkpoint (indicative
 | gen_glass_table | The glass tips over and spills the water. | 4 | 0.096 | 0.023 | 0.096 (1) | 0.379 (16) |
 | gen_glass_edge | The glass falls off the table and shatters on the floor. | 3 | 0.082 | 0.495 | 0.431 (4) | 0.082 (1) |
 | gen_windmill | The windmill blades start turning. | 3 | 0.542 | 0.878 | 0.974 (4) | 0.923 (7) |
-| gen_wolf_hill | The wolf howls with its head tilted up. | 3 | 0.987 | 0.987 | 0.986 (1) | pending |
+| gen_wolf_hill | The wolf howls with its head tilted up. | 3 | 0.987 | 0.987 | 0.986 (1) | 0.986 (1) |

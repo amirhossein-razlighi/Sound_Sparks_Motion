@@ -11,5 +11,11 @@
   "dz_audio": 0.0,
   "d_text": 5082.28759765625
  },
- "audio_only": null
+ "audio_only": {
+  "best_iter": 7,
+  "best_yes": 0.04098119127377879,
+  "frame_diff": 0.0022129970602691174,
+  "dz_audio": 6.337996482849121,
+  "d_text": 0.0
+ }
 }
