@@ -4,6 +4,12 @@
  "both_iter": 3,
  "baseline_yes": 0.5418236364786917,
  "both_best_yes": 0.8780847842739612,
- "text_only": null,
+ "text_only": {
+  "best_iter": 4,
+  "best_yes": 0.9741629956994139,
+  "frame_diff": 0.03211146220564842,
+  "dz_audio": 0.0,
+  "d_text": 2833.605224609375
+ },
  "audio_only": null
 }
