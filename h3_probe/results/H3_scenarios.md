@@ -338,6 +338,9 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   `scenarios/gen_inputs_r6.json`, `scenarios/candidates_r6.json`. gen job 20506624. Plus a yoga scenario (user: does a complex multi-step
   body motion - arms overhead, deep forward fold, rise - show where we shine?): gen job 20506630, screened with ONLY=gen_yoga.
 
+- gen_yoga screened: H3's baseline performs the whole flow (arms overhead -> deep forward fold -> rise) cleanly (critic 0.81 lin /
+  0.89 any, visually complete). Complex multi-step body motion is NOT where H3 fails -> stop, per the agreed rule.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -406,6 +409,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_windmill | H3 t2va (r5) | blades start turning | fail (static, 0.14/0.63) | user: iters 3 and 14 ok (iter 3 primary) | PACKAGED |
 | car_door_opens | retake input (workshop) | car door swings open | fail (0.04/0.24) | iter 4: door swings open mid-clip, clean (alt 3/5) | PACKAGED |
 | car_lights_flash | retake input (garage) | headlights flash, horn | fail (0.005) | any: flat 0.03, drift after iter 10 | failed |
+| gen_yoga | H3 t2va (r6) | yoga flow: arms overhead, forward fold, rise | success at baseline (full flow, 0.81/0.89) | - | skip (no room) |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
 | gen_horse_rears | H3 t2va | rears up on hind legs | fail (0.0002, only walks) | cancelled (flat critic) | skip |
