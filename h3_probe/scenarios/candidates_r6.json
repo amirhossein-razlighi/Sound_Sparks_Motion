@@ -14,7 +14,8 @@
   "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_toaster_h3sound_89f.wav",
   "edit": "The toaster pops the toast up.",
   "scene": "a chrome toaster with bread inside on a kitchen counter",
-  "question": "Does the toast pop up out of the toaster at any point in this video? Answer only 'yes' or 'no'."
+  "question": "Does the toast pop up out of the toaster at any point in this video? Answer only 'yes' or 'no'.",
+  "note": "INVALID SOURCE: the toast is already up from frame 2; replaced by gen_toaster2"
  },
  "gen_beer_pour": {
   "group": "r6",
@@ -22,7 +23,8 @@
   "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_beer_pour_h3sound_89f.wav",
   "edit": "The beer is poured into the glass until it overflows and foam spills over the rim.",
   "scene": "a hand holding a beer bottle above a half-full glass of beer on a bar counter",
-  "question": "Does beer overflow or foam spill over the rim of the glass at any point in this video? Answer only 'yes' or 'no'."
+  "question": "Does beer overflow or foam spill over the rim of the glass at any point in this video? Answer only 'yes' or 'no'.",
+  "note": "INVALID SOURCE: the generated clip already pours beer; replaced by gen_beer_pour2"
  },
  "gen_woman_scream": {
   "group": "r6",
@@ -55,5 +57,21 @@
   "edit": "The woman does a yoga flow: she raises both arms overhead, bends into a deep forward fold, and rises back up.",
   "scene": "a woman standing on a yoga mat in a bright studio",
   "question": "Does the woman raise both arms overhead and bend forward into a yoga fold at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_beer_pour2": {
+  "group": "r6",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_beer_pour2__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_beer_pour2_h3sound_89f.wav",
+  "edit": "The bartender tilts the bottle and pours the beer into the glass until it overflows and foam spills over the rim.",
+  "scene": "a half-full glass of beer on a bar counter next to an upright beer bottle held by a bartender's hand",
+  "question": "Does beer overflow or foam spill over the rim of the glass at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_toaster2": {
+  "group": "r6",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_toaster2__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_toaster2_h3sound_89f.wav",
+  "edit": "The toast pops up out of the toaster.",
+  "scene": "a chrome toaster on a kitchen counter with its lever down",
+  "question": "Does toast pop up out of the toaster at any point in this video? Answer only 'yes' or 'no'."
  }
 }
