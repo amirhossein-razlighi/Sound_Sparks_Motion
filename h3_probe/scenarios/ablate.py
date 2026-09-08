@@ -26,7 +26,7 @@ ENV = {  # run_config key -> env var read by h3_full_method.py
 }
 SCEN_JSON = ":".join(os.path.join(SCN, f) for f in ("candidates_r1.json", "candidates_r2.json", "candidates_r3.json",
                                                       "candidates_r4.json", "candidates_r5.json", "candidates_fullsize_test.json"))
-EXCL = "rg31701,rg13401,rg21803,rg21802,rg31502,rg32202"
+EXCL = "rg31701,rg13401,rg21803,rg21802,rg31502,rg32202,rg21702"   # rg21702: CUDA driver init failed (2026-09-08)
 LINES = int(os.environ.get("LINES", "3"))
 ORDER = ["goldfish", "cat_yawns", "man_shouts", "boy_splashes", "car_door_opens", "gen_dolphin_sea", "gen_koi_pond", "gen_sealion",
          "gen_woman_desk", "gen_cow_field", "gen_woman_door", "gen_frog_jumps"]
@@ -54,7 +54,7 @@ def main():
         if cfg.get("gpu_mem_split"):
             env["GPU_MEM_SPLIT"] = cfg["gpu_mem_split"].replace(",", ";")
         three = bool(cfg.get("gpu_mem_split")) and "full" in run
-        for mode in ("text", "audio"):
+        for mode in [m for m in os.environ.get("MODES", "text,audio").split(",") if m]:   # MODES=audio -> resubmit one mode
             out = os.path.join(ABL, s, f"{mode}_only")
             os.makedirs(out, exist_ok=True)
             cap = os.path.join(out, "capture.pt")

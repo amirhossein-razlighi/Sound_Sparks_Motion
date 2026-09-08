@@ -322,6 +322,15 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   audio), \`source_audio.wav\`, and \`prompts.txt\` (edit sentence, scene, the full H3 prompt shared by A and B, the critic
   question, mode/objective/picked iteration). package_ab.py builds these from each run's run_config.json.
 
+### 2026-09-08 - ablation nearly complete
+- 31/32 ablation runs finished and packaged (\`results/ablation/README.md\`, per-folder \`critic_scores.txt\`). The one failure,
+  gen_woman_door audio-only, died on rg21702 ("CUDA driver initialization failed") - node added to the exclude list and the
+  run resubmitted (ablate.py now takes MODES=audio|text to resubmit a single mode).
+- pattern across the 15 complete triples: audio-only never changes the frames by more than ~2 % (inert on H3, even where the
+  critic reports a high score, e.g. man_shouts 0.86 / windmill 0.92 with <1 % frame change - critic fooled); text-only either
+  stays at the baseline or drifts, reaching a competitive critic score only late (dolphin iter 10, car door iter 11,
+  windmill iter 4); both mode is the only one that produced the clean motion in each user-study pair.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
