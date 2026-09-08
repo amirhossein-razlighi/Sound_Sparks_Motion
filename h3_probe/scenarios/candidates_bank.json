@@ -1,0 +1,99 @@
+{
+ "_comment": "Overnight bank (2026-09-08): new no-water impulsive events with before-state source prompts; used only when fewer than 5 clear wins. Sources 320x512x124 -> 89 f.",
+ "gen_piano_lid": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_piano_lid__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_piano_lid_h3sound_89f.wav",
+  "edit": "The piano lid slams shut.",
+  "scene": "a grand piano with its lid propped open",
+  "question": "Does the piano lid fall or slam shut at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_cat_vase": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_cat_vase__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_cat_vase_h3sound_89f.wav",
+  "edit": "The cat knocks the vase off the table and it shatters on the floor.",
+  "scene": "a cat sitting on a table next to a ceramic vase",
+  "question": "Does the vase fall off the table or shatter at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_bike_tips": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_bike_tips__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_bike_tips_h3sound_89f.wav",
+  "edit": "The bicycle tips over and falls onto the sidewalk.",
+  "scene": "a bicycle standing on its kickstand on a sidewalk",
+  "question": "Does the bicycle tip over or fall at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_ladder": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_ladder__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_ladder_h3sound_89f.wav",
+  "edit": "The ladder slides sideways and falls to the ground.",
+  "scene": "a ladder leaning against a house wall",
+  "question": "Does the ladder slide or fall at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_bowling": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_bowling__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_bowling_h3sound_89f.wav",
+  "edit": "The ball rolls down the lane and knocks all the pins over.",
+  "scene": "a bowling lane with ten pins standing and a ball resting at the near end",
+  "question": "Do the bowling pins get knocked over at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_firecracker": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_firecracker__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_firecracker_h3sound_89f.wav",
+  "edit": "The firecracker explodes with a bang and a puff of smoke.",
+  "scene": "a red firecracker lying on a concrete yard with a lit fuse",
+  "question": "Does the firecracker explode (flash, smoke) at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_soda_can": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_soda_can__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_soda_can_h3sound_89f.wav",
+  "edit": "The hand crushes the can flat with a crunch.",
+  "scene": "a hand holding an empty soda can",
+  "question": "Does the hand crush the can at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_popcorn": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_popcorn__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_popcorn_h3sound_89f.wav",
+  "edit": "The kernels pop into popcorn and fill the pan.",
+  "scene": "a pan with a glass lid on a stove with popcorn kernels inside",
+  "question": "Do the kernels pop into popcorn at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_gorilla": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_gorilla__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_gorilla_h3sound_89f.wav",
+  "edit": "The gorilla stands up and beats its chest.",
+  "scene": "a gorilla sitting calmly on grass",
+  "question": "Does the gorilla beat its chest at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_elephant": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_elephant__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_elephant_h3sound_89f.wav",
+  "edit": "The elephant raises its trunk and trumpets loudly.",
+  "scene": "an elephant standing still in a savanna",
+  "question": "Does the elephant raise its trunk at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_horse_neigh": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_horse_neigh__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_horse_neigh_h3sound_89f.wav",
+  "edit": "The horse throws its head up and neighs loudly.",
+  "scene": "a brown horse standing behind a wooden fence",
+  "question": "Does the horse throw its head up and neigh at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_kettle": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_kettle__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_kettle_h3sound_89f.wav",
+  "edit": "The kettle whistles and steam shoots out of the spout.",
+  "scene": "a stovetop kettle on a lit gas burner",
+  "question": "Does steam come out of the kettle spout at any point in this video? Answer only 'yes' or 'no'."
+ }
+}
