@@ -56,4 +56,12 @@ for tag, sel in (("a", [i for i in its if i <= 8]), ("b", [i for i in its if i >
     vids = [os.path.join(run, "baseline.mp4")] + [os.path.join(run, f"iter_{i:02d}.mp4") for i in sel if os.path.exists(os.path.join(run, f"iter_{i:02d}.mp4"))]
     if len(vids) > 1:
         subprocess.run(["bash", SHEET, os.path.join(d, f"iters_sheet_{tag}.jpg")] + vids, env=env, check=False)
-print("packaged", d, "best", ok[0] if ok else None)
+b_any = res.get("baseline_yes_any"); best_any = ok[0]["yes_any"] if ok else None
+if b_any is None or best_any is None: verdict = "unknown"
+elif b_any < 0.35 and best_any > 0.7: verdict = "strong_win"
+elif best_any > max(0.5, (b_any or 0) + 0.2): verdict = "improved"
+else: verdict = "no_gain"
+json.dump({"slug": slug, "baseline_any": b_any, "baseline_lin": res.get("baseline_yes"), "best_iter": ok[0]["iter"] if ok else None, "best_any": best_any,
+           "best_lin": ok[0]["yes_lin"] if ok else None, "best_perc": ok[0]["perc"] if ok else None, "auto_verdict": verdict,
+           "note": "auto verdict from the in-loop critic; visual review decides"}, open(os.path.join(d, "verdict.json"), "w"), indent=1)
+print("packaged", d, "best", ok[0] if ok else None, "auto_verdict", verdict)
