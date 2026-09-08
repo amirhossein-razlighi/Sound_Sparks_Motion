@@ -11,11 +11,11 @@ Critic yes = in-loop Qwen yes-probability at the selected checkpoint (indicative
 | boy_splashes | The boy splashes the water with both hands. | 9 | 0.327 | 0.915 | 0.697 (3) | 0.420 (7) |
 | car_door_opens | The car door swings open. | 4 | 0.024 | 0.9 | 0.674 (11) | 0.041 (7) |
 | gen_dolphin_sea | The dolphin leaps out of the water. | 2 | 0.001 | 0.013 | 0.661 (10) | 0.001 (10) |
-| gen_koi_pond | The koi jumps out of the water. | final | 0.001 | 0.003 | 0.012 (2) | pending |
-| gen_sealion | The sea lion barks with its head raised. | 2 | 0.077 | 0.78 | pending | pending |
-| gen_woman_desk | The woman yawns widely. | 2 | 0.911 | 0.911 | pending | pending |
-| gen_cow_field | The cow moos loudly. | 3 | 0.884 | 0.884 | pending | pending |
-| gen_woman_door | The woman opens the door and walks inside. | 4 | 0.098 | 0.24 | pending | pending |
+| gen_koi_pond | The koi jumps out of the water. | final | 0.001 | 0.003 | 0.012 (2) | 0.001 (9) |
+| gen_sealion | The sea lion barks with its head raised. | 2 | 0.077 | 0.78 | 0.121 (2) | 0.009 (15) |
+| gen_woman_desk | The woman yawns widely. | 2 | 0.911 | 0.911 | 0.908 (1) | 0.908 (1) |
+| gen_cow_field | The cow moos loudly. | 3 | 0.884 | 0.884 | 0.884 (1) | 0.880 (6) |
+| gen_woman_door | The woman opens the door and walks inside. | 4 | 0.098 | 0.24 | 0.382 (11) | pending |
 | gen_frog_jumps | The frog jumps off the lily pad into the water. | 3 | 0.01 | 0.414 | 0.018 (2) | 0.009 (13) |
 | gen_glass_table | The glass tips over and spills the water. | 4 | 0.096 | 0.023 | 0.096 (1) | 0.379 (16) |
 | gen_glass_edge | The glass falls off the table and shatters on the floor. | 3 | 0.082 | 0.495 | 0.431 (4) | 0.082 (1) |
