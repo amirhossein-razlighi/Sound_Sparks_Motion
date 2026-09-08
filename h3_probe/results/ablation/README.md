@@ -11,7 +11,7 @@ Critic yes = in-loop Qwen yes-probability at the selected checkpoint (indicative
 | boy_splashes | The boy splashes the water with both hands. | 9 | 0.327 | 0.915 | 0.697 (3) | 0.420 (7) |
 | car_door_opens | The car door swings open. | 4 | 0.024 | 0.9 | 0.674 (11) | 0.041 (7) |
 | gen_dolphin_sea | The dolphin leaps out of the water. | 2 | 0.001 | 0.013 | 0.661 (10) | 0.001 (10) |
-| gen_koi_pond | The koi jumps out of the water. | final | 0.001 | 0.003 | pending | pending |
+| gen_koi_pond | The koi jumps out of the water. | final | 0.001 | 0.003 | 0.012 (2) | pending |
 | gen_sealion | The sea lion barks with its head raised. | 2 | 0.077 | 0.78 | pending | pending |
 | gen_woman_desk | The woman yawns widely. | 2 | 0.911 | 0.911 | pending | pending |
 | gen_cow_field | The cow moos loudly. | 3 | 0.884 | 0.884 | pending | pending |
