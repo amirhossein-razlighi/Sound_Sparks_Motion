@@ -8,8 +8,8 @@ Critic yes = in-loop Qwen yes-probability at the selected checkpoint (indicative
 | goldfish | The goldfish jumps out of the fish tank into the air. | final | 0.004 | 0.365 | 0.039 (4) | 0.004 (15) |
 | cat_yawns | The cat yawns widely. | 3 | 0.936 | 0.953 | 0.954 (4) | 0.944 (11) |
 | man_shouts | The man shouts loudly. | 3 | 0.388 | 0.546 | 0.483 (2) | 0.861 (13) |
-| boy_splashes | The boy splashes the water with both hands. | 9 | 0.327 | 0.915 | pending | pending |
-| car_door_opens | The car door swings open. | 4 | 0.024 | 0.9 | pending | pending |
+| boy_splashes | The boy splashes the water with both hands. | 9 | 0.327 | 0.915 | 0.697 (3) | 0.420 (7) |
+| car_door_opens | The car door swings open. | 4 | 0.024 | 0.9 | 0.674 (11) | pending |
 | gen_dolphin_sea | The dolphin leaps out of the water. | 2 | 0.001 | 0.013 | pending | pending |
 | gen_koi_pond | The koi jumps out of the water. | final | 0.001 | 0.003 | pending | pending |
 | gen_sealion | The sea lion barks with its head raised. | 2 | 0.077 | 0.78 | pending | pending |
