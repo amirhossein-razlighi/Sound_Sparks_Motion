@@ -1,5 +1,6 @@
-WAITLOG|slurm_logs/interac_opt_champagne.log|PHASES_EXIT
 GEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/gen_inputs_r6b.json|gen_beer_pour2;gen_toaster2|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_r6.json
 SCREEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_r6.json|gen_books_shelf;gen_toaster2;gen_beer_pour2
+GEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/gen_inputs_r6c.json|gen_champagne_close|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_r6.json
+SCREEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_r6.json|gen_champagne_close
 OPT|gen_woman_scream|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_r6.json
 OPT|gen_man_desk|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_r6.json

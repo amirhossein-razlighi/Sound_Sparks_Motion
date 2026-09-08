@@ -1,0 +1,11 @@
+{
+ "slug": "gen_champagne",
+ "baseline_any": 0.23594747619757248,
+ "baseline_lin": 0.19065868643303632,
+ "best_iter": 1,
+ "best_any": 0.20700992511687047,
+ "best_lin": 0.20700992511687047,
+ "best_perc": 6.844726158306003e-05,
+ "auto_verdict": "no_gain",
+ "note": "auto verdict from the in-loop critic; visual review decides"
+}

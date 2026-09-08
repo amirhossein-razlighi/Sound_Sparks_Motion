@@ -65,3 +65,4 @@ h3_probe/results/**/*.wav
 h3_probe/results/**/*.png
 h3_probe/results/**/*.pt
 h3_probe/results/**/*.npy
+h3_probe/results/**/*.jpg

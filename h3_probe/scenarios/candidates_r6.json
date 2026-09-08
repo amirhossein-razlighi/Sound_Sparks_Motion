@@ -73,5 +73,13 @@
   "edit": "The toast pops up out of the toaster.",
   "scene": "a chrome toaster on a kitchen counter with its lever down",
   "question": "Does toast pop up out of the toaster at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_champagne_close": {
+  "group": "r6",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_champagne_close__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_champagne_close_h3sound_89f.wav",
+  "edit": "The cork shoots out of the bottle with a loud pop and foam sprays out of the neck.",
+  "scene": "a close-up of the neck of a champagne bottle with the cork in place",
+  "question": "Does the cork shoot out of the bottle or does foam spray out of the neck at any point in this video? Answer only 'yes' or 'no'."
  }
 }

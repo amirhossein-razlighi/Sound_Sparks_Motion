@@ -361,6 +361,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   ladder slides and falls, bowling strike, firecracker, soda can crushed, popcorn pops out of the pan, gorilla beats chest,
   elephant raises trunk and trumpets, horse neighs, kettle whistles with steam).
 
+- 19:40 champagne (both/any) finished: critic 0.04-0.08 for 11 iterations, previews identical to the baseline -> failed; the cork is
+  a few pixels in this framing. Queued a close-up variant (gen_champagne_close: neck fills the frame, edit = cork shoots out + foam
+  sprays). Candidate package with sheets kept in results/user_study_candidates/gen_champagne/ for review.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -429,7 +433,8 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_windmill | H3 t2va (r5) | blades start turning | fail (static, 0.14/0.63) | user: iters 3 and 14 ok (iter 3 primary) | PACKAGED |
 | car_door_opens | retake input (workshop) | car door swings open | fail (0.04/0.24) | iter 4: door swings open mid-clip, clean (alt 3/5) | PACKAGED |
 | car_lights_flash | retake input (garage) | headlights flash, horn | fail (0.005) | any: flat 0.03, drift after iter 10 | failed |
-| gen_champagne | H3 t2va (r6) | cork pops out | fail (completely static, 0.08/0.15) | both/any run 20524811 | opt |
+| gen_champagne | H3 t2va (r6) | cork pops out | fail (completely static, 0.08/0.15) | ours: every iteration identical to the baseline (cork ~5 px, no gradient) | failed |
+| gen_champagne_close | H3 t2va (r6) | cork shoots out, foam sprays (close-up) | queued (gen -> screen -> opt if room) | - | pending |
 | gen_toaster | H3 t2va (r6) | toast pops up | INVALID SOURCE (toast already up) -> gen_toaster2 | - | redo |
 | gen_beer_pour | H3 t2va (r6) | pours until overflow | INVALID SOURCE (already pouring) -> gen_beer_pour2 | - | redo |
 | gen_woman_scream | H3 t2va (r6) | screams in fright | late (mouth opens only in the last 2 frames, 0.61/0.37) | ours next | opt |
