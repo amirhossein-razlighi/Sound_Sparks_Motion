@@ -345,6 +345,9 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   was granted within a minute (job 20518172, rg32102) while batch jobs had been waiting for hours. Steps are run inside it with
   \`srun --jobid=20518172 --overlap ...\`; the batch screening 20507917 was cancelled in favour of it.
 
+- round-6 screening (interactive node rg31802; rg32102 hung twice on Lustre I/O and is excluded): gen_champagne baseline is
+  completely static (cork never pops, 0.08/0.15) -> room -> both-mode run 20524811 submitted (event recipe).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -413,6 +416,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_windmill | H3 t2va (r5) | blades start turning | fail (static, 0.14/0.63) | user: iters 3 and 14 ok (iter 3 primary) | PACKAGED |
 | car_door_opens | retake input (workshop) | car door swings open | fail (0.04/0.24) | iter 4: door swings open mid-clip, clean (alt 3/5) | PACKAGED |
 | car_lights_flash | retake input (garage) | headlights flash, horn | fail (0.005) | any: flat 0.03, drift after iter 10 | failed |
+| gen_champagne | H3 t2va (r6) | cork pops out | fail (completely static, 0.08/0.15) | both/any run 20524811 | opt |
 | gen_yoga | H3 t2va (r6) | yoga flow: arms overhead, forward fold, rise | success at baseline (full flow, 0.81/0.89) | - | skip (no room) |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |

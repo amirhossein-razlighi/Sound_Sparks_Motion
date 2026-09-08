@@ -1,0 +1,1 @@
+- rg32102 (gpubase_interac): Lustre cl_sync_io_wait hang when reading inputs, twice (2026-09-08)
