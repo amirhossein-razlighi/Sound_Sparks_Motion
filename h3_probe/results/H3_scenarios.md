@@ -348,6 +348,19 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 - round-6 screening (interactive node rg31802; rg32102 hung twice on Lustre I/O and is excluded): gen_champagne baseline is
   completely static (cork never pops, 0.08/0.15) -> room -> both-mode run 20524811 submitted (event recipe).
 
+### 2026-09-08 evening - overnight coordination (user: I stay on as coordinator/judge all night)
+- source audit: beer_pour and toaster sources already contained the target motion (pouring; toast up from frame 2) -> invalid,
+  regenerated as gen_beer_pour2 / gen_toaster2 with before-state prompts and GEN_SEED=7. All 17 packaged study sources audited:
+  none contains its motion (sheets in outputs/source_check/). Rule from now on: inspect every generated source before screening.
+- screening verdicts (interactive node rg31802): champagne static -> room (ours running in allocation 20523721, both/any);
+  woman_scream late (room); man_desk late/partial (room); books screening OOMed because a regeneration step landed on the same
+  GPU (lesson: one GPU step at a time in an allocation).
+- plan: champagne opt -> regenerate beer2/toaster2 (sequential) -> inspect -> screen books/toaster2/beer2 -> new allocation ->
+  ours on scream, desk, and whichever of the three has room -> judge sheets -> package to results/user_study_candidates/.
+  If < 5 clear wins: bank of new no-water impulsive events (piano lid slams, cat knocks vase off table, bike tips over,
+  ladder slides and falls, bowling strike, firecracker, soda can crushed, popcorn pops out of the pan, gorilla beats chest,
+  elephant raises trunk and trumpets, horse neighs, kettle whistles with steam).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -417,6 +430,11 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | car_door_opens | retake input (workshop) | car door swings open | fail (0.04/0.24) | iter 4: door swings open mid-clip, clean (alt 3/5) | PACKAGED |
 | car_lights_flash | retake input (garage) | headlights flash, horn | fail (0.005) | any: flat 0.03, drift after iter 10 | failed |
 | gen_champagne | H3 t2va (r6) | cork pops out | fail (completely static, 0.08/0.15) | both/any run 20524811 | opt |
+| gen_toaster | H3 t2va (r6) | toast pops up | INVALID SOURCE (toast already up) -> gen_toaster2 | - | redo |
+| gen_beer_pour | H3 t2va (r6) | pours until overflow | INVALID SOURCE (already pouring) -> gen_beer_pour2 | - | redo |
+| gen_woman_scream | H3 t2va (r6) | screams in fright | late (mouth opens only in the last 2 frames, 0.61/0.37) | ours next | opt |
+| gen_man_desk | H3 t2va (r6) | slams fist on desk | late/partial (fist up at frame ~11, no clear slam, 0.08/0.17) | ours next | opt |
+| gen_books_shelf | H3 t2va (r6) | books fall off shelf | screening OOMed (GPU collision) | rescreen | pending |
 | gen_yoga | H3 t2va (r6) | yoga flow: arms overhead, forward fold, rise | success at baseline (full flow, 0.81/0.89) | - | skip (no room) |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
