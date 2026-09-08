@@ -341,6 +341,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 - gen_yoga screened: H3's baseline performs the whole flow (arms overhead -> deep forward fold -> rise) cleanly (critic 0.81 lin /
   0.89 any, visually complete). Complex multi-step body motion is NOT where H3 fails -> stop, per the agreed rule.
 
+- 2026-09-08 15:10: user suggestion - interactive allocation. \`salloc -p gpubase_interac --gres=gpu:h100:2 --time=3:00:00 --no-shell\`
+  was granted within a minute (job 20518172, rg32102) while batch jobs had been waiting for hours. Steps are run inside it with
+  \`srun --jobid=20518172 --overlap ...\`; the batch screening 20507917 was cancelled in favour of it.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
