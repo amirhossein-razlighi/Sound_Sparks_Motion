@@ -335,7 +335,8 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 - user cancelled my 14-source list and chose 6: champagne cork pops, toaster pops the toast up, beer poured until the glass
   overflows, woman screams in fright, man slams his fist on the desk, books fall off the shelf. Plan agreed: generate ->
   trim to 89 f -> screen (baseline); optimize (both mode, event recipe) ONLY where the baseline leaves room.
-  `scenarios/gen_inputs_r6.json`, `scenarios/candidates_r6.json`. gen job 20506624.
+  `scenarios/gen_inputs_r6.json`, `scenarios/candidates_r6.json`. gen job 20506624. Plus a yoga scenario (user: does a complex multi-step
+  body motion - arms overhead, deep forward fold, rise - show where we shine?): gen job 20506630, screened with ONLY=gen_yoga.
 
 ## Scenario table (updated as results land)
 

@@ -1,5 +1,5 @@
 {
- "_comment": "Round-6 candidates chosen by the user (2026-09-08): champagne cork pops, toaster pops, beer poured until it overflows, woman screams, man slams fist on desk, books fall off the shelf. Sources 320x512x124 trimmed to 89 frames (_89f) before screening; optimization (both mode) only where the baseline leaves room.",
+ "_comment": "Round-6 candidates chosen by the user (2026-09-08): champagne cork pops, toaster pops, beer poured until it overflows, woman screams, man slams fist on desk, books fall off the shelf. Sources 320x512x124 trimmed to 89 frames (_89f) before screening; optimization (both mode) only where the baseline leaves room. Plus gen_yoga (complex multi-step body motion) added by the user.",
  "gen_champagne": {
   "group": "r6",
   "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_champagne__t2va_89f.mp4",
@@ -47,5 +47,13 @@
   "edit": "The books fall off the shelf onto the ground.",
   "scene": "a row of books standing on a wall shelf",
   "question": "Do the books fall off the shelf at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_yoga": {
+  "group": "r6",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_yoga__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_yoga_h3sound_89f.wav",
+  "edit": "The woman does a yoga flow: she raises both arms overhead, bends into a deep forward fold, and rises back up.",
+  "scene": "a woman standing on a yoga mat in a bright studio",
+  "question": "Does the woman raise both arms overhead and bend forward into a yoga fold at any point in this video? Answer only 'yes' or 'no'."
  }
 }
