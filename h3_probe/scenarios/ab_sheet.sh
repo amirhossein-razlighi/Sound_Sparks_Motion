@@ -11,4 +11,5 @@ for v in "$@"; do
   args+=(-i "$v"); filt="$filt[$i:v]select='between(n\,$s\,$e)*not(mod(n-$s\,$step))',${cropf}scale=$W:-2,tile=${N}x1[r$i];"; i=$((i+1))
 done
 rows=""; for ((k=0;k<i;k++)); do rows="$rows[r$k]"; done
-ffmpeg -y -v error -threads 1 "${args[@]}" -filter_complex "$filt${rows}vstack=inputs=$i" -frames:v 1 -q:v 4 -threads 1 "$out"   # .png or .jpg (jpg is ~10x smaller)
+if [ $i -eq 1 ]; then stack="[r0]copy"; else stack="${rows}vstack=inputs=$i"; fi   # vstack needs >= 2 inputs
+ffmpeg -y -v error -threads 1 "${args[@]}" -filter_complex "$filt$stack" -frames:v 1 -q:v 4 -threads 1 "$out"   # .png or .jpg (jpg is ~10x smaller)
