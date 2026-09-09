@@ -567,6 +567,15 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   re-prompted as gen_glass_note3 ("framed from the waist up so that the singer's whole face and head are clearly visible"),
   queued after the demo2 screening. Gate b3 opened; demo2 screening (10 real-clip edits) starts now.
 
+- 19:55 demo2 screening (classics, cartoons, user variants): nosferatu - Orlok just stands (0.03/0.07) -> ours; keaton - looks
+  around, no laugh (0.01/0.04) -> ours; chaplin - fiddles with the forks, no roll dance (0.03/0.22) -> ours; steamboat - Mickey
+  keeps steering, a swing/turn only in the last frames (0.09/0.41) -> ours; tom_walk - H3 trips him only at frames 10-12
+  (0.35/0.50, late) -> ours; leo_clap - raises the can, no clear drop or clap (0.03/0.16) -> ours; casablanca - a soft smile
+  from frame ~7 (0.40/0.50, mild) -> ours, low priority; tom_hammock - eyes pop out at frames 5-8 (0.45/0.67) -> H3 does it,
+  skip; travolta_jump - hand up and jumps (0.90/0.99) -> skip; gatsby_wink - hand through the hair at frames 4-7 (0.67/0.91)
+  -> skip. Night order of the optimizations: gatsby glass, nosferatu, keaton, thug_cat, plate_counter, tom_walk, steamboat,
+  chaplin, mrbean, leo_couch, leo_clap, casablanca, tyre, lightbulb2 (about 1 h each).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -669,6 +678,16 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_mrbean | real (demo) | faints and falls backwards | baseline: stands, checks watch (0.004/0.015) | ours queued | opt |
 | real_grumpy | real (demo) | big yawn | baseline opens the mouth wide (0.99/1.0) | - | skip |
 | real_thug_cat | real (demo) | pushes the glass off the table | baseline: cat just sits (0.007/0.08) | ours queued | opt |
+| real_nosferatu | real (demo B&W) | bares fangs, hisses, lunges | baseline: stands still (0.03/0.07) | ours queued | opt |
+| real_keaton | real (demo B&W) | bursts out laughing | baseline: looks around (0.01/0.04) | ours queued | opt |
+| real_chaplin | real (demo B&W) | bread rolls dance | baseline: fiddles with forks (0.03/0.22) | ours queued | opt |
+| real_casablanca | real (demo B&W) | bursts out laughing | baseline: soft smile from frame 7 (0.40/0.50) | ours queued (low) | opt |
+| real_steamboat | real (demo cartoon) | startled, jumps into the air | baseline: swing/turn in the last frames (0.09/0.41) | ours queued | opt |
+| real_tom_walk | real (demo cartoon) | trips and falls flat | baseline trips him at frames 10-12 (0.35/0.50, late) | ours queued | opt |
+| real_tom_hammock | real (demo cartoon) | eyes pop out, screams | baseline does it at frames 5-8 (0.45/0.67) | - | skip |
+| real_travolta_jump | real (demo) | jumps with hand up, shouting | baseline does it (0.90/0.99) | - | skip |
+| real_gatsby_wink | real (demo) | winks, combs hair | baseline combs hair at frames 4-7 (0.67/0.91) | - | skip |
+| real_leo_clap | real (demo) | drops the can, claps | baseline: raises the can, no clap (0.03/0.16) | ours queued | opt |
 | gen_car_shatter | bank (car_window source) | the whole car shatters into glass shards | baseline does it, early and complete (cracks at frame 4, debris field by frame 9; 0.86/0.60) | ours cancelled (stop rule) | skip |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
