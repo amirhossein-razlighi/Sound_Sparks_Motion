@@ -402,6 +402,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   table -> edit changed to "pushes the vase over and it shatters on the floor"), bicycle (leaning on a tree, still),
   ladder (against a wall, still) -> all valid; screening on allocation 20625821 (rg31607).
 
+- 02:55 bank screening (rg31607, fast node: 4 candidates in 20 min): piano lid closes slowly at baseline (critic missed it) -> ours
+  cancelled; cat pushes the vase over at baseline -> skip; ladder slides and falls at baseline -> auto-OPT removed; bicycle
+  falls late (frames 9-12) -> ours queued. Lesson: H3 handles "object falls/tips" edits; the critic under-scores them.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -480,6 +484,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_man_desk | H3 t2va (r6) | slams fist on desk | late/partial (fist up at frame ~11, no clear slam, 0.08/0.17) | ours: only a raised fist at various times (iters 2-5), never a slam; iters 6-7 swap the person | failed |
 | gen_books_shelf | H3 t2va (r6) | books fall off shelf | late (topple only in the last 2 frames, 0.93/0.91) | iter 2: cascade starts at frame ~70 and more books fall (earlier, fuller); iters 3/5 fling a single book; iter 7 zoom drift | modest improvement |
 | gen_yoga | H3 t2va (r6) | yoga flow: arms overhead, forward fold, rise | success at baseline (full flow, 0.81/0.89) | - | skip (no room) |
+| gen_piano_lid | bank | lid slams shut | baseline closes the lid slowly but completely (frames 4-7); critic missed it (0.12/0.02) | ours cancelled (no room) | skip |
+| gen_cat_vase | bank | pushes the vase over, it shatters | baseline does it (0.97/0.99) | - | skip |
+| gen_bike_tips | bank | bicycle tips over | baseline falls late (frames 9-12, 0.78/0.40) | ours queued (any) | opt |
+| gen_ladder | bank | ladder slides and falls | baseline does it mid-clip (0.67/0.20, critic miss) | auto-OPT removed | skip |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
 | gen_horse_rears | H3 t2va | rears up on hind legs | fail (0.0002, only walks) | cancelled (flat critic) | skip |

@@ -1,5 +1,2 @@
-SCREEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_r6.json|gen_beer_pour3
-OPT|gen_woman_scream|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_r6.json
-OPT|gen_man_desk|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_r6.json
-OPT|gen_books_shelf|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_r6.json
-OPT|gen_toaster2|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_r6.json
+OPT|gen_piano_lid|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+OPT|gen_bike_tips|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
