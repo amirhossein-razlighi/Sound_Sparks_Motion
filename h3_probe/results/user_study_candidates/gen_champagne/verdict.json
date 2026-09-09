@@ -7,5 +7,6 @@
  "best_lin": 0.20700992511687047,
  "best_perc": 6.844726158306003e-05,
  "auto_verdict": "no_gain",
- "note": "auto verdict from the in-loop critic; visual review decides"
+ "note": "auto verdict from the in-loop critic; visual review decides",
+ "visual_verdict": "failed: every iteration identical to the baseline (cork ~5 px in frame)"
 }

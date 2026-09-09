@@ -394,6 +394,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   collapse start ~2 frames earlier with more books falling (perceptual 0.11) - a modest "sooner and fuller" case, not a
   striking win. Packaged with iter 2 as a candidate.
 
+- 02:20 gen_toaster2 (both/any): critic flat 0.01-0.04; previews: the toast disappears in iters 2-5, iters 6+ zoom-drift -> failed.
+  Round-6 tally: woman_scream = candidate win; books = modest improvement; champagne (x2), toaster (x2), beer (x3), fist slam,
+  yoga = no room or failed. Bank feed started: piano lid, cat+vase, bicycle, ladder (generating).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -464,7 +468,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | car_lights_flash | retake input (garage) | headlights flash, horn | fail (0.005) | any: flat 0.03, drift after iter 10 | failed |
 | gen_champagne | H3 t2va (r6) | cork pops out | fail (completely static, 0.08/0.15) | ours: every iteration identical to the baseline (cork ~5 px, no gradient) | failed |
 | gen_champagne_close | H3 t2va (r6) | cork shoots out, foam sprays (close-up) | baseline 0.95/0.98 (H3 does it at this framing) | - | skip (verify sheet) |
-| gen_toaster2 | H3 t2va (r6) | toast pops up | baseline 0.37/0.42 -> room | ours queued (any) | opt |
+| gen_toaster2 | H3 t2va (r6) | toast pops up | baseline shows toast sitting up from frame 1, no pop (0.37/0.42) | ours: toast vanishes (iters 2-5), then zoom drift; no pop motion | failed |
 | gen_beer_pour3 | H3 t2va (r6) | pours until overflow (no person in source) | baseline: a hand appears, pours, glass overflows with foam in the last third (0.95/0.94) | - | skip (H3 does it) |
 | gen_toaster | H3 t2va (r6) | toast pops up | INVALID SOURCE (toast already up) -> gen_toaster2 | - | redo |
 | gen_beer_pour | H3 t2va (r6) | pours until overflow | INVALID SOURCE x2 (pouring in the clip even with a 'not pouring' prompt) -> gen_beer_pour3 (no person in the source) | - | redo |

@@ -1,0 +1,12 @@
+{
+ "slug": "gen_toaster2",
+ "baseline_any": 0.09585578542949745,
+ "baseline_lin": 0.09546585586143468,
+ "best_iter": 1,
+ "best_any": 0.08027573995510849,
+ "best_lin": 0.08027573995510849,
+ "best_perc": 8.173248352250084e-05,
+ "auto_verdict": "no_gain",
+ "note": "auto verdict from the in-loop critic; visual review decides",
+ "visual_verdict": "failed: toast vanishes in iters 2-5, zoom drift after; no pop"
+}
