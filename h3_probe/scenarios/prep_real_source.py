@@ -37,14 +37,17 @@ def probe(path):
     return int(v[0]), int(v[1]), bool(a)
 
 def main():
-    slug, src, start = sys.argv[1], sys.argv[2], float(sys.argv[3]); crop = "center"; sheet = False
+    slug, src, start = sys.argv[1], sys.argv[2], float(sys.argv[3]); crop = "center"; sheet = False; rect = None
     for a in sys.argv[4:]:
         if a.startswith("--crop"): crop = a.split("=", 1)[1] if "=" in a else sys.argv[sys.argv.index(a) + 1]
+        if a.startswith("--rect="): rect = [float(x) for x in a.split("=", 1)[1].split(",")]  # x,y,w,h as fractions of the raw frame
         if a == "--sheet": sheet = True
     os.makedirs(OUT, exist_ok=True)
     raw = fetch(slug, src); w, h, has_audio = probe(raw)
-    # cover-scale to at least 512x320 then crop a 512x320 window
-    if w / h >= W / H:  # wider than 16:10 -> scale by height, crop width
+    # cover-scale to at least 512x320 then crop a 512x320 window (or take an explicit --rect, e.g. to cut pillarbox bars)
+    if rect:
+        x, y, rw, rh = rect; sc = f"crop=iw*{rw}:ih*{rh}:iw*{x}:ih*{y}"; cropf = f"scale={W}:{H}"
+    elif w / h >= W / H:  # wider than 16:10 -> scale by height, crop width
         sc = f"scale=-2:{H}"; frac = {"left": 0.0, "center": 0.5, "right": 1.0}.get(crop, float(crop.split("=")[-1]) if "x=" in crop else 0.5)
         cropf = f"crop={W}:{H}:(iw-{W})*{frac}:0"
     else:               # taller -> scale by width, crop height (centre)

@@ -296,5 +296,21 @@
   "edit": "He faints and falls backwards into the field.",
   "scene": "a man in a brown suit standing in a yellow field, hands on hips",
   "question": "Does the man fall down at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_grumpy": {
+  "group": "demo",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_grumpy__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_grumpy_audio_89f.wav",
+  "edit": "The cat opens its mouth wide in a big yawn.",
+  "scene": "a close-up of a grumpy-looking cat lying on a bed, looking at the camera",
+  "question": "Does the cat yawn or open its mouth wide at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_thug_cat": {
+  "group": "demo",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_thug_cat__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_thug_cat_audio_89f.wav",
+  "edit": "The cat pushes the glass off the table and it shatters on the floor.",
+  "scene": "a fluffy cat sitting on a white table next to a glass of water, a monitor behind",
+  "question": "Does the cat push or knock the glass off the table at any point in this video? Answer only 'yes' or 'no'."
  }
 }

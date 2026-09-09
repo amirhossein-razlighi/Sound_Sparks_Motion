@@ -6,4 +6,4 @@ OPT|gen_plate_counter|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/sce
 WAITLOG|h3_probe/results/overnight/gate.txt|SOURCES_OK_b2
 SCREEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json|gen_door_slam;gen_glass_note;gen_branch;gen_horse_neigh;gen_elephant;gen_lightbulb2;gen_bowling2
 WAITLOG|h3_probe/results/overnight/gate.txt|SOURCES_OK_demo
-SCREEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json|real_gatsby;real_gatsby_fw;real_leo_couch;real_travolta;real_mrbean
+SCREEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json|real_gatsby;real_gatsby_fw;real_leo_couch;real_travolta;real_mrbean;real_grumpy;real_thug_cat
