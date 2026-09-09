@@ -3,12 +3,18 @@
  "gen_cat_vase": "A fixed camera shot of a cat sitting calmly on a table next to a ceramic vase, the cat is still and looking at the vase, wooden floor below. Photorealistic.",
  "gen_bike_tips": "A fixed camera shot of a bicycle standing upright on its kickstand on a quiet sidewalk, nobody around, still. Photorealistic.",
  "gen_ladder": "A fixed camera shot of a wooden ladder leaning against a house wall in a garden, nobody around, still. Photorealistic.",
- "gen_bowling": "A fixed camera shot of a bowling lane seen from behind the foul line: ten pins standing at the far end, a bowling ball resting still at the near end of the lane. Photorealistic.",
  "gen_firecracker": "A fixed camera shot of a single red firecracker lying on a concrete yard with its fuse lit and sparking slightly, camera fixed. Photorealistic.",
- "gen_soda_can": "A fixed camera shot of a hand holding an empty aluminium soda can upright in front of a plain wall, still. Photorealistic.",
- "gen_popcorn": "A fixed camera shot of a pan with a glass lid on a stove, popcorn kernels lying still at the bottom, kitchen. Photorealistic.",
+ "gen_kettle": "A fixed camera shot of a stovetop kettle sitting on a lit gas burner, no steam yet, kitchen counter. Photorealistic.",
+ "gen_plate_counter": "A fixed camera shot of a white ceramic dinner plate lying flat right at the edge of a kitchen counter, tiled floor visible below, still. Photorealistic.",
+ "gen_car_window": "A fixed camera shot of a parked grey sedan seen from the side on a quiet street, the driver window intact and reflecting the sky, still. Photorealistic.",
+ "gen_bubblegum": "A fixed camera shot of a close-up of a girl's face chewing gum calmly, looking at the camera, lips closed. Photorealistic.",
+ "gen_spit_take": "A fixed camera shot of a man sitting at a cafe table holding a cup of coffee near his mouth, calm, looking at the camera. Photorealistic.",
+ "gen_frame_wall": "A fixed camera shot of a framed picture hanging on a living-room wall above a hardwood floor, hanging slightly crooked, still. Photorealistic.",
+ "gen_lightbulb": "A fixed camera shot of a close-up of a bare incandescent light bulb glowing in a dark room, hanging from a wire, still. Photorealistic.",
  "gen_gorilla": "A fixed camera shot of a large gorilla sitting calmly on grass in a zoo enclosure, hands on the ground, looking ahead. Photorealistic.",
- "gen_elephant": "A fixed camera shot of an elephant standing still in a savanna, trunk hanging down, side view. Photorealistic.",
  "gen_horse_neigh": "A fixed camera shot of a brown horse standing still behind a wooden fence, head level, close-up of the head and neck. Photorealistic.",
- "gen_kettle": "A fixed camera shot of a stovetop kettle sitting on a lit gas burner, no steam yet, kitchen counter. Photorealistic."
+ "gen_popcorn": "A fixed camera shot of a pan with a glass lid on a stove, popcorn kernels lying still at the bottom, kitchen. Photorealistic.",
+ "gen_soda_can": "A fixed camera shot of a hand holding an empty aluminium soda can upright in front of a plain wall, still. Photorealistic.",
+ "gen_elephant": "A fixed camera shot of an elephant standing still in a savanna, trunk hanging down, side view. Photorealistic.",
+ "gen_bowling": "A fixed camera shot of a bowling lane seen from behind the foul line: ten pins standing at the far end, a bowling ball resting still at the near end of the lane. Photorealistic."
 }

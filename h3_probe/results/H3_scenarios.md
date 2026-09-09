@@ -406,6 +406,11 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   cancelled; cat pushes the vase over at baseline -> skip; ladder slides and falls at baseline -> auto-OPT removed; bicycle
   falls late (frames 9-12) -> ours queued. Lesson: H3 handles "object falls/tips" edits; the critic under-scores them.
 
+- 03:00 bank extended and reordered for the next feeds (learning from tonight: plain object falls/tips are handled by H3;
+  shatters, bursts and face bursts are where it fails): firecracker, kettle steam, plate slides off counter and shatters,
+  car window shatters, girl's gum bubble pops, man's spit-take, picture frame falls, light bulb bursts, then gorilla, horse
+  neigh, popcorn, soda can, elephant, bowling.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |

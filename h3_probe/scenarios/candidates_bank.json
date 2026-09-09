@@ -1,5 +1,5 @@
 {
- "_comment": "Overnight bank (2026-09-08): new no-water impulsive events with before-state source prompts; used only when fewer than 5 clear wins. Sources 320x512x124 -> 89 f.",
+ "_comment": "Overnight bank (2026-09-08): new no-water impulsive events with before-state source prompts; used only when fewer than 5 clear wins. Sources 320x512x124 -> 89 f. Reordered 2026-09-09 03:00 after the first feed: shatter/burst events and face bursts first (H3 handles plain object falls/tips itself).",
  "gen_piano_lid": {
   "group": "bank",
   "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_piano_lid__t2va_89f.mp4",
@@ -32,14 +32,6 @@
   "scene": "a ladder leaning against a house wall",
   "question": "Does the ladder slide or fall at any point in this video? Answer only 'yes' or 'no'."
  },
- "gen_bowling": {
-  "group": "bank",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_bowling__t2va_89f.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_bowling_h3sound_89f.wav",
-  "edit": "The ball rolls down the lane and knocks all the pins over.",
-  "scene": "a bowling lane with ten pins standing and a ball resting at the near end",
-  "question": "Do the bowling pins get knocked over at any point in this video? Answer only 'yes' or 'no'."
- },
  "gen_firecracker": {
   "group": "bank",
   "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_firecracker__t2va_89f.mp4",
@@ -48,21 +40,61 @@
   "scene": "a red firecracker lying on a concrete yard with a lit fuse",
   "question": "Does the firecracker explode (flash, smoke) at any point in this video? Answer only 'yes' or 'no'."
  },
- "gen_soda_can": {
+ "gen_kettle": {
   "group": "bank",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_soda_can__t2va_89f.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_soda_can_h3sound_89f.wav",
-  "edit": "The hand crushes the can flat with a crunch.",
-  "scene": "a hand holding an empty soda can",
-  "question": "Does the hand crush the can at any point in this video? Answer only 'yes' or 'no'."
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_kettle__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_kettle_h3sound_89f.wav",
+  "edit": "The kettle whistles and steam shoots out of the spout.",
+  "scene": "a stovetop kettle on a lit gas burner",
+  "question": "Does steam come out of the kettle spout at any point in this video? Answer only 'yes' or 'no'."
  },
- "gen_popcorn": {
+ "gen_plate_counter": {
   "group": "bank",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_popcorn__t2va_89f.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_popcorn_h3sound_89f.wav",
-  "edit": "The kernels pop into popcorn and fill the pan.",
-  "scene": "a pan with a glass lid on a stove with popcorn kernels inside",
-  "question": "Do the kernels pop into popcorn at any point in this video? Answer only 'yes' or 'no'."
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_plate_counter__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_plate_counter_h3sound_89f.wav",
+  "edit": "The plate slides off the counter and shatters on the floor.",
+  "scene": "a ceramic plate at the edge of a kitchen counter",
+  "question": "Does the plate fall off the counter or shatter at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_car_window": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_car_window__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_car_window_h3sound_89f.wav",
+  "edit": "The car's side window shatters into pieces.",
+  "scene": "a parked grey sedan seen from the side",
+  "question": "Does the car window shatter or break at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_bubblegum": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_bubblegum__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_bubblegum_h3sound_89f.wav",
+  "edit": "The girl blows a big bubble-gum bubble and it pops on her face.",
+  "scene": "a close-up of a girl chewing gum",
+  "question": "Does the girl blow a gum bubble that pops at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_spit_take": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_spit_take__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_spit_take_h3sound_89f.wav",
+  "edit": "The man spits out his coffee in surprise.",
+  "scene": "a man at a cafe table holding a cup of coffee near his mouth",
+  "question": "Does the man spit out his drink at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_frame_wall": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_frame_wall__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_frame_wall_h3sound_89f.wav",
+  "edit": "The picture frame falls off the wall and breaks on the floor.",
+  "scene": "a framed picture hanging on a living-room wall",
+  "question": "Does the picture frame fall off the wall at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_lightbulb": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_lightbulb__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_lightbulb_h3sound_89f.wav",
+  "edit": "The light bulb bursts with a flash and a pop.",
+  "scene": "a bare light bulb glowing in a dark room",
+  "question": "Does the light bulb burst or shatter at any point in this video? Answer only 'yes' or 'no'."
  },
  "gen_gorilla": {
   "group": "bank",
@@ -72,14 +104,6 @@
   "scene": "a gorilla sitting calmly on grass",
   "question": "Does the gorilla beat its chest at any point in this video? Answer only 'yes' or 'no'."
  },
- "gen_elephant": {
-  "group": "bank",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_elephant__t2va_89f.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_elephant_h3sound_89f.wav",
-  "edit": "The elephant raises its trunk and trumpets loudly.",
-  "scene": "an elephant standing still in a savanna",
-  "question": "Does the elephant raise its trunk at any point in this video? Answer only 'yes' or 'no'."
- },
  "gen_horse_neigh": {
   "group": "bank",
   "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_horse_neigh__t2va_89f.mp4",
@@ -88,12 +112,36 @@
   "scene": "a brown horse standing behind a wooden fence",
   "question": "Does the horse throw its head up and neigh at any point in this video? Answer only 'yes' or 'no'."
  },
- "gen_kettle": {
+ "gen_popcorn": {
   "group": "bank",
-  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_kettle__t2va_89f.mp4",
-  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_kettle_h3sound_89f.wav",
-  "edit": "The kettle whistles and steam shoots out of the spout.",
-  "scene": "a stovetop kettle on a lit gas burner",
-  "question": "Does steam come out of the kettle spout at any point in this video? Answer only 'yes' or 'no'."
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_popcorn__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_popcorn_h3sound_89f.wav",
+  "edit": "The kernels pop into popcorn and fill the pan.",
+  "scene": "a pan with a glass lid on a stove with popcorn kernels inside",
+  "question": "Do the kernels pop into popcorn at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_soda_can": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_soda_can__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_soda_can_h3sound_89f.wav",
+  "edit": "The hand crushes the can flat with a crunch.",
+  "scene": "a hand holding an empty soda can",
+  "question": "Does the hand crush the can at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_elephant": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_elephant__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_elephant_h3sound_89f.wav",
+  "edit": "The elephant raises its trunk and trumpets loudly.",
+  "scene": "an elephant standing still in a savanna",
+  "question": "Does the elephant raise its trunk at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_bowling": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_bowling__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_bowling_h3sound_89f.wav",
+  "edit": "The ball rolls down the lane and knocks all the pins over.",
+  "scene": "a bowling lane with ten pins standing and a ball resting at the near end",
+  "question": "Do the bowling pins get knocked over at any point in this video? Answer only 'yes' or 'no'."
  }
 }
