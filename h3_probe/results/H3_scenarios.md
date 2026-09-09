@@ -435,6 +435,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   Iters 4-6 similar; iter 7 (perceptual 0.43, over the guard) makes the whole car explode into debris - kept as an extra
   candidate file; iters 8-16 hallucinate people (drift). This also previews the whole-car-shatter idea: screening it now.
 
+- 05:40 user correction: in the car-window run the whole car and its doors shatter, not the window -> an over-edit for that
+  prompt, not a win. The whole-car-shatter scenario (gen_car_shatter, same source) is the right home for that behaviour;
+  its screening + ours are running now.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -520,7 +524,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_firecracker | bank | explodes with a bang and smoke | source already sparks/smokes; baseline = source, no bang (0.07/0.49) | ours running (weak scenario) | opt |
 | gen_kettle | bank | whistles, steam shoots out | baseline static, no steam (0.02/0.10) | ours queued | opt |
 | gen_plate_counter | bank | plate slides off and shatters | baseline does it late (slides at frame ~9, shatters; 0.66/0.13) | ours queued (late case) | opt |
-| gen_car_window | bank | side window shatters | baseline: only a faint crack pattern (0.10/0.06) | iter 3: windows blow out, side bursts with shards (0.96); iter 7: whole car explodes into debris (over guard) | CANDIDATE WIN |
+| gen_car_window | bank | side window shatters | baseline: only a faint crack pattern (0.10/0.06) | iters 3-7 shatter the whole car and doors, not the window (over-edit) | not a win (user) |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
 | gen_horse_rears | H3 t2va | rears up on hind legs | fail (0.0002, only walks) | cancelled (flat critic) | skip |
