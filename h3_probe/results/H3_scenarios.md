@@ -398,6 +398,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   Round-6 tally: woman_scream = candidate win; books = modest improvement; champagne (x2), toaster (x2), beer (x3), fist slam,
   yoga = no room or failed. Bank feed started: piano lid, cat+vase, bicycle, ladder (generating).
 
+- 02:30 bank sources verified: piano (lid open, still), cat + vase (the vase stands on the floor next to the cat, not on a
+  table -> edit changed to "pushes the vase over and it shatters on the floor"), bicycle (leaning on a tree, still),
+  ladder (against a wall, still) -> all valid; screening on allocation 20625821 (rg31607).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |

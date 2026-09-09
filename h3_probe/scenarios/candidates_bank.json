@@ -12,9 +12,9 @@
   "group": "bank",
   "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_cat_vase__t2va_89f.mp4",
   "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_cat_vase_h3sound_89f.wav",
-  "edit": "The cat knocks the vase off the table and it shatters on the floor.",
-  "scene": "a cat sitting on a table next to a ceramic vase",
-  "question": "Does the vase fall off the table or shatter at any point in this video? Answer only 'yes' or 'no'."
+  "edit": "The cat pushes the vase over and it shatters on the floor.",
+  "scene": "a cat sitting on the floor next to a large ceramic vase",
+  "question": "Does the vase fall over or shatter at any point in this video? Answer only 'yes' or 'no'."
  },
  "gen_bike_tips": {
   "group": "bank",
