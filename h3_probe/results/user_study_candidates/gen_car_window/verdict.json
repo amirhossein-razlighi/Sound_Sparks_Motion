@@ -1,0 +1,12 @@
+{
+ "slug": "gen_car_window",
+ "baseline_any": 0.06347628182295896,
+ "baseline_lin": 0.0966002280336365,
+ "best_iter": 3,
+ "best_any": 0.9596956557892922,
+ "best_lin": 0.9596956557892922,
+ "best_perc": 0.13190901279449463,
+ "auto_verdict": "strong_win",
+ "note": "auto verdict from the in-loop critic; visual review decides",
+ "visual_verdict": "CANDIDATE WIN: iter 3 - from frame ~60 the windows blow out and the car's side bursts with glass shards (baseline: faint crack only); iters 4-6 similar; iter 7 (over the perceptual guard, added as B_cand_iter07_overguard) = the whole car explodes into debris; iters 8+ hallucinate people"
+}

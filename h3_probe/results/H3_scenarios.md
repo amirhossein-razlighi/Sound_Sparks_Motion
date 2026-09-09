@@ -430,6 +430,11 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   H3 is unlikely to do on its own). Added as gen_car_shatter (bank), queued right after the car-window run: screen, then ours.
   Auto-queuing disabled (no_auto) - I decide manually now.
 
+- 05:30 gen_car_window (both/any, patience 14): iter 3 = the windows blow out and the car's side bursts into glass shards from frame
+  ~60 (critic 0.96, perceptual 0.13) vs a baseline that only shows a faint crack -> candidate win, our most violent event so far.
+  Iters 4-6 similar; iter 7 (perceptual 0.43, over the guard) makes the whole car explode into debris - kept as an extra
+  candidate file; iters 8-16 hallucinate people (drift). This also previews the whole-car-shatter idea: screening it now.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -515,7 +520,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_firecracker | bank | explodes with a bang and smoke | source already sparks/smokes; baseline = source, no bang (0.07/0.49) | ours running (weak scenario) | opt |
 | gen_kettle | bank | whistles, steam shoots out | baseline static, no steam (0.02/0.10) | ours queued | opt |
 | gen_plate_counter | bank | plate slides off and shatters | baseline does it late (slides at frame ~9, shatters; 0.66/0.13) | ours queued (late case) | opt |
-| gen_car_window | bank | side window shatters | baseline cracks/shatters the window mid-clip (0.17/0.07, critic miss) | auto-OPT removed | skip |
+| gen_car_window | bank | side window shatters | baseline: only a faint crack pattern (0.10/0.06) | iter 3: windows blow out, side bursts with shards (0.96); iter 7: whole car explodes into debris (over guard) | CANDIDATE WIN |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
 | gen_horse_rears | H3 t2va | rears up on hind legs | fail (0.0002, only walks) | cancelled (flat critic) | skip |
