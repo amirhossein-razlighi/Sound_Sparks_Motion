@@ -454,6 +454,15 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   it (0.01). Packaged as B_cand_iter05 via the new FORCE_ITERS option of package_candidate.py. iter 4 = a human hand appears (drift),
   iter 6 = the vase never falls, 7-15 flat. Firecracker running next on the same allocation.
 
+- 07:30 gen_firecracker (both/any, patience 14, all 16 iters): critic noisy (0.58, 0.42, 0.66, 0.15, 0.10, 0.15, 0.43, 0.30, 0.70, 0.08,
+  0.05, 0.11, 0.24, ...), drift low (< 0.15). Image viewer unavailable (host hook timeouts since 06:38), so judged with a new
+  critic-independent proxy (scenarios/motion_timeline.py: per-frame mean |frame diff| + brightness in 12 bins): the baseline has
+  only the source's smoke puff at frame 29 (peak 7); iters 8-11 have a violent change at frame 25 (peaks 44, 37, 30, 33) followed
+  by a bright smoke cloud (brightness 97-98 vs 86) = a bang ~1 s in; iter 12 fires at frames 25 and 68; iters 13-16 lose the
+  event; iters 4-5 even remove the puff. iter 9 = critic best (0.70) and packaged as B_best; iters 8, 10, 11 forced in as
+  candidates. Visual confirmation still needed (is the bang a burst of the cracker or just a flash?). Ladder next on allocation
+  20638196 (rg32101).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -536,7 +545,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_cat_vase | bank | pushes the vase over, it shatters | baseline does it: lunge at frame 6, shatter at frame 10 (0.97/0.99) | ours (both/any, patience 14): iter 1 = baseline; iter 5 = the cat paws at the vase from frame 2 and pushes until it tips and the plant spills (critic miss 0.01, perc 0.27); iter 4 hand drift; 6-15 flat/drift | candidate (user: iter 5 good) |
 | gen_bike_tips | bank | bicycle tips over | baseline falls late (frames 9-12, 0.78/0.40) | ours: iters 2-4 remove the fall, iters 5+ drift | failed |
 | gen_ladder | bank | ladder slides and falls | baseline does it mid-clip (0.67/0.20, critic miss) | auto-OPT removed | skip |
-| gen_firecracker | bank | explodes with a bang and smoke | source already sparks/smokes; baseline = source, no bang (0.07/0.49) | ours running (weak scenario) | opt |
+| gen_firecracker | bank | explodes with a bang and smoke | source already sparks/smokes; baseline = a small puff at frame 29, no bang (0.07/0.49; 0.55 in our loop) | ours (both/any, patience 14, 16 iters): iters 8-11 carry a violent change at frame 25 (proxy |diff| 30-44 vs 7 baseline) + brighter smoke; iter 9 critic best 0.70, perc 0.07; iter 12 fires twice; 13-16 lose it | promising (visual check pending) |
 | gen_kettle | bank | whistles, steam shoots out | baseline static, no steam (0.02/0.10) | ours queued | opt |
 | gen_plate_counter | bank | plate slides off and shatters | baseline does it late (slides at frame ~9, shatters; 0.66/0.13) | ours queued (late case) | opt |
 | gen_car_window | bank | side window shatters | baseline: only a faint crack pattern (0.10/0.06) | iters 3-7 shatter the whole car and doors, not the window (over-edit) | not a win (user) |
