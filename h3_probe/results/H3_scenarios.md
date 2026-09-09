@@ -475,6 +475,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   Runner swap: the pause line matched its own log entry, so the old runner skipped the ABL task; killed it while idle and
   relaunched the ABL-capable runner on allocation 20638196 with the woman_door audio-only ablation queued.
 
+- 09:26 ablation complete (16 scenarios x both/text_only/audio_only = 32 single-mode runs + 16 both): woman_door audio-only done
+  (best iter 11: yes_lin 0.15 in-loop / 0.45 final re-render, perceptual 0.02) - `results/ablation/README.md` regenerated.
+  Queue empty; the runner released allocation 20638196 at 09:40 and idles (kept alive for the next approved tasks).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |

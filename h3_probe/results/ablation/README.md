@@ -15,7 +15,7 @@ Critic yes = in-loop Qwen yes-probability at the selected checkpoint (indicative
 | gen_sealion | The sea lion barks with its head raised. | 2 | 0.077 | 0.78 | 0.121 (2) | 0.009 (15) |
 | gen_woman_desk | The woman yawns widely. | 2 | 0.911 | 0.911 | 0.908 (1) | 0.908 (1) |
 | gen_cow_field | The cow moos loudly. | 3 | 0.884 | 0.884 | 0.884 (1) | 0.880 (6) |
-| gen_woman_door | The woman opens the door and walks inside. | 4 | 0.098 | 0.24 | 0.382 (11) | pending |
+| gen_woman_door | The woman opens the door and walks inside. | 4 | 0.098 | 0.24 | 0.382 (11) | 0.447 (11) |
 | gen_frog_jumps | The frog jumps off the lily pad into the water. | 3 | 0.01 | 0.414 | 0.018 (2) | 0.009 (13) |
 | gen_glass_table | The glass tips over and spills the water. | 4 | 0.096 | 0.023 | 0.096 (1) | 0.379 (16) |
 | gen_glass_edge | The glass falls off the table and shatters on the floor. | 3 | 0.082 | 0.495 | 0.431 (4) | 0.082 (1) |

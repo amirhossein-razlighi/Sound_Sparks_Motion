@@ -1,0 +1,252 @@
+[09-08 18:37:21] waiting for 'PHASES_EXIT' in slurm_logs/interac_opt_champagne.log
+[09-08 19:38:21] found 'PHASES_EXIT' in slurm_logs/interac_opt_champagne.log
+[09-08 19:38:21] task done (ok): WAITLOG|slurm_logs/interac_opt_champagne.log|PHASES_EXIT
+[09-08 19:38:21] step -> h3_probe/results/overnight/logs/gen_193821.log (gpus=1, timeout=1500s, alloc=20523721)
+[09-08 20:03:24] step <- h3_probe/results/overnight/logs/gen_193821.log rc=124
+[ok] gen_champagne
+[ok] gen_toaster
+[ok] gen_beer_pour
+[ok] gen_woman_scream
+[ok] gen_man_desk
+[ok] gen_books_shelf
+[ok] gen_yoga
+[ok] gen_beer_pour2
+[missing] gen_toaster2 /scratch/amirrz/H3_exp/inputs/gen/gen_toaster2__t2va.mp4
+[missing] gen_champagne_close /scratch/amirrz/H3_exp/inputs/gen/gen_champagne_close__t2va.mp4
+[09-08 20:03:24] source sheet: /scratch/amirrz/H3_exp/inputs/gen/gen_beer_pour2__src_sheet.jpg
+[09-08 20:03:24] task done (fail): GEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/gen_inputs_r6b.json|gen_beer_pour2;gen_toaster2|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_r6.json
+[09-08 20:03:24] step -> h3_probe/results/overnight/logs/screen_200324.log (gpus=1, timeout=2700s, alloc=20523721)
+[09-08 20:10:47] requesting allocation (2xH100, 3h) ...
+[09-08 20:10:52] allocation 20544319 RUNNING on rg31802, 10800s
+[09-08 20:10:52] staging models to /localscratch/amirrz.20544319.0/models ...
+[09-08 20:16:10] staged: 134G	/localscratch/amirrz.20544319.0/models/ckpt 16G	/localscratch/amirrz.20544319.0/models/qwen 
+[09-08 20:16:10] step -> h3_probe/results/overnight/logs/screen_201610.log (gpus=1, timeout=2600s, alloc=20544319)
+[09-08 21:00:32] step <- h3_probe/results/overnight/logs/screen_201610.log rc=124
+[09-08 21:00:43] SCREENED gen_books_shelf baseline lin/any = 0.925 0.909  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/gen_books_shelf_sheet.png
+[09-08 21:00:43] auto: no room / no auto for gen_books_shelf (any=0.909)
+[09-08 21:00:43] SCREENED gen_toaster2 baseline lin/any = err  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/gen_toaster2_sheet.png
+[09-08 21:00:43] auto: no room / no auto for gen_toaster2 (any=)
+[09-08 21:00:43] SCREENED gen_beer_pour2 baseline lin/any = err  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/gen_beer_pour2_sheet.png
+[09-08 21:00:43] auto: no room / no auto for gen_beer_pour2 (any=)
+[09-08 21:00:43] task done (fail): SCREEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_r6.json|gen_books_shelf;gen_toaster2;gen_beer_pour2
+[09-08 21:00:43] step -> h3_probe/results/overnight/logs/gen_210043.log (gpus=1, timeout=2100s, alloc=20544319)
+[09-08 21:07:13] step <- h3_probe/results/overnight/logs/gen_210043.log rc=143
+[ok] gen_champagne
+[ok] gen_toaster
+[ok] gen_beer_pour
+[ok] gen_woman_scream
+[ok] gen_man_desk
+[ok] gen_books_shelf
+[ok] gen_yoga
+[ok] gen_beer_pour2
+[missing] gen_toaster2 /scratch/amirrz/H3_exp/inputs/gen/gen_toaster2__t2va.mp4
+[missing] gen_champagne_close /scratch/amirrz/H3_exp/inputs/gen/gen_champagne_close__t2va.mp4
+[missing] gen_beer_pour3 /scratch/amirrz/H3_exp/inputs/gen/gen_beer_pour3__t2va.mp4
+[09-08 21:07:13] task done (fail): GEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/gen_inputs_r6c.json|gen_champagne_close;gen_toaster2;gen_beer_pour3|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_r6.json
+[09-08 21:07:53] step -> h3_probe/results/overnight/logs/gen_210753.log (gpus=1, timeout=2100s, alloc=20544319)
+[09-08 21:08:33] staging models to /localscratch/amirrz.20544319.0/models ...
+[09-08 21:08:33] staged: 134G	/localscratch/amirrz.20544319.0/models/ckpt 16G	/localscratch/amirrz.20544319.0/models/qwen 
+[09-08 21:08:33] step -> h3_probe/results/overnight/logs/gen_210833.log (gpus=1, timeout=2100s, alloc=20544319)
+[09-08 21:32:25] step <- h3_probe/results/overnight/logs/gen_210833.log rc=0
+[ok] gen_champagne
+[ok] gen_toaster
+[ok] gen_beer_pour
+[ok] gen_woman_scream
+[ok] gen_man_desk
+[ok] gen_books_shelf
+[ok] gen_yoga
+[ok] gen_beer_pour2
+[ok] gen_toaster2
+[ok] gen_champagne_close
+[ok] gen_beer_pour3
+[09-08 21:32:26] source sheet: /scratch/amirrz/H3_exp/inputs/gen/gen_champagne_close__src_sheet.jpg
+[09-08 21:32:26] source sheet: /scratch/amirrz/H3_exp/inputs/gen/gen_toaster2__src_sheet.jpg
+[09-08 21:32:26] source sheet: /scratch/amirrz/H3_exp/inputs/gen/gen_beer_pour3__src_sheet.jpg
+[09-08 21:32:26] task done (ok): GEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/gen_inputs_r6c.json|gen_champagne_close;gen_toaster2;gen_beer_pour3|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_r6.json
+[09-08 21:32:26] step -> h3_probe/results/overnight/logs/screen_213226.log (gpus=1, timeout=2600s, alloc=20544319)
+[09-08 22:15:49] step <- h3_probe/results/overnight/logs/screen_213226.log rc=124
+[09-08 22:15:49] SCREENED gen_champagne_close baseline lin/any = 0.948 0.981  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/gen_champagne_close_sheet.png
+[09-08 22:15:49] auto: no room / no auto for gen_champagne_close (any=0.981)
+[09-08 22:15:49] SCREENED gen_toaster2 baseline lin/any = 0.373 0.420  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/gen_toaster2_sheet.png
+[09-08 22:15:49] auto: room for gen_toaster2 (any=0.420) -> OPT queued
+[09-08 22:15:49] SCREENED gen_beer_pour3 baseline lin/any = err  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/gen_beer_pour3_sheet.png
+[09-08 22:15:49] auto: no room / no auto for gen_beer_pour3 (any=)
+[09-08 22:15:49] task done (fail): SCREEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_r6.json|gen_champagne_close;gen_toaster2;gen_beer_pour3
+[09-08 22:15:49] allocation 20544319 has only 3303s left (< 5700s) -> releasing
+[09-08 22:15:49] requesting allocation (2xH100, 3h) ...
+[09-08 22:15:53] allocation 20568376 RUNNING on rg32201, 10800s
+[09-08 22:15:53] staging models to /localscratch/amirrz.20568376.0/models ...
+[09-08 22:21:09] staged: 134G	/localscratch/amirrz.20568376.0/models/ckpt 15G	/localscratch/amirrz.20568376.0/models/qwen 
+[09-08 22:21:09] step -> h3_probe/results/overnight/logs/opt_gen_woman_scream.log (gpus=2, timeout=5400s, alloc=20568376)
+[09-08 23:26:18] step <- h3_probe/results/overnight/logs/opt_gen_woman_scream.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/gen_woman_scream best {'iter': 2, 'yes_lin': 0.9464791406782778, 'yes_any': 0.9464791406782778, 'perc': 0.03664926439523697} auto_verdict improved
+[09-08 23:26:20] OPT DONE gen_woman_scream: baseline any=0.415 -> best iter 2, final any=0.938, fd=0.010
+[09-08 23:26:20] task done (ok): OPT|gen_woman_scream|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_r6.json
+[09-08 23:26:20] step -> h3_probe/results/overnight/logs/screen_232620.log (gpus=1, timeout=1400s, alloc=20568376)
+[09-08 23:34:21] step <- h3_probe/results/overnight/logs/screen_232620.log rc=0
+[09-08 23:34:21] SCREENED gen_beer_pour3 baseline lin/any = 0.953 0.939  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/gen_beer_pour3_sheet.png
+[09-08 23:34:22] auto: no room / no auto for gen_beer_pour3 (any=0.939)
+[09-08 23:34:22] task done (ok): SCREEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_r6.json|gen_beer_pour3
+[09-08 23:34:22] step -> h3_probe/results/overnight/logs/opt_gen_man_desk.log (gpus=2, timeout=5400s, alloc=20568376)
+[09-09 00:37:15] step <- h3_probe/results/overnight/logs/opt_gen_man_desk.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/gen_man_desk best {'iter': 2, 'yes_lin': 0.23336052228305595, 'yes_any': 0.23336052228305595, 'perc': 0.0047020637430250645} auto_verdict no_gain
+[09-09 00:37:17] OPT DONE gen_man_desk: baseline any=0.163 -> best iter 2, final any=0.218, fd=0.003
+[09-09 00:37:17] task done (ok): OPT|gen_man_desk|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_r6.json
+[09-09 00:37:17] allocation 20568376 has only 2316s left (< 5700s) -> releasing
+[09-09 00:37:17] requesting allocation (2xH100, 3h) ...
+[09-09 00:37:26] allocation 20612433 RUNNING on rg32201, 10800s
+[09-09 00:37:26] staging models to /localscratch/amirrz.20612433.0/models ...
+[09-09 00:40:24] staging models to /localscratch/amirrz.20612433.0/models ...
+[09-09 00:43:11] staged: 139G	/localscratch/amirrz.20612433.0/models/ckpt 15G	/localscratch/amirrz.20612433.0/models/qwen 
+[09-09 00:43:11] step -> h3_probe/results/overnight/logs/opt_gen_books_shelf.log (gpus=2, timeout=5400s, alloc=20612433)
+[09-09 01:32:49] step <- h3_probe/results/overnight/logs/opt_gen_books_shelf.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/gen_books_shelf best {'iter': 1, 'yes_lin': 0.9112946302531701, 'yes_any': 0.9112946302531701, 'perc': 0.0002640433085616678} auto_verdict no_gain
+[09-09 01:32:51] OPT DONE gen_books_shelf: baseline any=0.897 -> best iter 1, final any=0.897, fd=0.000
+[09-09 01:32:51] task done (ok): OPT|gen_books_shelf|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_r6.json
+[09-09 01:32:51] step -> h3_probe/results/overnight/logs/opt_gen_toaster2.log (gpus=2, timeout=5400s, alloc=20612433)
+[09-09 02:18:49] step <- h3_probe/results/overnight/logs/opt_gen_toaster2.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/gen_toaster2 best {'iter': 1, 'yes_lin': 0.08027573995510849, 'yes_any': 0.08027573995510849, 'perc': 8.173248352250084e-05} auto_verdict no_gain
+[09-09 02:18:51] OPT DONE gen_toaster2: baseline any=0.096 -> best iter 1, final any=0.096, fd=0.000
+[09-09 02:18:51] task done (ok): OPT|gen_toaster2|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_r6.json
+[09-09 02:18:51] bank feed: gen_piano_lid;gen_cat_vase;gen_bike_tips;gen_ladder
+[09-09 02:18:51] step -> h3_probe/results/overnight/logs/gen_021851.log (gpus=1, timeout=2100s, alloc=20612433)
+[09-09 02:27:53] step <- h3_probe/results/overnight/logs/gen_021851.log rc=0
+[ok] gen_piano_lid
+[ok] gen_cat_vase
+[ok] gen_bike_tips
+[ok] gen_ladder
+[missing] gen_bowling /scratch/amirrz/H3_exp/inputs/gen/gen_bowling__t2va.mp4
+[missing] gen_firecracker /scratch/amirrz/H3_exp/inputs/gen/gen_firecracker__t2va.mp4
+[missing] gen_soda_can /scratch/amirrz/H3_exp/inputs/gen/gen_soda_can__t2va.mp4
+[missing] gen_popcorn /scratch/amirrz/H3_exp/inputs/gen/gen_popcorn__t2va.mp4
+[missing] gen_gorilla /scratch/amirrz/H3_exp/inputs/gen/gen_gorilla__t2va.mp4
+[missing] gen_elephant /scratch/amirrz/H3_exp/inputs/gen/gen_elephant__t2va.mp4
+[missing] gen_horse_neigh /scratch/amirrz/H3_exp/inputs/gen/gen_horse_neigh__t2va.mp4
+[missing] gen_kettle /scratch/amirrz/H3_exp/inputs/gen/gen_kettle__t2va.mp4
+[09-09 02:27:54] source sheet: /scratch/amirrz/H3_exp/inputs/gen/gen_piano_lid__src_sheet.jpg
+[09-09 02:27:54] source sheet: /scratch/amirrz/H3_exp/inputs/gen/gen_cat_vase__src_sheet.jpg
+[09-09 02:27:54] source sheet: /scratch/amirrz/H3_exp/inputs/gen/gen_bike_tips__src_sheet.jpg
+[09-09 02:27:55] source sheet: /scratch/amirrz/H3_exp/inputs/gen/gen_ladder__src_sheet.jpg
+[09-09 02:27:55] task done (ok): GEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/gen_inputs_bank.json|gen_piano_lid;gen_cat_vase;gen_bike_tips;gen_ladder|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-09 02:27:55] allocation 20612433 has only 4171s left (< 5200s) -> releasing
+[09-09 02:27:55] requesting allocation (2xH100, 3h) ...
+[09-09 02:27:59] allocation 20625821 RUNNING on rg31607, 10800s
+[09-09 02:27:59] staging models to /localscratch/amirrz.20625821.0/models ...
+[09-09 02:33:21] staged: 134G	/localscratch/amirrz.20625821.0/models/ckpt 16G	/localscratch/amirrz.20625821.0/models/qwen 
+[09-09 02:33:21] step -> h3_probe/results/overnight/logs/screen_023321.log (gpus=1, timeout=4900s, alloc=20625821)
+[09-09 02:53:54] step <- h3_probe/results/overnight/logs/screen_023321.log rc=0
+[09-09 02:53:54] SCREENED gen_piano_lid baseline lin/any = 0.115 0.015  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/gen_piano_lid_sheet.png
+[09-09 02:53:54] auto: room for gen_piano_lid (any=0.015) -> OPT queued
+[09-09 02:53:54] SCREENED gen_cat_vase baseline lin/any = 0.971 0.985  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/gen_cat_vase_sheet.png
+[09-09 02:53:54] auto: no room / no auto for gen_cat_vase (any=0.985)
+[09-09 02:53:54] SCREENED gen_bike_tips baseline lin/any = 0.784 0.395  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/gen_bike_tips_sheet.png
+[09-09 02:53:54] auto: room for gen_bike_tips (any=0.395) -> OPT queued
+[09-09 02:53:54] SCREENED gen_ladder baseline lin/any = 0.667 0.201  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/gen_ladder_sheet.png
+[09-09 02:53:54] auto: room for gen_ladder (any=0.201) -> OPT queued
+[09-09 02:53:54] task done (ok): SCREEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json|gen_piano_lid;gen_cat_vase;gen_bike_tips;gen_ladder
+[09-09 02:53:55] step -> h3_probe/results/overnight/logs/opt_gen_piano_lid.log (gpus=2, timeout=5400s, alloc=20625821)
+[09-09 02:57:12] step <- h3_probe/results/overnight/logs/opt_gen_piano_lid.log rc=143
+[09-09 02:57:12] OPT FAILED gen_piano_lid (no results.json) - see h3_probe/results/overnight/logs/opt_gen_piano_lid.log
+[09-09 02:57:12] task done (fail): OPT|gen_piano_lid|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-09 02:57:13] step -> h3_probe/results/overnight/logs/opt_gen_bike_tips.log (gpus=2, timeout=5400s, alloc=20625821)
+[09-09 03:39:40] step <- h3_probe/results/overnight/logs/opt_gen_bike_tips.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/gen_bike_tips best {'iter': 1, 'yes_lin': 0.22376372432012948, 'yes_any': 0.22376372432012948, 'perc': 0.00034647146821953356} auto_verdict no_gain
+[09-09 03:39:42] OPT DONE gen_bike_tips: baseline any=0.221 -> best iter 1, final any=0.221, fd=0.000
+[09-09 03:39:42] task done (ok): OPT|gen_bike_tips|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-09 03:39:42] bank feed: gen_firecracker;gen_kettle;gen_plate_counter;gen_car_window
+[09-09 03:39:42] step -> h3_probe/results/overnight/logs/gen_033942.log (gpus=1, timeout=2100s, alloc=20625821)
+[09-09 03:49:20] step <- h3_probe/results/overnight/logs/gen_033942.log rc=0
+[ok] gen_piano_lid
+[ok] gen_cat_vase
+[ok] gen_bike_tips
+[ok] gen_ladder
+[ok] gen_firecracker
+[ok] gen_kettle
+[ok] gen_plate_counter
+[ok] gen_car_window
+[missing] gen_bubblegum /scratch/amirrz/H3_exp/inputs/gen/gen_bubblegum__t2va.mp4
+[missing] gen_spit_take /scratch/amirrz/H3_exp/inputs/gen/gen_spit_take__t2va.mp4
+[missing] gen_frame_wall /scratch/amirrz/H3_exp/inputs/gen/gen_frame_wall__t2va.mp4
+[missing] gen_lightbulb /scratch/amirrz/H3_exp/inputs/gen/gen_lightbulb__t2va.mp4
+[missing] gen_gorilla /scratch/amirrz/H3_exp/inputs/gen/gen_gorilla__t2va.mp4
+[missing] gen_horse_neigh /scratch/amirrz/H3_exp/inputs/gen/gen_horse_neigh__t2va.mp4
+[missing] gen_popcorn /scratch/amirrz/H3_exp/inputs/gen/gen_popcorn__t2va.mp4
+[missing] gen_soda_can /scratch/amirrz/H3_exp/inputs/gen/gen_soda_can__t2va.mp4
+[missing] gen_elephant /scratch/amirrz/H3_exp/inputs/gen/gen_elephant__t2va.mp4
+[missing] gen_bowling /scratch/amirrz/H3_exp/inputs/gen/gen_bowling__t2va.mp4
+[09-09 03:49:21] source sheet: /scratch/amirrz/H3_exp/inputs/gen/gen_firecracker__src_sheet.jpg
+[09-09 03:49:21] source sheet: /scratch/amirrz/H3_exp/inputs/gen/gen_kettle__src_sheet.jpg
+[09-09 03:49:21] source sheet: /scratch/amirrz/H3_exp/inputs/gen/gen_plate_counter__src_sheet.jpg
+[09-09 03:49:22] source sheet: /scratch/amirrz/H3_exp/inputs/gen/gen_car_window__src_sheet.jpg
+[09-09 03:49:22] task done (ok): GEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/gen_inputs_bank.json|gen_firecracker;gen_kettle;gen_plate_counter;gen_car_window|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-09 03:49:22] step -> h3_probe/results/overnight/logs/screen_034922.log (gpus=1, timeout=4900s, alloc=20625821)
+[09-09 04:07:47] step <- h3_probe/results/overnight/logs/screen_034922.log rc=0
+[09-09 04:07:47] SCREENED gen_firecracker baseline lin/any = 0.071 0.491  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/gen_firecracker_sheet.png
+[09-09 04:07:47] auto: room for gen_firecracker (any=0.491) -> OPT queued
+[09-09 04:07:47] SCREENED gen_kettle baseline lin/any = 0.019 0.101  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/gen_kettle_sheet.png
+[09-09 04:07:47] auto: room for gen_kettle (any=0.101) -> OPT queued
+[09-09 04:07:47] SCREENED gen_plate_counter baseline lin/any = 0.663 0.128  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/gen_plate_counter_sheet.png
+[09-09 04:07:47] auto: room for gen_plate_counter (any=0.128) -> OPT queued
+[09-09 04:07:47] SCREENED gen_car_window baseline lin/any = 0.173 0.073  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/gen_car_window_sheet.png
+[09-09 04:07:47] auto: room for gen_car_window (any=0.073) -> OPT queued
+[09-09 04:07:47] task done (ok): SCREEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json|gen_firecracker;gen_kettle;gen_plate_counter;gen_car_window
+[09-09 04:07:47] allocation 20625821 has only 4812s left (< 5700s) -> releasing
+[09-09 04:07:47] requesting allocation (2xH100, 3h) ...
+[09-09 04:07:53] allocation 20630380 RUNNING on rg31607, 10800s
+[09-09 04:07:53] staging models to /localscratch/amirrz.20630380.0/models ...
+[09-09 04:13:12] staged: 134G	/localscratch/amirrz.20630380.0/models/ckpt 15G	/localscratch/amirrz.20630380.0/models/qwen 
+[09-09 04:13:12] step -> h3_probe/results/overnight/logs/opt_gen_firecracker.log (gpus=2, timeout=5400s, alloc=20630380)
+[09-09 04:23:51] staging models to /localscratch/amirrz.20630380.0/models ...
+[09-09 04:23:53] staged: 134G	/localscratch/amirrz.20630380.0/models/ckpt 16G	/localscratch/amirrz.20630380.0/models/qwen 
+[09-09 04:23:53] step -> h3_probe/results/overnight/logs/opt_gen_car_window.log (gpus=2, timeout=5400s, alloc=20630380)
+[09-09 05:23:24] step <- h3_probe/results/overnight/logs/opt_gen_car_window.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/gen_car_window best {'iter': 3, 'yes_lin': 0.9596956557892922, 'yes_any': 0.9596956557892922, 'perc': 0.13190901279449463} auto_verdict strong_win
+[09-09 05:23:26] OPT DONE gen_car_window: baseline any=0.063 -> best iter 3, final any=0.948, fd=0.053
+[09-09 05:23:26] task done (ok): OPT|gen_car_window|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-09 05:23:26] step -> h3_probe/results/overnight/logs/screen_052326.log (gpus=1, timeout=1900s, alloc=20630380)
+[09-09 05:29:37] step <- h3_probe/results/overnight/logs/screen_052326.log rc=0
+[09-09 05:29:37] SCREENED gen_car_shatter baseline lin/any = 0.858 0.601  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/gen_car_shatter_sheet.png
+[09-09 05:29:37] auto: no room / no auto for gen_car_shatter (any=0.601)
+[09-09 05:29:37] task done (ok): SCREEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json|gen_car_shatter
+[09-09 05:29:37] step -> h3_probe/results/overnight/logs/opt_gen_car_shatter.log (gpus=2, timeout=5400s, alloc=20630380)
+[09-09 05:32:54] step <- h3_probe/results/overnight/logs/opt_gen_car_shatter.log rc=137
+[09-09 05:32:54] OPT FAILED gen_car_shatter (no results.json) - see h3_probe/results/overnight/logs/opt_gen_car_shatter.log
+[09-09 05:32:54] task done (fail): OPT|gen_car_shatter|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-09 05:32:54] allocation 20630380 has only 5699s left (< 5700s) -> releasing
+[09-09 05:32:54] requesting allocation (2xH100, 3h) ...
+[09-09 05:32:57] allocation 20634712 RUNNING on rg31702, 10800s
+[09-09 05:32:57] staging models to /localscratch/amirrz.20634712.0/models ...
+[09-09 05:38:13] staged: 134G	/localscratch/amirrz.20634712.0/models/ckpt 15G	/localscratch/amirrz.20634712.0/models/qwen 
+[09-09 05:38:13] step -> h3_probe/results/overnight/logs/opt_gen_cat_vase.log (gpus=2, timeout=5400s, alloc=20634712)
+[09-09 06:36:14] step <- h3_probe/results/overnight/logs/opt_gen_cat_vase.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/gen_cat_vase best {'iter': 1, 'yes_lin': 0.9889292777390669, 'yes_any': 0.9889292777390669, 'perc': 0.00026552367489784956} auto_verdict no_gain
+[09-09 06:36:16] OPT DONE gen_cat_vase: baseline any=0.988 -> best iter 1, final any=0.988, fd=0.000
+[09-09 06:36:16] task done (ok): OPT|gen_cat_vase|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-09 06:36:17] step -> h3_probe/results/overnight/logs/opt_gen_firecracker.log (gpus=2, timeout=5400s, alloc=20634712)
+[09-09 07:29:17] step <- h3_probe/results/overnight/logs/opt_gen_firecracker.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/gen_firecracker best {'iter': 9, 'yes_lin': 0.6956547017958528, 'yes_any': 0.6956547017958528, 'perc': 0.07032545655965805} auto_verdict no_gain
+[09-09 07:29:19] OPT DONE gen_firecracker: baseline any=0.552 -> best iter 9, final any=0.679, fd=0.025
+[09-09 07:29:19] task done (ok): OPT|gen_firecracker|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-09 07:29:19] allocation 20634712 has only 3818s left (< 5700s) -> releasing
+[09-09 07:29:19] requesting allocation (2xH100, 3h) ...
+[09-09 07:29:21] allocation 20638196 RUNNING on rg32101, 10800s
+[09-09 07:29:21] staging models to /localscratch/amirrz.20638196.0/models ...
+[09-09 07:34:39] staged: 134G	/localscratch/amirrz.20638196.0/models/ckpt 16G	/localscratch/amirrz.20638196.0/models/qwen 
+[09-09 07:34:39] step -> h3_probe/results/overnight/logs/opt_gen_ladder.log (gpus=2, timeout=5400s, alloc=20638196)
+[09-09 08:32:27] step <- h3_probe/results/overnight/logs/opt_gen_ladder.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/gen_ladder best {'iter': 1, 'yes_lin': 0.0518777639314918, 'yes_any': 0.0518777639314918, 'perc': 0.0002565221511758864} auto_verdict no_gain
+[09-09 08:32:30] OPT DONE gen_ladder: baseline any=0.039 -> best iter 1, final any=0.039, fd=0.000
+[09-09 08:32:30] task done (ok): OPT|gen_ladder|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-09 08:32:30] waiting for 'COORDINATOR_SWAP_RUNNER_FOR_ABL' in h3_probe/results/overnight/night.log
+[09-09 08:32:30] found 'COORDINATOR_SWAP_RUNNER_FOR_ABL' in h3_probe/results/overnight/night.log
+[09-09 08:32:30] task done (ok): WAITLOG|h3_probe/results/overnight/night.log|COORDINATOR_SWAP_RUNNER_FOR_ABL
+[09-09 08:32:30] unknown task: ABL|gen_woman_door|audio
+[09-09 08:32:30] task done (skip): ABL|gen_woman_door|audio
+[09-09 08:34:01] staging models to /localscratch/amirrz.20638196.0/models ...
+[09-09 08:34:02] staged: 134G	/localscratch/amirrz.20638196.0/models/ckpt 16G	/localscratch/amirrz.20638196.0/models/qwen 
+[09-09 08:34:02] step -> h3_probe/results/overnight/logs/abl_gen_woman_door_audio.log (gpus=2, timeout=5400s, alloc=20638196)
+[09-09 09:25:56] step <- h3_probe/results/overnight/logs/abl_gen_woman_door_audio.log rc=0
+wrote /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/ablation/README.md
+[09-09 09:26:07] ABL DONE gen_woman_door/audio
+[09-09 09:26:07] task done (ok): ABL|gen_woman_door|audio
+[09-09 09:40:10] idle 15 min with empty queue -> releasing 20638196

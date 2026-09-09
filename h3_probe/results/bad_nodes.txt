@@ -1,1 +1,2 @@
 - rg32102 (gpubase_interac): Lustre cl_sync_io_wait hang when reading inputs, twice (2026-09-08)
+- srun steps inside a --no-shell allocation must NOT use --overlap here: with it every step gets a single GPU regardless of --gres/--gpus (2026-09-08)
