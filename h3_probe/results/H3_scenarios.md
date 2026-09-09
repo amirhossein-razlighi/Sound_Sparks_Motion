@@ -33,7 +33,8 @@ Where it does not work (drop quickly):
 - **sustained/pose edits with the linspace objective** (celebrate, wings, walk): at best a partial pose change without the
   expression that makes it convincing (man_celebrates rejected by the user).
 - H3 already succeeds on common actions with clear text semantics (stand up, take off, open umbrella, play piano, drink,
-  wave, cover face, raise arms) -> no room to save anything.
+  wave, cover face, raise arms) -> no room to save anything. The same holds for dramatic whole-object destruction (the
+  whole car shatters into debris): a drastic geometry change is a strong text prior for H3, not a weakness.
 
 Consequences for finding scenarios: prefer animal vocalisations and sudden events (bark, roar, neigh, sneeze, yawn,
 laugh, leap, splash, blow-out) on single centred subjects; generate sources at reduced size (320x512, 124 frames = H3's 5 s minimum) so runs fit on 2 GPUs.
@@ -439,6 +440,13 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   prompt, not a win. The whole-car-shatter scenario (gen_car_shatter, same source) is the right home for that behaviour;
   its screening + ours are running now.
 
+- 05:35 gen_car_shatter screened: H3's baseline ALREADY does the whole-car shatter on its own - frames 1-3 intact, frame 4 the
+  body cracks, frames 5-8 the car bursts into dark chunks, frames 9-16 a debris field with the wheels left standing
+  (critic 0.86/0.60; output kept in outputs/overnight/screen/gen_car_shatter_av.mp4). Rule "stop when the baseline already does
+  it well" -> our run cancelled 3 min in (rc 137, no results), skip. Lesson: a drastic geometry change is not where H3 fails -
+  whole-object destruction is a strong text prior for it (the car-window over-edit was that prior taking over). Queue continues
+  with cat + vase, firecracker, ladder (new allocation 20634712 on rg31702).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -525,6 +533,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_kettle | bank | whistles, steam shoots out | baseline static, no steam (0.02/0.10) | ours queued | opt |
 | gen_plate_counter | bank | plate slides off and shatters | baseline does it late (slides at frame ~9, shatters; 0.66/0.13) | ours queued (late case) | opt |
 | gen_car_window | bank | side window shatters | baseline: only a faint crack pattern (0.10/0.06) | iters 3-7 shatter the whole car and doors, not the window (over-edit) | not a win (user) |
+| gen_car_shatter | bank (car_window source) | the whole car shatters into glass shards | baseline does it, early and complete (cracks at frame 4, debris field by frame 9; 0.86/0.60) | ours cancelled (stop rule) | skip |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
 | gen_horse_rears | H3 t2va | rears up on hind legs | fail (0.0002, only walks) | cancelled (flat critic) | skip |
