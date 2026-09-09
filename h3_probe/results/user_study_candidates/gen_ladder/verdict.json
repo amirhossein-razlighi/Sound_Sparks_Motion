@@ -1,0 +1,12 @@
+{
+ "slug": "gen_ladder",
+ "baseline_any": 0.03945554563388821,
+ "baseline_lin": 0.8193750929073047,
+ "best_iter": 1,
+ "best_any": 0.0518777639314918,
+ "best_lin": 0.0518777639314918,
+ "best_perc": 0.0002565221511758864,
+ "auto_verdict": "drift",
+ "note": "auto verdict from the in-loop critic; visual review decides",
+ "visual_verdict": "FAILED (drift): the baseline already drops the ladder late in the clip (frames ~85-105; critic misses it, 0.04 in our loop); iter 1 reproduces it, and every later iteration is far over the perceptual guard (0.42-0.72): iter 2 moves the fall earlier (frames ~50-80, motion proxy) but in a visibly altered scene, iters 3-4 keep the late fall, iter 6 and 13 lose it, 10-14 add unrelated motion. Nothing usable; judged by the critic trace + motion proxy (image viewer unavailable), sheets kept for review."
+}

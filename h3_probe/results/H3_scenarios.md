@@ -467,6 +467,14 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   shows a large orange fireball (3.8 % red pixels at frame 25), and a denser/brighter smoke cloud follows. The cracker casing
   survives in all iterations, so this is flash + bang + smoke rather than a fragmenting burst - plausible for the prompt.
 
+- 08:35 gen_ladder (both/any, patience 14, 16 iters): the baseline already drops the ladder at frames ~85-105 and the critic misses
+  it (0.04) - so the critic's gradient points away from the baseline and every iteration after the first drifts (perceptual
+  0.42-0.72, five times the guard). iter 2 moves the fall to frames ~50-80 (motion proxy) but the scene is visibly altered;
+  iters 6 and 13 lose the fall. Failed. Lesson: a baseline that already succeeds but scores low with the critic (critic miss) is
+  the worst case - the optimizer has nowhere to go but away from a correct video.
+  Runner swap: the pause line matched its own log entry, so the old runner skipped the ABL task; killed it while idle and
+  relaunched the ABL-capable runner on allocation 20638196 with the woman_door audio-only ablation queued.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -548,7 +556,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_piano_lid | bank | lid slams shut | baseline closes the lid slowly but completely (frames 4-7); critic missed it (0.12/0.02) | ours cancelled (no room) | skip |
 | gen_cat_vase | bank | pushes the vase over, it shatters | baseline does it: lunge at frame 6, shatter at frame 10 (0.97/0.99) | ours (both/any, patience 14): iter 1 = baseline; iter 5 = the cat paws at the vase from frame 2 and pushes until it tips and the plant spills (critic miss 0.01, perc 0.27); iter 4 hand drift; 6-15 flat/drift | candidate (user: iter 5 good) |
 | gen_bike_tips | bank | bicycle tips over | baseline falls late (frames 9-12, 0.78/0.40) | ours: iters 2-4 remove the fall, iters 5+ drift | failed |
-| gen_ladder | bank | ladder slides and falls | baseline does it mid-clip (0.67/0.20, critic miss) | auto-OPT removed | skip |
+| gen_ladder | bank | ladder slides and falls | baseline does it late (frames ~85-105; 0.67/0.20 screen, 0.04 in our loop = critic miss) | ours (both/any, patience 14, 16 iters): iter 1 = baseline; iters 2-16 drift (perceptual 0.42-0.72) - iter 2 moves the fall earlier but in an altered scene | failed (drift) |
 | gen_firecracker | bank | explodes with a bang and smoke | source already sparks/smokes; baseline = a small puff at frame 29, no bang (0.07/0.49; 0.55 in our loop) | ours (both/any, patience 14, 16 iters): iters 8-11 carry a violent change at frame 25 (proxy |diff| 30-44 vs 7 baseline) + brighter smoke; iter 9 critic best 0.70, perc 0.07; iter 12 fires twice; 13-16 lose it | promising (visual check pending) |
 | gen_kettle | bank | whistles, steam shoots out | baseline static, no steam (0.02/0.10) | ours queued | opt |
 | gen_plate_counter | bank | plate slides off and shatters | baseline does it late (slides at frame ~9, shatters; 0.66/0.13) | ours queued (late case) | opt |
