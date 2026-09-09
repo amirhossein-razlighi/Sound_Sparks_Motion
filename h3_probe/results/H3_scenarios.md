@@ -492,6 +492,12 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   -> OPT plate_counter -> [gate] -> SCREEN batch 2 -> OPT only where the baseline clearly fails (no_auto stays on). Gates are
   WAITLOG lines on results/overnight/gate.txt (not night.log - that self-matched this morning).
 
+- 12:15 user idea: meme / cinema-style base scenes for the paper's demo video (e.g. the tuxedo champagne toast). Added a `demo`
+  group to the bank (look-alike descriptions, no real names or films): gatsby_toast (raises the glass, fireworks burst behind
+  him), mic_drop (drops the mic with a thud, walks off), table_flip (flips the table with a crash), party_popper (bang +
+  confetti), cat_dinner (the cat at the dinner table hisses and swipes the plate off), guitar_smash (smashes the guitar on the
+  stage). Goal here is a showcase-quality result from ours, the A/B gap is secondary. Queued after round 7 (GEN -> gate -> SCREEN).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |

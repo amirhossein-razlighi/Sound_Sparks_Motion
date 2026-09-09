@@ -192,5 +192,53 @@
   "edit": "The branch snaps with a loud crack and falls to the ground.",
   "scene": "an oak tree with a long low branch",
   "question": "Does the branch break or fall at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_gatsby_toast": {
+  "group": "demo",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_gatsby_toast__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_gatsby_toast_h3sound_89f.wav",
+  "edit": "He raises the glass in a toast toward the camera as fireworks burst in the night sky behind him.",
+  "scene": "a man in a 1920s tuxedo holding a champagne glass on a mansion balcony at night",
+  "question": "Do fireworks burst in the sky at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_mic_drop": {
+  "group": "demo",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_mic_drop__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_mic_drop_h3sound_89f.wav",
+  "edit": "He drops the microphone with a loud thud and walks off the stage.",
+  "scene": "a rapper on stage holding a microphone",
+  "question": "Does the performer drop the microphone at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_table_flip": {
+  "group": "demo",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_table_flip__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_table_flip_h3sound_89f.wav",
+  "edit": "He flips the table over with a crash, sending everything on it flying.",
+  "scene": "a furious man gripping the edge of a table with a laptop and papers on it",
+  "question": "Does the man flip the table over at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_party_popper": {
+  "group": "demo",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_party_popper__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_party_popper_h3sound_89f.wav",
+  "edit": "The party popper bursts with a bang and colourful confetti flies everywhere.",
+  "scene": "a woman in a party hat holding an unopened party popper",
+  "question": "Does the party popper burst or does confetti fly at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_cat_dinner": {
+  "group": "demo",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_cat_dinner__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_cat_dinner_h3sound_89f.wav",
+  "edit": "The cat hisses angrily and swipes the plate off the table.",
+  "scene": "a white cat sitting at a dinner table in front of a plate of salad",
+  "question": "Does the cat swipe or knock the plate off the table at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_guitar_smash": {
+  "group": "demo",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_guitar_smash__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_guitar_smash_h3sound_89f.wav",
+  "edit": "He smashes the guitar onto the stage floor and it breaks apart with a crash.",
+  "scene": "a rock guitarist holding an electric guitar raised over his head on stage",
+  "question": "Does the guitar get smashed or broken at any point in this video? Answer only 'yes' or 'no'."
  }
 }

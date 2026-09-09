@@ -6,3 +6,6 @@ GEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/gen_inputs_bank
 OPT|gen_plate_counter|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
 WAITLOG|h3_probe/results/overnight/gate.txt|SOURCES_OK_b2
 SCREEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json|gen_door_slam;gen_glass_note;gen_branch;gen_horse_neigh;gen_elephant
+GEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/gen_inputs_bank.json|gen_gatsby_toast;gen_mic_drop;gen_table_flip;gen_party_popper;gen_cat_dinner;gen_guitar_smash|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+WAITLOG|h3_probe/results/overnight/gate.txt|SOURCES_OK_demo
+SCREEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json|gen_gatsby_toast;gen_mic_drop;gen_table_flip;gen_party_popper;gen_cat_dinner;gen_guitar_smash
