@@ -1,0 +1,29 @@
+scenario: gen_horse_neigh
+edit sentence: The horse throws its head up and neighs loudly.
+scene: a brown horse standing behind a wooden fence
+critic question: Does the horse throw its head up and neigh at any point in this video? Answer only 'yes' or 'no'.
+mode: both  objective: any  select_by: any  perc_max: 0.25
+source video: /scratch/amirrz/H3_exp/inputs/gen/gen_horse_neigh__t2va_89f.mp4
+source audio: /scratch/amirrz/H3_exp/inputs/sweep/gen_horse_neigh_h3sound_89f.wav
+run dir: /scratch/amirrz/H3_exp/outputs/overnight/gen_horse_neigh/opt
+
+full H3 prompt (A and B):
+subject_definitions:
+<Video 1> is the source video to edit: a fixed-camera shot of a brown horse standing behind a wooden fence.
+<Subject 1> is the main subject of <Video 1>: a brown horse standing behind a wooden fence.
+<Audio 2> is the soundtrack accompanying the target video.
+
+summary:
+[video editing] The target video is an edited version of <Video 1>. The camera position, framing, scene, lighting, and pacing of <Video 1> are kept identical. The only change: The horse throws its head up and neighs loudly.
+
+retention_analysis:
+<Audio 2>: reference - the target video's sound follows the content and timing of <Audio 2>; on-screen actions stay synchronized with it.
+<Video 1> (camera, framing, scene layout, lighting, and temporal structure): fully_preserved - the fixed camera, background, lighting, and overall pacing are kept identical to the source.
+<Subject 1> (appears throughout): partially_preserved - appearance and position are identical to <Video 1>; only its action changes: The horse throws its head up and neighs loudly.
+
+detailed_description:
+[Shot 1] Fixed camera, framing identical to <Video 1>. The scene of <Video 1>: a brown horse standing behind a wooden fence. Within the first second, The horse throws its head up and neighs loudly; the motion is clear and fully visible, and continues naturally through the shot. Everything else - the background, the lighting, the framing - remains exactly as in <Video 1>.
+
+overall_soundscape: The soundscape follows <Audio 2>, with the natural sounds of the described action.
+
+non_diegetic_music: None.

@@ -558,6 +558,11 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   Same lesson as the kettle: an inanimate object that must start moving by itself (no visible agent, no precursor) is a dead
   end for the critic. Horse neigh next on allocation 20736897 (rg31605).
 
+- 18:50 gen_horse_neigh: modest timing win. Baseline = a mild head turn with an open mouth at frames 8-9; ours iters 3-5 throw
+  the head up and sideways at frames 2-4 (iter 5 with the mouth open), iter 6 turns away, 8-16 lose it; the critic missed all
+  of it (0.03-0.07, like the koi). Packaged with iter 5 best and iters 3-4 forced in; not a clean failure of the baseline, so
+  a user call. glass_note2 generating next.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -648,7 +653,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_tyre | bank (r7) | tyre bursts, goes flat | baseline static (0.001/0.009) | ours queued | opt |
 | gen_frame_wall | bank (r7) | picture falls off the wall, breaks | baseline drops it at frames 9-13 (0.97/0.86) | - | skip |
 | gen_door_slam | bank (r7) | wind slams the door shut | baseline: door never moves (0.003/0.01) | ours (both/any, 16 iters): door never moves, critic flat 0.01-0.02 | failed (flat) |
-| gen_horse_neigh | bank (r7) | throws its head up and neighs | baseline: head tilt, half-open mouth (0.23/0.07) | ours queued | opt |
+| gen_horse_neigh | bank (r7) | throws its head up and neighs | baseline: head turn + open mouth only at frames 8-9 (0.23/0.07) | ours iters 3-5: head thrown up at frames 2-4 (early, stronger; critic miss 0.03-0.07); 8-16 nothing | candidate (modest, timing) |
 | gen_lightbulb2 | bank (r7) | bulb bursts with a flash | baseline static (0.001/0.005) | ours queued (last) | opt |
 | gen_branch | bank (r7) | branch snaps and falls | baseline does it at frames 9-13 (0.74/0.58) | - | skip |
 | gen_elephant | bank (r7) | raises trunk, trumpets | baseline does it at frames 4-7 (0.91/0.99) | - | skip |
