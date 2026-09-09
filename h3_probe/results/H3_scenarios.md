@@ -387,6 +387,9 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 - 23:35 gen_beer_pour3 baseline: H3 adds a hand, pours and overflows the glass on its own (0.95/0.94) -> no room. Beer is done
   (3 source attempts; the valid one is handled by H3). Ours running on gen_man_desk; books and toaster2 follow.
 
+- 00:40 gen_man_desk (both/any): critic 0.16 -> 0.23; previews show only a raised fist (earlier in iters 3-4) but never the slam
+  on the desk; iters 6-7 drift to a different person -> failed. Package kept in user_study_candidates/gen_man_desk/.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -462,7 +465,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_toaster | H3 t2va (r6) | toast pops up | INVALID SOURCE (toast already up) -> gen_toaster2 | - | redo |
 | gen_beer_pour | H3 t2va (r6) | pours until overflow | INVALID SOURCE x2 (pouring in the clip even with a 'not pouring' prompt) -> gen_beer_pour3 (no person in the source) | - | redo |
 | gen_woman_scream | H3 t2va (r6) | screams in fright | late (mouth opens only in the last frame, 0.52/0.42) | iter 2: wide-open scream mid-clip for ~1 s (0.95); iter 3 drifts (she runs away), iters 4+ collapse to baseline | CANDIDATE WIN |
-| gen_man_desk | H3 t2va (r6) | slams fist on desk | late/partial (fist up at frame ~11, no clear slam, 0.08/0.17) | ours next | opt |
+| gen_man_desk | H3 t2va (r6) | slams fist on desk | late/partial (fist up at frame ~11, no clear slam, 0.08/0.17) | ours: only a raised fist at various times (iters 2-5), never a slam; iters 6-7 swap the person | failed |
 | gen_books_shelf | H3 t2va (r6) | books fall off shelf | screening OOMed (GPU collision) | rescreen | pending |
 | gen_yoga | H3 t2va (r6) | yoga flow: arms overhead, forward fold, rise | success at baseline (full flow, 0.81/0.89) | - | skip (no room) |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |

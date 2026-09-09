@@ -1,0 +1,12 @@
+{
+ "slug": "gen_man_desk",
+ "baseline_any": 0.16257003967692019,
+ "baseline_lin": 0.0320536997737734,
+ "best_iter": 2,
+ "best_any": 0.23336052228305595,
+ "best_lin": 0.23336052228305595,
+ "best_perc": 0.0047020637430250645,
+ "auto_verdict": "no_gain",
+ "note": "auto verdict from the in-loop critic; visual review decides",
+ "visual_verdict": "failed: raised fist only, no slam; iters 6-7 identity drift"
+}
