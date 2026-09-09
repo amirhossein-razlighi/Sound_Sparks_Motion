@@ -312,5 +312,13 @@
   "edit": "The cat pushes the glass off the table and it shatters on the floor.",
   "scene": "a fluffy cat sitting on a white table next to a glass of water, a monitor behind",
   "question": "Does the cat push or knock the glass off the table at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_glass_note2": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_glass_note2__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_glass_note2_h3sound_89f.wav",
+  "edit": "The singer hits a high note and the wine glass shatters.",
+  "scene": "an opera singer behind a table with a large wine glass in the foreground",
+  "question": "Does the wine glass shatter or break at any point in this video? Answer only 'yes' or 'no'."
  }
 }

@@ -1,1 +1,3 @@
 SOURCES_OK_b1 (frame_wall, balloon, tyre; lightbulb + bowling rejected -> regenerated as *2)
+SOURCES_OK_demo (real_gatsby x2 edits, real_leo_couch, real_travolta, real_mrbean, real_grumpy, real_thug_cat)
+SOURCES_OK_b2 (door_slam, branch, horse_neigh, elephant, lightbulb2 re-trimmed from frame 30, bowling2; glass_note rejected: subject and glass tiny -> gen_glass_note2)

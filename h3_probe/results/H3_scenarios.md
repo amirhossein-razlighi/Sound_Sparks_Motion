@@ -518,6 +518,12 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   ours queued after plate_counter (static-scene risk, but the subject itself must deform); gen_frame_wall - the picture drops
   off the wall at frames 9-13 and lands on the floor (0.97/0.86) -> baseline does it, skip.
 
+- 14:20 batch-2 sources: door_slam (open door, curtain billowing) OK; branch (big low oak branch) OK; horse_neigh (head close-up)
+  OK; elephant (walks slowly to the right, trunk down) OK; bowling2 (pins only, still) OK; lightbulb2 still switched on at
+  ~frame 24 -> re-trimmed to frames 30-118 (steadily lit; the from-0 trim kept as *_from0); glass_note rejected (wide shot,
+  singer and glass tiny) -> gen_glass_note2 (medium close-up, glass in the foreground) queued as batch 3. Gate b2 open.
+  Allocation 20652872 released (too short), 20678872 on rg31902 staging -> OPT balloon.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
