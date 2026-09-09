@@ -414,6 +414,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 - 03:45 gen_bike_tips (both/any): the optimization removes the late fall (iters 2-4 stay upright, critic 0.003) and drifts into
   texture garbage from iter 5 -> failed. Bank feed #2 generating: firecracker, kettle, plate, car window.
 
+- 03:50 bank feed #2 sources: firecracker already sparks and smokes in the source (only the bang is missing -> weak scenario);
+  kettle (still), plate (close-up on the counter, still), car window (the sedan drives slowly along the street, window
+  intact) -> valid. Screening.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |

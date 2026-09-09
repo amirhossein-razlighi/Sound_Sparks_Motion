@@ -38,7 +38,8 @@
   "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_firecracker_h3sound_89f.wav",
   "edit": "The firecracker explodes with a bang and a puff of smoke.",
   "scene": "a red firecracker lying on a concrete yard with a lit fuse",
-  "question": "Does the firecracker explode (flash, smoke) at any point in this video? Answer only 'yes' or 'no'."
+  "question": "Does the firecracker explode (flash, smoke) at any point in this video? Answer only 'yes' or 'no'.",
+  "note": "SOURCE ALREADY SMOKES: the fuse sparks and smoke rises from frame ~4; only the bang/flash is missing - treat with care"
  },
  "gen_kettle": {
   "group": "bank",
