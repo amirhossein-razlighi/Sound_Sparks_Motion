@@ -65,6 +65,8 @@ def main():
                 if cfg.get(key):
                     fp = os.path.join(out, var.lower() + ".txt"); open(fp, "w").write(cfg[key]); e[var] = fp
             assert not any("," in v for v in e.values()), e
+            if os.environ.get("PRINT_ENV"):
+                print(" ".join(f"{k}={v}" for k, v in e.items())); continue
             line = 99 if three else n % LINES
             cmd = ["sbatch", "--parsable", f"--exclude={EXCL}"]
             if line in dep:
@@ -78,6 +80,8 @@ def main():
             dep[line] = jid; n += 1
             manifest.setdefault(s, {"both_run": run, "both_iter": picks[s]["iter"], "edit": picks[s].get("edit") or cands.get(s, {}).get("edit")})[f"{mode}_only"] = {"out": out, "job": jid}
             print(f"{s:18s} {mode}-only -> {jid} ({'3 GPUs' if three else '2 GPUs'}, line {line})")
+    if os.environ.get("PRINT_ENV"):
+        return
     json.dump(manifest, open(mp, "w"), indent=1)
     print("manifest:", mp)
 

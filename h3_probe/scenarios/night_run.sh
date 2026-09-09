@@ -79,6 +79,10 @@ while :; do
     OPT) ensure_alloc 5700; s=$A1; obj=${A2:-any}; cj=${A3:-}; od=$OUTB/$s/opt; mkdir -p $od
          run_step 2 5400 $ON/logs/opt_${s}.log "export SCEN_JSON=$ALLCANDS QWEN_IMG=224 FP32_HEAD=1 QWEN_ACCUM=1 GRAD_STEPS=2 ITERS=16 EARLY=${EARLY_STOP:-14} LPIPS_W=1.0 TEMPORAL_W=0.3 AUDIO_REG=0 TEXT_REG=0 SAVE_PREVIEWS=1 DECODE_GRAD_FRAC=0.5 OPTIM=ngd NGD_ETA=0.03 NGD_MOM=0.3 ATTN_VIS=0 GRAD_CHECK=0 OPT_MODE=both PERC_MAX=0.25 CRITIC_OBJ=$obj SELECT_BY=$obj SLUG=$s OUT_DIR=$od; nvidia-smi -L; ([ -f $od/capture.pt ] || $PY h3_probe/h3_full_method.py --phase a) && $PY h3_probe/h3_full_method.py --phase b; echo PHASES_EXIT \$?" || status=fail
          if [ -f $od/results.json ]; then OPENBLAS_NUM_THREADS=1 $PY $R/package_candidate.py $s $od >> $L 2>&1; log "OPT DONE $s: $($PY -c "import json;r=json.load(open('$od/results.json'));print('baseline any=%.3f -> best iter %s, final any=%.3f, fd=%.3f'%(r.get('baseline_yes_any',-1),r.get('best_iter'),r.get('final_yes_any',-1),r.get('frame_diff_vs_baseline',-1)))")"; else log "OPT FAILED $s (no results.json) - see $ON/logs/opt_${s}.log"; status=fail; fi;;
+    ABL) ensure_alloc 5700; s=$A1; mode=${A2:-audio}; env=$(ONLY=$s MODES=$mode PRINT_ENV=1 $PY $R/ablate.py 2>/dev/null | grep "OPT_MODE=$mode" | head -1)
+         if [ -z "$env" ]; then log "ABL: no env for $s/$mode"; status=fail; else od=$(echo "$env" | grep -oE "OUT_DIR=[^ ]+" | cut -d= -f2)
+           run_step 2 5400 $ON/logs/abl_${s}_${mode}.log "export $env; nvidia-smi -L; $PY h3_probe/h3_full_method.py --phase b; echo PHASES_EXIT \$?" || status=fail
+           [ -f $od/results.json ] && { OPENBLAS_NUM_THREADS=1 $PY $R/package_ablation.py >> $L 2>&1; log "ABL DONE $s/$mode"; } || { log "ABL FAILED $s/$mode"; status=fail; }; fi;;
     *) log "unknown task: $task"; status=skip;;
   esac
   # pop the task
