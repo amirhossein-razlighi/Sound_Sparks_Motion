@@ -8,5 +8,6 @@
  "best_perc": 0.00026552367489784956,
  "auto_verdict": "no_gain",
  "note": "auto verdict from the in-loop critic; visual review decides",
- "visual_verdict": "CANDIDATE (user, 06:30): iter 5 is good - the cat paws at the vase from frame ~2 and keeps pushing until it tips over and the plant spills out (frames 11-13); critic missed it (yes 0.01, perceptual 0.27 > guard) -> packaged as B_cand_iter05 (flagged by eye). iter 1 = the baseline (0.99; H3 already lunges at frame 6 and shatters the vase at frame 10). iter 4: a human hand appears (drift). iter 6: the vase never falls. iters 7-15: critic flat (0.001), perceptual drift 0.25-0.33."
+ "visual_verdict": "CANDIDATE (user, 06:30): iter 5 is good - the cat paws at the vase from frame ~2 and keeps pushing until it tips over and the plant spills out (frames 11-13); critic missed it (yes 0.01, perceptual 0.27 > guard) -> packaged as B_cand_iter05 (flagged by eye). iter 1 = the baseline (0.99; H3 already lunges at frame 6 and shatters the vase at frame 10). iter 4: a human hand appears (drift). iter 6: the vase never falls. iters 7-15: critic flat (0.001), perceptual drift 0.25-0.33. Packaged into results/user_study/gen_cat_vase (B_ours = iter 5).",
+ "user_verdict": "iter 5 good"
 }
