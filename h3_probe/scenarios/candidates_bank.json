@@ -400,5 +400,13 @@
   "edit": "He drops the can and starts clapping his hands proudly.",
   "scene": "a man in a yellow shirt sitting on a couch holding a drink",
   "question": "Does the man drop the can or clap his hands at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_glass_note3": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_glass_note3__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_glass_note3_h3sound_89f.wav",
+  "edit": "The singer hits a high note and the wine glass shatters.",
+  "scene": "an opera singer behind a table with a large wine glass in front of her, face visible",
+  "question": "Does the wine glass shatter or break at any point in this video? Answer only 'yes' or 'no'."
  }
 }

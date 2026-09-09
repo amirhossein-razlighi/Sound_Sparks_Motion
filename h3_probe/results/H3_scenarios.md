@@ -563,6 +563,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   of it (0.03-0.07, like the koi). Packaged with iter 5 best and iters 3-4 forced in; not a clean failure of the baseline, so
   a user call. glass_note2 generating next.
 
+- 18:55 gen_glass_note2 source: the glass is now large and centred but the singer's head is cut off at the neck -> not screened;
+  re-prompted as gen_glass_note3 ("framed from the waist up so that the singer's whole face and head are clearly visible"),
+  queued after the demo2 screening. Gate b3 opened; demo2 screening (10 real-clip edits) starts now.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |

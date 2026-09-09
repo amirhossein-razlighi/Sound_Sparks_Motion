@@ -1,10 +1,7 @@
-OPT|gen_door_slam|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
-OPT|gen_horse_neigh|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
-GEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/gen_inputs_bank.json|gen_glass_note2|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
-WAITLOG|h3_probe/results/overnight/gate.txt|SOURCES_OK_b3
-SCREEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json|gen_glass_note2
-WAITLOG|h3_probe/results/overnight/gate.txt|SOURCES_OK_demo2
 SCREEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json|real_casablanca;real_nosferatu;real_keaton;real_chaplin;real_steamboat;real_tom_walk;real_tom_hammock;real_travolta_jump;real_gatsby_wink;real_leo_clap
+GEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/gen_inputs_bank.json|gen_glass_note3|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+WAITLOG|h3_probe/results/overnight/gate.txt|SOURCES_OK_b4
+SCREEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json|gen_glass_note3
 OPT|real_gatsby|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
 OPT|gen_plate_counter|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
 OPT|real_thug_cat|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
