@@ -15,6 +15,7 @@ PY=/scratch/amirrz/H3_exp/venv/bin/python
 EXCL=rg31701,rg13401,rg21803,rg21802,rg31502,rg32202,rg21702,rg32102
 AUTO_ROOM=${AUTO_ROOM:-0.5}
 ALLOC=${ALLOC_ID:-}
+[ -n "$ALLOC" ] && NEED_STAGE=1 || NEED_STAGE=0   # an inherited allocation must be staged on first use
 ALLCANDS="$R/candidates_r1.json:$R/candidates_r2.json:$R/candidates_r3.json:$R/candidates_r4.json:$R/candidates_r5.json:$R/candidates_r6.json:$R/candidates_bank.json"
 BASEENV="HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TORCH_HOME=/scratch/amirrz/.cache/torch PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True PYTHONUNBUFFERED=1"
 log(){ echo "[$(date '+%m-%d %H:%M:%S')] $*" | tee -a $L; }
@@ -29,7 +30,7 @@ stage_models(){ # copy H3 ckpt + Qwen to the node-local NVMe once per allocation
 alloc_ok(){ [ -n "$ALLOC" ] && [ "$(squeue -j $ALLOC -h -o %T 2>/dev/null)" = "RUNNING" ]; }
 ensure_alloc(){ # $1 = seconds needed
   local need=$1
-  if alloc_ok; then local left; left=$(secs_left $ALLOC); if [ "$left" -ge "$need" ]; then return 0; fi
+  if alloc_ok; then local left; left=$(secs_left $ALLOC); if [ "$left" -ge "$need" ]; then [ "$NEED_STAGE" = 1 ] && { stage_models; NEED_STAGE=0; }; return 0; fi
     log "allocation $ALLOC has only ${left}s left (< ${need}s) -> releasing"; scancel $ALLOC; ALLOC=""; fi
   while :; do log "requesting allocation (2xH100, 3h) ..."
     local out; out=$(salloc -p gpubase_interac --account=def-amahdavi --gres=gpu:h100:2 --cpus-per-task=8 --mem=220G --time=3:00:00 --exclude=$EXCL --job-name=h3-night --no-shell 2>&1)
