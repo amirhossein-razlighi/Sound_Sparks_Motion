@@ -390,6 +390,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 - 00:40 gen_man_desk (both/any): critic 0.16 -> 0.23; previews show only a raised fist (earlier in iters 3-4) but never the slam
   on the desk; iters 6-7 drift to a different person -> failed. Package kept in user_study_candidates/gen_man_desk/.
 
+- 01:35 gen_books_shelf (both/any): the critic is saturated (baseline 0.90), best-by-critic = baseline; visually iter 2 makes the
+  collapse start ~2 frames earlier with more books falling (perceptual 0.11) - a modest "sooner and fuller" case, not a
+  striking win. Packaged with iter 2 as a candidate.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -466,7 +470,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_beer_pour | H3 t2va (r6) | pours until overflow | INVALID SOURCE x2 (pouring in the clip even with a 'not pouring' prompt) -> gen_beer_pour3 (no person in the source) | - | redo |
 | gen_woman_scream | H3 t2va (r6) | screams in fright | late (mouth opens only in the last frame, 0.52/0.42) | iter 2: wide-open scream mid-clip for ~1 s (0.95); iter 3 drifts (she runs away), iters 4+ collapse to baseline | CANDIDATE WIN |
 | gen_man_desk | H3 t2va (r6) | slams fist on desk | late/partial (fist up at frame ~11, no clear slam, 0.08/0.17) | ours: only a raised fist at various times (iters 2-5), never a slam; iters 6-7 swap the person | failed |
-| gen_books_shelf | H3 t2va (r6) | books fall off shelf | screening OOMed (GPU collision) | rescreen | pending |
+| gen_books_shelf | H3 t2va (r6) | books fall off shelf | late (topple only in the last 2 frames, 0.93/0.91) | iter 2: cascade starts at frame ~70 and more books fall (earlier, fuller); iters 3/5 fling a single book; iter 7 zoom drift | modest improvement |
 | gen_yoga | H3 t2va (r6) | yoga flow: arms overhead, forward fold, rise | success at baseline (full flow, 0.81/0.89) | - | skip (no room) |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |

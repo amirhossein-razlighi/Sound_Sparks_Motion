@@ -1,0 +1,12 @@
+{
+ "slug": "gen_books_shelf",
+ "baseline_any": 0.8967534635154703,
+ "baseline_lin": 0.9024015091570923,
+ "best_iter": 1,
+ "best_any": 0.9112946302531701,
+ "best_lin": 0.9112946302531701,
+ "best_perc": 0.0002640433085616678,
+ "auto_verdict": "no_gain",
+ "note": "auto verdict from the in-loop critic; visual review decides",
+ "visual_verdict": "modest improvement: iter 2 collapse starts earlier and fuller than the baseline's last-2-frames topple; iter 7 zoom drift"
+}
