@@ -152,5 +152,45 @@
   "edit": "The entire car suddenly shatters into thousands of glass shards that burst outward and scatter across the street, leaving nothing but broken glass where the car stood.",
   "scene": "a parked grey sedan seen from the side",
   "question": "Does the whole car break apart or shatter into pieces at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_balloon": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_balloon__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_balloon_h3sound_89f.wav",
+  "edit": "The balloon bursts with a loud pop.",
+  "scene": "a child holding an inflated red balloon",
+  "question": "Does the balloon burst or pop at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_tyre": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_tyre__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_tyre_h3sound_89f.wav",
+  "edit": "The tyre bursts with a loud bang and goes flat.",
+  "scene": "a close-up of a parked car's front wheel",
+  "question": "Does the tyre burst or go flat at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_door_slam": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_door_slam__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_door_slam_h3sound_89f.wav",
+  "edit": "A gust of wind slams the door shut with a bang.",
+  "scene": "an open wooden front door in a hallway",
+  "question": "Does the door slam shut at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_glass_note": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_glass_note__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_glass_note_h3sound_89f.wav",
+  "edit": "The singer hits a high note and the wine glass shatters.",
+  "scene": "an opera singer beside a table with a wine glass",
+  "question": "Does the wine glass shatter or break at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_branch": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_branch__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_branch_h3sound_89f.wav",
+  "edit": "The branch snaps with a loud crack and falls to the ground.",
+  "scene": "an oak tree with a long low branch",
+  "question": "Does the branch break or fall at any point in this video? Answer only 'yes' or 'no'."
  }
 }

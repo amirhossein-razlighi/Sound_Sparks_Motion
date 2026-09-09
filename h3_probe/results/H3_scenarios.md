@@ -479,6 +479,19 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   (best iter 11: yes_lin 0.15 in-loop / 0.45 final re-render, perceptual 0.02) - `results/ablation/README.md` regenerated.
   Queue empty; the runner released allocation 20638196 at 09:40 and idles (kept alive for the next approved tasks).
 
+### 2026-09-09 12:00 - user: firecracker iters 7 and 8 are good; continue the hunt (round 7)
+- Packaged into the study: gen_firecracker (iter 8 primary = fireball + dense smoke at frame ~25, iter 7 alternate), gen_cat_vase
+  (iter 5). Study set now 18 pairs + reserve.
+- Round 7 design, from what has worked: single centred subject, a **brief impulsive event with a natural sound** whose text prior
+  in H3 is weak or late (bang, pop, crack, slam, shatter of a small object, animal call), no water, no whole-body relocation,
+  no whole-object destruction (H3 does that by itself). Ready to optimize (sources + failing baselines exist): gen_kettle (static
+  baseline), gen_plate_counter (late). New sources (before-state prompts, 320x512x124 -> 89 f): balloon pop, tyre blow-out,
+  wind slams the door, singer shatters a wine glass with a high note, branch snaps; plus bank prompts frame_wall, lightbulb,
+  bowling, horse_neigh, elephant.
+- Queue: GEN batch 1 -> OPT kettle -> [gate: I inspect the source sheets, regenerate wrong ones] -> SCREEN batch 1 -> GEN batch 2
+  -> OPT plate_counter -> [gate] -> SCREEN batch 2 -> OPT only where the baseline clearly fails (no_auto stays on). Gates are
+  WAITLOG lines on results/overnight/gate.txt (not night.log - that self-matched this morning).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |

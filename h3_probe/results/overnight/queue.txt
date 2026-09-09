@@ -1,0 +1,8 @@
+GEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/gen_inputs_bank.json|gen_frame_wall;gen_lightbulb;gen_bowling;gen_balloon;gen_tyre|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+OPT|gen_kettle|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+WAITLOG|h3_probe/results/overnight/gate.txt|SOURCES_OK_b1
+SCREEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json|gen_frame_wall;gen_lightbulb;gen_bowling;gen_balloon;gen_tyre
+GEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/gen_inputs_bank.json|gen_door_slam;gen_glass_note;gen_branch;gen_horse_neigh;gen_elephant|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+OPT|gen_plate_counter|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+WAITLOG|h3_probe/results/overnight/gate.txt|SOURCES_OK_b2
+SCREEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json|gen_door_slam;gen_glass_note;gen_branch;gen_horse_neigh;gen_elephant
