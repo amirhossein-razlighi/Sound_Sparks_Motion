@@ -379,6 +379,11 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   beer3 not reached (the 3-candidate screening step hit its 43-min timeout: ~14 min per candidate on this node even from local
   disk) -> re-queued first. Allocation rolled over automatically (20568376 on rg32201, staging).
 
+- 23:30 gen_woman_scream (both/any): iter 2 = a clear wide-open scream mid-clip (critic 0.95, perceptual 0.04) vs a baseline that
+  opens the mouth only in the last frame -> candidate win (package in user_study_candidates/gen_woman_scream/, B_best_iter02).
+  Iter 3 drifts into the woman running down the corridor (perceptual 0.34, excluded); the optimization then collapses back to
+  the baseline for iters 4-12 (critic 0.01) - the usual early-peak pattern.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -453,7 +458,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_beer_pour3 | H3 t2va (r6) | pours until overflow (no person in source) | screening timed out -> re-queued | - | pending |
 | gen_toaster | H3 t2va (r6) | toast pops up | INVALID SOURCE (toast already up) -> gen_toaster2 | - | redo |
 | gen_beer_pour | H3 t2va (r6) | pours until overflow | INVALID SOURCE x2 (pouring in the clip even with a 'not pouring' prompt) -> gen_beer_pour3 (no person in the source) | - | redo |
-| gen_woman_scream | H3 t2va (r6) | screams in fright | late (mouth opens only in the last 2 frames, 0.61/0.37) | ours next | opt |
+| gen_woman_scream | H3 t2va (r6) | screams in fright | late (mouth opens only in the last frame, 0.52/0.42) | iter 2: wide-open scream mid-clip for ~1 s (0.95); iter 3 drifts (she runs away), iters 4+ collapse to baseline | CANDIDATE WIN |
 | gen_man_desk | H3 t2va (r6) | slams fist on desk | late/partial (fist up at frame ~11, no clear slam, 0.08/0.17) | ours next | opt |
 | gen_books_shelf | H3 t2va (r6) | books fall off shelf | screening OOMed (GPU collision) | rescreen | pending |
 | gen_yoga | H3 t2va (r6) | yoga flow: arms overhead, forward fold, rise | success at baseline (full flow, 0.81/0.89) | - | skip (no room) |

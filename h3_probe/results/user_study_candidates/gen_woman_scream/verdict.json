@@ -1,0 +1,12 @@
+{
+ "slug": "gen_woman_scream",
+ "baseline_any": 0.4150751791363866,
+ "baseline_lin": 0.523987941783912,
+ "best_iter": 2,
+ "best_any": 0.9464791406782778,
+ "best_lin": 0.9464791406782778,
+ "best_perc": 0.03664926439523697,
+ "auto_verdict": "improved",
+ "note": "auto verdict from the in-loop critic; visual review decides",
+ "visual_verdict": "candidate win: iter 2 wide-open scream mid-clip; baseline last-frame only; iter 3 = drift (runs away)"
+}
