@@ -418,6 +418,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   kettle (still), plate (close-up on the counter, still), car window (the sedan drives slowly along the street, window
   intact) -> valid. Screening.
 
+- 04:10 bank feed #2 screening: kettle static (room); plate slides off and shatters late (modest room); car window shatters at
+  baseline (critic missed it) -> OPT removed; firecracker baseline = smoky source, no bang -> ours running but the scenario is
+  weak (A already smokes). New allocation 20630380 (rg31607).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -500,6 +504,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_cat_vase | bank | pushes the vase over, it shatters | baseline does it (0.97/0.99) | - | skip |
 | gen_bike_tips | bank | bicycle tips over | baseline falls late (frames 9-12, 0.78/0.40) | ours: iters 2-4 remove the fall, iters 5+ drift | failed |
 | gen_ladder | bank | ladder slides and falls | baseline does it mid-clip (0.67/0.20, critic miss) | auto-OPT removed | skip |
+| gen_firecracker | bank | explodes with a bang and smoke | source already sparks/smokes; baseline = source, no bang (0.07/0.49) | ours running (weak scenario) | opt |
+| gen_kettle | bank | whistles, steam shoots out | baseline static, no steam (0.02/0.10) | ours queued | opt |
+| gen_plate_counter | bank | plate slides off and shatters | baseline does it late (slides at frame ~9, shatters; 0.66/0.13) | ours queued (late case) | opt |
+| gen_car_window | bank | side window shatters | baseline cracks/shatters the window mid-clip (0.17/0.07, critic miss) | auto-OPT removed | skip |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
 | gen_horse_rears | H3 t2va | rears up on hind legs | fail (0.0002, only walks) | cancelled (flat critic) | skip |
