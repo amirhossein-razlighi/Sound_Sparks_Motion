@@ -422,6 +422,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   baseline (critic missed it) -> OPT removed; firecracker baseline = smoky source, no bang -> ours running but the scenario is
   weak (A already smokes). New allocation 20630380 (rg31607).
 
+### 2026-09-09 04:20 - user review: none of the overnight candidates is good enough
+- user: run ours on car window shatter, cat + vase, firecracker, ladder, in that order, with more early-stop patience
+  (EARLY 10 -> 14). Firecracker run interrupted and re-queued third; bank auto-feed paused (no_bank) so this order holds.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
