@@ -64,7 +64,8 @@
   "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_beer_pour2_h3sound_89f.wav",
   "edit": "The bartender tilts the bottle and pours the beer into the glass until it overflows and foam spills over the rim.",
   "scene": "a half-full glass of beer on a bar counter next to an upright beer bottle held by a bartender's hand",
-  "question": "Does beer overflow or foam spill over the rim of the glass at any point in this video? Answer only 'yes' or 'no'."
+  "question": "Does beer overflow or foam spill over the rim of the glass at any point in this video? Answer only 'yes' or 'no'.",
+  "note": "INVALID SOURCE (2nd attempt): a bartender pours from a bottle in the first third of the clip; replaced by gen_beer_pour3 (no person in the source)"
  },
  "gen_toaster2": {
   "group": "r6",
@@ -81,5 +82,13 @@
   "edit": "The cork shoots out of the bottle with a loud pop and foam sprays out of the neck.",
   "scene": "a close-up of the neck of a champagne bottle with the cork in place",
   "question": "Does the cork shoot out of the bottle or does foam spray out of the neck at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_beer_pour3": {
+  "group": "r6",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_beer_pour3__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_beer_pour3_h3sound_89f.wav",
+  "edit": "A hand picks up the bottle and pours beer into the glass until it overflows and foam spills over the rim.",
+  "scene": "a half-full pint glass of beer and a closed beer bottle standing side by side on a bar counter",
+  "question": "Does beer overflow or foam spill over the rim of the glass at any point in this video? Answer only 'yes' or 'no'."
  }
 }

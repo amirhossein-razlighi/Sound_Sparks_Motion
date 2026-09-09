@@ -365,6 +365,12 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   a few pixels in this framing. Queued a close-up variant (gen_champagne_close: neck fills the frame, edit = cork shoots out + foam
   sprays). Candidate package with sheets kept in results/user_study_candidates/gen_champagne/ for review.
 
+- 20:15 interactive-node loading stall diagnosed: processes sit in Lustre `cl_sync_io_wait` while memory-mapping the 100 GB
+  checkpoint (15-25 min per process; the t2va step needed 24 min for one clip). Fix: the runner now copies the H3 checkpoint
+  and Qwen to the node-local NVMe once per allocation (~2 min) and every step loads from there (H3_CKPT/H3_QWEN overrides).
+- beer source attempt 2 also pours in the first third -> gen_beer_pour3 with nobody in the source; toaster2 regenerates with
+  the champagne close-up in the next GEN step.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -436,7 +442,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_champagne | H3 t2va (r6) | cork pops out | fail (completely static, 0.08/0.15) | ours: every iteration identical to the baseline (cork ~5 px, no gradient) | failed |
 | gen_champagne_close | H3 t2va (r6) | cork shoots out, foam sprays (close-up) | queued (gen -> screen -> opt if room) | - | pending |
 | gen_toaster | H3 t2va (r6) | toast pops up | INVALID SOURCE (toast already up) -> gen_toaster2 | - | redo |
-| gen_beer_pour | H3 t2va (r6) | pours until overflow | INVALID SOURCE (already pouring) -> gen_beer_pour2 | - | redo |
+| gen_beer_pour | H3 t2va (r6) | pours until overflow | INVALID SOURCE x2 (pouring in the clip even with a 'not pouring' prompt) -> gen_beer_pour3 (no person in the source) | - | redo |
 | gen_woman_scream | H3 t2va (r6) | screams in fright | late (mouth opens only in the last 2 frames, 0.61/0.37) | ours next | opt |
 | gen_man_desk | H3 t2va (r6) | slams fist on desk | late/partial (fist up at frame ~11, no clear slam, 0.08/0.17) | ours next | opt |
 | gen_books_shelf | H3 t2va (r6) | books fall off shelf | screening OOMed (GPU collision) | rescreen | pending |
