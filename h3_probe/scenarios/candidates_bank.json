@@ -376,5 +376,29 @@
   "edit": "The cat's eyes pop out of his head and he screams in surprise.",
   "scene": "a classic colour cartoon close-up of a grey cat lying in a hammock, glaring at a small mouse",
   "question": "Do the cat's eyes pop out or does the cat scream at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_travolta_jump": {
+  "group": "demo",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_travolta__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_travolta_audio_89f.wav",
+  "edit": "He starts jumping up and down cheerfully with one hand raised high in the air, shouting with joy.",
+  "scene": "a man in a dark suit standing in a retro room looking around",
+  "question": "Does the man jump or throw his hand up in the air at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_gatsby_wink": {
+  "group": "demo",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_gatsby__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_gatsby_audio_89f.wav",
+  "edit": "He winks at the camera, then runs his free hand through his hair, combing it back.",
+  "scene": "a man in a tuxedo holding a champagne glass at a glittering night party",
+  "question": "Does the man wink or run his hand through his hair at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_leo_clap": {
+  "group": "demo",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_leo_couch__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_leo_couch_audio_89f.wav",
+  "edit": "He drops the can and starts clapping his hands proudly.",
+  "scene": "a man in a yellow shirt sitting on a couch holding a drink",
+  "question": "Does the man drop the can or clap his hands at any point in this video? Answer only 'yes' or 'no'."
  }
 }

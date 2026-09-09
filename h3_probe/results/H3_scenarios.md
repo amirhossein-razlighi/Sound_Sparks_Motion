@@ -549,6 +549,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   twist (0.67/0.82) -> skip; real_mrbean - stands and checks his watch, no faint (0.004/0.015) -> ours queued (whole-body fall,
   risky); real_grumpy - H3 opens the cat's mouth wide (0.99/1.0) -> skip; real_thug_cat - the cat just sits (0.007/0.08) ->
   ours queued. Queue order after the demo2 screening: gatsby, plate_counter, thug_cat, mrbean, tyre, leo_couch, lightbulb2.
+- 16:45 user prompt variants on the same real sources, added to the demo2 screening: real_travolta_jump ("He starts jumping up
+  and down cheerfully with one hand raised high in the air, shouting with joy."), real_gatsby_wink ("He winks at the camera,
+  then runs his free hand through his hair, combing it back."), real_leo_clap ("He drops the can and starts clapping his hands
+  proudly."). Ours only where the baseline fails.
 
 ## Scenario table (updated as results land)
 
