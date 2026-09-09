@@ -1,0 +1,12 @@
+{
+ "slug": "gen_door_slam",
+ "baseline_any": 0.010802859193579598,
+ "baseline_lin": 0.003294600660321962,
+ "best_iter": 10,
+ "best_any": 0.017487362916567717,
+ "best_lin": 0.017487362916567717,
+ "best_perc": 0.041182681918144226,
+ "auto_verdict": "flat",
+ "note": "auto verdict from the in-loop critic; visual review decides",
+ "visual_verdict": "FAILED (flat): the door never moves in the baseline or in any of the 16 iterations - only the curtain keeps billowing; critic 0.011-0.018 throughout, motion proxy identical to the baseline in every iteration. A static object that must start moving on its own (no agent) gives the critic nothing to climb, like the kettle."
+}

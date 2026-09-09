@@ -554,6 +554,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   then runs his free hand through his hair, combing it back."), real_leo_clap ("He drops the can and starts clapping his hands
   proudly."). Ours only where the baseline fails.
 
+- 17:40 gen_door_slam failed flat: the door never moves in any iteration (critic 0.01-0.02, motion identical to the baseline).
+  Same lesson as the kettle: an inanimate object that must start moving by itself (no visible agent, no precursor) is a dead
+  end for the critic. Horse neigh next on allocation 20736897 (rg31605).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -643,7 +647,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_balloon | bank (r7) | balloon bursts with a pop | baseline: the balloon vanishes between frames 4-5, no pop (0.003/0.02) | ours (both/any, 16 iters): critic flat 0.004-0.025; iter 2 keeps the balloon, iters 3-16 shrink the picture inside a white border with text overlays (layout drift) | failed (flat + drift) |
 | gen_tyre | bank (r7) | tyre bursts, goes flat | baseline static (0.001/0.009) | ours queued | opt |
 | gen_frame_wall | bank (r7) | picture falls off the wall, breaks | baseline drops it at frames 9-13 (0.97/0.86) | - | skip |
-| gen_door_slam | bank (r7) | wind slams the door shut | baseline: door never moves (0.003/0.01) | ours queued | opt |
+| gen_door_slam | bank (r7) | wind slams the door shut | baseline: door never moves (0.003/0.01) | ours (both/any, 16 iters): door never moves, critic flat 0.01-0.02 | failed (flat) |
 | gen_horse_neigh | bank (r7) | throws its head up and neighs | baseline: head tilt, half-open mouth (0.23/0.07) | ours queued | opt |
 | gen_lightbulb2 | bank (r7) | bulb bursts with a flash | baseline static (0.001/0.005) | ours queued (last) | opt |
 | gen_branch | bank (r7) | branch snaps and falls | baseline does it at frames 9-13 (0.74/0.58) | - | skip |
