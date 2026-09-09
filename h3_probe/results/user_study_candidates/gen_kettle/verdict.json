@@ -1,0 +1,12 @@
+{
+ "slug": "gen_kettle",
+ "baseline_any": 0.09198610980467094,
+ "baseline_lin": 0.0188839920248058,
+ "best_iter": 2,
+ "best_any": 0.14992127148526135,
+ "best_lin": 0.14992127148526135,
+ "best_perc": 0.020283006131649017,
+ "auto_verdict": "flat",
+ "note": "auto verdict from the in-loop critic; visual review decides",
+ "visual_verdict": "FAILED (flat): the kettle sits on the flame in every frame of the baseline and of all 16 iterations - no steam, no motion (critic 0.02 baseline, 0.04-0.15 ours; motion proxy zero everywhere). An edit that needs a new element to appear (steam) from a static scene gives the critic nothing to climb."
+}

@@ -509,6 +509,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   Batch 1 sources: frame_wall, balloon, tyre accepted; lightbulb (switches on mid-clip) and bowling (ball already rolls and
   strikes) rejected and re-prompted as gen_lightbulb2 (steadily lit) / gen_bowling2 (pins only, no ball) in batch 2.
 
+- 13:30 gen_kettle failed flat: no steam in any iteration (critic 0.04-0.15, zero motion). Lesson (adds to the "small motions"
+  rule): edits that require a new element to appear in a static scene (steam, smoke from nothing) give the critic no foothold;
+  prefer events on an existing subject. Screening batch 1 (frame_wall, balloon, tyre) running.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -592,7 +596,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_bike_tips | bank | bicycle tips over | baseline falls late (frames 9-12, 0.78/0.40) | ours: iters 2-4 remove the fall, iters 5+ drift | failed |
 | gen_ladder | bank | ladder slides and falls | baseline does it late (frames ~85-105; 0.67/0.20 screen, 0.04 in our loop = critic miss) | ours (both/any, patience 14, 16 iters): iter 1 = baseline; iters 2-16 drift (perceptual 0.42-0.72) - iter 2 moves the fall earlier but in an altered scene | failed (drift) |
 | gen_firecracker | bank | explodes with a bang and smoke | source already sparks/smokes; baseline = a small puff at frame 29, no bang (0.07/0.49; 0.55 in our loop) | ours (both/any, patience 14, 16 iters): iters 8-11 carry a violent change at frame 25 (proxy |diff| 30-44 vs 7 baseline) + brighter smoke; iter 9 critic best 0.70, perc 0.07; iter 12 fires twice; 13-16 lose it | promising (visual check pending) |
-| gen_kettle | bank | whistles, steam shoots out | baseline static, no steam (0.02/0.10) | ours queued | opt |
+| gen_kettle | bank | whistles, steam shoots out | baseline static, no steam (0.02/0.10) | ours (both/any, 16 iters): nothing ever appears, critic flat 0.04-0.15 | failed (flat) |
 | gen_plate_counter | bank | plate slides off and shatters | baseline does it late (slides at frame ~9, shatters; 0.66/0.13) | ours queued (late case) | opt |
 | gen_car_window | bank | side window shatters | baseline: only a faint crack pattern (0.10/0.06) | iters 3-7 shatter the whole car and doors, not the window (over-edit) | not a win (user) |
 | gen_car_shatter | bank (car_window source) | the whole car shatters into glass shards | baseline does it, early and complete (cracks at frame 4, debris field by frame 9; 0.86/0.60) | ours cancelled (stop rule) | skip |
