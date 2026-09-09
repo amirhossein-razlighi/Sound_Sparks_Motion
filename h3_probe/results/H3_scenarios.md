@@ -462,6 +462,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   event; iters 4-5 even remove the puff. iter 9 = critic best (0.70) and packaged as B_best; iters 8, 10, 11 forced in as
   candidates. Visual confirmation still needed (is the bang a burst of the cracker or just a flash?). Ladder next on allocation
   20638196 (rg32101).
+  07:45 localization of the frame-25 event (colour/spatial stats, still without eyes): 24-31 % of the frame changes at once (the
+  baseline puff: 12 %), the wall in the upper half brightens by +12..+15 in iters 8/10/11 (a flash lighting the scene), iter 8
+  shows a large orange fireball (3.8 % red pixels at frame 25), and a denser/brighter smoke cloud follows. The cracker casing
+  survives in all iterations, so this is flash + bang + smoke rather than a fragmenting burst - plausible for the prompt.
 
 ## Scenario table (updated as results land)
 
