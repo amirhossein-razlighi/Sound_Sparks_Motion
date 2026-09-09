@@ -24,7 +24,7 @@ secs_left(){ local t; t=$(squeue -j "$1" -h -o %L 2>/dev/null | head -1); [ -z "
 LOCAL=""; STEPENV=""
 stage_models(){ # copy H3 ckpt + Qwen to the node-local NVMe once per allocation: Lustre mmap loading stalled 15-25 min per process
   LOCAL=/localscratch/amirrz.$ALLOC.0/models; log "staging models to $LOCAL ..."
-  timeout 2400 srun --jobid=$ALLOC --ntasks=1 --cpus-per-task=8 --export=ALL bash -c "mkdir -p $LOCAL && rsync -a --exclude docs --exclude scripts /scratch/amirrz/H3_exp/ckpt/ $LOCAL/ckpt/ && rsync -a /project/def-amahdavi/amirrz/HF/models/Qwen2.5-VL-7B-Instruct/ $LOCAL/qwen/ && du -sh $LOCAL/ckpt $LOCAL/qwen" > $ON/logs/stage_$ALLOC.log 2>&1
+  timeout 2400 srun --jobid=$ALLOC --ntasks=1 --cpus-per-task=8 --export=ALL bash -c "mkdir -p $LOCAL && rsync -a --exclude docs --exclude scripts /scratch/amirrz/H3_exp/ckpt/ $LOCAL/ckpt/ && rsync -a /project/def-amahdavi/amirrz/HF/models/Qwen2.5-VL-7B-Instruct/ $LOCAL/qwen/ && sed -i \"s#/scratch/amirrz/H3_exp/ckpt#$LOCAL/ckpt#g\" $LOCAL/ckpt/modular_model_index.json $LOCAL/ckpt/model_index.json && grep -c $LOCAL $LOCAL/ckpt/modular_model_index.json && du -sh $LOCAL/ckpt $LOCAL/qwen" > $ON/logs/stage_$ALLOC.log 2>&1
   if [ $? -eq 0 ]; then STEPENV="H3_CKPT=$LOCAL/ckpt H3_QWEN=$LOCAL/qwen"; log "staged: $(tail -2 $ON/logs/stage_$ALLOC.log | tr '\n' ' ')"; else STEPENV=""; log "staging FAILED (see $ON/logs/stage_$ALLOC.log) - steps will load from Lustre"; fi; }
 alloc_ok(){ [ -n "$ALLOC" ] && [ "$(squeue -j $ALLOC -h -o %T 2>/dev/null)" = "RUNNING" ]; }
 ensure_alloc(){ # $1 = seconds needed
