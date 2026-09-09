@@ -144,5 +144,13 @@
   "edit": "The ball rolls down the lane and knocks all the pins over.",
   "scene": "a bowling lane with ten pins standing and a ball resting at the near end",
   "question": "Do the bowling pins get knocked over at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_car_shatter": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_car_window__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_car_window_h3sound_89f.wav",
+  "edit": "The entire car suddenly shatters into thousands of glass shards that burst outward and scatter across the street, leaving nothing but broken glass where the car stood.",
+  "scene": "a parked grey sedan seen from the side",
+  "question": "Does the whole car break apart or shatter into pieces at any point in this video? Answer only 'yes' or 'no'."
  }
 }

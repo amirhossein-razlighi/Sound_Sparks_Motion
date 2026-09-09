@@ -426,6 +426,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 - user: run ours on car window shatter, cat + vase, firecracker, ladder, in that order, with more early-stop patience
   (EARLY 10 -> 14). Firecracker run interrupted and re-queued third; bank auto-feed paused (no_bank) so this order holds.
 
+- 04:35 user idea: same car source, but the edit asks for the WHOLE car to shatter into glass shards (a drastic geometry change
+  H3 is unlikely to do on its own). Added as gen_car_shatter (bank), queued right after the car-window run: screen, then ours.
+  Auto-queuing disabled (no_auto) - I decide manually now.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
