@@ -1,0 +1,12 @@
+{
+ "slug": "gen_cat_vase",
+ "edit": "The cat pushes the vase over and it shatters on the floor.",
+ "run": "/scratch/amirrz/H3_exp/outputs/overnight/gen_cat_vase/opt",
+ "iter": 5,
+ "note": "user (09-09 06:30): iter 5 is good - the cat paws at the vase from frame ~2 and pushes until it tips over (critic miss 0.01). Baseline already knocks the vase over mid-clip (lunge at frame 6) - both do the motion; ours is an earlier, more deliberate push.",
+ "steps": 16,
+ "extra": [],
+ "baseline_yes": 0.9648410667911498,
+ "baseline_yes_any": 0.9877278409485732,
+ "best_iter_by_critic": 1
+}

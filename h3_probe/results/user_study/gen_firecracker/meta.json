@@ -1,0 +1,14 @@
+{
+ "slug": "gen_firecracker",
+ "edit": "The firecracker explodes with a bang and a puff of smoke.",
+ "run": "/scratch/amirrz/H3_exp/outputs/overnight/gen_firecracker/opt",
+ "iter": 8,
+ "note": "user (09-09 11:50): iters 7 and 8 are good. iter 8 primary (fireball + dense smoke cloud at frame ~25, critic 0.30), iter 7 alternate (flash + puff at the same moment, critic 0.43). Baseline = the source's small puff, no bang. Critic best was iter 9 (0.70).",
+ "steps": 16,
+ "extra": [
+  "B_candidate_iter07"
+ ],
+ "baseline_yes": 0.052590062664066566,
+ "baseline_yes_any": 0.5520676174541839,
+ "best_iter_by_critic": 9
+}
