@@ -44,11 +44,17 @@ for f in os.listdir(d):
 for i, r in enumerate(ok[:ncand + 1]):
     name = f"B_best_iter{r['iter']:02d}_av.mp4" if i == 0 else f"B_cand_iter{r['iter']:02d}_av.mp4"
     shutil.copy2(os.path.join(run, f"iter_{r['iter']:02d}_av.mp4"), os.path.join(d, name))
+# FORCE_ITERS=5,7 : iterations flagged by eye (critic misses) are always packaged as B_cand files, guard or not
+forced = [int(x) for x in os.environ.get("FORCE_ITERS", "").replace(";", ",").split(",") if x.strip()]
+for it in forced:
+    src = os.path.join(run, f"iter_{it:02d}_av.mp4")
+    if os.path.exists(src) and not any(f.endswith(f"iter{it:02d}_av.mp4") for f in os.listdir(d)):
+        shutil.copy2(src, os.path.join(d, f"B_cand_iter{it:02d}_av.mp4"))
 with open(os.path.join(d, "critic_scores.txt"), "w") as f:
     f.write(f"baseline: yes_lin={res.get('baseline_yes', float('nan')):.4f} yes_any={res.get('baseline_yes_any', float('nan')):.4f}\n")
     f.write(f"ranking key: {key} (perceptual <= {perc_max} only); B_best = rank 1, B_cand = next {ncand}\n\n")
     for r in rows:
-        tag = "  <- B_best" if ok and r is ok[0] else ("  <- cand" if r in ok[1:ncand + 1] else ("  (over perceptual guard)" if r["perc"] > perc_max else ""))
+        tag = "  <- B_best" if ok and r is ok[0] else ("  <- cand" if r in ok[1:ncand + 1] else ("  <- cand (flagged by eye)" if r["iter"] in forced else ("  (over perceptual guard)" if r["perc"] > perc_max else "")))
         f.write(f"iter {r['iter']:02d}  yes_lin={r['yes_lin']:.4f}  yes_any={r['yes_any']:.4f}  perceptual={r['perc']:.3f}{tag}\n")
 # sheets (baseline + iters 1-8, baseline + iters 9-16)
 its = sorted(r["iter"] for r in rows); env = dict(os.environ, W="200", N="12")
