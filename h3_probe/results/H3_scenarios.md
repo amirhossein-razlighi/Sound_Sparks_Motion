@@ -371,6 +371,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 - beer source attempt 2 also pours in the first third -> gen_beer_pour3 with nobody in the source; toaster2 regenerates with
   the champagne close-up in the next GEN step.
 
+- 21:35 sources verified (sheets): gen_champagne_close (neck fills frame, cork in, still), gen_toaster2 (empty slots, lever down),
+  gen_beer_pour3 (full glass + closed bottle, nobody) -> all valid; screening. Local-NVMe staging + index-path rewrite brought the
+  per-clip generation back to ~4 min (was 24 min).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
