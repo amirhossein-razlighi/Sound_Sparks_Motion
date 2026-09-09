@@ -513,6 +513,11 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   rule): edits that require a new element to appear in a static scene (steam, smoke from nothing) give the critic no foothold;
   prefer events on an existing subject. Screening batch 1 (frame_wall, balloon, tyre) running.
 
+- 13:50 batch-1 screening: gen_balloon - the balloon simply vanishes between frames 4 and 5, no pop, no fragments (0.003/0.02)
+  -> ours queued first (an unnatural baseline is the best kind of failure for us); gen_tyre - nothing happens (0.001/0.009) ->
+  ours queued after plate_counter (static-scene risk, but the subject itself must deform); gen_frame_wall - the picture drops
+  off the wall at frames 9-13 and lands on the floor (0.97/0.86) -> baseline does it, skip.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -599,6 +604,9 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_kettle | bank | whistles, steam shoots out | baseline static, no steam (0.02/0.10) | ours (both/any, 16 iters): nothing ever appears, critic flat 0.04-0.15 | failed (flat) |
 | gen_plate_counter | bank | plate slides off and shatters | baseline does it late (slides at frame ~9, shatters; 0.66/0.13) | ours queued (late case) | opt |
 | gen_car_window | bank | side window shatters | baseline: only a faint crack pattern (0.10/0.06) | iters 3-7 shatter the whole car and doors, not the window (over-edit) | not a win (user) |
+| gen_balloon | bank (r7) | balloon bursts with a pop | baseline: the balloon vanishes between frames 4-5, no pop (0.003/0.02) | ours queued | opt |
+| gen_tyre | bank (r7) | tyre bursts, goes flat | baseline static (0.001/0.009) | ours queued | opt |
+| gen_frame_wall | bank (r7) | picture falls off the wall, breaks | baseline drops it at frames 9-13 (0.97/0.86) | - | skip |
 | gen_car_shatter | bank (car_window source) | the whole car shatters into glass shards | baseline does it, early and complete (cracks at frame 4, debris field by frame 9; 0.86/0.60) | ours cancelled (stop rule) | skip |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
