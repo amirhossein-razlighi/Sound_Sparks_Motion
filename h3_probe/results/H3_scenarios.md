@@ -524,6 +524,12 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   singer and glass tiny) -> gen_glass_note2 (medium close-up, glass in the foreground) queued as batch 3. Gate b2 open.
   Allocation 20652872 released (too short), 20678872 on rg31902 staging -> OPT balloon.
 
+- 15:20 gen_balloon failed: the critic never sees a pop (0.004-0.025), iter 2 just keeps the balloon intact, and from iter 3 the
+  video drifts into a screenshot-like layout (picture shrunk inside a white border, text overlays) - a new drift mode, probably
+  the text residual steering toward web-page imagery. Lesson: a pop of a small object with no residue is invisible to the
+  critic (like the champagne cork); the vanishing-baseline case is not automatically saveable. Batch-2 screening next on
+  allocation 20700282.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -610,7 +616,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_kettle | bank | whistles, steam shoots out | baseline static, no steam (0.02/0.10) | ours (both/any, 16 iters): nothing ever appears, critic flat 0.04-0.15 | failed (flat) |
 | gen_plate_counter | bank | plate slides off and shatters | baseline does it late (slides at frame ~9, shatters; 0.66/0.13) | ours queued (late case) | opt |
 | gen_car_window | bank | side window shatters | baseline: only a faint crack pattern (0.10/0.06) | iters 3-7 shatter the whole car and doors, not the window (over-edit) | not a win (user) |
-| gen_balloon | bank (r7) | balloon bursts with a pop | baseline: the balloon vanishes between frames 4-5, no pop (0.003/0.02) | ours queued | opt |
+| gen_balloon | bank (r7) | balloon bursts with a pop | baseline: the balloon vanishes between frames 4-5, no pop (0.003/0.02) | ours (both/any, 16 iters): critic flat 0.004-0.025; iter 2 keeps the balloon, iters 3-16 shrink the picture inside a white border with text overlays (layout drift) | failed (flat + drift) |
 | gen_tyre | bank (r7) | tyre bursts, goes flat | baseline static (0.001/0.009) | ours queued | opt |
 | gen_frame_wall | bank (r7) | picture falls off the wall, breaks | baseline drops it at frames 9-13 (0.97/0.86) | - | skip |
 | gen_car_shatter | bank (car_window source) | the whole car shatters into glass shards | baseline does it, early and complete (cracks at frame 4, debris field by frame 9; 0.86/0.60) | ours cancelled (stop rule) | skip |

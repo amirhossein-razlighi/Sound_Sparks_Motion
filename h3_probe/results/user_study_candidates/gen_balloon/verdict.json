@@ -1,0 +1,12 @@
+{
+ "slug": "gen_balloon",
+ "baseline_any": 0.02420598053254952,
+ "baseline_lin": 0.002635902920325733,
+ "best_iter": 1,
+ "best_any": 0.02469236057560442,
+ "best_lin": 0.02469236057560442,
+ "best_perc": 0.0001022925935103558,
+ "auto_verdict": "drift",
+ "note": "auto verdict from the in-loop critic; visual review decides",
+ "visual_verdict": "FAILED (flat critic + layout drift): baseline = the balloon silently vanishes at frame ~4; iter 1 = baseline; iter 2 keeps the balloon intact (no pop); iter 3 onwards the picture shrinks inside a white border with text overlays (a screenshot-like layout drift, new failure mode); iter 4 turns the balloon white and floats a second balloon away. Critic 0.004-0.025 throughout, motion proxy flat."
+}
