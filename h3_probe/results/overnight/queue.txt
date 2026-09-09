@@ -2,3 +2,4 @@ OPT|gen_car_window|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenar
 OPT|gen_cat_vase|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
 OPT|gen_firecracker|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
 OPT|gen_ladder|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+ABL|gen_woman_door|audio
