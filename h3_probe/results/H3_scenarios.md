@@ -375,6 +375,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   gen_beer_pour3 (full glass + closed bottle, nobody) -> all valid; screening. Local-NVMe staging + index-path rewrite brought the
   per-clip generation back to ~4 min (was 24 min).
 
+- 22:16 screening: champagne close-up baseline already pops/foams (0.95/0.98) -> no room; toaster2 0.37/0.42 -> room, ours queued;
+  beer3 not reached (the 3-candidate screening step hit its 43-min timeout: ~14 min per candidate on this node even from local
+  disk) -> re-queued first. Allocation rolled over automatically (20568376 on rg32201, staging).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -444,7 +448,9 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | car_door_opens | retake input (workshop) | car door swings open | fail (0.04/0.24) | iter 4: door swings open mid-clip, clean (alt 3/5) | PACKAGED |
 | car_lights_flash | retake input (garage) | headlights flash, horn | fail (0.005) | any: flat 0.03, drift after iter 10 | failed |
 | gen_champagne | H3 t2va (r6) | cork pops out | fail (completely static, 0.08/0.15) | ours: every iteration identical to the baseline (cork ~5 px, no gradient) | failed |
-| gen_champagne_close | H3 t2va (r6) | cork shoots out, foam sprays (close-up) | queued (gen -> screen -> opt if room) | - | pending |
+| gen_champagne_close | H3 t2va (r6) | cork shoots out, foam sprays (close-up) | baseline 0.95/0.98 (H3 does it at this framing) | - | skip (verify sheet) |
+| gen_toaster2 | H3 t2va (r6) | toast pops up | baseline 0.37/0.42 -> room | ours queued (any) | opt |
+| gen_beer_pour3 | H3 t2va (r6) | pours until overflow (no person in source) | screening timed out -> re-queued | - | pending |
 | gen_toaster | H3 t2va (r6) | toast pops up | INVALID SOURCE (toast already up) -> gen_toaster2 | - | redo |
 | gen_beer_pour | H3 t2va (r6) | pours until overflow | INVALID SOURCE x2 (pouring in the clip even with a 'not pouring' prompt) -> gen_beer_pour3 (no person in the source) | - | redo |
 | gen_woman_scream | H3 t2va (r6) | screams in fright | late (mouth opens only in the last 2 frames, 0.61/0.37) | ours next | opt |
