@@ -3,3 +3,4 @@ SOURCES_OK_demo (real_gatsby x2 edits, real_leo_couch, real_travolta, real_mrbea
 SOURCES_OK_b2 (door_slam, branch, horse_neigh, elephant, lightbulb2 re-trimmed from frame 30, bowling2; glass_note rejected: subject and glass tiny -> gen_glass_note2)
 SOURCES_OK_demo2 (casablanca, nosferatu, keaton, chaplin, steamboat, tom_walk, tom_hammock)
 SOURCES_OK_b3 (glass_note2 seen: glass large but the singer's head is cut off -> not screened, re-prompted as glass_note3 after demo2)
+SOURCES_OK_b4 (glass_note3: singer from the waist up, face visible, glass on the table - small but visible)
