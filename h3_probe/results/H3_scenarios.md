@@ -530,6 +530,16 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   critic (like the champagne cork); the vanishing-baseline case is not automatically saveable. Batch-2 screening next on
   allocation 20700282.
 
+- 15:55 batch-2 screening: door_slam - the door never moves (0.003/0.01) -> ours queued first; horse_neigh - only a head tilt
+  with a half-open mouth at frames 9-11 (0.23/0.07) -> ours queued; lightbulb2 - steady bulb (0.001/0.005) -> ours queued last
+  (small-object burst, balloon-like risk); branch breaks and falls at frames 9-13 (0.74/0.58), elephant raises its trunk at
+  frames 4-7 (0.91/0.99), bowling2: H3 conjures a ball at frame 7 and knocks the pins (0.98/0.92) -> all three skip.
+- 16:00 user: also cartoon + black-and-white demo samples (generated OK if real fails; famous real preferred). Real classics
+  prepared (inputs/real/): Casablanca close-up (she bursts out laughing), Nosferatu Orlok standing (bares fangs, hisses,
+  lunges), Keaton deadpan (bursts out laughing), Chaplin at the table (makes the bread rolls dance), Steamboat Willie at the
+  wheel (startled, jumps into the air); Tom & Jerry "To Nap or Not To Nap" downloaded, hammock window being chosen. Queued as
+  SCREEN demo2 behind a gate; generated cartoon/B&W fallbacks only if these disappoint.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -619,6 +629,12 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_balloon | bank (r7) | balloon bursts with a pop | baseline: the balloon vanishes between frames 4-5, no pop (0.003/0.02) | ours (both/any, 16 iters): critic flat 0.004-0.025; iter 2 keeps the balloon, iters 3-16 shrink the picture inside a white border with text overlays (layout drift) | failed (flat + drift) |
 | gen_tyre | bank (r7) | tyre bursts, goes flat | baseline static (0.001/0.009) | ours queued | opt |
 | gen_frame_wall | bank (r7) | picture falls off the wall, breaks | baseline drops it at frames 9-13 (0.97/0.86) | - | skip |
+| gen_door_slam | bank (r7) | wind slams the door shut | baseline: door never moves (0.003/0.01) | ours queued | opt |
+| gen_horse_neigh | bank (r7) | throws its head up and neighs | baseline: head tilt, half-open mouth (0.23/0.07) | ours queued | opt |
+| gen_lightbulb2 | bank (r7) | bulb bursts with a flash | baseline static (0.001/0.005) | ours queued (last) | opt |
+| gen_branch | bank (r7) | branch snaps and falls | baseline does it at frames 9-13 (0.74/0.58) | - | skip |
+| gen_elephant | bank (r7) | raises trunk, trumpets | baseline does it at frames 4-7 (0.91/0.99) | - | skip |
+| gen_bowling2 | bank (r7) | ball knocks the pins over | baseline adds a ball and strikes (0.98/0.92) | - | skip |
 | gen_car_shatter | bank (car_window source) | the whole car shatters into glass shards | baseline does it, early and complete (cracks at frame 4, debris field by frame 9; 0.86/0.60) | ours cancelled (stop rule) | skip |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |

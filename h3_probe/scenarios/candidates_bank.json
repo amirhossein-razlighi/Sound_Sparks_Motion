@@ -320,5 +320,45 @@
   "edit": "The singer hits a high note and the wine glass shatters.",
   "scene": "an opera singer behind a table with a large wine glass in the foreground",
   "question": "Does the wine glass shatter or break at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_casablanca": {
+  "group": "demo_bw",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_casablanca__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_casablanca_audio_89f.wav",
+  "edit": "She bursts out laughing.",
+  "scene": "a black-and-white close-up of a woman in a hat with tearful eyes",
+  "question": "Does the woman laugh at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_nosferatu": {
+  "group": "demo_bw",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_nosferatu__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_nosferatu_audio_89f.wav",
+  "edit": "The vampire bares his fangs and hisses, lunging toward the camera.",
+  "scene": "a black-and-white silent-film shot of a bald vampire standing stiffly with long clawed hands",
+  "question": "Does the vampire open his mouth, hiss or lunge forward at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_keaton": {
+  "group": "demo_bw",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_keaton__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_keaton_audio_89f.wav",
+  "edit": "He bursts out laughing.",
+  "scene": "a black-and-white silent-film close-up of a deadpan man in a flat straw hat",
+  "question": "Does the man laugh or smile broadly at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_chaplin": {
+  "group": "demo_bw",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_chaplin__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_chaplin_audio_89f.wav",
+  "edit": "He makes the two bread rolls on forks dance like a pair of legs.",
+  "scene": "a black-and-white silent-film shot of a man with a small moustache sitting at a table holding two forks stuck into bread rolls",
+  "question": "Do the bread rolls dance or kick like legs at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_steamboat": {
+  "group": "demo_cartoon",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_steamboat__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_steamboat_audio_89f.wav",
+  "edit": "The mouse gets startled and jumps high into the air, arms flailing.",
+  "scene": "a black-and-white 1920s cartoon of a mouse steering a ship's wheel",
+  "question": "Does the mouse jump into the air at any point in this video? Answer only 'yes' or 'no'."
  }
 }
