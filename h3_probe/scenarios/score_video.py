@@ -11,7 +11,7 @@ def _load(name, path):
     spec = importlib.util.spec_from_file_location(name, path); m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m); return m
 _fm = _load("h3_full_method", os.path.join(_PROBE, "h3_full_method.py"))
 _cc = _load("critic_calib", os.path.join(_PROBE, "critic_calib.py"))
-QWEN = "/project/def-amahdavi/amirrz/HF/models/Qwen2.5-VL-7B-Instruct"
+QWEN = os.environ.get("H3_QWEN", "/project/def-amahdavi/amirrz/HF/models/Qwen2.5-VL-7B-Instruct")
 def main():
     from motion_opt.qwen_loss import build_qwen_model, build_qwen_rubric_inputs, compute_qwen_video_loss
     dev = torch.device("cuda"); qwen, proc = build_qwen_model(QWEN, device=dev, gradient_checkpointing=False); qwen.lm_head = _fm.FP32Head(qwen.lm_head)

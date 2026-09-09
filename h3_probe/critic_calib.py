@@ -21,7 +21,7 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.abspath(_HERE + "/../editing/src"))
 logging.basicConfig(level=logging.INFO, format="[%(asctime)s] %(levelname)s: %(message)s")
 log = logging.getLogger("calib")
-QWEN = "/project/def-amahdavi/amirrz/HF/models/Qwen2.5-VL-7B-Instruct"
+QWEN = os.environ.get("H3_QWEN", "/project/def-amahdavi/amirrz/HF/models/Qwen2.5-VL-7B-Instruct")
 VIDEOS = [v for v in os.environ["VIDEOS"].split(";") if v]
 OUT = os.environ.get("OUT", "/scratch/amirrz/H3_exp/outputs/critic_calib.json")
 EDIT = os.environ.get("EDIT", "The goldfish jumps out of the fish tank into the air.")

@@ -25,9 +25,9 @@ sys.path.insert(0, os.path.abspath(_HERE + "/../editing/src"))
 logging.basicConfig(level=logging.INFO, format="[%(asctime)s] %(levelname)s: %(message)s")
 log = logging.getLogger("sweep")
 
-CKPT = "/scratch/amirrz/H3_exp/ckpt"
+CKPT = os.environ.get("H3_CKPT", "/scratch/amirrz/H3_exp/ckpt")   # H3_CKPT: node-local copy for fast (mmap) loading
 OUT = "/scratch/amirrz/H3_exp/outputs/baseline_sweep"
-QWEN = "/project/def-amahdavi/amirrz/HF/models/Qwen2.5-VL-7B-Instruct"
+QWEN = os.environ.get("H3_QWEN", "/project/def-amahdavi/amirrz/HF/models/Qwen2.5-VL-7B-Instruct")
 RV = "/home/amirrz/my_codes/Sound_Sparks_Motion/results/videos"
 IV = "/home/amirrz/my_codes/Sound_Sparks_Motion/input_videos"
 SW = "/scratch/amirrz/H3_exp/inputs/sweep"
