@@ -384,6 +384,9 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   Iter 3 drifts into the woman running down the corridor (perceptual 0.34, excluded); the optimization then collapses back to
   the baseline for iters 4-12 (critic 0.01) - the usual early-peak pattern.
 
+- 23:35 gen_beer_pour3 baseline: H3 adds a hand, pours and overflows the glass on its own (0.95/0.94) -> no room. Beer is done
+  (3 source attempts; the valid one is handled by H3). Ours running on gen_man_desk; books and toaster2 follow.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -455,7 +458,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_champagne | H3 t2va (r6) | cork pops out | fail (completely static, 0.08/0.15) | ours: every iteration identical to the baseline (cork ~5 px, no gradient) | failed |
 | gen_champagne_close | H3 t2va (r6) | cork shoots out, foam sprays (close-up) | baseline 0.95/0.98 (H3 does it at this framing) | - | skip (verify sheet) |
 | gen_toaster2 | H3 t2va (r6) | toast pops up | baseline 0.37/0.42 -> room | ours queued (any) | opt |
-| gen_beer_pour3 | H3 t2va (r6) | pours until overflow (no person in source) | screening timed out -> re-queued | - | pending |
+| gen_beer_pour3 | H3 t2va (r6) | pours until overflow (no person in source) | baseline: a hand appears, pours, glass overflows with foam in the last third (0.95/0.94) | - | skip (H3 does it) |
 | gen_toaster | H3 t2va (r6) | toast pops up | INVALID SOURCE (toast already up) -> gen_toaster2 | - | redo |
 | gen_beer_pour | H3 t2va (r6) | pours until overflow | INVALID SOURCE x2 (pouring in the clip even with a 'not pouring' prompt) -> gen_beer_pour3 (no person in the source) | - | redo |
 | gen_woman_scream | H3 t2va (r6) | screams in fright | late (mouth opens only in the last frame, 0.52/0.42) | iter 2: wide-open scream mid-clip for ~1 s (0.95); iter 3 drifts (she runs away), iters 4+ collapse to baseline | CANDIDATE WIN |
