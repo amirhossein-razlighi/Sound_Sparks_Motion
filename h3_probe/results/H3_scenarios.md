@@ -539,6 +539,9 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   lunges), Keaton deadpan (bursts out laughing), Chaplin at the table (makes the bread rolls dance), Steamboat Willie at the
   wheel (startled, jumps into the air); Tom & Jerry "To Nap or Not To Nap" downloaded, hammock window being chosen. Queued as
   SCREEN demo2 behind a gate; generated cartoon/B&W fallbacks only if these disappoint.
+  16:15 Tom & Jerry windows cut (content region measured with cropdetect, bars removed): real_tom_walk (Tom strolling with a
+  picnic basket, 6.0-9.7 s; edit: trips and falls flat on his face) and real_tom_hammock (close-up in the hammock glaring at
+  Jerry, 23.9-27.6 s; edit: eyes pop out and he screams). Gate demo2 open; demo2 screening = 7 real clips.
 
 ## Scenario table (updated as results land)
 

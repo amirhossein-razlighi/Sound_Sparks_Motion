@@ -360,5 +360,21 @@
   "edit": "The mouse gets startled and jumps high into the air, arms flailing.",
   "scene": "a black-and-white 1920s cartoon of a mouse steering a ship's wheel",
   "question": "Does the mouse jump into the air at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_tom_walk": {
+  "group": "demo_cartoon",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_tom_walk__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_tom_walk_audio_89f.wav",
+  "edit": "The cat trips and falls flat on his face with a crash.",
+  "scene": "a classic colour cartoon of a grey cat strolling with a picnic basket in a garden",
+  "question": "Does the cat trip or fall down at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_tom_hammock": {
+  "group": "demo_cartoon",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_tom_hammock__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_tom_hammock_audio_89f.wav",
+  "edit": "The cat's eyes pop out of his head and he screams in surprise.",
+  "scene": "a classic colour cartoon close-up of a grey cat lying in a hammock, glaring at a small mouse",
+  "question": "Do the cat's eyes pop out or does the cat scream at any point in this video? Answer only 'yes' or 'no'."
  }
 }
