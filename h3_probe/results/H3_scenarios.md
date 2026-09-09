@@ -543,6 +543,13 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   picnic basket, 6.0-9.7 s; edit: trips and falls flat on his face) and real_tom_hammock (close-up in the hammock glaring at
   Jerry, 23.9-27.6 s; edit: eyes pop out and he screams). Gate demo2 open; demo2 screening = 7 real clips.
 
+- 16:35 demo screening (real memes): real_gatsby glass-shatter - baseline = the original toast, glass intact (0.003/0.04) ->
+  ours queued; real_gatsby_fw - H3 adds modest firework bursts behind him (0.13/0.49) -> skip; real_leo_couch - the original
+  point-and-sip, no spit/laugh (0.006/0.03) -> ours queued; real_travolta - H3 makes him swing his arms and turn, a passable
+  twist (0.67/0.82) -> skip; real_mrbean - stands and checks his watch, no faint (0.004/0.015) -> ours queued (whole-body fall,
+  risky); real_grumpy - H3 opens the cat's mouth wide (0.99/1.0) -> skip; real_thug_cat - the cat just sits (0.007/0.08) ->
+  ours queued. Queue order after the demo2 screening: gatsby, plate_counter, thug_cat, mrbean, tyre, leo_couch, lightbulb2.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -638,6 +645,13 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_branch | bank (r7) | branch snaps and falls | baseline does it at frames 9-13 (0.74/0.58) | - | skip |
 | gen_elephant | bank (r7) | raises trunk, trumpets | baseline does it at frames 4-7 (0.91/0.99) | - | skip |
 | gen_bowling2 | bank (r7) | ball knocks the pins over | baseline adds a ball and strikes (0.98/0.92) | - | skip |
+| real_gatsby | real (demo) | champagne glass shatters in his hand | baseline: original toast, glass intact (0.003/0.04) | ours queued | opt |
+| real_gatsby_fw | real (demo) | huge firework explodes behind him | baseline adds modest bursts (0.13/0.49) | - | skip |
+| real_leo_couch | real (demo) | spits out his drink, bursts out laughing | baseline: original point-and-sip (0.006/0.03) | ours queued | opt |
+| real_travolta | real (demo) | starts dancing the twist | baseline swings arms and turns (0.67/0.82) | - | skip |
+| real_mrbean | real (demo) | faints and falls backwards | baseline: stands, checks watch (0.004/0.015) | ours queued | opt |
+| real_grumpy | real (demo) | big yawn | baseline opens the mouth wide (0.99/1.0) | - | skip |
+| real_thug_cat | real (demo) | pushes the glass off the table | baseline: cat just sits (0.007/0.08) | ours queued | opt |
 | gen_car_shatter | bank (car_window source) | the whole car shatters into glass shards | baseline does it, early and complete (cracks at frame 4, debris field by frame 9; 0.86/0.60) | ours cancelled (stop rule) | skip |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
