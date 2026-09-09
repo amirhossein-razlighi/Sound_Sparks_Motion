@@ -447,6 +447,13 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   whole-object destruction is a strong text prior for it (the car-window over-edit was that prior taking over). Queue continues
   with cat + vase, firecracker, ladder (new allocation 20634712 on rg31702).
 
+- 06:40 gen_cat_vase (both/any, patience 14, 15 iters): the baseline already does the edit (0.99 in our loop; lunge at frame 6,
+  shatter at frame 10), iter 1 reproduces it, and from iter 2 the critic collapses to 0.001-0.07 with drift 0.25-0.33 (saturated
+  critic + normalized step, as with the bicycle). User while it ran: **iter 5 is good** - the cat paws at the vase from frame ~2 and
+  pushes until it tips over and the plant spills out (frames 11-13), a more deliberate push than the baseline's lunge; critic missed
+  it (0.01). Packaged as B_cand_iter05 via the new FORCE_ITERS option of package_candidate.py. iter 4 = a human hand appears (drift),
+  iter 6 = the vase never falls, 7-15 flat. Firecracker running next on the same allocation.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -526,7 +533,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_books_shelf | H3 t2va (r6) | books fall off shelf | late (topple only in the last 2 frames, 0.93/0.91) | iter 2: cascade starts at frame ~70 and more books fall (earlier, fuller); iters 3/5 fling a single book; iter 7 zoom drift | modest improvement |
 | gen_yoga | H3 t2va (r6) | yoga flow: arms overhead, forward fold, rise | success at baseline (full flow, 0.81/0.89) | - | skip (no room) |
 | gen_piano_lid | bank | lid slams shut | baseline closes the lid slowly but completely (frames 4-7); critic missed it (0.12/0.02) | ours cancelled (no room) | skip |
-| gen_cat_vase | bank | pushes the vase over, it shatters | baseline does it (0.97/0.99) | - | skip |
+| gen_cat_vase | bank | pushes the vase over, it shatters | baseline does it: lunge at frame 6, shatter at frame 10 (0.97/0.99) | ours (both/any, patience 14): iter 1 = baseline; iter 5 = the cat paws at the vase from frame 2 and pushes until it tips and the plant spills (critic miss 0.01, perc 0.27); iter 4 hand drift; 6-15 flat/drift | candidate (user: iter 5 good) |
 | gen_bike_tips | bank | bicycle tips over | baseline falls late (frames 9-12, 0.78/0.40) | ours: iters 2-4 remove the fall, iters 5+ drift | failed |
 | gen_ladder | bank | ladder slides and falls | baseline does it mid-clip (0.67/0.20, critic miss) | auto-OPT removed | skip |
 | gen_firecracker | bank | explodes with a bang and smoke | source already sparks/smokes; baseline = source, no bang (0.07/0.49) | ours running (weak scenario) | opt |
