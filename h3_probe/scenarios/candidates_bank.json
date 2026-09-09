@@ -240,5 +240,61 @@
   "edit": "He smashes the guitar onto the stage floor and it breaks apart with a crash.",
   "scene": "a rock guitarist holding an electric guitar raised over his head on stage",
   "question": "Does the guitar get smashed or broken at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_lightbulb2": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_lightbulb2__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_lightbulb2_h3sound_89f.wav",
+  "edit": "The light bulb bursts with a flash and a pop.",
+  "scene": "a close-up of a glowing bare light bulb hanging from a wire",
+  "question": "Does the light bulb burst or break at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_bowling2": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_bowling2__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_bowling2_h3sound_89f.wav",
+  "edit": "A bowling ball smashes into the pins and knocks them all over with a crash.",
+  "scene": "ten bowling pins standing at the end of a lane",
+  "question": "Do the bowling pins get knocked over at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_gatsby": {
+  "group": "demo",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_gatsby__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_gatsby_audio_89f.wav",
+  "edit": "The champagne glass shatters in his hand with a sharp crack.",
+  "scene": "a man in a tuxedo holding a champagne glass at a glittering night party",
+  "question": "Does the champagne glass shatter or break at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_gatsby_fw": {
+  "group": "demo",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_gatsby__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_gatsby_audio_89f.wav",
+  "edit": "A huge firework explodes right behind him and lights up the whole sky.",
+  "scene": "a man in a tuxedo holding a champagne glass at a glittering night party",
+  "question": "Does a large firework explode behind the man at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_leo_couch": {
+  "group": "demo",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_leo_couch__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_leo_couch_audio_89f.wav",
+  "edit": "He spits out his drink and bursts out laughing.",
+  "scene": "a man in a yellow shirt sitting on a couch holding a drink",
+  "question": "Does the man spit out his drink or burst out laughing at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_travolta": {
+  "group": "demo",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_travolta__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_travolta_audio_89f.wav",
+  "edit": "He starts dancing the twist, swinging his hips and arms.",
+  "scene": "a man in a dark suit standing in a retro room looking around",
+  "question": "Does the man dance at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_mrbean": {
+  "group": "demo",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_mrbean__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_mrbean_audio_89f.wav",
+  "edit": "He faints and falls backwards into the field.",
+  "scene": "a man in a brown suit standing in a yellow field, hands on hips",
+  "question": "Does the man fall down at any point in this video? Answer only 'yes' or 'no'."
  }
 }

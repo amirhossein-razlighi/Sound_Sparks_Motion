@@ -1,0 +1,1 @@
+SOURCES_OK_b1 (frame_wall, balloon, tyre; lightbulb + bowling rejected -> regenerated as *2)

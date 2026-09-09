@@ -497,6 +497,17 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   him), mic_drop (drops the mic with a thud, walks off), table_flip (flips the table with a crash), party_popper (bang +
   confetti), cat_dinner (the cat at the dinner table hisses and swipes the plate off), guitar_smash (smashes the guitar on the
   stage). Goal here is a showcase-quality result from ours, the A/B gap is secondary. Queued after round 7 (GEN -> gate -> SCREEN).
+  12:30 user: do NOT generate the demo inputs - download real meme/film clips from the web. Generated demo scenes dropped from
+  the queue (prompts kept in the bank, unused). New tool scenarios/prep_real_source.py: yt-dlp (<=720p) -> 512x320 cover crop,
+  24 fps, 89 frames, 32 kHz mono wav of the same window (raw downloads kept in inputs/real/raw). Prepared (inputs/real/):
+  real_gatsby (tuxedo toast, 0-3.7 s; edits: glass shatters in his hand / a huge firework explodes behind him), real_leo_couch
+  (couch + drink, 0-3.7 s; edit: spits out his drink and bursts out laughing), real_travolta (confused look, 2.0-5.7 s; edit:
+  starts dancing the twist), real_mrbean (hands on hips in the field, 0-3.7 s; edit: faints and falls backwards). Grumpy Cat
+  (yawn) and the glass-pushing cat (pushes the glass off the table) windows being chosen; Home Alone needs a sign-in, the
+  Inception clip 403, Pikachu's own shot too short, the MJ popcorn clip 224x176. Demo screening queued after round 7 batch 2
+  behind a SOURCES_OK_demo gate.
+  Batch 1 sources: frame_wall, balloon, tyre accepted; lightbulb (switches on mid-clip) and bowling (ball already rolls and
+  strikes) rejected and re-prompted as gen_lightbulb2 (steadily lit) / gen_bowling2 (pins only, no ball) in batch 2.
 
 ## Scenario table (updated as results land)
 
