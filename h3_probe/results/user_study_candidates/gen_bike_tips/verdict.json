@@ -1,0 +1,12 @@
+{
+ "slug": "gen_bike_tips",
+ "baseline_any": 0.22146907370563862,
+ "baseline_lin": 0.8115065091454002,
+ "best_iter": 1,
+ "best_any": 0.22376372432012948,
+ "best_lin": 0.22376372432012948,
+ "best_perc": 0.00034647146821953356,
+ "auto_verdict": "no_gain",
+ "note": "auto verdict from the in-loop critic; visual review decides",
+ "visual_verdict": "failed: iters 2-4 remove the baseline's late fall; iters 5+ texture drift"
+}

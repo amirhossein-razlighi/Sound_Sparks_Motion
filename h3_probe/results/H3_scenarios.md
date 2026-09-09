@@ -411,6 +411,9 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   car window shatters, girl's gum bubble pops, man's spit-take, picture frame falls, light bulb bursts, then gorilla, horse
   neigh, popcorn, soda can, elephant, bowling.
 
+- 03:45 gen_bike_tips (both/any): the optimization removes the late fall (iters 2-4 stay upright, critic 0.003) and drifts into
+  texture garbage from iter 5 -> failed. Bank feed #2 generating: firecracker, kettle, plate, car window.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -491,7 +494,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_yoga | H3 t2va (r6) | yoga flow: arms overhead, forward fold, rise | success at baseline (full flow, 0.81/0.89) | - | skip (no room) |
 | gen_piano_lid | bank | lid slams shut | baseline closes the lid slowly but completely (frames 4-7); critic missed it (0.12/0.02) | ours cancelled (no room) | skip |
 | gen_cat_vase | bank | pushes the vase over, it shatters | baseline does it (0.97/0.99) | - | skip |
-| gen_bike_tips | bank | bicycle tips over | baseline falls late (frames 9-12, 0.78/0.40) | ours queued (any) | opt |
+| gen_bike_tips | bank | bicycle tips over | baseline falls late (frames 9-12, 0.78/0.40) | ours: iters 2-4 remove the fall, iters 5+ drift | failed |
 | gen_ladder | bank | ladder slides and falls | baseline does it mid-clip (0.67/0.20, critic miss) | auto-OPT removed | skip |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |

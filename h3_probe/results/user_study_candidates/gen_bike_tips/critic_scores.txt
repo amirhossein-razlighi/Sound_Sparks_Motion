@@ -1,0 +1,14 @@
+baseline: yes_lin=0.8115 yes_any=0.2215
+ranking key: yes_any (perceptual <= 0.25 only); B_best = rank 1, B_cand = next 3
+
+iter 01  yes_lin=0.2238  yes_any=0.2238  perceptual=0.000  <- B_best
+iter 02  yes_lin=0.0031  yes_any=0.0031  perceptual=0.179  <- cand
+iter 03  yes_lin=0.0029  yes_any=0.0029  perceptual=0.181  <- cand
+iter 04  yes_lin=0.0032  yes_any=0.0032  perceptual=0.233  <- cand
+iter 05  yes_lin=0.0159  yes_any=0.0159  perceptual=0.589  (over perceptual guard)
+iter 06  yes_lin=0.0117  yes_any=0.0117  perceptual=0.515  (over perceptual guard)
+iter 07  yes_lin=0.0352  yes_any=0.0352  perceptual=0.522  (over perceptual guard)
+iter 08  yes_lin=0.0606  yes_any=0.0606  perceptual=0.547  (over perceptual guard)
+iter 09  yes_lin=0.0049  yes_any=0.0049  perceptual=0.262  (over perceptual guard)
+iter 10  yes_lin=0.0014  yes_any=0.0014  perceptual=0.606  (over perceptual guard)
+iter 11  yes_lin=0.0015  yes_any=0.0015  perceptual=0.616  (over perceptual guard)
