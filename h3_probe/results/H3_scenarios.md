@@ -828,7 +828,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_frame_wall | bank (r7) | picture falls off the wall, breaks | baseline drops it at frames 9-13 (0.97/0.86) | - | skip |
 | gen_door_slam | bank (r7) | wind slams the door shut | baseline: door never moves (0.003/0.01) | ours (both/any, 16 iters): door never moves, critic flat 0.01-0.02 | failed (flat) |
 | gen_horse_neigh | bank (r7) | throws its head up and neighs | baseline: head turn + open mouth only at frames 8-9 (0.23/0.07) | ours iters 3-5: head thrown up at frames 2-4 (early, stronger; critic miss 0.03-0.07); 8-16 nothing | candidate (modest, timing) |
-| gen_lightbulb2 | bank (r7) | bulb bursts with a flash | baseline static (0.001/0.005) | ours queued (last) | opt |
+| gen_lightbulb2 | bank (r7) | bulb bursts with a flash | baseline static (0.001/0.005) | ours: steady glow in all 16 iters, critic flat 0.005; iter 7 zoom drift (perc 0.37), iter 9 garbage frames (perc 0.26) | FAIL (19:40): static-object dead end |
 | gen_branch | bank (r7) | branch snaps and falls | baseline does it at frames 9-13 (0.74/0.58) | - | skip |
 | gen_elephant | bank (r7) | raises trunk, trumpets | baseline does it at frames 4-7 (0.91/0.99) | - | skip |
 | gen_bowling2 | bank (r7) | ball knocks the pins over | baseline adds a ball and strikes (0.98/0.92) | - | skip |
@@ -905,3 +905,6 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 - 18:35 gen_tyre FAILED: critic flat (any 0.009 -> 0.016 best), no burst or flattening in any iteration; iters 4 and 6 only drift
   the layout (perceptual 0.40). Confirms the static-object dead end (kettle, door, balloon, glass, now tyre). gen_lightbulb2
   (same class) running since 18:30; expect the same, it stays because the user put it at the top.
+- 19:40 gen_lightbulb2 FAILED like the tyre: critic flat at 0.005, steady glow in every iteration; iter 7 = zoom drift, iter 9 =
+  garbage second half (critic fooling, 0.034). Static-object class now 0 for 6 - do not queue more of these. Allocation renewed
+  (20877246, rg31802); real_michael_cry running since 19:42.
