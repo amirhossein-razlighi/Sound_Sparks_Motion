@@ -22,7 +22,7 @@ NG_WANT=${NGPU_ALLOC:-4}; T_WANT=${ALLOC_TIME:-8:00:00}; STEP_MEM=""
 trap 'rm -f $ON/step_$TAGR.lock' EXIT
 OUTB=/scratch/amirrz/H3_exp/outputs/overnight; mkdir -p $OUTB $OUTB/screen; touch $Q $D
 PY=/scratch/amirrz/H3_exp/venv/bin/python
-EXCL=rg31701,rg13401,rg21803,rg21802,rg31502,rg32202,rg21702,rg32102
+EXCL=rg31701,rg13401,rg21803,rg21802,rg31502,rg32202,rg21702,rg32102,rg31801
 AUTO_ROOM=${AUTO_ROOM:-0.5}
 ALLOC=${ALLOC_ID:-}
 [ -n "$ALLOC" ] && NEED_STAGE=1 || NEED_STAGE=0   # an inherited allocation must be staged on first use

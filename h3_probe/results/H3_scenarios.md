@@ -729,6 +729,13 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   turns the wheel a little, so ours amplifies an existing motion instead of inventing one - the pattern that has worked).
   Chaplin sneeze running on allocation 20843961 (rg31801).
 - 15:40 user: real_tom_walk2 iter 3 is cool for the demo -> results/demo/real_tom_walk2 (iter 3 primary, iter 5 alternate, critic best iter 1 alongside).
+- 15:40 stuck step caught: real_chaplin_sneeze phase B logged "models ready" at 15:10 and then nothing for 30 min (normal gap
+  to the first critic line is 2 min). On the node: GPU 0 of rg31801 in "GPU requires reset" state (utilization N/A), the python
+  at 90 % CPU spinning in poll/ioctl on the CUDA driver, GPU 1 idle. Phase A had completed on the same GPUs minutes earlier,
+  so the fault appeared mid-job. Allocation cancelled, rg31801 added to the exclude list (runner + bad_nodes.txt), runner
+  swapped through a queue gate, chaplin_sneeze re-queued first (its capture.pt is reused). New allocation 20847774 on
+  rg31802 within seconds. Cost: ~35 min. Detection rule added to the memory: no "[B] baseline" line within 5 min of
+  "models ready" = check the node.
 
 ## Scenario table (updated as results land)
 
