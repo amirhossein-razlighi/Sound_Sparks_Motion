@@ -653,6 +653,12 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   hugely, bored, and rolls her eyes.") and, user's own, real_casablanca_hat ("She grabs her hat, throws it up into the air and
   laughs.").
 
+- 06:20 real_mrbean: candidate win. iter 4 = he tips backwards at frame 7 and lies flat on his back in the field from frame 9
+  (user spotted it in the previews; critic missed it at 0.09 and the perceptual term 0.32 sat above the 0.25 guard, so it was
+  forced into the package). iter 9 falls too but drops out of view; all other iterations equal the baseline. Lesson: for
+  whole-body falls the drift guard rejects the true positive - judge by eye (or raise PERC_MAX for fall edits). Next: the
+  8-candidate screening on allocation 20827739 (rg31901).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -752,7 +758,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_gatsby_fw | real (demo) | huge firework explodes behind him | baseline adds modest bursts (0.13/0.49) | - | skip |
 | real_leo_couch | real (demo) | spits out his drink, bursts out laughing | baseline: original point-and-sip (0.006/0.03) | ours queued | opt |
 | real_travolta | real (demo) | starts dancing the twist | baseline swings arms and turns (0.67/0.82) | - | skip |
-| real_mrbean | real (demo) | faints and falls backwards | baseline: stands, checks watch (0.004/0.015) | ours queued | opt |
+| real_mrbean | real (demo) | faints and falls backwards | baseline: stands, checks watch (0.004/0.015) | ours iter 4: tips at frame 7, lies flat on his back from frame 9 (critic miss 0.09, perc 0.32 > guard, forced in); iter 9 falls then drops out of view; rest = baseline | CANDIDATE WIN (user flagged iter 4) |
 | real_grumpy | real (demo) | big yawn | baseline opens the mouth wide (0.99/1.0) | - | skip |
 | real_thug_cat | real (demo) | pushes the glass off the table | baseline: cat just sits (0.007/0.08) | ours: no push in any iteration; iter 7 adds an object, iter 8 reframes (drift) | failed |
 | real_nosferatu | real (demo B&W) | bares fangs, hisses, lunges | baseline: rises and looms (source motion), mouth shut (0.03/0.07) | ours iter 2: mouth opens, fangs show at frames 6-7 (critic 0.28, perc 0.01); iters 4, 9 fainter | candidate (subtle) |

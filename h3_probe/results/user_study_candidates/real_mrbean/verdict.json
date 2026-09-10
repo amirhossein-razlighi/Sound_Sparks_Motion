@@ -1,0 +1,13 @@
+{
+ "slug": "real_mrbean",
+ "baseline_any": 0.014200555225532652,
+ "baseline_lin": 0.0035047787925107567,
+ "best_iter": 9,
+ "best_any": 0.04042663432788019,
+ "best_lin": 0.04042663432788019,
+ "best_perc": 0.15271639823913574,
+ "auto_verdict": "candidate_win",
+ "note": "auto verdict from the in-loop critic; visual review decides",
+ "visual_verdict": "CANDIDATE WIN (demo; user flagged iter 4 while it ran): baseline = he stands hands-on-hips and checks his watch, no faint. iter 4: starts tipping backwards at frame 7, is falling at frame 8 and lies flat on his back in the rapeseed for frames 9-12 - a proper faint; critic only 0.09 and perceptual 0.32 (over the 0.25 guard, hence forced in as B_cand_iter04; the guard is too tight for whole-body falls). iter 9 (critic best, 0.04): tips and falls at frames 7-9 but then drops out of view into the field. All other iterations = baseline. Use iter 4.",
+ "user_flag": "iter 4 works (user, 05:55)"
+}
