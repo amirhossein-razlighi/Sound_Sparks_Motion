@@ -6,7 +6,8 @@
  "note": "user: iters 3 and 14 are ok (iter 3 primary). lin objective, trimmed source.",
  "steps": 16,
  "extra": [
-  "B_candidate_iter14"
+  "B_candidate_iter14",
+  "B_criticbest_iter11"
  ],
  "baseline_yes": 0.5418236364786917,
  "baseline_yes_any": 0.9563786337501767,

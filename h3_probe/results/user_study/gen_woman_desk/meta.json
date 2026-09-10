@@ -5,7 +5,9 @@
  "iter": 2,
  "note": "user pick: iter 2 (wide yawn). Note: the run's own baseline also scored 0.91 on the critic.",
  "steps": 16,
- "extra": [],
+ "extra": [
+  "B_criticbest_iter01"
+ ],
  "baseline_yes": 0.911391735962326,
  "baseline_yes_any": 0.9998756399953459,
  "best_iter_by_critic": 1

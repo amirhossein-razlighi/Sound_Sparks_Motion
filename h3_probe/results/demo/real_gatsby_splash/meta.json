@@ -6,7 +6,8 @@
  "note": "user (09-10 08:35): iter 3 is not bad, demo only. Foam bubbles up and overflows the rim at frames 7-9; iter 2 alternate. Baseline has a brief spray of its own at frames 7-9, so no study pair.",
  "steps": 16,
  "extra": [
-  "B_candidate_iter02"
+  "B_candidate_iter02",
+  "B_criticbest_iter01"
  ],
  "baseline_yes": 0.014213874681045279,
  "baseline_yes_any": 0.42011472194743604,

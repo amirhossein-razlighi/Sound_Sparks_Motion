@@ -6,7 +6,8 @@
  "note": "RESERVE - clear sustained clapping (frames ~20-110) but H3 zooms out to a wider shot to show the hands (baseline is a tight face shot where hands meet once for ~3 frames). alt: iter 3. Framing change = weaker preservation.",
  "steps": 16,
  "extra": [
-  "B_candidate_iter03"
+  "B_candidate_iter03",
+  "B_criticbest_iter01"
  ],
  "baseline_yes": 0.1709592587588535,
  "baseline_yes_any": 0.6531208633544544,

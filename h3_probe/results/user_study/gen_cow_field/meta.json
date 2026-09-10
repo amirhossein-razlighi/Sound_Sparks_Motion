@@ -7,7 +7,8 @@
  "steps": 16,
  "extra": [
   "B_candidate_iter04",
-  "B_candidate_iter07"
+  "B_candidate_iter07",
+  "B_criticbest_iter01"
  ],
  "baseline_yes": 0.8844724337762319,
  "baseline_yes_any": 0.9934566760226893,

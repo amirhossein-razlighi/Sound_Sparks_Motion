@@ -5,7 +5,9 @@
  "iter": 4,
  "note": "user pick: iter 4 is good (downscaled 320x512x89 source); critic stayed flat (0.004 at iter 4) - critic miss; later iterations drift.",
  "steps": 16,
- "extra": [],
+ "extra": [
+  "B_criticbest_iter02"
+ ],
  "baseline_yes": 0.09634119756879023,
  "baseline_yes_any": 0.008227288344911932,
  "best_iter_by_critic": 2

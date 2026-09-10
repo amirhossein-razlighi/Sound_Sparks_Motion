@@ -6,6 +6,7 @@
  "note": "clean leap out of the tank; baseline never jumps",
  "steps": 16,
  "extra": [
+  "B_criticbest_iter03",
   "A_baseline_32steps",
   "B_ours_32steps"
  ],

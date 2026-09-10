@@ -91,6 +91,17 @@ def main():
             if os.path.exists(fa):
                 na = "B_candidate_final" if alt == "final" else f"B_candidate_iter{int(alt):02d}"
                 shutil.copy2(fa, os.path.join(d, na + "_av.mp4")); extra.append(na)
+        # always ship the critic's own pick next to the user's, so it is clear later which iteration was chosen by eye
+        res0 = json.load(open(os.path.join(run, "results.json"))) if os.path.exists(os.path.join(run, "results.json")) else {}
+        cb = res0.get("best_iter")
+        try:
+            cb = int(cb)
+        except (TypeError, ValueError):
+            cb = None
+        if cb is not None and cb != (int(it) if it != "final" else -1) and cb not in [int(a) for a in pk.get("alts", []) if a != "final"]:
+            fc = os.path.join(run, f"iter_{cb:02d}_av.mp4")
+            if os.path.exists(fc):
+                shutil.copy2(fc, os.path.join(d, f"B_criticbest_iter{cb:02d}_av.mp4")); extra.append(f"B_criticbest_iter{cb:02d}")
         for tag, name in (("baseline", "A_baseline"), ("optimized", "B_ours")):
             f = next((x for x in (os.path.join(run, f"render_{tag}_32_av.mp4"), os.path.join(run, "render", f"render_{tag}_32_av.mp4"))
                       if os.path.exists(x)), None)
@@ -105,12 +116,13 @@ def main():
                 "best_iter_by_critic": res.get("best_iter")}
         json.dump(meta, open(os.path.join(d, "meta.json"), "w"), indent=1)
         alts = ", ".join(str(a) for a in pk.get("alts", []))
-        rows.append(f"| {s} | {edit} | {it}{' (alt: ' + alts + ')' if alts else ''} | {pk.get('note', '')} |")
+        cbs = f" [critic best: {cb}]" if cb is not None and cb != (int(it) if it != "final" else -1) else ""
+        rows.append(f"| {s} | {edit} | {it}{' (alt: ' + alts + ')' if alts else ''}{cbs} | {pk.get('note', '')} |")
         print(rows[-1])
     with open(os.path.join(DST, "INDEX.md"), "w") as f:
         f.write(f"# {INDEX_TITLE} (A = H3 baseline, B = ours; same source, prompt, noise and 16 steps)\n\n"
                 "Files per scenario: `source_input_av.mp4` (the model input) + `source_audio.wav`, `prompts.txt` (edit sentence, full H3 prompt, critic question), `A_baseline_av.mp4`, `B_ours_av.mp4` (+ `B_candidate_iterNN_av.mp4` alternates), `meta.json`.\n"
-                "B is the iteration picked by visual inspection of all previews (`scenarios/picks.json`).\n\n"
+                "B is the iteration picked by visual inspection of all previews (`scenarios/picks.json`); `B_criticbest_iterNN_av.mp4` is the iteration the critic itself ranked best (when it differs from the pick), for reference.\n\n"
                 "| slug | edit | picked iter | what changes |\n|---|---|---|---|\n")
         for r in rows:
             f.write(r + "\n")
