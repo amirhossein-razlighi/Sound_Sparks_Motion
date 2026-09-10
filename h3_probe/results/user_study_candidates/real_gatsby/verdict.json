@@ -1,0 +1,12 @@
+{
+ "slug": "real_gatsby",
+ "baseline_any": 0.015288012036277613,
+ "baseline_lin": 0.001809263272375875,
+ "best_iter": 7,
+ "best_any": 0.08342752378322983,
+ "best_lin": 0.08342752378322983,
+ "best_perc": 0.19195155799388885,
+ "auto_verdict": "weak",
+ "note": "auto verdict from the in-loop critic; visual review decides",
+ "visual_verdict": "WEAK (no clean shatter, user to judge): iters 1-4 = the original toast; iter 5 overlays a cracked-glass pattern over the whole frame at frames 3-5 (a cracked-screen effect, not the champagne glass); iters 6-7 and 11-16 add a white spray/burst near his hand at frames 4-6 while the glass stays intact afterwards; iters 8-10 drift to a wide party shot. Critic peaked at iter 5 (0.18) and 6 (0.12), both over the perceptual guard. B_best = iter 7; iters 5 and 6 forced in for review."
+}

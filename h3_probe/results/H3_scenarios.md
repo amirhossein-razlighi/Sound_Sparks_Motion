@@ -579,6 +579,11 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   stands still, only a faint highlight on the glass at frames 10-11, no shatter (0.08/0.06) -> ours queued after tom_walk.
   Optimizations started with real_gatsby on allocation 20740859.
 
+- 21:10 real_gatsby (glass shatters): no clean shatter of the glass in his hand. The 'shatter' prior shows up as a cracked-glass
+  overlay across the frame (iter 5) or a white spray burst near the hand at frames 4-6 (iters 6-7, 11-16) with the glass intact
+  right after; iters 8-10 drift to a wide party shot. Weak; iters 5-6 packaged for review. Lesson: on real footage with a lot
+  of background motion (fireworks bokeh) the object-level shatter does not localize. Nosferatu next (allocation 20746305).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -674,7 +679,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_branch | bank (r7) | branch snaps and falls | baseline does it at frames 9-13 (0.74/0.58) | - | skip |
 | gen_elephant | bank (r7) | raises trunk, trumpets | baseline does it at frames 4-7 (0.91/0.99) | - | skip |
 | gen_bowling2 | bank (r7) | ball knocks the pins over | baseline adds a ball and strikes (0.98/0.92) | - | skip |
-| real_gatsby | real (demo) | champagne glass shatters in his hand | baseline: original toast, glass intact (0.003/0.04) | ours queued | opt |
+| real_gatsby | real (demo) | champagne glass shatters in his hand | baseline: original toast, glass intact (0.003/0.04) | ours: iter 5 cracked-screen overlay; iters 6-7, 11-16 a white spray near the hand at frames 4-6, glass intact after; 8-10 drift | weak (user to judge) |
 | real_gatsby_fw | real (demo) | huge firework explodes behind him | baseline adds modest bursts (0.13/0.49) | - | skip |
 | real_leo_couch | real (demo) | spits out his drink, bursts out laughing | baseline: original point-and-sip (0.006/0.03) | ours queued | opt |
 | real_travolta | real (demo) | starts dancing the twist | baseline swings arms and turns (0.67/0.82) | - | skip |
