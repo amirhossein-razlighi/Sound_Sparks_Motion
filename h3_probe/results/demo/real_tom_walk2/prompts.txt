@@ -2,7 +2,7 @@ scenario: real_tom_walk2
 edit sentence (the only thing the user asks for): The cat trips and falls flat on his face with a crash, and the yellow pillow he is holding and the red picnic basket tumble out of his hands.
 scene description used in the prompt: a classic colour cartoon of a grey cat strolling in a garden carrying a red picnic basket and pulling out a yellow pillow
 critic question (Qwen2.5-VL, our method only): Does the cat trip or fall down at any point in this video? Answer only 'yes' or 'no'.
-mode: both   critic objective: any   picked iteration: 3
+mode: both   critic objective: any   picked iteration: 2
 source video: /scratch/amirrz/H3_exp/inputs/real/real_tom_walk__real_89f.mp4
 source audio: /scratch/amirrz/H3_exp/inputs/real/real_tom_walk_audio_89f.wav
 

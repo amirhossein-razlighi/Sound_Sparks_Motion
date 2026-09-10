@@ -728,7 +728,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   dropped from the queue (same class of edit on the same source, no hope); real_steamboat_wheel stays (the baseline already
   turns the wheel a little, so ours amplifies an existing motion instead of inventing one - the pattern that has worked).
   Chaplin sneeze running on allocation 20843961 (rg31801).
-- 15:40 user: real_tom_walk2 iter 3 is cool for the demo -> results/demo/real_tom_walk2 (iter 3 primary, iter 5 alternate, critic best iter 1 alongside).
+- 15:40 user: real_tom_walk2 -> results/demo/real_tom_walk2. CORRECTION 15:55: the user's pick is ITER 2 (I had packaged iter 3 first by mistake); repackaged with iter 2 as B_ours, iters 3 and 5 as alternates, critic best iter 1 alongside.
 - 15:40 stuck step caught: real_chaplin_sneeze phase B logged "models ready" at 15:10 and then nothing for 30 min (normal gap
   to the first critic line is 2 min). On the node: GPU 0 of rg31801 in "GPU requires reset" state (utilization N/A), the python
   at 90 % CPU spinning in poll/ioctl on the CUDA driver, GPU 1 idle. Phase A had completed on the same GPUs minutes earlier,
