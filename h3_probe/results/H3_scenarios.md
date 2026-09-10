@@ -695,6 +695,9 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   the glass, 7 adds subtitle-like text, 9-15 fade to a bubble ring. Critic fell monotonically 0.41 -> 0.02 (the optimizer left
   the baseline's spray behind instead of amplifying it). Gatsby closed: three edits tried (shatter, splash, wink/comb), none a
   win for ours. New allocation 20830889 (rg32503); tom_walk2 running.
+- 08:40 user: gatsby_splash iter 3 is not bad, but demo only, keep it somewhere separate -> new folder results/demo/ (picks in
+  scenarios/demo_picks.json, packaged by package_ab.py with PICKS_FILE/DST_DIR env); real_gatsby_splash = iter 3 primary, iter 2
+  alternate. The user-study folder stays clean.
 
 ## Scenario table (updated as results land)
 
