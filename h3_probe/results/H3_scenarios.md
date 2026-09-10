@@ -699,6 +699,13 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   scenarios/demo_picks.json, packaged by package_ab.py with PICKS_FILE/DST_DIR env); real_gatsby_splash = iter 3 primary, iter 2
   alternate. The user-study folder stays clean.
 
+- 09:35 real_tom_walk2: naming the pillow and the basket fixed the object swap, but for the BASELINE too - H3 now trips Tom at
+  frame ~9 with the pillow flying; ours (iters 2-5) falls at the same moment, iters 3 and 5 with the pillow on the ground,
+  6-8 drift (orange Tom, then a crowd of mice). No gap. To get a real pair the fall has to come from ours on the original
+  prompt (baseline late at frames 10-12) without the swap -> queued a rerun of real_tom_walk with stronger appearance
+  anchoring (TEMPORAL_W 0.3 -> 0.5, LPIPS_W 1.0 -> 1.5, TAG=anchor; capture reused) right after plate2 - the second lever
+  planned this morning, now possible with night_run2.sh's extra-env field.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -815,7 +822,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_chaplin_sneeze | real (demo B&W) | sneezes, rolls fly off the forks | baseline: fork fiddling, no sneeze (0.09/0.23) | ours queued | opt |
 | real_chaplin_sleep | real (demo B&W) | falls asleep, head drops on the table | baseline: head drops only in the last frame (0.81/0.87, late) | ours queued (low) | opt |
 | real_gatsby_splash | real (demo) | champagne splashes out of the glass | baseline: brief spray over the glass at frames 7-9 (0.34/0.50) | ours: iters 2-3 foam overflows the rim; 4-5 a bottle appears; 6, 8 a pouring jet; 7 text overlay; critic falls 0.41 -> 0.02 | weak (iter 3 closest) |
-| real_tom_walk2 | real (demo cartoon) | trips and falls; pillow + basket anchored in the prompt | baseline now trips him at frame ~8, pillow flying (0.77/0.93) | ours queued (earlier fall, keep the pillow) | opt |
+| real_tom_walk2 | real (demo cartoon) | trips and falls; pillow + basket anchored in the prompt | baseline trips him at frame ~9, pillow flying (0.77/0.93) | ours iters 2-5 fall at frames 8-9 too (3, 5 keep the pillow); 6-8 identity drift | no gap (demo-quality, not a pair) |
 | real_steamboat_laugh | real (demo cartoon) | throws head back, laughs | baseline = source; whistling mouth read as 'open' (0.45/0.98, saturated) | - | skip |
 | real_steamboat_shout | real (demo cartoon) | shouts angrily, shakes fist | baseline = source (0.05/0.13) | ours queued | opt |
 | real_steamboat_wheel | real (demo cartoon) | spins the wheel wildly | baseline turns the wheel at frames 7-11 (0.19/0.48) | ours queued (medium) | opt |

@@ -1,0 +1,12 @@
+{
+ "slug": "real_tom_walk2",
+ "baseline_any": 0.9574628653706455,
+ "baseline_lin": 0.829038852792814,
+ "best_iter": 1,
+ "best_any": 0.9362787187279438,
+ "best_lin": 0.9362787187279438,
+ "best_perc": 0.0003726907598320395,
+ "auto_verdict": "no_gap",
+ "note": "auto verdict from the in-loop critic; visual review decides",
+ "visual_verdict": "NO GAP (prompt fix helped both): with both objects named, the BASELINE already trips Tom at frame ~9 with the yellow pillow flying and the basket tumbling. Ours iters 2-5 fall at frames 8-9 as well (iters 3 and 5 keep the pillow visible on the ground, iter 2 loses it); iter 6 turns Tom orange, iters 7-8 replace him with several small brown mice (identity drift). Same timing as the baseline (motion peak in the same bin), so a demo-quality clip from ours (iter 5) but not a study pair. Next lever for a real gap: rerun the ORIGINAL prompt (baseline late at frames 10-12) with stronger appearance anchoring to keep the pillow."
+}
