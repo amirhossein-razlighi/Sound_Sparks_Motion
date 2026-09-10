@@ -728,6 +728,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   dropped from the queue (same class of edit on the same source, no hope); real_steamboat_wheel stays (the baseline already
   turns the wheel a little, so ours amplifies an existing motion instead of inventing one - the pattern that has worked).
   Chaplin sneeze running on allocation 20843961 (rg31801).
+- 15:40 user: real_tom_walk2 iter 3 is cool for the demo -> results/demo/real_tom_walk2 (iter 3 primary, iter 5 alternate, critic best iter 1 alongside).
 
 ## Scenario table (updated as results land)
 

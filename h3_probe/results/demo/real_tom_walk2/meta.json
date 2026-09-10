@@ -1,0 +1,15 @@
+{
+ "slug": "real_tom_walk2",
+ "edit": "The cat trips and falls flat on his face with a crash, and the yellow pillow he is holding and the red picnic basket tumble out of his hands.",
+ "run": "/scratch/amirrz/H3_exp/outputs/overnight/real_tom_walk2/opt",
+ "iter": 3,
+ "note": "user (09-10 15:40): iter 3 is cool for the demo, not bad. Tom trips at frames 8-9 with the yellow pillow and the basket tumbling and stays down; iter 5 alternate. Demo only: the baseline with this anchored prompt trips him at the same moment, so no study pair.",
+ "steps": 16,
+ "extra": [
+  "B_candidate_iter05",
+  "B_criticbest_iter01"
+ ],
+ "baseline_yes": 0.829038852792814,
+ "baseline_yes_any": 0.9574628653706455,
+ "best_iter_by_critic": 1
+}

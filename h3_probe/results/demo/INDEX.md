@@ -6,3 +6,4 @@ B is the iteration picked by visual inspection of all previews (`scenarios/picks
 | slug | edit | picked iter | what changes |
 |---|---|---|---|
 | real_gatsby_splash | The champagne splashes out of the glass in his hand, spraying up into the air. | 3 (alt: 2) [critic best: 1] | user (09-10 08:35): iter 3 is not bad, demo only. Foam bubbles up and overflows the rim at frames 7-9; iter 2 alternate. Baseline has a brief spray of its own at frames 7-9, so no study pair. |
+| real_tom_walk2 | The cat trips and falls flat on his face with a crash, and the yellow pillow he is holding and the red picnic basket tumble out of his hands. | 3 (alt: 5) [critic best: 1] | user (09-10 15:40): iter 3 is cool for the demo, not bad. Tom trips at frames 8-9 with the yellow pillow and the basket tumbling and stays down; iter 5 alternate. Demo only: the baseline with this anchored prompt trips him at the same moment, so no study pair. |
