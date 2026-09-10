@@ -575,6 +575,9 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   skip; travolta_jump - hand up and jumps (0.90/0.99) -> skip; gatsby_wink - hand through the hair at frames 4-7 (0.67/0.91)
   -> skip. Night order of the optimizations: gatsby glass, nosferatu, keaton, thug_cat, plate_counter, tom_walk, steamboat,
   chaplin, mrbean, leo_couch, leo_clap, casablanca, tyre, lightbulb2 (about 1 h each).
+- 20:05 gen_glass_note3 source accepted (singer from the waist up, face visible, glass small on the table); baseline: she
+  stands still, only a faint highlight on the glass at frames 10-11, no shatter (0.08/0.06) -> ours queued after tom_walk.
+  Optimizations started with real_gatsby on allocation 20740859.
 
 ## Scenario table (updated as results land)
 
@@ -688,6 +691,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_travolta_jump | real (demo) | jumps with hand up, shouting | baseline does it (0.90/0.99) | - | skip |
 | real_gatsby_wink | real (demo) | winks, combs hair | baseline combs hair at frames 4-7 (0.67/0.91) | - | skip |
 | real_leo_clap | real (demo) | drops the can, claps | baseline: raises the can, no clap (0.03/0.16) | ours queued | opt |
+| gen_glass_note3 | bank (r7) | singer's high note shatters the glass | baseline: stands still, faint glass highlight, no shatter (0.08/0.06) | ours queued | opt |
 | gen_car_shatter | bank (car_window source) | the whole car shatters into glass shards | baseline does it, early and complete (cracks at frame 4, debris field by frame 9; 0.86/0.60) | ours cancelled (stop rule) | skip |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
