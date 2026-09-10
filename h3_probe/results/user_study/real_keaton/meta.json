@@ -1,0 +1,14 @@
+{
+ "slug": "real_keaton",
+ "edit": "He bursts out laughing.",
+ "run": "/scratch/amirrz/H3_exp/outputs/overnight/real_keaton/opt",
+ "iter": 5,
+ "note": "user (09-10 05:45): good. Real B&W footage (Buster Keaton, public domain), demo set. iter 5 primary (broad laugh from frame ~5, critic 0.9999, perceptual 0.07), iter 6 alternate; iters 9+ drift (second person, colour, other face). Baseline stays deadpan.",
+ "steps": 16,
+ "extra": [
+  "B_candidate_iter06"
+ ],
+ "baseline_yes": 0.012123765731628705,
+ "baseline_yes_any": 0.040944296627908765,
+ "best_iter_by_critic": 8
+}

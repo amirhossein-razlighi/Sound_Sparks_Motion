@@ -24,3 +24,4 @@ B is the iteration picked by visual inspection of all previews (`scenarios/picks
 | goldfish | The goldfish jumps out of the fish tank into the air. | final | clean leap out of the tank; baseline never jumps |
 | man_claps | The man claps his hands. | 2 (alt: 3) | RESERVE - clear sustained clapping (frames ~20-110) but H3 zooms out to a wider shot to show the hands (baseline is a tight face shot where hands meet once for ~3 frames). alt: iter 3. Framing change = weaker preservation. |
 | man_shouts | The man shouts loudly. | 3 | hands come up from mid-clip and an open-mouth shout; baseline raises hands only in the last frames |
+| real_keaton | He bursts out laughing. | 5 (alt: 6) | user (09-10 05:45): good. Real B&W footage (Buster Keaton, public domain), demo set. iter 5 primary (broad laugh from frame ~5, critic 0.9999, perceptual 0.07), iter 6 alternate; iters 9+ drift (second person, colour, other face). Baseline stays deadpan. |
