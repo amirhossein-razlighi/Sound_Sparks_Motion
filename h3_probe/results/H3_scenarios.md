@@ -706,6 +706,13 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   anchoring (TEMPORAL_W 0.3 -> 0.5, LPIPS_W 1.0 -> 1.5, TAG=anchor; capture reused) right after plate2 - the second lever
   planned this morning, now possible with night_run2.sh's extra-env field.
 
+- 10:35 gen_plate_counter2 (user's 'drops without breaking' idea): candidate win on timing. Baseline drops the plate only in
+  the last 0.7 s; ours iter 3 tips it off at frames 2-3 and it lies intact on the floor from frame 4 - the edit as asked, ~2.5 s
+  earlier. Critic missed it (0.05) and the perceptual guard excluded it (0.32), forced in by eye; iters 4-6 fall early, put the
+  plate back and fall again (double fall), 7-8 drift. Third time the guard rejected the true positive on a fall (Mr Bean,
+  plate x2) - for fall edits PERC_MAX should be ~0.4. Next: the Tom anchored rerun, waiting for allocation 20835204 (pending
+  this time).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -827,7 +834,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_steamboat_shout | real (demo cartoon) | shouts angrily, shakes fist | baseline = source (0.05/0.13) | ours queued | opt |
 | real_steamboat_wheel | real (demo cartoon) | spins the wheel wildly | baseline turns the wheel at frames 7-11 (0.19/0.48) | ours queued (medium) | opt |
 | real_steamboat_sneeze | real (demo cartoon) | sneezes, body jerks back | baseline = source (0.10/0.30) | ours queued (low) | opt |
-| gen_plate_counter2 | bank | plate drops off the counter without breaking | baseline: slides off only at frames 10-12 (0.12/0.02, late) | ours queued | opt |
+| gen_plate_counter2 | bank | plate drops off the counter without breaking | baseline: slides off only at frames 10-12, lands intact (0.12/0.02) | ours iter 3: off the edge at frames 2-3, intact on the floor from frame 4 (critic miss 0.05, perc 0.32 > guard, forced in); 4-6 double fall; 7-8 drift | CANDIDATE WIN (timing, user to confirm) |
 | real_tony_laugh | real (demo) | bursts out laughing | baseline throws his head back and laughs from frame ~5 (0.90/1.0) | - | skip (H3 does it) |
 | real_tony_shout | real (demo) | shouts angrily at the camera | baseline: mouth slightly open at frames 8-11 (0.08/0.42) | ours queued | opt |
 | real_casablanca_yawn | real (demo B&W) | yawns hugely, rolls her eyes | baseline yawns behind her hand from frame 3 (0.93/1.0) | - | skip (H3 does it) |

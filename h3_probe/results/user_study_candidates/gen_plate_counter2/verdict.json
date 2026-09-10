@@ -1,0 +1,12 @@
+{
+ "slug": "gen_plate_counter2",
+ "baseline_any": 0.02515535627704923,
+ "baseline_lin": 0.25551886465936596,
+ "best_iter": 4,
+ "best_any": 0.03179569054819831,
+ "best_lin": 0.03179569054819831,
+ "best_perc": 0.17834952473640442,
+ "auto_verdict": "candidate_win",
+ "note": "auto verdict from the in-loop critic; visual review decides",
+ "visual_verdict": "CANDIDATE WIN (timing; user to confirm): baseline slides the plate off only at frames 10-12 (the last ~0.7 s) and it lands intact. Ours iter 3: the plate tilts off the edge at frames 2-3 and lies intact on the floor from frame 4 to the end - exactly the edit, ~2.5 s earlier than the baseline; critic missed it (0.05) and the perceptual term 0.32 sat over the guard (big pixel change because the plate is on the floor most of the clip) -> forced in as B_cand_iter03. iters 4-6: falls early, then the plate is back on the counter and falls again at the end (double fall, odd); iter 7 a second plate appears; iter 8 a soup bowl with a spoon and hands (drift). Use iter 3."
+}
