@@ -617,6 +617,13 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   glass_note3 rechecked by eye: iters 5-6 make her sing with a rippling shattered-glass pattern across the background while the
   glass stays whole - the same 'shatter leaks into the frame' mode as the Gatsby cracked overlay. Verdict unchanged (failed).
 
+- 05:10 user: the Chaplin edit ("makes the bread rolls dance") is what the input window already shows - my 39-42.7 s cut is the
+  start of the roll dance itself. Running optimization cancelled (37 min in, wasted), scenario dropped. Same clip re-queued
+  with edits that are NOT in the footage, screened first: real_chaplin_sneeze ("He sneezes so violently that the bread rolls
+  fly off the forks and across the table.") and real_chaplin_sleep ("He falls asleep and his head drops onto the table with a
+  thud."). Lesson (again): check the source against the edit, not just for stillness - a real clip's own action can coincide
+  with the edit. Mr Bean next on allocation 20826081 (rg32101).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -721,7 +728,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_thug_cat | real (demo) | pushes the glass off the table | baseline: cat just sits (0.007/0.08) | ours: no push in any iteration; iter 7 adds an object, iter 8 reframes (drift) | failed |
 | real_nosferatu | real (demo B&W) | bares fangs, hisses, lunges | baseline: rises and looms (source motion), mouth shut (0.03/0.07) | ours iter 2: mouth opens, fangs show at frames 6-7 (critic 0.28, perc 0.01); iters 4, 9 fainter | candidate (subtle) |
 | real_keaton | real (demo B&W) | bursts out laughing | baseline: looks around, deadpan (0.01/0.04) | ours iter 5-6: broad laugh from frame ~5, identity + B&W look kept (critic 0.9999, perc 0.07); 9-16 drift (second person, colour, other face) | STRONG WIN (demo) |
-| real_chaplin | real (demo B&W) | bread rolls dance | baseline: fiddles with forks (0.03/0.22) | ours queued | opt |
+| real_chaplin | real (demo B&W) | bread rolls dance | INVALID: the cut window (39-42.7 s) is the start of the roll dance itself (user, 05:10) | run cancelled at iter ~8 | dropped; re-queued as real_chaplin_sneeze / real_chaplin_sleep |
 | real_casablanca | real (demo B&W) | bursts out laughing | baseline: soft smile from frame 7 (0.40/0.50) | ours queued (low) | opt |
 | real_steamboat | real (demo cartoon) | startled, jumps into the air | baseline: keeps steering, swing at frames 10-12 (0.09/0.41) | ours: identical to the baseline in all 16 iterations (critic flat ~0.4) | failed |
 | real_tom_walk | real (demo cartoon) | trips and falls flat | baseline trips him at frames 10-12 (0.35/0.50, late) | ours iter 3: trips at frame ~8, sprawled 9-12 (0.80, perc 0.13); iters 4-5 similar; 8+ drift | modest (timing) |
@@ -730,6 +737,8 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_gatsby_wink | real (demo) | winks, combs hair | baseline combs hair at frames 4-7 (0.67/0.91) | - | skip |
 | real_leo_clap | real (demo) | drops the can, claps | baseline: raises the can, no clap (0.03/0.16) | ours queued | opt |
 | gen_glass_note3 | bank (r7) | singer's high note shatters the glass | baseline: stands still, no shatter (0.08/0.06) | ours: flat (0.01-0.07), static except drift in iters 5-6; no shatter | failed (flat) |
+| real_chaplin_sneeze | real (demo B&W) | sneezes, rolls fly off the forks | to screen | - | screen |
+| real_chaplin_sleep | real (demo B&W) | falls asleep, head drops on the table | to screen | - | screen |
 | gen_car_shatter | bank (car_window source) | the whole car shatters into glass shards | baseline does it, early and complete (cracks at frame 4, debris field by frame 9; 0.86/0.60) | ours cancelled (stop rule) | skip |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |

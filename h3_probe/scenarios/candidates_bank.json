@@ -408,5 +408,21 @@
   "edit": "The singer hits a high note and the wine glass shatters.",
   "scene": "an opera singer behind a table with a large wine glass in front of her, face visible",
   "question": "Does the wine glass shatter or break at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_chaplin_sneeze": {
+  "group": "demo_bw",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_chaplin__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_chaplin_audio_89f.wav",
+  "edit": "He sneezes so violently that the bread rolls fly off the forks and across the table.",
+  "scene": "a black-and-white silent-film shot of a man with a small moustache sitting at a table holding two forks stuck into bread rolls",
+  "question": "Does the man sneeze or do the bread rolls fly off the forks at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_chaplin_sleep": {
+  "group": "demo_bw",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_chaplin__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_chaplin_audio_89f.wav",
+  "edit": "He falls asleep and his head drops onto the table with a thud.",
+  "scene": "a black-and-white silent-film shot of a man with a small moustache sitting at a table holding two forks stuck into bread rolls",
+  "question": "Does the man fall asleep or does his head drop onto the table at any point in this video? Answer only 'yes' or 'no'."
  }
 }
