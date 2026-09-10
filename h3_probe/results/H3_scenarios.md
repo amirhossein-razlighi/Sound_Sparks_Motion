@@ -824,7 +824,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_plate_counter | bank | plate slides off and shatters | baseline does it late (slides at frame ~9, shatters at 11-12; 0.66/0.13) | ours iters 2-3: slides off at frames 3-4 but lands intact (critic miss, perc 0.28); 4-8 hands + drift | partial (early fall, no shatter) |
 | gen_car_window | bank | side window shatters | baseline: only a faint crack pattern (0.10/0.06) | iters 3-7 shatter the whole car and doors, not the window (over-edit) | not a win (user) |
 | gen_balloon | bank (r7) | balloon bursts with a pop | baseline: the balloon vanishes between frames 4-5, no pop (0.003/0.02) | ours (both/any, 16 iters): critic flat 0.004-0.025; iter 2 keeps the balloon, iters 3-16 shrink the picture inside a white border with text overlays (layout drift) | failed (flat + drift) |
-| gen_tyre | bank (r7) | tyre bursts, goes flat | baseline static (0.001/0.009) | ours queued | opt |
+| gen_tyre | bank (r7) | tyre bursts, goes flat | baseline static (0.001/0.009) | ours: static in all 16 iters, critic flat 0.009-0.016; iters 4/6 layout-drift outliers (perc 0.40) | FAIL (18:35): static-object dead end, as predicted |
 | gen_frame_wall | bank (r7) | picture falls off the wall, breaks | baseline drops it at frames 9-13 (0.97/0.86) | - | skip |
 | gen_door_slam | bank (r7) | wind slams the door shut | baseline: door never moves (0.003/0.01) | ours (both/any, 16 iters): door never moves, critic flat 0.01-0.02 | failed (flat) |
 | gen_horse_neigh | bank (r7) | throws its head up and neighs | baseline: head turn + open mouth only at frames 8-9 (0.23/0.07) | ours iters 3-5: head thrown up at frames 2-4 (early, stronger; critic miss 0.03-0.07); 8-16 nothing | candidate (modest, timing) |
@@ -902,3 +902,6 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   the mug out of frame late, no bang (desk not visible -> ambiguous); hiccup -> H3 static, talking only (full room). Decision
   (overnight mode, user asked for the edit that works best): OPT real_michael_cry and real_michael_hiccup after gen_lightbulb2,
   real_michael_kiss at the queue tail (runs only if the night is long enough); slam not run.
+- 18:35 gen_tyre FAILED: critic flat (any 0.009 -> 0.016 best), no burst or flattening in any iteration; iters 4 and 6 only drift
+  the layout (perceptual 0.40). Confirms the static-object dead end (kettle, door, balloon, glass, now tyre). gen_lightbulb2
+  (same class) running since 18:30; expect the same, it stays because the user put it at the top.
