@@ -1,0 +1,10 @@
+{
+ "_comment": "Demo-video picks (NOT part of the user study): clips where ours looks good enough for the paper's demo but the A/B gap is not a clean study pair. Packaged by package_ab.py with PICKS_FILE=demo_picks.json DST_DIR=h3_probe/results/demo.",
+ "real_gatsby_splash": {
+  "run": "/scratch/amirrz/H3_exp/outputs/overnight/real_gatsby_splash/opt",
+  "iter": 3,
+  "alts": [2],
+  "edit": "The champagne splashes out of the glass in his hand, spraying up into the air.",
+  "note": "user (09-10 08:35): iter 3 is not bad, demo only. Foam bubbles up and overflows the rim at frames 7-9; iter 2 alternate. Baseline has a brief spray of its own at frames 7-9, so no study pair."
+ }
+}

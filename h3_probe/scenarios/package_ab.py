@@ -14,8 +14,11 @@ import subprocess
 import sys
 
 REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
-DST = os.path.join(REPO, "h3_probe/results/user_study")
-PICKS = {k: v for k, v in json.load(open(os.path.join(REPO, "h3_probe/scenarios/picks.json"))).items() if not k.startswith("_")}
+# PICKS_FILE / DST_DIR / INDEX_TITLE env: package a different pick list into a different folder (e.g. the demo-only set:
+#   PICKS_FILE=h3_probe/scenarios/demo_picks.json DST_DIR=h3_probe/results/demo INDEX_TITLE="Demo-video clips")
+DST = os.path.join(REPO, os.environ.get("DST_DIR", "h3_probe/results/user_study"))
+PICKS = {k: v for k, v in json.load(open(os.path.join(REPO, os.environ.get("PICKS_FILE", "h3_probe/scenarios/picks.json")))).items() if not k.startswith("_")}
+INDEX_TITLE = os.environ.get("INDEX_TITLE", "User-study A/B pairs")
 CANDS = {}
 for f in ("candidates_r1.json", "candidates_r2.json"):
     p = os.path.join(REPO, "h3_probe/scenarios", f)
@@ -105,7 +108,7 @@ def main():
         rows.append(f"| {s} | {edit} | {it}{' (alt: ' + alts + ')' if alts else ''} | {pk.get('note', '')} |")
         print(rows[-1])
     with open(os.path.join(DST, "INDEX.md"), "w") as f:
-        f.write("# User-study A/B pairs (A = H3 baseline, B = ours; same source, prompt, noise and 16 steps)\n\n"
+        f.write(f"# {INDEX_TITLE} (A = H3 baseline, B = ours; same source, prompt, noise and 16 steps)\n\n"
                 "Files per scenario: `source_input_av.mp4` (the model input) + `source_audio.wav`, `prompts.txt` (edit sentence, full H3 prompt, critic question), `A_baseline_av.mp4`, `B_ours_av.mp4` (+ `B_candidate_iterNN_av.mp4` alternates), `meta.json`.\n"
                 "B is the iteration picked by visual inspection of all previews (`scenarios/picks.json`).\n\n"
                 "| slug | edit | picked iter | what changes |\n|---|---|---|---|\n")
