@@ -325,9 +325,25 @@
   "group": "demo_bw",
   "src": "/scratch/amirrz/H3_exp/inputs/real/real_casablanca__real_89f.mp4",
   "wav": "/scratch/amirrz/H3_exp/inputs/real/real_casablanca_audio_89f.wav",
-  "edit": "She bursts out laughing.",
+  "edit": "She bursts out laughing, throwing her head back.",
   "scene": "a black-and-white close-up of a woman in a hat with tearful eyes",
   "question": "Does the woman laugh at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_casablanca_yawn": {
+  "group": "demo_bw",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_casablanca__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_casablanca_audio_89f.wav",
+  "edit": "She yawns hugely, bored, and rolls her eyes.",
+  "scene": "a black-and-white close-up of a woman in a hat with tearful eyes",
+  "question": "Does the woman yawn or open her mouth wide at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_casablanca_hat": {
+  "group": "demo_bw",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_casablanca__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_casablanca_audio_89f.wav",
+  "edit": "She grabs her hat, throws it up into the air and laughs.",
+  "scene": "a black-and-white close-up of a woman in a wide-brimmed hat with tearful eyes",
+  "question": "Does the woman throw her hat or laugh at any point in this video? Answer only 'yes' or 'no'."
  },
  "real_nosferatu": {
   "group": "demo_bw",

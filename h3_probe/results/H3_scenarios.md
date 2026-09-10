@@ -648,6 +648,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   2-3 s. real_tony = 12.0-15.7 s of that clip; edits screened with the plate variant: real_tony_laugh ("He bursts out
   laughing, throwing his head back.") and real_tony_shout ("He suddenly shouts angrily at the camera, his face contorted
   with rage."). Raw clips kept in inputs/real/raw (tony_gabagool, tony_hotel, tony_melfi, tony_fridge).
+- 05:55 user accepted the Casablanca prompts: real_casablanca edit strengthened to "She bursts out laughing, throwing her head
+  back." (already queued for ours); two variants added and screened with the plate/Tony step: real_casablanca_yawn ("She yawns
+  hugely, bored, and rolls her eyes.") and, user's own, real_casablanca_hat ("She grabs her hat, throws it up into the air and
+  laughs.").
 
 ## Scenario table (updated as results land)
 
@@ -773,6 +777,8 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_plate_counter2 | bank | plate drops off the counter without breaking | to screen | - | screen |
 | real_tony_laugh | real (demo) | bursts out laughing | to screen | - | screen |
 | real_tony_shout | real (demo) | shouts angrily at the camera | to screen | - | screen |
+| real_casablanca_yawn | real (demo B&W) | yawns hugely, rolls her eyes | to screen | - | screen |
+| real_casablanca_hat | real (demo B&W) | throws her hat into the air and laughs | to screen | - | screen |
 | gen_car_shatter | bank (car_window source) | the whole car shatters into glass shards | baseline does it, early and complete (cracks at frame 4, debris field by frame 9; 0.86/0.60) | ours cancelled (stop rule) | skip |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
