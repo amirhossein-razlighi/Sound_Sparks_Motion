@@ -1,0 +1,13 @@
+{
+ "slug": "real_keaton",
+ "baseline_any": 0.040944296627908765,
+ "baseline_lin": 0.012123765731628705,
+ "best_iter": 5,
+ "best_any": 0.9998986158073557,
+ "best_lin": 0.9998986158073557,
+ "best_perc": 0.06921945512294769,
+ "auto_verdict": "strong_win",
+ "note": "auto verdict from the in-loop critic; visual review decides",
+ "visual_verdict": "STRONG WIN (demo, B&W): the Great Stone Face laughs. Baseline and iters 1-4 = the deadpan look-around. From iter 5 (critic 0.9999, perceptual 0.07) Keaton breaks into a broad open-mouthed laugh from frame ~5 to the end, identity, hat and the silent-film look preserved; iters 6-8 the same with slightly more drift. iters 9-10 insert a second person; iters 11-16 replace him with a bearded man in colour (identity + colourization drift, despite critic 0.99) - the B_cand_iter13/16 files are those drifted ones. Use iter 5 or 6.",
+ "demo": true
+}

@@ -588,6 +588,12 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   shows the fangs at frames 6-7 as the face passes the camera, where the baseline keeps the mouth shut (critic 0.28 vs 0.03,
   perceptual 0.01). Only visible on a head crop - for the demo it would need a tighter framing or a slower window. Keaton next.
 
+- 23:15 real_keaton: STRONG WIN for the demo. Baseline stays deadpan; iter 5 (critic 0.9999, perceptual 0.07) has Keaton break
+  into a broad laugh from frame ~5 to the end with identity, hat and the silent-film look intact; iters 6-8 similar. iters 9-10
+  add a second person, iters 11-16 swap him for a bearded man in colour (the critic still says 0.99 - drift guard did its job,
+  the perceptual term rose to 0.10+ only slowly, so B_cand_iter13/16 are drifted; ignore them). Thug cat next (allocation
+  20755156, rg32602).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -691,7 +697,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_grumpy | real (demo) | big yawn | baseline opens the mouth wide (0.99/1.0) | - | skip |
 | real_thug_cat | real (demo) | pushes the glass off the table | baseline: cat just sits (0.007/0.08) | ours queued | opt |
 | real_nosferatu | real (demo B&W) | bares fangs, hisses, lunges | baseline: rises and looms (source motion), mouth shut (0.03/0.07) | ours iter 2: mouth opens, fangs show at frames 6-7 (critic 0.28, perc 0.01); iters 4, 9 fainter | candidate (subtle) |
-| real_keaton | real (demo B&W) | bursts out laughing | baseline: looks around (0.01/0.04) | ours queued | opt |
+| real_keaton | real (demo B&W) | bursts out laughing | baseline: looks around, deadpan (0.01/0.04) | ours iter 5-6: broad laugh from frame ~5, identity + B&W look kept (critic 0.9999, perc 0.07); 9-16 drift (second person, colour, other face) | STRONG WIN (demo) |
 | real_chaplin | real (demo B&W) | bread rolls dance | baseline: fiddles with forks (0.03/0.22) | ours queued | opt |
 | real_casablanca | real (demo B&W) | bursts out laughing | baseline: soft smile from frame 7 (0.40/0.50) | ours queued (low) | opt |
 | real_steamboat | real (demo cartoon) | startled, jumps into the air | baseline: swing/turn in the last frames (0.09/0.41) | ours queued | opt |
