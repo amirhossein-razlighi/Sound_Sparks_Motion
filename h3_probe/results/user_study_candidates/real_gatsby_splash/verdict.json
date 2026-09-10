@@ -1,0 +1,12 @@
+{
+ "slug": "real_gatsby_splash",
+ "baseline_any": 0.42011472194743604,
+ "baseline_lin": 0.014213874681045279,
+ "best_iter": 1,
+ "best_any": 0.41354134957620403,
+ "best_lin": 0.41354134957620403,
+ "best_perc": 0.00013696704991161823,
+ "auto_verdict": "weak",
+ "note": "auto verdict from the in-loop critic; visual review decides",
+ "visual_verdict": "WEAK / not a win: no clean upward splash. Baseline (and iter 1) already show H3's brief spray over the glass at frames 7-9. iters 2-3: foam bubbles up and overflows the rim at frames 7-9 (the closest to the edit; iter 3 the fullest); iters 4-5 insert a champagne bottle spraying foam (drift); iters 6 and 8 pour a jet into the glass; iter 7 adds a subtitle-like text overlay; iters 9-15 a bubble/foam ring over the glass, fading. The critic fell monotonically 0.41 -> 0.02: the optimizer moved away from the baseline's own spray, it never found a stronger one. B_cand_iter02/03 packaged for the user's eye."
+}

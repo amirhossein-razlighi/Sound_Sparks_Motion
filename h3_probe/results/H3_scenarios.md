@@ -690,6 +690,12 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   original priority order (15 optimizations, ~1 h each, sequential on night_run2.sh). night_run3.sh stays in the repo as an
   unused option.
 
+- 08:30 real_gatsby_splash weak: the baseline already carries a brief spray at frames 7-9, and ours never made it stronger -
+  iters 2-3 turn it into foam overflowing the rim (closest to the edit), 4-5 conjure a champagne bottle, 6 and 8 pour a jet into
+  the glass, 7 adds subtitle-like text, 9-15 fade to a bubble ring. Critic fell monotonically 0.41 -> 0.02 (the optimizer left
+  the baseline's spray behind instead of amplifying it). Gatsby closed: three edits tried (shatter, splash, wink/comb), none a
+  win for ours. New allocation 20830889 (rg32503); tom_walk2 running.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -805,7 +811,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_glass_note3 | bank (r7) | singer's high note shatters the glass | baseline: stands still, no shatter (0.08/0.06) | ours: flat (0.01-0.07), static except drift in iters 5-6; no shatter | failed (flat) |
 | real_chaplin_sneeze | real (demo B&W) | sneezes, rolls fly off the forks | baseline: fork fiddling, no sneeze (0.09/0.23) | ours queued | opt |
 | real_chaplin_sleep | real (demo B&W) | falls asleep, head drops on the table | baseline: head drops only in the last frame (0.81/0.87, late) | ours queued (low) | opt |
-| real_gatsby_splash | real (demo) | champagne splashes out of the glass | baseline: brief burst over the glass at frames 8-10 (0.34/0.50) | ours queued (user) | opt |
+| real_gatsby_splash | real (demo) | champagne splashes out of the glass | baseline: brief spray over the glass at frames 7-9 (0.34/0.50) | ours: iters 2-3 foam overflows the rim; 4-5 a bottle appears; 6, 8 a pouring jet; 7 text overlay; critic falls 0.41 -> 0.02 | weak (iter 3 closest) |
 | real_tom_walk2 | real (demo cartoon) | trips and falls; pillow + basket anchored in the prompt | baseline now trips him at frame ~8, pillow flying (0.77/0.93) | ours queued (earlier fall, keep the pillow) | opt |
 | real_steamboat_laugh | real (demo cartoon) | throws head back, laughs | baseline = source; whistling mouth read as 'open' (0.45/0.98, saturated) | - | skip |
 | real_steamboat_shout | real (demo cartoon) | shouts angrily, shakes fist | baseline = source (0.05/0.13) | ours queued | opt |
