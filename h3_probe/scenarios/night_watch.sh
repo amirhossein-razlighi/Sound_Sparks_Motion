@@ -6,6 +6,6 @@ while :; do
   seen=$(cat $ST 2>/dev/null); seen=${seen:-0}; total=$(wc -l < $L)
   if [ "$total" -gt "$seen" ]; then new=$(tail -n +$((seen+1)) $L | grep -E "$PAT"); echo $total > $ST
     if [ -n "$new" ]; then echo "$new"; exit 0; fi; fi
-  pgrep -f night_run.sh > /dev/null || { echo "RUNNER NOT RUNNING"; exit 2; }
+  pgrep -f 'night_run2?.sh' > /dev/null || { echo "RUNNER NOT RUNNING"; exit 2; }
   sleep $P
 done
