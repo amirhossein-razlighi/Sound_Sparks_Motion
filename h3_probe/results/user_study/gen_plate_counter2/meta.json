@@ -1,0 +1,12 @@
+{
+ "slug": "gen_plate_counter2",
+ "edit": "The plate slides off the edge of the counter and drops onto the floor without breaking.",
+ "run": "/scratch/amirrz/H3_exp/outputs/overnight/gen_plate_counter2/opt",
+ "iter": 3,
+ "note": "user (09-10 10:40): ok-ish, not bad. Ours tips the plate off at frames 2-3 and it lies intact on the floor from frame 4; baseline slides it off only in the last frames (10-12). Critic missed it (0.05); perceptual 0.32 (over the guard - fall edits move many pixels).",
+ "steps": 16,
+ "extra": [],
+ "baseline_yes": 0.25551886465936596,
+ "baseline_yes_any": 0.02515535627704923,
+ "best_iter_by_critic": 2
+}
