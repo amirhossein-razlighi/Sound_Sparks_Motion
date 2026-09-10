@@ -614,6 +614,8 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   10-12); the critic sat at ~0.4 for every iteration with no gradient direction. 1928 rubber-hose animation is outside what
   the critic can read as 'jumps into the air'. Chaplin next. (Session restarted at ~04:25 on rorqual3; the runner on rorqual1
   was unaffected; the watcher now runs there over ssh.)
+  glass_note3 rechecked by eye: iters 5-6 make her sing with a rippling shattered-glass pattern across the background while the
+  glass stays whole - the same 'shatter leaks into the frame' mode as the Gatsby cracked overlay. Verdict unchanged (failed).
 
 ## Scenario table (updated as results land)
 

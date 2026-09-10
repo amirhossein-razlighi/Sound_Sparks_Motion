@@ -8,5 +8,5 @@
  "best_perc": 3.9479076804127544e-05,
  "auto_verdict": "flat",
  "note": "auto verdict from the in-loop critic; visual review decides",
- "visual_verdict": "FAILED (flat; judged by proxy, image viewer blocked at 03:30): critic 0.01-0.07 in every iteration; motion proxy shows the scene static in iters 2-4, 7, 10 (identical to the baseline) and a continuous whole-frame motion in iters 5-6 (camera/scene drift, not a shatter). No glass shatter anywhere. Sheets kept in the folder for a look in the morning."
+ "visual_verdict": "FAILED (confirmed by eye at 04:45): the glass never shatters. iters 1-3 = baseline; iter 4 puts a tiara on her head; iters 5-6 open her mouth (she sings) while a rippling shattered-glass pattern spreads across the dark background - the shatter prior leaks into the background exactly like the Gatsby cracked-screen overlay; iter 7 changes her dress, iter 8 brightens the backdrop. Critic 0.01-0.07 throughout."
 }
