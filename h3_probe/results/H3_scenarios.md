@@ -850,7 +850,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_gatsby_wink | real (demo) | winks, combs hair | baseline combs hair at frames 4-7 (0.67/0.91) | - | skip |
 | real_leo_clap | real (demo) | drops the can, claps | baseline: raises the can, no clap (0.03/0.16) | ours queued | opt |
 | gen_glass_note3 | bank (r7) | singer's high note shatters the glass | baseline: stands still, no shatter (0.08/0.06) | ours: flat (0.01-0.07), static except drift in iters 5-6; no shatter | failed (flat) |
-| real_chaplin_sneeze | real (demo B&W) | sneezes, rolls fly off the forks | baseline: fork fiddling, no sneeze (0.09/0.23) | ours queued | opt |
+| real_chaplin_sneeze | real (demo B&W) | sneezes, rolls fly off the forks | baseline: fork fiddling, no sneeze (0.12/0.30) | ours: no sneeze in any of 16 iters, critic flat 0.16-0.30, best iter 1 = untouched | FAIL (user 16:45): wide dark shot, face too small for a facial event; rolls = object animation |
 | real_chaplin_sleep | real (demo B&W) | falls asleep, head drops on the table | baseline: head drops only in the last frame (0.81/0.87, late) | ours queued (low) | opt |
 | real_gatsby_splash | real (demo) | champagne splashes out of the glass | baseline: brief spray over the glass at frames 7-9 (0.34/0.50) | ours: iters 2-3 foam overflows the rim; 4-5 a bottle appears; 6, 8 a pouring jet; 7 text overlay; critic falls 0.41 -> 0.02 | weak (iter 3 closest) |
 | real_tom_walk2 | real (demo cartoon) | trips and falls; pillow + basket anchored in the prompt | baseline trips him at frame ~9, pillow flying (0.77/0.93) | ours iters 2-5 fall at frames 8-9 too (3, 5 keep the pillow); 6-8 identity drift | no gap (demo-quality, not a pair) |
@@ -891,3 +891,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   through a SCREEN first (at the queue head, ~10 min): cry/sob, slam the mug down, kiss the mug, hiccup with coffee sloshing.
   All four are brief, sound-linked, single-subject events not used before; the one with the most baseline room (and the best
   look) gets an OPT inserted after gen_lightbulb2.
+- 16:45 real_chaplin_sneeze FAILED (user judged from the videos; the sheets agree): critic flat (any 0.16-0.30 over 16 iters),
+  best iter 1 = untouched, no sneeze anywhere. Lesson added to the failure classes: a facial event needs the face to fill the
+  frame (Keaton close-up worked; Chaplin's wide dark table shot does not register at the critic's 224 px). The Chaplin source
+  is closed (sleep variant already dropped by the user). Michael Scott screen running since 16:39.
