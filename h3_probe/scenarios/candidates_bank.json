@@ -480,5 +480,21 @@
   "edit": "The plate slides off the edge of the counter and drops onto the floor without breaking.",
   "scene": "a white ceramic plate lying at the edge of a kitchen counter, tiled floor below",
   "question": "Does the plate fall off the counter onto the floor at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_tony_laugh": {
+  "group": "demo",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_tony__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_tony_audio_89f.wav",
+  "edit": "He bursts out laughing, throwing his head back.",
+  "scene": "a close-up of a heavy-set man in a patterned shirt sitting in a dim hotel room, staring toward the camera",
+  "question": "Does the man laugh at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_tony_shout": {
+  "group": "demo",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_tony__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_tony_audio_89f.wav",
+  "edit": "He suddenly shouts angrily at the camera, his face contorted with rage.",
+  "scene": "a close-up of a heavy-set man in a patterned shirt sitting in a dim hotel room, staring toward the camera",
+  "question": "Does the man shout or yell at any point in this video? Answer only 'yes' or 'no'."
  }
 }
