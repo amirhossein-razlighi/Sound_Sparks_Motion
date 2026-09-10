@@ -623,6 +623,9 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   fly off the forks and across the table.") and real_chaplin_sleep ("He falls asleep and his head drops onto the table with a
   thud."). Lesson (again): check the source against the edit, not just for stillness - a real clip's own action can coincide
   with the edit. Mr Bean next on allocation 20826081 (rg32101).
+- 05:25 user, from the Gatsby shatter run: ours is clearly good at splashing but not at breaking the glass -> new edit on the
+  same source, real_gatsby_splash ("The champagne splashes out of the glass in his hand, spraying up into the air."), added to
+  the screening step after Mr Bean (with the two Chaplin variants); ours if the baseline fails.
 
 ## Scenario table (updated as results land)
 
@@ -739,6 +742,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_glass_note3 | bank (r7) | singer's high note shatters the glass | baseline: stands still, no shatter (0.08/0.06) | ours: flat (0.01-0.07), static except drift in iters 5-6; no shatter | failed (flat) |
 | real_chaplin_sneeze | real (demo B&W) | sneezes, rolls fly off the forks | to screen | - | screen |
 | real_chaplin_sleep | real (demo B&W) | falls asleep, head drops on the table | to screen | - | screen |
+| real_gatsby_splash | real (demo) | champagne splashes out of the glass | to screen | - | screen |
 | gen_car_shatter | bank (car_window source) | the whole car shatters into glass shards | baseline does it, early and complete (cracks at frame 4, debris field by frame 9; 0.86/0.60) | ours cancelled (stop rule) | skip |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |

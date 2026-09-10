@@ -424,5 +424,13 @@
   "edit": "He falls asleep and his head drops onto the table with a thud.",
   "scene": "a black-and-white silent-film shot of a man with a small moustache sitting at a table holding two forks stuck into bread rolls",
   "question": "Does the man fall asleep or does his head drop onto the table at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_gatsby_splash": {
+  "group": "demo",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_gatsby__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_gatsby_audio_89f.wav",
+  "edit": "The champagne splashes out of the glass in his hand, spraying up into the air.",
+  "scene": "a man in a tuxedo holding a champagne glass at a glittering night party",
+  "question": "Does liquid splash or spray out of the glass at any point in this video? Answer only 'yes' or 'no'."
  }
 }
