@@ -659,6 +659,17 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   whole-body falls the drift guard rejects the true positive - judge by eye (or raise PERC_MAX for fall edits). Next: the
   8-candidate screening on allocation 20827739 (rg31901).
 
+- 07:05 8-candidate screening: chaplin_sneeze - fork fiddling, no sneeze, rolls stay (0.09/0.23) -> ours; chaplin_sleep - head
+  drops to the table only in the last frame (0.81/0.87, late) -> ours, low priority; gatsby_splash - a brief burst of
+  shards/spray over the glass at frames 8-10 (0.34/0.50, partial) -> ours (user's request); tom_walk2 - with both objects
+  named, the BASELINE now trips Tom at frame ~8 with the yellow pillow flying and the basket tumbling (0.77/0.93) - the prompt
+  fix helped H3 too -> ours anyway, to move the fall earlier while keeping the pillow (user's demo priority); steamboat_laugh -
+  identical to the source, but the critic reads Mickey's whistling mouth as "mouth wide open" (0.98, saturated) -> skip;
+  steamboat_shout - source, no shout (0.05/0.13) -> ours; steamboat_wheel - the wheel turns at frames 7-11 (0.19/0.48,
+  partial) -> ours, medium; steamboat_sneeze - source (0.10/0.30) -> ours, low. Second screening (plate2, Tony x2, Casablanca
+  x2) running; then the runner swap gate, then the OPT order: gatsby_splash, tom_walk2, steamboat_shout, chaplin_sneeze,
+  leo_couch, casablanca, steamboat_wheel, leo_clap, chaplin_sleep, steamboat_sneeze, tyre, lightbulb2.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -772,14 +783,14 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_gatsby_wink | real (demo) | winks, combs hair | baseline combs hair at frames 4-7 (0.67/0.91) | - | skip |
 | real_leo_clap | real (demo) | drops the can, claps | baseline: raises the can, no clap (0.03/0.16) | ours queued | opt |
 | gen_glass_note3 | bank (r7) | singer's high note shatters the glass | baseline: stands still, no shatter (0.08/0.06) | ours: flat (0.01-0.07), static except drift in iters 5-6; no shatter | failed (flat) |
-| real_chaplin_sneeze | real (demo B&W) | sneezes, rolls fly off the forks | to screen | - | screen |
-| real_chaplin_sleep | real (demo B&W) | falls asleep, head drops on the table | to screen | - | screen |
-| real_gatsby_splash | real (demo) | champagne splashes out of the glass | to screen | - | screen |
-| real_tom_walk2 | real (demo cartoon) | trips and falls; pillow + basket anchored in the prompt | to screen | - | screen |
-| real_steamboat_laugh | real (demo cartoon) | throws head back, laughs | to screen | - | screen |
-| real_steamboat_shout | real (demo cartoon) | shouts angrily, shakes fist | to screen | - | screen |
-| real_steamboat_wheel | real (demo cartoon) | spins the wheel wildly | to screen | - | screen |
-| real_steamboat_sneeze | real (demo cartoon) | sneezes, body jerks back | to screen | - | screen |
+| real_chaplin_sneeze | real (demo B&W) | sneezes, rolls fly off the forks | baseline: fork fiddling, no sneeze (0.09/0.23) | ours queued | opt |
+| real_chaplin_sleep | real (demo B&W) | falls asleep, head drops on the table | baseline: head drops only in the last frame (0.81/0.87, late) | ours queued (low) | opt |
+| real_gatsby_splash | real (demo) | champagne splashes out of the glass | baseline: brief burst over the glass at frames 8-10 (0.34/0.50) | ours queued (user) | opt |
+| real_tom_walk2 | real (demo cartoon) | trips and falls; pillow + basket anchored in the prompt | baseline now trips him at frame ~8, pillow flying (0.77/0.93) | ours queued (earlier fall, keep the pillow) | opt |
+| real_steamboat_laugh | real (demo cartoon) | throws head back, laughs | baseline = source; whistling mouth read as 'open' (0.45/0.98, saturated) | - | skip |
+| real_steamboat_shout | real (demo cartoon) | shouts angrily, shakes fist | baseline = source (0.05/0.13) | ours queued | opt |
+| real_steamboat_wheel | real (demo cartoon) | spins the wheel wildly | baseline turns the wheel at frames 7-11 (0.19/0.48) | ours queued (medium) | opt |
+| real_steamboat_sneeze | real (demo cartoon) | sneezes, body jerks back | baseline = source (0.10/0.30) | ours queued (low) | opt |
 | gen_plate_counter2 | bank | plate drops off the counter without breaking | to screen | - | screen |
 | real_tony_laugh | real (demo) | bursts out laughing | to screen | - | screen |
 | real_tony_shout | real (demo) | shouts angrily at the camera | to screen | - | screen |
