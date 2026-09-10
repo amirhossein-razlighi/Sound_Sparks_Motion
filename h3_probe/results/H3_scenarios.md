@@ -885,3 +885,9 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_rowboat | H3 t2va (r2) | rocks side to side | fail (0.01, static) | held (flat critic) | hold |
 | gen_bell | H3 t2va (r2) | swings and rings | fail (0.06/0.10, barely moves) | held | hold |
 | gen_glass_table | H3 t2va (r2) | tips over, spills | late + distorted (glass morphs in last frames) | user: iter 4 is good (critic flat = critic miss); later iterations drift | PACKAGED |
+- 16:25 user: queue reordered -> gen_tyre and gen_lightbulb2 right after the running chaplin_sneeze; real_chaplin_sleep removed
+  (kept in the bank, not run). New demo source per user request: "Michael Scott" mug talking head (The Office pilot, YouTube
+  5Tb3MgEqwKE, 13.0-16.7 s, centre cover-crop; he holds the mug up and talks, no big motion) -> real_michael_mug. Four edits go
+  through a SCREEN first (at the queue head, ~10 min): cry/sob, slam the mug down, kiss the mug, hiccup with coffee sloshing.
+  All four are brief, sound-linked, single-subject events not used before; the one with the most baseline room (and the best
+  look) gets an OPT inserted after gen_lightbulb2.

@@ -512,5 +512,37 @@
   "edit": "He suddenly shouts angrily at the camera, his face contorted with rage.",
   "scene": "a close-up of a heavy-set man in a patterned shirt sitting in a dim hotel room, staring toward the camera",
   "question": "Does the man shout or yell at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_michael_cry": {
+  "group": "demo",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_michael_mug__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_michael_mug_audio_89f.wav",
+  "edit": "He suddenly bursts into tears, sobbing loudly, his face crumpling.",
+  "scene": "a close-up of a man in a white shirt and dark tie sitting at an office desk in front of window blinds, holding up a white coffee mug and talking to the camera",
+  "question": "Does the man cry or sob at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_michael_slam": {
+  "group": "demo",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_michael_mug__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_michael_mug_audio_89f.wav",
+  "edit": "He slams the mug down onto the desk with a loud bang.",
+  "scene": "a close-up of a man in a white shirt and dark tie sitting at an office desk in front of window blinds, holding up a white coffee mug and talking to the camera",
+  "question": "Does the man slam the mug down at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_michael_kiss": {
+  "group": "demo",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_michael_mug__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_michael_mug_audio_89f.wav",
+  "edit": "He kisses the mug lovingly with a loud smooch.",
+  "scene": "a close-up of a man in a white shirt and dark tie sitting at an office desk in front of window blinds, holding up a white coffee mug and talking to the camera",
+  "question": "Does the man kiss the mug at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_michael_hiccup": {
+  "group": "demo",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_michael_mug__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_michael_mug_audio_89f.wav",
+  "edit": "He hiccups violently and coffee sloshes out of the mug.",
+  "scene": "a close-up of a man in a white shirt and dark tie sitting at an office desk in front of window blinds, holding up a white coffee mug and talking to the camera",
+  "question": "Does the man hiccup or does coffee slosh out of the mug at any point in this video? Answer only 'yes' or 'no'."
  }
 }
