@@ -670,6 +670,14 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   x2) running; then the runner swap gate, then the OPT order: gatsby_splash, tom_walk2, steamboat_shout, chaplin_sneeze,
   leo_couch, casablanca, steamboat_wheel, leo_clap, chaplin_sleep, steamboat_sneeze, tyre, lightbulb2.
 
+- 07:30 second screening: plate_counter2 (drops without breaking) - baseline slides it off only at frames 10-12 (0.12/0.02,
+  late) -> ours (user's idea), queued after tom_walk2; tony_laugh - H3 throws his head back and laughs from frame ~5
+  (0.90/1.0) -> H3 does it, skip; tony_shout - mouth slightly open at frames 8-11, no shout (0.08/0.42) -> ours, after
+  chaplin_sneeze; casablanca_yawn - hand to the mouth and a yawn from frame 3 (0.93/1.0) -> H3 does it, skip;
+  casablanca_hat - she lifts the hat off at frames 3-5 and ends up smiling without it, no throw (critic miss 0.004) ->
+  partial, ours after casablanca. Runner swapped at the gate: night_run2.sh (extra-env field) now runs on this login node
+  (rorqual3) on allocation 20827739; gatsby_splash started 07:28.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -791,11 +799,11 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_steamboat_shout | real (demo cartoon) | shouts angrily, shakes fist | baseline = source (0.05/0.13) | ours queued | opt |
 | real_steamboat_wheel | real (demo cartoon) | spins the wheel wildly | baseline turns the wheel at frames 7-11 (0.19/0.48) | ours queued (medium) | opt |
 | real_steamboat_sneeze | real (demo cartoon) | sneezes, body jerks back | baseline = source (0.10/0.30) | ours queued (low) | opt |
-| gen_plate_counter2 | bank | plate drops off the counter without breaking | to screen | - | screen |
-| real_tony_laugh | real (demo) | bursts out laughing | to screen | - | screen |
-| real_tony_shout | real (demo) | shouts angrily at the camera | to screen | - | screen |
-| real_casablanca_yawn | real (demo B&W) | yawns hugely, rolls her eyes | to screen | - | screen |
-| real_casablanca_hat | real (demo B&W) | throws her hat into the air and laughs | to screen | - | screen |
+| gen_plate_counter2 | bank | plate drops off the counter without breaking | baseline: slides off only at frames 10-12 (0.12/0.02, late) | ours queued | opt |
+| real_tony_laugh | real (demo) | bursts out laughing | baseline throws his head back and laughs from frame ~5 (0.90/1.0) | - | skip (H3 does it) |
+| real_tony_shout | real (demo) | shouts angrily at the camera | baseline: mouth slightly open at frames 8-11 (0.08/0.42) | ours queued | opt |
+| real_casablanca_yawn | real (demo B&W) | yawns hugely, rolls her eyes | baseline yawns behind her hand from frame 3 (0.93/1.0) | - | skip (H3 does it) |
+| real_casablanca_hat | real (demo B&W) | throws her hat into the air and laughs | baseline lifts the hat off at frames 3-5, smiles, no throw (0.004) | ours queued (medium) | opt |
 | gen_car_shatter | bank (car_window source) | the whole car shatters into glass shards | baseline does it, early and complete (cracks at frame 4, debris field by frame 9; 0.86/0.60) | ours cancelled (stop rule) | skip |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |

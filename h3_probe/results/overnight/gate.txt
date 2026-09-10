@@ -4,3 +4,4 @@ SOURCES_OK_b2 (door_slam, branch, horse_neigh, elephant, lightbulb2 re-trimmed f
 SOURCES_OK_demo2 (casablanca, nosferatu, keaton, chaplin, steamboat, tom_walk, tom_hammock)
 SOURCES_OK_b3 (glass_note2 seen: glass large but the singer's head is cut off -> not screened, re-prompted as glass_note3 after demo2)
 SOURCES_OK_b4 (glass_note3: singer from the waist up, face visible, glass on the table - small but visible)
+SWAP_RUNNER2_OK (night_run2.sh with the extra-env field takes over on allocation 20827739)
