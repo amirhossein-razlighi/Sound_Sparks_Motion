@@ -686,6 +686,9 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   B = steamboat_shout, tony_shout, casablanca, steamboat_wheel, chaplin_sleep, tyre, lightbulb2. Swap at the gate after
   gatsby_splash (~08:30). Risk: only 1 idle node on the partition right now - a 4-GPU request may wait; the fallback keeps
   the master going alone.
+- 07:55 user: forget parallelization, continue as we are. Gate removed, queue B merged back into the single queue in the
+  original priority order (15 optimizations, ~1 h each, sequential on night_run2.sh). night_run3.sh stays in the repo as an
+  unused option.
 
 ## Scenario table (updated as results land)
 
