@@ -626,6 +626,14 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 - 05:25 user, from the Gatsby shatter run: ours is clearly good at splashing but not at breaking the glass -> new edit on the
   same source, real_gatsby_splash ("The champagne splashes out of the glass in his hand, spraying up into the air."), added to
   the screening step after Mr Bean (with the two Chaplin variants); ours if the baseline fails.
+- 05:30 user on real_tom_walk: ours is really good except that the yellow pillow turns into the basket when he drops. Likely a
+  prompt problem: the scene text only named "a picnic basket", so the model paints a basket at the fall. Re-queued as
+  real_tom_walk2 with both objects anchored (scene: "...carrying a red picnic basket and pulling out a yellow pillow"; edit:
+  "...the yellow pillow he is holding and the red picnic basket tumble out of his hands"), screened with the others after Mr
+  Bean. If the swap persists, second lever = stronger appearance anchoring (temporal 0.3 -> 0.5, LPIPS 1.0 -> 1.5) via a
+  per-task env field in the runner (night_run2.sh, swapped in at a queue boundary), or picking an earlier iteration.
+- 05:30 found and stopped a stale instance of my previous session still running on rorqual1 without a client (it had re-armed
+  its own watcher at 05:13); one coordinator again. Runner and allocation unaffected.
 
 ## Scenario table (updated as results land)
 
@@ -743,6 +751,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_chaplin_sneeze | real (demo B&W) | sneezes, rolls fly off the forks | to screen | - | screen |
 | real_chaplin_sleep | real (demo B&W) | falls asleep, head drops on the table | to screen | - | screen |
 | real_gatsby_splash | real (demo) | champagne splashes out of the glass | to screen | - | screen |
+| real_tom_walk2 | real (demo cartoon) | trips and falls; pillow + basket anchored in the prompt | to screen | - | screen |
 | gen_car_shatter | bank (car_window source) | the whole car shatters into glass shards | baseline does it, early and complete (cracks at frame 4, debris field by frame 9; 0.86/0.60) | ours cancelled (stop rule) | skip |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |

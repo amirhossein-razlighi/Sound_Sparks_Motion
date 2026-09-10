@@ -432,5 +432,13 @@
   "edit": "The champagne splashes out of the glass in his hand, spraying up into the air.",
   "scene": "a man in a tuxedo holding a champagne glass at a glittering night party",
   "question": "Does liquid splash or spray out of the glass at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_tom_walk2": {
+  "group": "demo_cartoon",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_tom_walk__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_tom_walk_audio_89f.wav",
+  "edit": "The cat trips and falls flat on his face with a crash, and the yellow pillow he is holding and the red picnic basket tumble out of his hands.",
+  "scene": "a classic colour cartoon of a grey cat strolling in a garden carrying a red picnic basket and pulling out a yellow pillow",
+  "question": "Does the cat trip or fall down at any point in this video? Answer only 'yes' or 'no'."
  }
 }
