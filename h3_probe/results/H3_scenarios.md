@@ -584,6 +584,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   right after; iters 8-10 drift to a wide party shot. Weak; iters 5-6 packaged for review. Lesson: on real footage with a lot
   of background motion (fireworks bokeh) the object-level shatter does not localize. Nosferatu next (allocation 20746305).
 
+- 22:15 real_nosferatu: subtle candidate. The looming toward the camera is in the source; ours (iter 2) opens Orlok's mouth and
+  shows the fangs at frames 6-7 as the face passes the camera, where the baseline keeps the mouth shut (critic 0.28 vs 0.03,
+  perceptual 0.01). Only visible on a head crop - for the demo it would need a tighter framing or a slower window. Keaton next.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -686,7 +690,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_mrbean | real (demo) | faints and falls backwards | baseline: stands, checks watch (0.004/0.015) | ours queued | opt |
 | real_grumpy | real (demo) | big yawn | baseline opens the mouth wide (0.99/1.0) | - | skip |
 | real_thug_cat | real (demo) | pushes the glass off the table | baseline: cat just sits (0.007/0.08) | ours queued | opt |
-| real_nosferatu | real (demo B&W) | bares fangs, hisses, lunges | baseline: stands still (0.03/0.07) | ours queued | opt |
+| real_nosferatu | real (demo B&W) | bares fangs, hisses, lunges | baseline: rises and looms (source motion), mouth shut (0.03/0.07) | ours iter 2: mouth opens, fangs show at frames 6-7 (critic 0.28, perc 0.01); iters 4, 9 fainter | candidate (subtle) |
 | real_keaton | real (demo B&W) | bursts out laughing | baseline: looks around (0.01/0.04) | ours queued | opt |
 | real_chaplin | real (demo B&W) | bread rolls dance | baseline: fiddles with forks (0.03/0.22) | ours queued | opt |
 | real_casablanca | real (demo B&W) | bursts out laughing | baseline: soft smile from frame 7 (0.40/0.50) | ours queued (low) | opt |

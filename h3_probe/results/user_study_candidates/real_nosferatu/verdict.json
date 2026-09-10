@@ -1,0 +1,12 @@
+{
+ "slug": "real_nosferatu",
+ "baseline_any": 0.06968838131469689,
+ "baseline_lin": 0.025025331984007065,
+ "best_iter": 2,
+ "best_any": 0.27577228429751355,
+ "best_lin": 0.27577228429751355,
+ "best_perc": 0.010191712528467178,
+ "auto_verdict": "improved",
+ "note": "auto verdict from the in-loop critic; visual review decides",
+ "visual_verdict": "CANDIDATE (subtle, user to judge): the source itself has Orlok rising into view and looming toward the camera (frames 3-7), so the 'lunge' is inherited. What ours adds: in iter 2 (critic 0.28, perceptual 0.01) his mouth opens and the fangs show at frames 6-7 as the face passes the camera; iters 4 and 9 open the mouth more faintly; the baseline keeps the mouth shut throughout. Seen on a head-crop sheet (scratch nosferatu_head_b_2_4_9.jpg), invisible on the full-frame sheet. B_best = iter 2."
+}
