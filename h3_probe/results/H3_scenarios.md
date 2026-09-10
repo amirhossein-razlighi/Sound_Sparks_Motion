@@ -594,6 +594,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   the perceptual term rose to 0.10+ only slowly, so B_cand_iter13/16 are drifted; ignore them). Thug cat next (allocation
   20755156, rg32602).
 
+- 00:20 real_thug_cat failed: no push in any iteration (critic 0.05-0.10, motion identical to the baseline); iter 7 adds a
+  sandal-like object on the table, iter 8 reframes to a close-up. Small blurry glass in a low-res clip - same lesson as the
+  balloon and the Gatsby glass: small-object events on real footage do not localize. Plate counter running.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -695,7 +699,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_travolta | real (demo) | starts dancing the twist | baseline swings arms and turns (0.67/0.82) | - | skip |
 | real_mrbean | real (demo) | faints and falls backwards | baseline: stands, checks watch (0.004/0.015) | ours queued | opt |
 | real_grumpy | real (demo) | big yawn | baseline opens the mouth wide (0.99/1.0) | - | skip |
-| real_thug_cat | real (demo) | pushes the glass off the table | baseline: cat just sits (0.007/0.08) | ours queued | opt |
+| real_thug_cat | real (demo) | pushes the glass off the table | baseline: cat just sits (0.007/0.08) | ours: no push in any iteration; iter 7 adds an object, iter 8 reframes (drift) | failed |
 | real_nosferatu | real (demo B&W) | bares fangs, hisses, lunges | baseline: rises and looms (source motion), mouth shut (0.03/0.07) | ours iter 2: mouth opens, fangs show at frames 6-7 (critic 0.28, perc 0.01); iters 4, 9 fainter | candidate (subtle) |
 | real_keaton | real (demo B&W) | bursts out laughing | baseline: looks around, deadpan (0.01/0.04) | ours iter 5-6: broad laugh from frame ~5, identity + B&W look kept (critic 0.9999, perc 0.07); 9-16 drift (second person, colour, other face) | STRONG WIN (demo) |
 | real_chaplin | real (demo B&W) | bread rolls dance | baseline: fiddles with forks (0.03/0.22) | ours queued | opt |

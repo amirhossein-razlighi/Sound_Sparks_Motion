@@ -1,0 +1,12 @@
+{
+ "slug": "real_thug_cat",
+ "baseline_any": 0.09398702820504536,
+ "baseline_lin": 0.017123701258957017,
+ "best_iter": 2,
+ "best_any": 0.09967906553991944,
+ "best_lin": 0.09967906553991944,
+ "best_perc": 0.06063050404191017,
+ "auto_verdict": "failed",
+ "note": "auto verdict from the in-loop critic; visual review decides",
+ "visual_verdict": "FAILED: no push. iters 1-6 are the baseline (the cat sits, the glass stays; motion proxy identical, critic 0.05-0.10); iter 7 puts a sandal-like object on the table (drift), iter 8 changes the framing to a close-up of the cat and glass; later iters flat. The glass is small and the source blurry - the object-level event does not localize."
+}
