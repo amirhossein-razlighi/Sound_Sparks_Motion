@@ -472,5 +472,13 @@
   "edit": "The mouse sneezes violently and his whole body jerks backwards.",
   "scene": "a black-and-white 1920s cartoon of a mouse steering a ship's wheel",
   "question": "Does the mouse sneeze at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "gen_plate_counter2": {
+  "group": "bank",
+  "src": "/scratch/amirrz/H3_exp/inputs/gen/gen_plate_counter__t2va_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/sweep/gen_plate_counter_h3sound_89f.wav",
+  "edit": "The plate slides off the edge of the counter and drops onto the floor without breaking.",
+  "scene": "a white ceramic plate lying at the edge of a kitchen counter, tiled floor below",
+  "question": "Does the plate fall off the counter onto the floor at any point in this video? Answer only 'yes' or 'no'."
  }
 }

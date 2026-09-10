@@ -640,6 +640,9 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   real_steamboat_shout ("leans forward and shouts angrily, mouth wide open, shaking his fist"), real_steamboat_wheel ("spins
   the ship's wheel wildly, the whole wheel whirling round and round"), real_steamboat_sneeze ("sneezes violently, whole body
   jerks backwards"). Screening batch is now 8 candidates (the runner's limit for one allocation).
+- 05:40 user on the plate: some of our iterations already drop the plate intact, so ask for exactly that and beat the baseline
+  on timing -> gen_plate_counter2 ("The plate slides off the edge of the counter and drops onto the floor without breaking."),
+  same source; screened in its own step after the 8-candidate batch, ours if the baseline fails or is late.
 
 ## Scenario table (updated as results land)
 
@@ -762,6 +765,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_steamboat_shout | real (demo cartoon) | shouts angrily, shakes fist | to screen | - | screen |
 | real_steamboat_wheel | real (demo cartoon) | spins the wheel wildly | to screen | - | screen |
 | real_steamboat_sneeze | real (demo cartoon) | sneezes, body jerks back | to screen | - | screen |
+| gen_plate_counter2 | bank | plate drops off the counter without breaking | to screen | - | screen |
 | gen_car_shatter | bank (car_window source) | the whole car shatters into glass shards | baseline does it, early and complete (cracks at frame 4, debris field by frame 9; 0.86/0.60) | ours cancelled (stop rule) | skip |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
