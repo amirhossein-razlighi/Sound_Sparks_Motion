@@ -602,6 +602,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   instead of shattering, and the critic scores it 0.003 (perceptual 0.28, just over the guard - forced in for review). iters
   4-8 add hands putting the plate back, then late texture drift. Timing gained, event weakened. Tom walk next.
 
+- 02:30 real_tom_walk modest: the baseline already trips Tom late (frames 10-12); ours iter 3 trips him at frame ~8 and keeps
+  him sprawled to the end (critic 0.80, perceptual 0.13), iters 4-5 a little later, iter 8+ drift. A half-second-earlier,
+  fuller fall - fine as a demo clip, not a category change. glass_note3 running next.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -709,7 +713,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_chaplin | real (demo B&W) | bread rolls dance | baseline: fiddles with forks (0.03/0.22) | ours queued | opt |
 | real_casablanca | real (demo B&W) | bursts out laughing | baseline: soft smile from frame 7 (0.40/0.50) | ours queued (low) | opt |
 | real_steamboat | real (demo cartoon) | startled, jumps into the air | baseline: swing/turn in the last frames (0.09/0.41) | ours queued | opt |
-| real_tom_walk | real (demo cartoon) | trips and falls flat | baseline trips him at frames 10-12 (0.35/0.50, late) | ours queued | opt |
+| real_tom_walk | real (demo cartoon) | trips and falls flat | baseline trips him at frames 10-12 (0.35/0.50, late) | ours iter 3: trips at frame ~8, sprawled 9-12 (0.80, perc 0.13); iters 4-5 similar; 8+ drift | modest (timing) |
 | real_tom_hammock | real (demo cartoon) | eyes pop out, screams | baseline does it at frames 5-8 (0.45/0.67) | - | skip |
 | real_travolta_jump | real (demo) | jumps with hand up, shouting | baseline does it (0.90/0.99) | - | skip |
 | real_gatsby_wink | real (demo) | winks, combs hair | baseline combs hair at frames 4-7 (0.67/0.91) | - | skip |

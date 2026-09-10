@@ -1,0 +1,12 @@
+{
+ "slug": "real_tom_walk",
+ "baseline_any": 0.6334701889389149,
+ "baseline_lin": 0.7389951955654471,
+ "best_iter": 6,
+ "best_any": 0.8448353329298598,
+ "best_lin": 0.8448353329298598,
+ "best_perc": 0.10509522259235382,
+ "auto_verdict": "improved_timing",
+ "note": "auto verdict from the in-loop critic; visual review decides",
+ "visual_verdict": "MODEST (timing, user to judge): H3's baseline already trips Tom at frames 10-12 (after he pulls the pillow at frame 9). Ours iter 3 trips him at frame ~8 and leaves him sprawled with the basket for frames 9-12 (the clearest early fall; critic 0.80, perc 0.13); iters 4-5 stumble at frames 9-10 and lie for 10-12; iter 6 (critic best 0.84) is close to the baseline timing; iter 8+ drift (giant face). A 0.5-1 s earlier, fuller fall - not a category change."
+}
