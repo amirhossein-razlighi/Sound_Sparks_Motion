@@ -677,6 +677,15 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   casablanca_hat - she lifts the hat off at frames 3-5 and ends up smiling without it, no throw (critic miss 0.004) ->
   partial, ours after casablanca. Runner swapped at the gate: night_run2.sh (extra-env field) now runs on this login node
   (rorqual3) on allocation 20827739; gatsby_splash started 07:28.
+- 07:50 user: get a second interactive session and parallelize. Not possible as two jobs: the interac QOS allows ONE running
+  job per user (MaxJobsPU=1). Nodes have 4 H100 / 500 GB, and another user holds an interactive 4-GPU job, so the way is one
+  4-GPU allocation with two runners: night_run3.sh = master (asks 4xH100 for 8 h, falls back to 2xH100/3 h if no free node
+  within 600 s; steps take 2 GPUs + 200 GB each so two fit; waits for the follower's step before releasing) + follower
+  (FOLLOW=1, own queue_b.txt / night_b.log / done_b.txt, never allocates, runs when the master's allocation is staged and
+  4-GPU). Queue split: A = tom_walk2, plate2, chaplin_sneeze, leo_couch, casablanca_hat, leo_clap, steamboat_sneeze;
+  B = steamboat_shout, tony_shout, casablanca, steamboat_wheel, chaplin_sleep, tyre, lightbulb2. Swap at the gate after
+  gatsby_splash (~08:30). Risk: only 1 idle node on the partition right now - a 4-GPU request may wait; the fallback keeps
+  the master going alone.
 
 ## Scenario table (updated as results land)
 
