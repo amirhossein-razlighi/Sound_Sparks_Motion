@@ -1,0 +1,29 @@
+scenario: real_steamboat
+edit sentence: The mouse gets startled and jumps high into the air, arms flailing.
+scene: a black-and-white 1920s cartoon of a mouse steering a ship's wheel
+critic question: Does the mouse jump into the air at any point in this video? Answer only 'yes' or 'no'.
+mode: both  objective: any  select_by: any  perc_max: 0.25
+source video: /scratch/amirrz/H3_exp/inputs/real/real_steamboat__real_89f.mp4
+source audio: /scratch/amirrz/H3_exp/inputs/real/real_steamboat_audio_89f.wav
+run dir: /scratch/amirrz/H3_exp/outputs/overnight/real_steamboat/opt
+
+full H3 prompt (A and B):
+subject_definitions:
+<Video 1> is the source video to edit: a fixed-camera shot of a black-and-white 1920s cartoon of a mouse steering a ship's wheel.
+<Subject 1> is the main subject of <Video 1>: a black-and-white 1920s cartoon of a mouse steering a ship's wheel.
+<Audio 2> is the soundtrack accompanying the target video.
+
+summary:
+[video editing] The target video is an edited version of <Video 1>. The camera position, framing, scene, lighting, and pacing of <Video 1> are kept identical. The only change: The mouse gets startled and jumps high into the air, arms flailing.
+
+retention_analysis:
+<Audio 2>: reference - the target video's sound follows the content and timing of <Audio 2>; on-screen actions stay synchronized with it.
+<Video 1> (camera, framing, scene layout, lighting, and temporal structure): fully_preserved - the fixed camera, background, lighting, and overall pacing are kept identical to the source.
+<Subject 1> (appears throughout): partially_preserved - appearance and position are identical to <Video 1>; only its action changes: The mouse gets startled and jumps high into the air, arms flailing.
+
+detailed_description:
+[Shot 1] Fixed camera, framing identical to <Video 1>. The scene of <Video 1>: a black-and-white 1920s cartoon of a mouse steering a ship's wheel. Within the first second, The mouse gets startled and jumps high into the air, arms flailing; the motion is clear and fully visible, and continues naturally through the shot. Everything else - the background, the lighting, the framing - remains exactly as in <Video 1>.
+
+overall_soundscape: The soundscape follows <Audio 2>, with the natural sounds of the described action.
+
+non_diegetic_music: None.

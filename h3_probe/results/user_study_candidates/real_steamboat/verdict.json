@@ -1,0 +1,12 @@
+{
+ "slug": "real_steamboat",
+ "baseline_any": 0.36532617106615084,
+ "baseline_lin": 0.09266100576354198,
+ "best_iter": 8,
+ "best_any": 0.4586787297219259,
+ "best_lin": 0.4586787297219259,
+ "best_perc": 0.006561464164406061,
+ "auto_verdict": "failed",
+ "note": "auto verdict from the in-loop critic; visual review decides",
+ "visual_verdict": "FAILED (no change): every iteration is the baseline - Mickey keeps steering and does the source's own swing at frames 10-12; motion proxy identical in all iterations, critic a constant ~0.4 misread (baseline 0.09 in the first pass). No jump, no startle. The rubber-hose cartoon style gives the critic nothing it recognises as a jump."
+}

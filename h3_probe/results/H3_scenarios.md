@@ -610,6 +610,11 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   small-object shatter to fail tonight (Gatsby glass, cat's glass, singer's glass) - the glass is too small a target for the
   critic at 224 px. Steamboat next on allocation 20816514 (rg32203). Image viewer blocked again; judged by the motion proxy.
 
+- 04:40 real_steamboat failed: all 16 iterations identical to the baseline (Mickey steers, the source's own swing at frames
+  10-12); the critic sat at ~0.4 for every iteration with no gradient direction. 1928 rubber-hose animation is outside what
+  the critic can read as 'jumps into the air'. Chaplin next. (Session restarted at ~04:25 on rorqual3; the runner on rorqual1
+  was unaffected; the watcher now runs there over ssh.)
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -716,7 +721,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_keaton | real (demo B&W) | bursts out laughing | baseline: looks around, deadpan (0.01/0.04) | ours iter 5-6: broad laugh from frame ~5, identity + B&W look kept (critic 0.9999, perc 0.07); 9-16 drift (second person, colour, other face) | STRONG WIN (demo) |
 | real_chaplin | real (demo B&W) | bread rolls dance | baseline: fiddles with forks (0.03/0.22) | ours queued | opt |
 | real_casablanca | real (demo B&W) | bursts out laughing | baseline: soft smile from frame 7 (0.40/0.50) | ours queued (low) | opt |
-| real_steamboat | real (demo cartoon) | startled, jumps into the air | baseline: swing/turn in the last frames (0.09/0.41) | ours queued | opt |
+| real_steamboat | real (demo cartoon) | startled, jumps into the air | baseline: keeps steering, swing at frames 10-12 (0.09/0.41) | ours: identical to the baseline in all 16 iterations (critic flat ~0.4) | failed |
 | real_tom_walk | real (demo cartoon) | trips and falls flat | baseline trips him at frames 10-12 (0.35/0.50, late) | ours iter 3: trips at frame ~8, sprawled 9-12 (0.80, perc 0.13); iters 4-5 similar; 8+ drift | modest (timing) |
 | real_tom_hammock | real (demo cartoon) | eyes pop out, screams | baseline does it at frames 5-8 (0.45/0.67) | - | skip |
 | real_travolta_jump | real (demo) | jumps with hand up, shouting | baseline does it (0.90/0.99) | - | skip |
