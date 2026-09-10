@@ -723,6 +723,12 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   clip. Lesson: the perceptual weights that keep objects stable also veto the whole-body motion; object identity needs the
   prompt, not the regulariser. Mickey shout running.
 
+- 15:00 real_steamboat_shout failed: 14 of 16 iterations pixel-identical to the baseline, iter 8 speckles, iter 9 (critic
+  best) hallucinated extra characters. Two Mickey edits (jump, shout) with zero motion response -> real_steamboat_sneeze
+  dropped from the queue (same class of edit on the same source, no hope); real_steamboat_wheel stays (the baseline already
+  turns the wheel a little, so ours amplifies an existing motion instead of inventing one - the pattern that has worked).
+  Chaplin sneeze running on allocation 20843961 (rg31801).
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -841,9 +847,9 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_gatsby_splash | real (demo) | champagne splashes out of the glass | baseline: brief spray over the glass at frames 7-9 (0.34/0.50) | ours: iters 2-3 foam overflows the rim; 4-5 a bottle appears; 6, 8 a pouring jet; 7 text overlay; critic falls 0.41 -> 0.02 | weak (iter 3 closest) |
 | real_tom_walk2 | real (demo cartoon) | trips and falls; pillow + basket anchored in the prompt | baseline trips him at frame ~9, pillow flying (0.77/0.93) | ours iters 2-5 fall at frames 8-9 too (3, 5 keep the pillow); 6-8 identity drift | no gap (demo-quality, not a pair) |
 | real_steamboat_laugh | real (demo cartoon) | throws head back, laughs | baseline = source; whistling mouth read as 'open' (0.45/0.98, saturated) | - | skip |
-| real_steamboat_shout | real (demo cartoon) | shouts angrily, shakes fist | baseline = source (0.05/0.13) | ours queued | opt |
+| real_steamboat_shout | real (demo cartoon) | shouts angrily, shakes fist | baseline = source (0.05/0.13) | ours: identical to the baseline in 14 of 16 iterations; iter 9 (critic best 0.36) hallucinates extra characters | failed |
 | real_steamboat_wheel | real (demo cartoon) | spins the wheel wildly | baseline turns the wheel at frames 7-11 (0.19/0.48) | ours queued (medium) | opt |
-| real_steamboat_sneeze | real (demo cartoon) | sneezes, body jerks back | baseline = source (0.10/0.30) | ours queued (low) | opt |
+| real_steamboat_sneeze | real (demo cartoon) | sneezes, body jerks back | baseline = source (0.10/0.30) | dropped after the jump and shout gave zero response on this source | dropped (no hope) |
 | gen_plate_counter2 | bank | plate drops off the counter without breaking | baseline: slides off only at frames 10-12, lands intact (0.12/0.02) | ours iter 3: off the edge at frames 2-3, intact on the floor from frame 4 (critic miss 0.05, perc 0.32 > guard, forced in); 4-6 double fall; 7-8 drift | PACKAGED (user: ok-ish, iter 3) |
 | real_tony_laugh | real (demo) | bursts out laughing | baseline throws his head back and laughs from frame ~5 (0.90/1.0) | - | skip (H3 does it) |
 | real_tony_shout | real (demo) | shouts angrily at the camera | baseline: mouth slightly open at frames 8-11 (0.08/0.42) | ours queued | opt |

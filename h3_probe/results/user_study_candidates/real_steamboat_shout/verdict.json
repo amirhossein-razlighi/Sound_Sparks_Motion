@@ -1,0 +1,12 @@
+{
+ "slug": "real_steamboat_shout",
+ "baseline_any": 0.14912604495319237,
+ "baseline_lin": 0.06124385624459799,
+ "best_iter": 9,
+ "best_any": 0.35916956639836384,
+ "best_lin": 0.35916956639836384,
+ "best_perc": 0.15655174851417542,
+ "auto_verdict": "failed",
+ "note": "auto verdict from the in-loop critic; visual review decides",
+ "visual_verdict": "FAILED: no shout in any iteration. iters 1-7 and 10-16 are pixel-identical to the baseline (Mickey steers, the source's own swing at frames 10-12); iter 8 adds red speckles; iter 9 (the critic's best, 0.36) hallucinates extra characters, a glove and a round object into frames 3-8 - drift, not a shout. Second Mickey edit with zero motion response (jump, shout): the 1928 rubber-hose style gives the critic nothing it can steer."
+}
