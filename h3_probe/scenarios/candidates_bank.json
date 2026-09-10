@@ -440,5 +440,37 @@
   "edit": "The cat trips and falls flat on his face with a crash, and the yellow pillow he is holding and the red picnic basket tumble out of his hands.",
   "scene": "a classic colour cartoon of a grey cat strolling in a garden carrying a red picnic basket and pulling out a yellow pillow",
   "question": "Does the cat trip or fall down at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_steamboat_laugh": {
+  "group": "demo_cartoon",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_steamboat__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_steamboat_audio_89f.wav",
+  "edit": "The mouse throws his head back and laughs out loud with his mouth wide open.",
+  "scene": "a black-and-white 1920s cartoon of a mouse steering a ship's wheel",
+  "question": "Does the mouse laugh or open his mouth wide at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_steamboat_shout": {
+  "group": "demo_cartoon",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_steamboat__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_steamboat_audio_89f.wav",
+  "edit": "The mouse leans forward and shouts angrily with his mouth wide open, shaking his fist.",
+  "scene": "a black-and-white 1920s cartoon of a mouse steering a ship's wheel",
+  "question": "Does the mouse shout or shake his fist at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_steamboat_wheel": {
+  "group": "demo_cartoon",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_steamboat__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_steamboat_audio_89f.wav",
+  "edit": "The mouse spins the ship's wheel wildly, the whole wheel whirling round and round.",
+  "scene": "a black-and-white 1920s cartoon of a mouse steering a ship's wheel",
+  "question": "Does the ship's wheel spin rapidly at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_steamboat_sneeze": {
+  "group": "demo_cartoon",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_steamboat__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_steamboat_audio_89f.wav",
+  "edit": "The mouse sneezes violently and his whole body jerks backwards.",
+  "scene": "a black-and-white 1920s cartoon of a mouse steering a ship's wheel",
+  "question": "Does the mouse sneeze at any point in this video? Answer only 'yes' or 'no'."
  }
 }

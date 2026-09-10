@@ -634,6 +634,12 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   per-task env field in the runner (night_run2.sh, swapped in at a queue boundary), or picking an earlier iteration.
 - 05:30 found and stopped a stale instance of my previous session still running on rorqual1 without a client (it had re-armed
   its own watcher at 05:13); one coordinator again. Runner and allocation unaffected.
+- 05:35 user: the Mickey (Steamboat Willie) base is cool, find an edit that works. The jump gave the critic no gradient at all.
+  Four variants along what has worked (face/mouth events, motion of the object under his hands), screened first with the other
+  new ones after Mr Bean: real_steamboat_laugh ("throws his head back and laughs out loud, mouth wide open"),
+  real_steamboat_shout ("leans forward and shouts angrily, mouth wide open, shaking his fist"), real_steamboat_wheel ("spins
+  the ship's wheel wildly, the whole wheel whirling round and round"), real_steamboat_sneeze ("sneezes violently, whole body
+  jerks backwards"). Screening batch is now 8 candidates (the runner's limit for one allocation).
 
 ## Scenario table (updated as results land)
 
@@ -752,6 +758,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_chaplin_sleep | real (demo B&W) | falls asleep, head drops on the table | to screen | - | screen |
 | real_gatsby_splash | real (demo) | champagne splashes out of the glass | to screen | - | screen |
 | real_tom_walk2 | real (demo cartoon) | trips and falls; pillow + basket anchored in the prompt | to screen | - | screen |
+| real_steamboat_laugh | real (demo cartoon) | throws head back, laughs | to screen | - | screen |
+| real_steamboat_shout | real (demo cartoon) | shouts angrily, shakes fist | to screen | - | screen |
+| real_steamboat_wheel | real (demo cartoon) | spins the wheel wildly | to screen | - | screen |
+| real_steamboat_sneeze | real (demo cartoon) | sneezes, body jerks back | to screen | - | screen |
 | gen_car_shatter | bank (car_window source) | the whole car shatters into glass shards | baseline does it, early and complete (cracks at frame 4, debris field by frame 9; 0.86/0.60) | ours cancelled (stop rule) | skip |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
