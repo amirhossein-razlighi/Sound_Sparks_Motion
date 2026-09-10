@@ -895,3 +895,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   best iter 1 = untouched, no sneeze anywhere. Lesson added to the failure classes: a facial event needs the face to fill the
   frame (Keaton close-up worked; Chaplin's wide dark table shot does not register at the critic's 224 px). The Chaplin source
   is closed (sleep variant already dropped by the user). Michael Scott screen running since 16:39.
+- 17:12 Michael Scott screen (mug talking head): baseline lin/any = cry 0.44/0.46 (H3 partly does it on its own), slam 0.004/0.013,
+  kiss 0.005/0.022, hiccup 0.002/0.013. Three edits with full room; the cry has the least. Allocation renewed (20853610, rg31802).
+  Baseline sheets: kiss -> H3 brings the mug to his lips and SIPS from frame ~5 (mug-to-lips already there, only the smooch is
+  missing -> weak visual gap); cry -> H3 crumples his face in the last 3 frames (late, our usual win pattern); slam -> H3 lowers
+  the mug out of frame late, no bang (desk not visible -> ambiguous); hiccup -> H3 static, talking only (full room). Decision
+  (overnight mode, user asked for the edit that works best): OPT real_michael_cry and real_michael_hiccup after gen_lightbulb2,
+  real_michael_kiss at the queue tail (runs only if the night is long enough); slam not run.
