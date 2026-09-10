@@ -1,0 +1,12 @@
+{
+ "slug": "real_tom_walk_anchor",
+ "baseline_any": 0.6334701889389149,
+ "baseline_lin": 0.7389951955654471,
+ "best_iter": 1,
+ "best_any": 0.8215287768638465,
+ "best_lin": 0.8215287768638465,
+ "best_perc": 0.0005586192710325122,
+ "auto_verdict": "failed",
+ "note": "auto verdict from the in-loop critic; visual review decides",
+ "visual_verdict": "FAILED (anchoring froze the motion): with TEMPORAL_W 0.5 / LPIPS_W 1.5 on the original prompt, iters 2-5 and 7-8 keep the yellow pillow but Tom never trips - he stands holding the pillow for frames 9-12; only iter 6 falls, at frames 10-12 with the pillow kept, i.e. the baseline's own timing (critic 0.31, softer motion than the baseline). No early fall anywhere, so no gap. Tom closed after three attempts: original prompt (early trip, pillow->basket swap), anchored prompt (swap fixed, baseline equally good), stronger anchoring (motion suppressed)."
+}

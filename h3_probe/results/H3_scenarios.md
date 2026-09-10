@@ -714,6 +714,15 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   this time).
 - 10:40 user: plate_counter2 iter 3 is ok-ish, not bad -> packaged into user_study (B_ours = iter 3). Study set: 22 pairs.
 
+- 09:40-12:55 cluster-wide drain (every node draining, reasons point at the cooling pumps): our allocation request waited
+  ~2.5 h; the runner on rorqual3 held it and resumed by itself at ~12:58 on rg13603. Nothing lost.
+- 13:57 real_tom_walk anchored rerun (TEMPORAL_W 0.3 -> 0.5, LPIPS_W 1.0 -> 1.5, verified in run_config): stronger appearance
+  anchoring keeps the pillow but suppresses the trip - iters 2-5 and 7-8 have Tom standing with the pillow, only iter 6 falls
+  and at the baseline's timing (frames 10-12). No early fall, no gap. Tom closed: the only clean-object early trip does not
+  exist in this family of runs; for the demo, real_tom_walk2 iter 5 (fall with the pillow, same timing as H3) is the usable
+  clip. Lesson: the perceptual weights that keep objects stable also veto the whole-body motion; object identity needs the
+  prompt, not the regulariser. Mickey shout running.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -840,6 +849,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_tony_shout | real (demo) | shouts angrily at the camera | baseline: mouth slightly open at frames 8-11 (0.08/0.42) | ours queued | opt |
 | real_casablanca_yawn | real (demo B&W) | yawns hugely, rolls her eyes | baseline yawns behind her hand from frame 3 (0.93/1.0) | - | skip (H3 does it) |
 | real_casablanca_hat | real (demo B&W) | throws her hat into the air and laughs | baseline lifts the hat off at frames 3-5, smiles, no throw (0.004) | ours queued (medium) | opt |
+| real_tom_walk (anchor rerun) | real (demo cartoon) | trips and falls flat; TEMPORAL_W 0.5, LPIPS_W 1.5 | baseline trips him at frames 10-12 | ours: pillow kept but no trip in iters 2-5, 7-8; iter 6 falls at the baseline's timing | failed (anchoring froze the motion) |
 | gen_car_shatter | bank (car_window source) | the whole car shatters into glass shards | baseline does it, early and complete (cracks at frame 4, debris field by frame 9; 0.86/0.60) | ours cancelled (stop rule) | skip |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |
