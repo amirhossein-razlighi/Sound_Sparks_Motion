@@ -1,0 +1,12 @@
+{
+ "slug": "gen_plate_counter",
+ "baseline_any": 0.14746483517035847,
+ "baseline_lin": 0.6853505341448005,
+ "best_iter": 1,
+ "best_any": 0.1758893395345692,
+ "best_lin": 0.1758893395345692,
+ "best_perc": 0.00012187357060611248,
+ "auto_verdict": "partial",
+ "note": "auto verdict from the in-loop critic; visual review decides",
+ "visual_verdict": "PARTIAL (timing gained, shatter lost - user to judge): baseline slides the plate off at frames 9-10 and shatters it at 11-12 (late). iters 2-3 slide it off at frames 3-4 (~1 s in) but it lands on the floor intact and stays there; critic 0.003 (miss), perceptual 0.28-0.29 (just over the guard, so forced in as B_cand_iter02/03). iters 4-8 add hands that put the plate back, then melt into wobbly textures late (drift); 9-16 flat/drift."
+}

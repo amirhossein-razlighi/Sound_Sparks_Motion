@@ -598,6 +598,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   sandal-like object on the table, iter 8 reframes to a close-up. Small blurry glass in a low-res clip - same lesson as the
   balloon and the Gatsby glass: small-object events on real footage do not localize. Plate counter running.
 
+- 01:20 gen_plate_counter partial: ours moves the fall from frame ~9 to frames 3-4 (iters 2-3) but the plate lands intact
+  instead of shattering, and the critic scores it 0.003 (perceptual 0.28, just over the guard - forced in for review). iters
+  4-8 add hands putting the plate back, then late texture drift. Timing gained, event weakened. Tom walk next.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -682,7 +686,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_ladder | bank | ladder slides and falls | baseline does it late (frames ~85-105; 0.67/0.20 screen, 0.04 in our loop = critic miss) | ours (both/any, patience 14, 16 iters): iter 1 = baseline; iters 2-16 drift (perceptual 0.42-0.72) - iter 2 moves the fall earlier but in an altered scene | failed (drift) |
 | gen_firecracker | bank | explodes with a bang and smoke | source already sparks/smokes; baseline = a small puff at frame 29, no bang (0.07/0.49; 0.55 in our loop) | ours (both/any, patience 14, 16 iters): iters 8-11 carry a violent change at frame 25 (proxy |diff| 30-44 vs 7 baseline) + brighter smoke; iter 9 critic best 0.70, perc 0.07; iter 12 fires twice; 13-16 lose it | promising (visual check pending) |
 | gen_kettle | bank | whistles, steam shoots out | baseline static, no steam (0.02/0.10) | ours (both/any, 16 iters): nothing ever appears, critic flat 0.04-0.15 | failed (flat) |
-| gen_plate_counter | bank | plate slides off and shatters | baseline does it late (slides at frame ~9, shatters; 0.66/0.13) | ours queued (late case) | opt |
+| gen_plate_counter | bank | plate slides off and shatters | baseline does it late (slides at frame ~9, shatters at 11-12; 0.66/0.13) | ours iters 2-3: slides off at frames 3-4 but lands intact (critic miss, perc 0.28); 4-8 hands + drift | partial (early fall, no shatter) |
 | gen_car_window | bank | side window shatters | baseline: only a faint crack pattern (0.10/0.06) | iters 3-7 shatter the whole car and doors, not the window (over-edit) | not a win (user) |
 | gen_balloon | bank (r7) | balloon bursts with a pop | baseline: the balloon vanishes between frames 4-5, no pop (0.003/0.02) | ours (both/any, 16 iters): critic flat 0.004-0.025; iter 2 keeps the balloon, iters 3-16 shrink the picture inside a white border with text overlays (layout drift) | failed (flat + drift) |
 | gen_tyre | bank (r7) | tyre bursts, goes flat | baseline static (0.001/0.009) | ours queued | opt |
