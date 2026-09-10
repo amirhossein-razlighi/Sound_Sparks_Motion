@@ -606,6 +606,10 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   him sprawled to the end (critic 0.80, perceptual 0.13), iters 4-5 a little later, iter 8+ drift. A half-second-earlier,
   fuller fall - fine as a demo clip, not a category change. glass_note3 running next.
 
+- 03:30 gen_glass_note3 failed flat: no shatter in any iteration (critic 0.01-0.07); iters 5-6 drift the whole frame. Third
+  small-object shatter to fail tonight (Gatsby glass, cat's glass, singer's glass) - the glass is too small a target for the
+  critic at 224 px. Steamboat next on allocation 20816514 (rg32203). Image viewer blocked again; judged by the motion proxy.
+
 ## Scenario table (updated as results land)
 
 | slug | source | edit | baseline (screen) | ours | status |
@@ -718,7 +722,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_travolta_jump | real (demo) | jumps with hand up, shouting | baseline does it (0.90/0.99) | - | skip |
 | real_gatsby_wink | real (demo) | winks, combs hair | baseline combs hair at frames 4-7 (0.67/0.91) | - | skip |
 | real_leo_clap | real (demo) | drops the can, claps | baseline: raises the can, no clap (0.03/0.16) | ours queued | opt |
-| gen_glass_note3 | bank (r7) | singer's high note shatters the glass | baseline: stands still, faint glass highlight, no shatter (0.08/0.06) | ours queued | opt |
+| gen_glass_note3 | bank (r7) | singer's high note shatters the glass | baseline: stands still, no shatter (0.08/0.06) | ours: flat (0.01-0.07), static except drift in iters 5-6; no shatter | failed (flat) |
 | gen_car_shatter | bank (car_window source) | the whole car shatters into glass shards | baseline does it, early and complete (cracks at frame 4, debris field by frame 9; 0.86/0.60) | ours cancelled (stop rule) | skip |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
 | gen_jeep_drives | H3 t2va | drives forward | weak motion (0.04/0.11) | - | maybe |

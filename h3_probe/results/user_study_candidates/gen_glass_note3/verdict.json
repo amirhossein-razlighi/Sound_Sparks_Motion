@@ -1,0 +1,12 @@
+{
+ "slug": "gen_glass_note3",
+ "baseline_any": 0.06222178759523055,
+ "baseline_lin": 0.13137313699862188,
+ "best_iter": 1,
+ "best_any": 0.07381047547794306,
+ "best_lin": 0.07381047547794306,
+ "best_perc": 3.9479076804127544e-05,
+ "auto_verdict": "flat",
+ "note": "auto verdict from the in-loop critic; visual review decides",
+ "visual_verdict": "FAILED (flat; judged by proxy, image viewer blocked at 03:30): critic 0.01-0.07 in every iteration; motion proxy shows the scene static in iters 2-4, 7, 10 (identical to the baseline) and a continuous whole-frame motion in iters 5-6 (camera/scene drift, not a shatter). No glass shatter anywhere. Sheets kept in the folder for a look in the morning."
+}
