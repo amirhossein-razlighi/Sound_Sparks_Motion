@@ -15,7 +15,7 @@ The critic is only a guide: it has missed real motion (koi, frog, glass table) a
 Judge the videos. Scenarios that were rejected at the source-check or baseline stage are listed in `../H3_scenarios.md`
 (section "overnight") with the reason; their baseline sheets are in `/scratch/amirrz/H3_exp/outputs/overnight/screen/`.
 
-## Status (2026-09-10, updated 03:20)
+## Status (2026-09-10, updated 03:30)
 
 | folder | baseline (A) | ours (B) | verdict |
 |---|---|---|---|
@@ -34,7 +34,7 @@ Judge the videos. Scenarios that were rejected at the source-check or baseline s
 | real_tony_shout | stares off, mouth opens slightly at frames ~50-60 (0.06/0.24) | iters 8-10: full open-mouthed yell at frames ~45-67, head turning to the camera (`B_best_iter10` critic best, `B_cand_iter09`/`08`); iters 11-16 back to the baseline look | CANDIDATE (auto, 23:00): strong; demo + likely study pair |
 | real_leo_couch | sips from the can, then sits (0.004/0.043) | no spit-take, no laugh in any iteration; critic flat 0.02-0.04, best = untouched | failed (auto, 23:58): small figure in a dark wide shot, face too small for a mouth event |
 | real_casablanca | laughs and throws her head back on its own (0.71/0.95) | iters 2-4 laugh slightly earlier with a changed framing (perc 0.27-0.35, guard-rejected); iters 8-16 drift to a crowd scene | rejected (auto, 01:00): no room, saturated critic + drift |
-| real_casablanca_hat | H3 grabs and throws the hat at ~1-2 s, slight smile after (critic miss: 0.004) | iters 4-5: laugh with the head back in the last third, hat vanishes, brighter re-framed shot (perc 0.41); iters 8-16 drift | no clean gap (eye recheck 03:20): A throws without laughing, B laughs without a visible throw |
+| real_casablanca_hat | H3 grabs and throws the hat at ~1-2 s, slight smile after (critic miss: 0.004) | iters 4-5: laugh with the head back in the last third, hat vanishes, brighter re-framed shot (perc 0.41); iters 8-16 drift | user (03:25): iter 4 is good -> in `../user_study/real_casablanca_hat` (iter 5 alternate) |
 | real_steamboat_wheel | wheel spins wildly and flings Mickey by itself (0.26/0.55) | every iteration dampens the spin (critic 0.14-0.29), best = untouched | rejected (auto, 03:15): no gain, Mickey source closed |
 
 Screened but not optimized: gen_car_shatter (H3 already shatters the whole car), gen_piano_lid (baseline closes the lid),

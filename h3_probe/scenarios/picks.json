@@ -167,5 +167,14 @@
   "alts": [],
   "edit": "The plate slides off the edge of the counter and drops onto the floor without breaking.",
   "note": "user (09-10 10:40): ok-ish, not bad. Ours tips the plate off at frames 2-3 and it lies intact on the floor from frame 4; baseline slides it off only in the last frames (10-12). Critic missed it (0.05); perceptual 0.32 (over the guard - fall edits move many pixels)."
+ },
+ "real_casablanca_hat": {
+  "run": "/scratch/amirrz/H3_exp/outputs/overnight/real_casablanca_hat/opt",
+  "iter": 4,
+  "alts": [
+   5
+  ],
+  "edit": "She grabs her hat, throws it up into the air and laughs.",
+  "note": "user (09-11 03:25): iter 4 is actually good -> packaged. Ours: the hat stays on until ~2.5 s, then she laughs with her head back and hands up while the hat leaves the frame, in a brighter, wider framing (perceptual 0.41, so the loop's own guard had rejected it; iter 5 alternate). Baseline: H3 grabs and throws the hat at ~1-2 s with only a slight smile after (critic miss 0.004)."
  }
 }
