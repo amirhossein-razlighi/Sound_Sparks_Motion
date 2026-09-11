@@ -865,7 +865,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_casablanca_hat | real (demo B&W) | throws her hat into the air and laughs | baseline lifts the hat off at frames 3-5, smiles, no throw (0.004) | ours queued (medium) | opt |
 | real_tom_walk (anchor rerun) | real (demo cartoon) | trips and falls flat; TEMPORAL_W 0.5, LPIPS_W 1.5 | baseline trips him at frames 10-12 | ours: pillow kept but no trip in iters 2-5, 7-8; iter 6 falls at the baseline's timing | failed (anchoring froze the motion) |
 | real_michael_cry | real (demo, sitcom) | bursts into tears, sobbing | baseline: talking, frown/cry only in the last ~20 frames (0.40/0.61) | ours iters 4-7: full open-mouthed sob from ~frame 55, head dropping (iter 4 critic 0.91; iters 6-7 biggest); iters 10-15 lose the cry | CANDIDATE (demo-grade, 20:55) |
-| real_michael_hiccup | real (demo, sitcom) | hiccups, coffee sloshes out of the mug | baseline static, talking only (0.002/0.013) | running (20:45) | opt |
+| real_michael_hiccup | real (demo, sitcom) | hiccups, coffee sloshes out of the mug | baseline static, talking only (0.002/0.013) | ours: no hiccup in any iter; iters 11-16 swap the mug for a transparent bottle with liquid + insert a suited man (iter 12 critic 0.20 = prop swap); iter 16 replaces him | FAIL (21:55): no hiccup prior; liquid clause -> object substitution |
 | real_michael_kiss | real (demo, sitcom) | kisses the mug with a smooch | baseline brings the mug to his lips and sips (0.005/0.022) | queued at the tail | opt (low) |
 | real_michael_slam | real (demo, sitcom) | slams the mug down with a bang | baseline lowers the mug out of frame late (0.004/0.013) | not run: desk out of frame, ambiguous | skipped |
 | gen_car_shatter | bank (car_window source) | the whole car shatters into glass shards | baseline does it, early and complete (cracks at frame 4, debris field by frame 9; 0.86/0.60) | ours cancelled (stop rule) | skip |
@@ -917,3 +917,8 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   critic 0.91, iters 6-7 the biggest wail, identity + mug intact). Later iters (10-15) lose the cry - the loop wandered off after
   the critic collapsed at iter 8 (critic 0.02 while iter 8 still visibly cries: another critic miss). Study value limited by the
   baseline doing a late version; demo value high (meme-grade).
+
+- 21:55 real_michael_hiccup FAILED: nothing hiccups; the 'coffee sloshes' clause is satisfied by swapping the mug for a clear bottle
+  (iters 12-15) and by inserting a second person (11-12), the same prop-substitution failure as Tom's pillow -> basket. Lesson: do
+  not put an object-liquid clause in the edit unless the liquid is already visible; hiccup has no usable audio-visual prior.
+  Allocation renewed on a new node (20889373, rg32003); real_tony_shout running since ~21:50.
