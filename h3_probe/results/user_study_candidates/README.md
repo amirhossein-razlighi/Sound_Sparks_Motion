@@ -35,6 +35,7 @@ Judge the videos. Scenarios that were rejected at the source-check or baseline s
 | real_leo_couch | sips from the can, then sits (0.004/0.043) | no spit-take, no laugh in any iteration; critic flat 0.02-0.04, best = untouched | failed (auto, 23:58): small figure in a dark wide shot, face too small for a mouth event |
 | real_casablanca | laughs and throws her head back on its own (0.71/0.95) | iters 2-4 laugh slightly earlier with a changed framing (perc 0.27-0.35, guard-rejected); iters 8-16 drift to a crowd scene | rejected (auto, 01:00): no room, saturated critic + drift |
 | real_casablanca_hat | H3 grabs and throws the hat at ~1-2 s, slight smile after (critic miss: 0.004) | iters 4-5: laugh with the head back in the last third, hat vanishes, brighter re-framed shot (perc 0.41); iters 8-16 drift | user (03:25): iter 4 is good -> in `../user_study/real_casablanca_hat` (iter 5 alternate) |
+| real_steamboat_wheel | turns the wheel moderately on its own (0.26/0.55) | every iteration scores lower than the baseline, same mild motion (proxy), best = untouched | failed (auto, 03:00, numbers + proxy; eye recheck pending): Mickey source closed, 0 for 4 |
 | real_steamboat_wheel | wheel spins wildly and flings Mickey by itself (0.26/0.55) | every iteration dampens the spin (critic 0.14-0.29), best = untouched | rejected (auto, 03:15): no gain, Mickey source closed |
 
 Screened but not optimized: gen_car_shatter (H3 already shatters the whole car), gen_piano_lid (baseline closes the lid),
