@@ -966,3 +966,8 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 - 04:15 real_leo_clap FAILED as expected: no can drop or clap, iters 4-5 drift into a standing shot with a black cylinder, the rest
   equals the baseline's small wave. Leo couch source closed (both edits). Allocation renewed (20909787, rg32501); the last run,
   real_michael_kiss, started 03:59 (models ready 04:08). The queue is empty after it; the runner will idle 15 min and release.
+- 04:25 user (awake): on the Leo couch source ours laughs much better than the baseline, but a plain "laughs" edit would let H3
+  match it; ask for a two-part edit whose second part is the laugh, and the spit-take is out. Queued after the kiss:
+  real_leo_crush = "He crushes the can in his fist with a loud crunch, then bursts out laughing." (crunch = sound-linked hand
+  event on the can he already holds, visible in the wide shot; H3 tends to be weak on object-state changes). Alternates if the
+  user prefers: knee slap + laugh, or shakes the can and it sprays foam + laugh.
