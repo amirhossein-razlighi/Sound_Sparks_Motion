@@ -849,6 +849,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_travolta_jump | real (demo) | jumps with hand up, shouting | baseline does it (0.90/0.99) | - | skip |
 | real_gatsby_wink | real (demo) | winks, combs hair | baseline combs hair at frames 4-7 (0.67/0.91) | - | skip |
 | real_leo_clap | real (demo) | drops the can and claps proudly | baseline: sits, small hand wave at ~1 s (0.018/0.25) | ours: no can drop, no clap in 15 iters; iters 4-5 drift (standing, black cylinder); best = untouched | FAIL (04:15): small dark figure; Leo source closed |
+| real_leo_kneeslap | real (demo) | slaps his knee and bursts out laughing (two-part) | baseline: sits, arm gesture near the end, small smile (0.58/0.95) | ours iters 6-12: knee slap in the first ~0.5 s, then a broad body-rocking laugh (iter 7 critic 0.99, perc 0.08) | USER: iter 7 really good -> packaged (05:40) |
 | gen_glass_note3 | bank (r7) | singer's high note shatters the glass | baseline: stands still, no shatter (0.08/0.06) | ours: flat (0.01-0.07), static except drift in iters 5-6; no shatter | failed (flat) |
 | real_chaplin_sneeze | real (demo B&W) | sneezes, rolls fly off the forks | baseline: fork fiddling, no sneeze (0.12/0.30) | ours: no sneeze in any of 16 iters, critic flat 0.16-0.30, best iter 1 = untouched | FAIL (user 16:45): wide dark shot, face too small for a facial event; rolls = object animation |
 | real_chaplin_sleep | real (demo B&W) | falls asleep, head drops on the table | baseline: head drops only in the last frame (0.81/0.87, late) | ours queued (low) | opt |
@@ -994,6 +995,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_leo_couch (spit) / real_leo_clap | fail: small dark figure; clap run also drifts | rejected; knee-slap two-part edit running as the last try |
 | real_michael_hiccup | fail: no hiccup; the liquid clause swaps the mug for a bottle | rejected |
 | gen_tyre / gen_lightbulb2 | fail: flat critic, static-object class (now 0 for 6) | rejected |
+| real_leo_kneeslap (05:58) | YOUR PICK iter 7 (packaged 05:40): two-part edit, knee slap then a broad laugh; the single-event edits on this source had failed | `user_study/real_leo_kneeslap` |
 
 **Lessons added tonight**
 - A facial or mouth event needs the face to fill the frame (Keaton close-up worked; Chaplin's and Leo's wide dark shots did not
@@ -1020,3 +1022,8 @@ knee slap -> it idles 15 min and releases the allocation.
 - 05:40 user (run at iter 10/16): real_leo_kneeslap iter 7 is "really good" -> packaged into results/user_study/real_leo_kneeslap
   now (B_ours = iter 7); critic best + alternates to be added when the run finishes. Baseline critic 0.95 on "slaps his knee or
   laughs" (H3 does part of the two-part edit on its own); ours iter 7 critic 0.99, perceptual 0.08.
+
+- 06:05 real_leo_kneeslap finished (early stop at 15): iters 6-12 all carry the slap + laugh, iter 7 the user's pick; the loop's own
+  total-loss best is iter 1 (untouched, because the baseline critic is already 0.95). Repackaged with iter 6 alternate and
+  B_criticbest_iter01. Lesson (user's idea, confirmed): when H3 already does the plain event, ask for a two-part edit whose second
+  part is the event - H3 does one part, ours does both. Queue empty; the runner idles 15 min then releases the allocation.
