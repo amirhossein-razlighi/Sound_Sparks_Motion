@@ -15,7 +15,7 @@ The critic is only a guide: it has missed real motion (koi, frog, glass table) a
 Judge the videos. Scenarios that were rejected at the source-check or baseline stage are listed in `../H3_scenarios.md`
 (section "overnight") with the reason; their baseline sheets are in `/scratch/amirrz/H3_exp/outputs/overnight/screen/`.
 
-## Status (2026-09-10, updated 02:10)
+## Status (2026-09-10, updated 03:15)
 
 | folder | baseline (A) | ours (B) | verdict |
 |---|---|---|---|
@@ -35,6 +35,7 @@ Judge the videos. Scenarios that were rejected at the source-check or baseline s
 | real_leo_couch | sips from the can, then sits (0.004/0.043) | no spit-take, no laugh in any iteration; critic flat 0.02-0.04, best = untouched | failed (auto, 23:58): small figure in a dark wide shot, face too small for a mouth event |
 | real_casablanca | laughs and throws her head back on its own (0.71/0.95) | iters 2-4 laugh slightly earlier with a changed framing (perc 0.27-0.35, guard-rejected); iters 8-16 drift to a crowd scene | rejected (auto, 01:00): no room, saturated critic + drift |
 | real_casablanca_hat | static, looks aside (0.004/0.005) | no hat throw; only iter 4 scores (0.50) and it is a brighter re-framed second half (perc 0.41); iters 6-15 drift (perc 0.4-0.6) | failed (auto, 02:10, numbers + motion proxy; eye recheck pending) |
+| real_steamboat_wheel | wheel spins wildly and flings Mickey by itself (0.26/0.55) | every iteration dampens the spin (critic 0.14-0.29), best = untouched | rejected (auto, 03:15): no gain, Mickey source closed |
 
 Screened but not optimized: gen_car_shatter (H3 already shatters the whole car), gen_piano_lid (baseline closes the lid),
 gen_kettle and gen_plate_counter (baseline fails / late) are being optimized in round 7 (started 11:50), together with new sources - see `../H3_scenarios.md`.

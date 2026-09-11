@@ -856,7 +856,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_tom_walk2 | real (demo cartoon) | trips and falls; pillow + basket anchored in the prompt | baseline trips him at frame ~9, pillow flying (0.77/0.93) | ours iters 2-5 fall at frames 8-9 too (3, 5 keep the pillow); 6-8 identity drift | no gap (demo-quality, not a pair) |
 | real_steamboat_laugh | real (demo cartoon) | throws head back, laughs | baseline = source; whistling mouth read as 'open' (0.45/0.98, saturated) | - | skip |
 | real_steamboat_shout | real (demo cartoon) | shouts angrily, shakes fist | baseline = source (0.05/0.13) | ours: identical to the baseline in 14 of 16 iterations; iter 9 (critic best 0.36) hallucinates extra characters | failed |
-| real_steamboat_wheel | real (demo cartoon) | spins the wheel wildly | baseline turns the wheel at frames 7-11 (0.19/0.48) | ours queued (medium) | opt |
+| real_steamboat_wheel | real (demo cartoon) | spins the wheel wildly | baseline does it: the wheel spins and flings Mickey from frame ~45 (0.26/0.55) | ours iters 2-16 dampen the spin (critic 0.14-0.29, less motion mid-clip); best = untouched | NO GAIN (03:15): Mickey source closed |
 | real_steamboat_sneeze | real (demo cartoon) | sneezes, body jerks back | baseline = source (0.10/0.30) | dropped after the jump and shout gave zero response on this source | dropped (no hope) |
 | gen_plate_counter2 | bank | plate drops off the counter without breaking | baseline: slides off only at frames 10-12, lands intact (0.12/0.02) | ours iter 3: off the edge at frames 2-3, intact on the floor from frame 4 (critic miss 0.05, perc 0.32 > guard, forced in); 4-6 double fall; 7-8 drift | PACKAGED (user: ok-ish, iter 3) |
 | real_tony_laugh | real (demo) | bursts out laughing | baseline throws his head back and laughs from frame ~5 (0.90/1.0) | - | skip (H3 does it) |
@@ -941,3 +941,8 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   eye): critic flat except iter 4 (0.50 with perc 0.41 = a brighter, re-framed second half), everything after iter 5 drifts
   (perc 0.4-0.6). Hat throw = whole-body/prop relocation, a known dead end. Casablanca source closed (laugh: no room; hat: drift).
   Allocation renewed (20906405, rg32501); real_steamboat_wheel running since 01:58 (baseline 0.26/0.11).
+
+- 03:15 real_steamboat_wheel NO GAIN: H3 already spins the wheel wildly and flings Mickey around; our iterations only dampen it.
+  Fourth Mickey edit with nothing to show - the 1928 rubber-hose source is closed. Session note: the coordinator session restarted
+  at ~03:00 and now sits on rorqual1 while the runner lives on rorqual4; ssh between login nodes needs MFA now, so the watcher
+  runs with RUNNER_CHECK=0 (liveness = log freshness). Runner confirmed alive via its running step (leo_clap, baseline 0.018 at 03:06).

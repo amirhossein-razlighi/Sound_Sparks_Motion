@@ -6,6 +6,7 @@ while :; do
   seen=$(cat $ST 2>/dev/null); seen=${seen:-0}; total=$(wc -l < $L)
   if [ "$total" -gt "$seen" ]; then new=$(tail -n +$((seen+1)) $L | grep -E "$PAT"); echo $total > $ST
     if [ -n "$new" ]; then echo "$new"; exit 0; fi; fi
-  pgrep -f 'night_run[23]?.sh' > /dev/null || { echo "RUNNER NOT RUNNING"; exit 2; }
+  if [ "${RUNNER_CHECK:-1}" = 1 ]; then pgrep -f 'night_run[23]?.sh' > /dev/null || { echo "RUNNER NOT RUNNING"; exit 2; }
+  else [ $(( $(date +%s) - $(stat -c %Y $L) )) -gt 5400 ] && { echo "LOG STALE 90 min - runner may be dead"; exit 2; }; fi  # RUNNER_CHECK=0 when the runner is on another login node (ssh needs MFA now)
   sleep $P
 done
