@@ -862,7 +862,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_tony_laugh | real (demo) | bursts out laughing | baseline throws his head back and laughs from frame ~5 (0.90/1.0) | - | skip (H3 does it) |
 | real_tony_shout | real (demo) | shouts angrily at the camera | baseline: stares off, mouth opens slightly at frames ~50-60 (0.06/0.24) | ours iters 8-10: full open-mouthed yell at frames ~45-67, head turning to the camera (iter 10 critic 0.87, perc 0.04); iters 11-16 revert | CANDIDATE (strong, 23:00) |
 | real_casablanca_yawn | real (demo B&W) | yawns hugely, rolls her eyes | baseline yawns behind her hand from frame 3 (0.93/1.0) | - | skip (H3 does it) |
-| real_casablanca_hat | real (demo B&W) | throws her hat into the air and laughs | baseline static, looks aside (0.004/0.005) | ours: no hat throw; iter 4 critic 0.50 = brighter re-framed second half (perc 0.41); iters 6-15 drift (perc 0.4-0.6); best = untouched | FAIL (02:10, numbers + proxy; eye recheck pending) |
+| real_casablanca_hat | real (demo B&W) | throws her hat into the air and laughs | baseline (loop seed): grabs and throws the hat out of frame at ~1-2 s, slight smile after - critic miss 0.004 | ours iters 4-5: laugh with the head back in the last third while the hat vanishes, brighter re-framed shot (perc 0.41); iters 8-16 drift | NO CLEAN GAP (eye recheck 03:20) |
 | real_tom_walk (anchor rerun) | real (demo cartoon) | trips and falls flat; TEMPORAL_W 0.5, LPIPS_W 1.5 | baseline trips him at frames 10-12 | ours: pillow kept but no trip in iters 2-5, 7-8; iter 6 falls at the baseline's timing | failed (anchoring froze the motion) |
 | real_michael_cry | real (demo, sitcom) | bursts into tears, sobbing | baseline: talking, frown/cry only in the last ~20 frames (0.40/0.61) | ours iters 4-7: full open-mouthed sob from ~frame 55, head dropping (iter 4 critic 0.91; iters 6-7 biggest); iters 10-15 lose the cry | CANDIDATE (demo-grade, 20:55) |
 | real_michael_hiccup | real (demo, sitcom) | hiccups, coffee sloshes out of the mug | baseline static, talking only (0.002/0.013) | ours: no hiccup in any iter; iters 11-16 swap the mug for a transparent bottle with liquid + insert a suited man (iter 12 critic 0.20 = prop swap); iter 16 replaces him | FAIL (21:55): no hiccup prior; liquid clause -> object substitution |
@@ -946,3 +946,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   Fourth Mickey edit with nothing to show - the 1928 rubber-hose source is closed. Session note: the coordinator session restarted
   at ~03:00 and now sits on rorqual1 while the runner lives on rorqual4; ssh between login nodes needs MFA now, so the watcher
   runs with RUNNER_CHECK=0 (liveness = log freshness). Runner confirmed alive via its running step (leo_clap, baseline 0.018 at 03:06).
+
+- 03:20 real_casablanca_hat eye recheck (viewer back): the 02:10 call was wrong on the baseline - H3 DOES throw the hat with this
+  seed (grab at ~1 s, out of frame by ~2 s), the critic scored it 0.004 (worst critic miss of the round: a whole-hat throw).
+  Ours trades the throw for a late laugh with the head back and a brighter re-framed shot. Verdict: no clean gap, rejected.
