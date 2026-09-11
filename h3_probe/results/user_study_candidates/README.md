@@ -15,7 +15,7 @@ The critic is only a guide: it has missed real motion (koi, frog, glass table) a
 Judge the videos. Scenarios that were rejected at the source-check or baseline stage are listed in `../H3_scenarios.md`
 (section "overnight") with the reason; their baseline sheets are in `/scratch/amirrz/H3_exp/outputs/overnight/screen/`.
 
-## Status (2026-09-10, updated 19:40)
+## Status (2026-09-10, updated 20:55)
 
 | folder | baseline (A) | ours (B) | verdict |
 |---|---|---|---|
@@ -29,6 +29,7 @@ Judge the videos. Scenarios that were rejected at the source-check or baseline s
 | real_chaplin_sneeze | fork fiddling, no sneeze (0.12/0.30) | no sneeze in any of 16 iterations, critic flat 0.16-0.30, best = untouched | failed (user 16:45, judged from the videos): wide dark shot, face too small for a facial event |
 | gen_tyre | static wheel (0.001/0.009) | static in all 16 iterations, critic flat 0.009-0.016, iters 4/6 layout drift | failed (auto, 18:35): static-object dead end |
 | gen_lightbulb2 | glowing bulb, static (0.001/0.005) | static in all iterations, critic flat 0.005; iter 7 zoom drift, iter 9 garbage frames | failed (auto, 19:40): static-object dead end |
+| real_michael_cry | talking, frown/cry only in the last ~20 frames (0.40/0.61) | iters 4-7: full open-mouthed sob from ~frame 55 with the head dropping (`B_cand_iter06`/`07` biggest, `B_best_iter04` critic pick); iters 10-15 lose the cry | CANDIDATE (auto, 20:55): demo-grade; study pair only if the late baseline frown does not count as crying |
 
 Screened but not optimized: gen_car_shatter (H3 already shatters the whole car), gen_piano_lid (baseline closes the lid),
 gen_kettle and gen_plate_counter (baseline fails / late) are being optimized in round 7 (started 11:50), together with new sources - see `../H3_scenarios.md`.
