@@ -848,7 +848,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_tom_hammock | real (demo cartoon) | eyes pop out, screams | baseline does it at frames 5-8 (0.45/0.67) | - | skip |
 | real_travolta_jump | real (demo) | jumps with hand up, shouting | baseline does it (0.90/0.99) | - | skip |
 | real_gatsby_wink | real (demo) | winks, combs hair | baseline combs hair at frames 4-7 (0.67/0.91) | - | skip |
-| real_leo_clap | real (demo) | drops the can, claps | baseline: raises the can, no clap (0.03/0.16) | ours queued | opt |
+| real_leo_clap | real (demo) | drops the can, claps proudly | baseline nearly static, dark (0.02/0.25 = critic misread) | ours: nearly static in every iter (proxy), critic 0.01-0.05, best = untouched | FAIL (04:00; eye recheck pending): Leo couch closed |
 | gen_glass_note3 | bank (r7) | singer's high note shatters the glass | baseline: stands still, no shatter (0.08/0.06) | ours: flat (0.01-0.07), static except drift in iters 5-6; no shatter | failed (flat) |
 | real_chaplin_sneeze | real (demo B&W) | sneezes, rolls fly off the forks | baseline: fork fiddling, no sneeze (0.12/0.30) | ours: no sneeze in any of 16 iters, critic flat 0.16-0.30, best iter 1 = untouched | FAIL (user 16:45): wide dark shot, face too small for a facial event; rolls = object animation |
 | real_chaplin_sleep | real (demo B&W) | falls asleep, head drops on the table | baseline: head drops only in the last frame (0.81/0.87, late) | ours queued (low) | opt |
@@ -958,3 +958,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 - 03:00 real_steamboat_wheel FAILED / no gain: the loop never beats the baseline's moderate wheel turn (critic 0.55 -> 0.14-0.48),
   proxy motion identical, best = untouched. Mickey (1928 rubber-hose) source: 0 for 4 edits (jump, shout, sneeze, wheel) - closed.
   real_leo_clap running since 02:57 (expected to fail: same small dark figure as leo_couch); real_michael_kiss last.
+
+- 04:00 real_leo_clap FAILED: nothing moves in any iteration (proxy), critic falls from a misread 0.25 to 0.01-0.05, best =
+  untouched. Leo couch source closed (spit-take and clap both 0). Allocation renewed (20909787, rg32501); real_michael_kiss
+  (last task) running since ~04:00; the queue is then empty and the runner releases the allocation after 15 idle minutes.
