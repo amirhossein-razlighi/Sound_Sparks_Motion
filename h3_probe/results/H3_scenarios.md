@@ -834,7 +834,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | gen_bowling2 | bank (r7) | ball knocks the pins over | baseline adds a ball and strikes (0.98/0.92) | - | skip |
 | real_gatsby | real (demo) | champagne glass shatters in his hand | baseline: original toast, glass intact (0.003/0.04) | ours: iter 5 cracked-screen overlay; iters 6-7, 11-16 a white spray near the hand at frames 4-6, glass intact after; 8-10 drift | weak (user to judge) |
 | real_gatsby_fw | real (demo) | huge firework explodes behind him | baseline adds modest bursts (0.13/0.49) | - | skip |
-| real_leo_couch | real (demo) | spits out his drink, bursts out laughing | baseline: original point-and-sip (0.006/0.03) | ours queued | opt |
+| real_leo_couch | real (demo) | spits out his drink, bursts out laughing | baseline: sips, then sits with the can raised (0.004/0.043) | ours: no spit, no laugh in 15 iters, critic flat 0.02-0.04, best = untouched | FAIL (23:58): small figure in a dark wide shot |
 | real_travolta | real (demo) | starts dancing the twist | baseline swings arms and turns (0.67/0.82) | - | skip |
 | real_mrbean | real (demo) | faints and falls backwards | baseline: stands, checks watch (0.004/0.015) | ours iter 4: tips at frame 7, lies flat on his back from frame 9 (critic miss 0.09, perc 0.32 > guard, forced in); iter 9 falls then drops out of view; rest = baseline | CANDIDATE WIN (user flagged iter 4) |
 | real_grumpy | real (demo) | big yawn | baseline opens the mouth wide (0.99/1.0) | - | skip |
@@ -927,3 +927,8 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   head turning toward the camera, tiny drift (perc 0.03-0.04), identity + dark room intact; iter 10 critic best (0.87). Third time
   tonight the loop peaks then collapses (cry iter 8, tony iter 11: critic 0.87 -> 0.02 and the motion vanishes) - the
   saturated-critic step; the per-iteration previews make it harmless, the best iterations are saved. real_leo_couch running since 22:56.
+
+- 23:58 real_leo_couch FAILED: critic flat (0.02-0.04), no spit-take or laugh anywhere; the faint wisp at ~0.9 s is in the baseline
+  too. Same class as chaplin_sneeze: the face is a small part of a dark wide frame. real_leo_clap (same source, later in the
+  queue) will most likely fail the same way; it stays because the user asked for it. Allocation renewed (20897392, rg31902);
+  real_casablanca running since ~23:58.
