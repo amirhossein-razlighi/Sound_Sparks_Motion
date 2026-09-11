@@ -194,7 +194,7 @@
    8
   ],
   "edit": "He suddenly shouts angrily at the camera, his face contorted with rage.",
-  "note": "PROVISIONAL (auto-pick 09-11 05:20, awaiting the user's verdict): iter 10 = critic best (0.87) and the biggest yell; iters 9 and 8 alternates. Baseline: stares off, mouth opens slightly at ~2 s. Ours: full open-mouthed yell at ~1.9-2.8 s, head turning to the camera, perceptual 0.04, identity and dark room intact."
+  "note": "user (09-11 06:20): iter 10 confirmed. iter 10 = critic best (0.87) and the biggest yell; iters 9 and 8 alternates. Baseline: stares off, mouth opens slightly at ~2 s. Ours: full open-mouthed yell at ~1.9-2.8 s, head turning to the camera, perceptual 0.04, identity and dark room intact."
  },
  "real_michael_cry": {
   "run": "/scratch/amirrz/H3_exp/outputs/overnight/real_michael_cry/opt",
@@ -213,5 +213,75 @@
   ],
   "edit": "He slaps his knee and bursts out laughing.",
   "note": "user (09-11 05:40): iter 7 is really good -> packaged; iter 6 adjacent alternate; the loop's own best (total loss) is iter 1 = untouched, copied as B_criticbest. Two-part edit on the Leo couch source (user's idea after the spit-take failed). Baseline: sits with the can up, raises an arm near the end with a small smile (critic 0.95 on 'slaps his knee or laughs'). Ours iter 7: hand down to the knee within ~0.5 s, then a broad open-mouthed laugh rocking his body through the first half (critic 0.99, perc 0.08)."
+ },
+ "real_mrbean": {
+  "run": "/scratch/amirrz/H3_exp/outputs/overnight/real_mrbean/opt",
+  "iter": 4,
+  "alts": [],
+  "edit": "He faints and falls backwards into the field.",
+  "note": "user (09-10 + 09-11 06:20): iter 4 works -> packaged. Baseline: stands hands-on-hips checking his watch, no faint. Iter 4: tips backwards at frame 7 and lies flat in the rapeseed for the rest (critic 0.09, perceptual 0.32 = guard-rejected, eye pick). Critic best iter 9 alongside (falls then drops out of view)."
+ },
+ "real_casablanca": {
+  "run": "/scratch/amirrz/H3_exp/outputs/overnight/real_casablanca/opt",
+  "iter": 3,
+  "alts": [
+   2,
+   4
+  ],
+  "edit": "She bursts out laughing, throwing her head back.",
+  "note": "user (09-11 06:20): iter 3 is good -> packaged (iters 2 and 4 alternates). Baseline already laughs late with the head back (critic 0.95); iter 3 laughs earlier (from ~1.5 s) with a slightly changed framing (perceptual 0.30, guard-rejected). Critic best iter 1 = untouched, alongside."
+ },
+ "gen_woman_scream": {
+  "run": "/scratch/amirrz/H3_exp/outputs/overnight/gen_woman_scream/opt",
+  "iter": 2,
+  "alts": [],
+  "edit": "The woman screams in fright.",
+  "note": "PROVISIONAL (auto-pick 09-11 06:20 so every candidate can be reviewed in one place; awaiting the user's verdict): iter 2 = wide-open scream mid-clip vs the baseline's last-frame-only scream; iter 3 drifts. Note: on 09-10 04:20 the user said none of that overnight batch was good enough - re-judge."
+ },
+ "gen_horse_neigh": {
+  "run": "/scratch/amirrz/H3_exp/outputs/overnight/gen_horse_neigh/opt",
+  "iter": 5,
+  "alts": [
+   3,
+   4
+  ],
+  "edit": "The horse throws its head up and neighs loudly.",
+  "note": "PROVISIONAL (auto-pick 09-11 06:20 so every candidate can be reviewed in one place; awaiting the user's verdict): iters 3-5 throw the head up at frames 2-4 (early, stronger; iter 5 with the mouth open) vs the baseline's mild late head turn at frames 8-9. Critic missed it (0.03-0.07). A timing win rather than a baseline failure."
+ },
+ "real_nosferatu": {
+  "run": "/scratch/amirrz/H3_exp/outputs/overnight/real_nosferatu/opt",
+  "iter": 2,
+  "alts": [
+   4,
+   9
+  ],
+  "edit": "The vampire bares his fangs and hisses, lunging toward the camera.",
+  "note": "PROVISIONAL (auto-pick 09-11 06:20 so every candidate can be reviewed in one place; awaiting the user's verdict): subtle: the lunge is in the source; ours iter 2 opens the mouth and shows the fangs at frames 6-7 as the face passes the camera, the baseline keeps the mouth shut. Visible only on a head crop."
+ },
+ "real_tom_walk": {
+  "run": "/scratch/amirrz/H3_exp/outputs/overnight/real_tom_walk/opt",
+  "iter": 3,
+  "alts": [
+   4,
+   5
+  ],
+  "edit": "The cat trips and falls flat on his face with a crash.",
+  "note": "PROVISIONAL (auto-pick 09-11 06:20 so every candidate can be reviewed in one place; awaiting the user's verdict): modest timing win: iter 3 trips Tom at frame ~8 and leaves him sprawled (the pillow turns into a basket - the issue the user flagged); baseline trips him at frames 10-12. Critic best iter 6 alongside (baseline timing)."
+ },
+ "gen_plate_counter": {
+  "run": "/scratch/amirrz/H3_exp/outputs/overnight/gen_plate_counter/opt",
+  "iter": 2,
+  "alts": [
+   3
+  ],
+  "edit": "The plate slides off the counter and shatters on the floor.",
+  "note": "PROVISIONAL (auto-pick 09-11 06:20 so every candidate can be reviewed in one place; awaiting the user's verdict): partial: iters 2-3 slide the plate off ~1 s in but it lands intact (shatter lost); baseline slides it off late and shatters it. The follow-up gen_plate_counter2 ('drops without breaking') is the packaged one."
+ },
+ "gen_books_shelf": {
+  "run": "/scratch/amirrz/H3_exp/outputs/overnight/gen_books_shelf/opt",
+  "iter": 2,
+  "alts": [],
+  "edit": "The books fall off the shelf onto the ground.",
+  "note": "PROVISIONAL (auto-pick 09-11 06:20 so every candidate can be reviewed in one place; awaiting the user's verdict): modest: iter 2 collapse starts earlier and fuller than the baseline's last-2-frames topple; iter 7 zoom drift. Note: on 09-10 04:20 the user said none of that overnight batch was good enough - re-judge."
  }
 }

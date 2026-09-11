@@ -1030,3 +1030,8 @@ knee slap -> it idles 15 min and releases the allocation.
 - 06:10 user: release the runner since the queue is empty -> allocation 20909787 cancelled from rorqual1 (no step was running).
   The runner process itself (night_run2.sh, rorqual4, pid 3614559) cannot be signalled from rorqual1 (ssh needs MFA); it idles
   harmlessly with an empty queue and no_bank set, requests nothing, and can be killed from rorqual4 with `pkill -f night_run2.sh`.
+- 06:20 user review pass: tony_shout iter 10 confirmed; casablanca_hat iter 4 was already the packaged pick; real_mrbean iter 4
+  and real_casablanca (laugh) iter 3 packaged on the user's word. The user also expected every candidate to be reviewable in
+  results/user_study, so the six unpicked "user to judge" runs went in as PROVISIONAL picks (woman_scream 2, horse_neigh 5,
+  nosferatu 2, tom_walk 3, plate_counter 2, books_shelf 2). Clear failures (flat critic / drift / no room) stay only in
+  user_study_candidates; the demo-only clips stay in results/demo. gen_cat_vase and gen_firecracker were already in user_study.
