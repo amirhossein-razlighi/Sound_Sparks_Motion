@@ -860,7 +860,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_steamboat_sneeze | real (demo cartoon) | sneezes, body jerks back | baseline = source (0.10/0.30) | dropped after the jump and shout gave zero response on this source | dropped (no hope) |
 | gen_plate_counter2 | bank | plate drops off the counter without breaking | baseline: slides off only at frames 10-12, lands intact (0.12/0.02) | ours iter 3: off the edge at frames 2-3, intact on the floor from frame 4 (critic miss 0.05, perc 0.32 > guard, forced in); 4-6 double fall; 7-8 drift | PACKAGED (user: ok-ish, iter 3) |
 | real_tony_laugh | real (demo) | bursts out laughing | baseline throws his head back and laughs from frame ~5 (0.90/1.0) | - | skip (H3 does it) |
-| real_tony_shout | real (demo) | shouts angrily at the camera | baseline: mouth slightly open at frames 8-11 (0.08/0.42) | ours queued | opt |
+| real_tony_shout | real (demo) | shouts angrily at the camera | baseline: stares off, mouth opens slightly at frames ~50-60 (0.06/0.24) | ours iters 8-10: full open-mouthed yell at frames ~45-67, head turning to the camera (iter 10 critic 0.87, perc 0.04); iters 11-16 revert | CANDIDATE (strong, 23:00) |
 | real_casablanca_yawn | real (demo B&W) | yawns hugely, rolls her eyes | baseline yawns behind her hand from frame 3 (0.93/1.0) | - | skip (H3 does it) |
 | real_casablanca_hat | real (demo B&W) | throws her hat into the air and laughs | baseline lifts the hat off at frames 3-5, smiles, no throw (0.004) | ours queued (medium) | opt |
 | real_tom_walk (anchor rerun) | real (demo cartoon) | trips and falls flat; TEMPORAL_W 0.5, LPIPS_W 1.5 | baseline trips him at frames 10-12 | ours: pillow kept but no trip in iters 2-5, 7-8; iter 6 falls at the baseline's timing | failed (anchoring froze the motion) |
@@ -922,3 +922,8 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   (iters 12-15) and by inserting a second person (11-12), the same prop-substitution failure as Tom's pillow -> basket. Lesson: do
   not put an object-liquid clause in the edit unless the liquid is already visible; hiccup has no usable audio-visual prior.
   Allocation renewed on a new node (20889373, rg32003); real_tony_shout running since ~21:50.
+
+- 23:00 real_tony_shout: CANDIDATE (strong). Baseline barely opens his mouth; ours iters 8-10 yell with the mouth wide open and the
+  head turning toward the camera, tiny drift (perc 0.03-0.04), identity + dark room intact; iter 10 critic best (0.87). Third time
+  tonight the loop peaks then collapses (cry iter 8, tony iter 11: critic 0.87 -> 0.02 and the motion vanishes) - the
+  saturated-critic step; the per-iteration previews make it harmless, the best iterations are saved. real_leo_couch running since 22:56.
