@@ -185,5 +185,24 @@
   ],
   "edit": "He kisses the mug lovingly with a loud smooch.",
   "note": "user (09-11 05:05): iter 15 is good -> packaged (iter 14 adjacent alternate). Critic best was iter 5 (0.11) and the critic scored iter 15 only 0.03 (critic miss). Baseline: H3 brings the mug to his lips and sips from ~0.5 s, no kiss."
+ },
+ "real_tony_shout": {
+  "run": "/scratch/amirrz/H3_exp/outputs/overnight/real_tony_shout/opt",
+  "iter": 10,
+  "alts": [
+   9,
+   8
+  ],
+  "edit": "He suddenly shouts angrily at the camera, his face contorted with rage.",
+  "note": "PROVISIONAL (auto-pick 09-11 05:20, awaiting the user's verdict): iter 10 = critic best (0.87) and the biggest yell; iters 9 and 8 alternates. Baseline: stares off, mouth opens slightly at ~2 s. Ours: full open-mouthed yell at ~1.9-2.8 s, head turning to the camera, perceptual 0.04, identity and dark room intact."
+ },
+ "real_michael_cry": {
+  "run": "/scratch/amirrz/H3_exp/outputs/overnight/real_michael_cry/opt",
+  "iter": 6,
+  "alts": [
+   7
+  ],
+  "edit": "He suddenly bursts into tears, sobbing loudly, his face crumpling.",
+  "note": "PROVISIONAL (auto-pick 09-11 05:20, awaiting the user's verdict): iter 6 = the biggest open-mouthed sob with the head dropping; iter 7 alternate; critic best iter 4 alongside. Baseline: talking, a frown/cry only in the last ~20 frames. Ours: the cry starts ~0.6 s earlier and is a full sob; demo-grade for sure, study pair if the baseline's late frown does not count as crying."
  }
 }

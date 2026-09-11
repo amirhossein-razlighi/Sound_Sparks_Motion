@@ -1014,3 +1014,6 @@ call: say an iteration number and they go in the same way.
 overnight; the coordinator session restarted at ~03:00 and now runs on rorqual1 while the runner stays on rorqual4 (ssh between
 login nodes needs MFA now, so the watcher uses log freshness instead of pgrep). Runner: night_run2.sh, queue empty after the
 knee slap -> it idles 15 min and releases the allocation.
+- 05:20 user: put the two open candidates into results/user_study as well, to review everything in one place -> real_tony_shout
+  (provisional iter 10 = critic best, alts 9/8) and real_michael_cry (provisional iter 6, alt 7, critic best 4 alongside). Marked
+  PROVISIONAL in picks.json/INDEX until the user names an iteration; nothing removed from user_study_candidates.
