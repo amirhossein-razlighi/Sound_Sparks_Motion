@@ -1027,3 +1027,6 @@ knee slap -> it idles 15 min and releases the allocation.
   total-loss best is iter 1 (untouched, because the baseline critic is already 0.95). Repackaged with iter 6 alternate and
   B_criticbest_iter01. Lesson (user's idea, confirmed): when H3 already does the plain event, ask for a two-part edit whose second
   part is the event - H3 does one part, ours does both. Queue empty; the runner idles 15 min then releases the allocation.
+- 06:10 user: release the runner since the queue is empty -> allocation 20909787 cancelled from rorqual1 (no step was running).
+  The runner process itself (night_run2.sh, rorqual4, pid 3614559) cannot be signalled from rorqual1 (ssh needs MFA); it idles
+  harmlessly with an empty queue and no_bank set, requests nothing, and can be killed from rorqual4 with `pkill -f night_run2.sh`.
