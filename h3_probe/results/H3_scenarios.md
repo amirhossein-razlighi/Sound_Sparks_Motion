@@ -866,7 +866,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_tom_walk (anchor rerun) | real (demo cartoon) | trips and falls flat; TEMPORAL_W 0.5, LPIPS_W 1.5 | baseline trips him at frames 10-12 | ours: pillow kept but no trip in iters 2-5, 7-8; iter 6 falls at the baseline's timing | failed (anchoring froze the motion) |
 | real_michael_cry | real (demo, sitcom) | bursts into tears, sobbing | baseline: talking, frown/cry only in the last ~20 frames (0.40/0.61) | ours iters 4-7: full open-mouthed sob from ~frame 55, head dropping (iter 4 critic 0.91; iters 6-7 biggest); iters 10-15 lose the cry | CANDIDATE (demo-grade, 20:55) |
 | real_michael_hiccup | real (demo, sitcom) | hiccups, coffee sloshes out of the mug | baseline static, talking only (0.002/0.013) | ours: no hiccup in any iter; iters 11-16 swap the mug for a transparent bottle with liquid + insert a suited man (iter 12 critic 0.20 = prop swap); iter 16 replaces him | FAIL (21:55): no hiccup prior; liquid clause -> object substitution |
-| real_michael_kiss | real (demo, sitcom) | kisses the mug with a smooch | baseline brings the mug to his lips and sips (0.005/0.022) | queued at the tail | opt (low) |
+| real_michael_kiss | real (demo, sitcom) | kisses the mug with a smooch | baseline: lifts the mug and sips, tilted, from ~1.8 s to the end (0.004/0.02) | ours iters 14-16: mug to the lips held upright, back down by ~2.8 s, then a smile (critic 0.03 = miss; critic best iter 5 = drift) | USER: iter 15 good -> packaged (05:05) |
 | real_michael_slam | real (demo, sitcom) | slams the mug down with a bang | baseline lowers the mug out of frame late (0.004/0.013) | not run: desk out of frame, ambiguous | skipped |
 | gen_car_shatter | bank (car_window source) | the whole car shatters into glass shards | baseline does it, early and complete (cracks at frame 4, debris field by frame 9; 0.86/0.60) | ours cancelled (stop rule) | skip |
 | dog_runs_off | retake input | gets up and runs off | fail (0.04/0.06), dog small in cluttered scene | - | skip |
@@ -973,3 +973,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   user prefers: knee slap + laugh, or shakes the can and it sprays foam + laugh.
 - 04:30 user: swap the two-part Leo edit to "He slaps his knee and bursts out laughing." -> real_leo_kneeslap replaces
   real_leo_crush in the queue (crush stays in the bank, not run).
+
+- 05:05 user: michael_kiss iter 15 is good -> packaged into results/user_study/real_michael_kiss (iter 14 alternate, critic best
+  iter 5 alongside). Another critic miss: the kiss-on-the-rim scores 0.03 while the drifted iter 5 scores 0.11. Kiss finished
+  05:01 (allocation 20909787); real_leo_kneeslap started 05:01, the last item in the queue.

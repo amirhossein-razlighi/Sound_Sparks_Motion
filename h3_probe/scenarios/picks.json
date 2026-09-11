@@ -176,5 +176,14 @@
   ],
   "edit": "She grabs her hat, throws it up into the air and laughs.",
   "note": "user (09-11 03:25): iter 4 is actually good -> packaged. Ours: the hat stays on until ~2.5 s, then she laughs with her head back and hands up while the hat leaves the frame, in a brighter, wider framing (perceptual 0.41, so the loop's own guard had rejected it; iter 5 alternate). Baseline: H3 grabs and throws the hat at ~1-2 s with only a slight smile after (critic miss 0.004)."
+ },
+ "real_michael_kiss": {
+  "run": "/scratch/amirrz/H3_exp/outputs/overnight/real_michael_kiss/opt",
+  "iter": 15,
+  "alts": [
+   14
+  ],
+  "edit": "He kisses the mug lovingly with a loud smooch.",
+  "note": "user (09-11 05:05): iter 15 is good -> packaged (iter 14 adjacent alternate). Critic best was iter 5 (0.11) and the critic scored iter 15 only 0.03 (critic miss). Baseline: H3 brings the mug to his lips and sips from ~0.5 s, no kiss."
  }
 }

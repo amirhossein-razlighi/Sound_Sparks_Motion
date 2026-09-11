@@ -15,7 +15,7 @@ The critic is only a guide: it has missed real motion (koi, frog, glass table) a
 Judge the videos. Scenarios that were rejected at the source-check or baseline stage are listed in `../H3_scenarios.md`
 (section "overnight") with the reason; their baseline sheets are in `/scratch/amirrz/H3_exp/outputs/overnight/screen/`.
 
-## Status (2026-09-10, updated 04:15)
+## Status (2026-09-10, updated 05:10)
 
 | folder | baseline (A) | ours (B) | verdict |
 |---|---|---|---|
@@ -37,6 +37,7 @@ Judge the videos. Scenarios that were rejected at the source-check or baseline s
 | real_casablanca_hat | H3 grabs and throws the hat at ~1-2 s, slight smile after (critic miss: 0.004) | iters 4-5: laugh with the head back in the last third, hat vanishes, brighter re-framed shot (perc 0.41); iters 8-16 drift | user (03:25): iter 4 is good -> in `../user_study/real_casablanca_hat` (iter 5 alternate) |
 | real_steamboat_wheel | turns the wheel moderately on its own (0.26/0.55) | every iteration scores lower than the baseline, same mild motion (proxy), best = untouched | failed (auto, 03:00, numbers + proxy; eye recheck pending): Mickey source closed, 0 for 4 |
 | real_leo_clap | sits, small hand wave at ~1 s (0.018/0.25) | no can drop, no clap in any iteration; iters 4-5 drift into a standing shot with a black cylinder; critic 0.01-0.05, best = untouched | failed (auto, 04:15): small figure in a dark wide shot; Leo source closed |
+| real_michael_kiss | lifts the mug and sips, tilted, from ~1.8 s to the end (0.004/0.02) | iters 14-16: mug to the lips held upright (a kiss on the rim), down again by ~2.8 s, then a smile (critic miss 0.03; critic best iter 5 = drift) | user (05:05): iter 15 is good -> in `../user_study/real_michael_kiss` (iter 14 alternate) |
 | real_leo_clap | nearly static, dark (0.02/0.25 critic misread) | nearly static in every iteration (proxy), critic 0.01-0.05, best = untouched | failed (auto, 04:00, numbers + proxy; eye recheck pending): Leo couch source closed, 0 for 2 |
 | real_steamboat_wheel | wheel spins wildly and flings Mickey by itself (0.26/0.55) | every iteration dampens the spin (critic 0.14-0.29), best = untouched | rejected (auto, 03:15): no gain, Mickey source closed |
 
