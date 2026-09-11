@@ -977,3 +977,40 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 - 05:05 user: michael_kiss iter 15 is good -> packaged into results/user_study/real_michael_kiss (iter 14 alternate, critic best
   iter 5 alongside). Another critic miss: the kiss-on-the-rim scores 0.03 while the drifted iter 5 scores 0.11. Kiss finished
   05:01 (allocation 20909787); real_leo_kneeslap started 05:01, the last item in the queue.
+
+## Morning summary - overnight Sep 10 -> 11 (round 8; written 05:15, knee-slap result to be appended)
+
+**Runs judged tonight (14) and where they stand**
+
+| run | outcome | where |
+|---|---|---|
+| real_tony_shout | CANDIDATE, strong: full yell at iters 8-10 vs the baseline's half-open mouth; iter 10 critic best | `user_study_candidates/real_tony_shout` - awaiting your verdict |
+| real_michael_cry | CANDIDATE, demo-grade: sob from ~frame 55 with the head dropping (iters 4-7) vs the baseline's late frown | `user_study_candidates/real_michael_cry` - awaiting your verdict |
+| real_casablanca_hat | YOUR PICK iter 4 (packaged 03:25); baseline throws the hat without laughing, ours laughs with the head back | `user_study/real_casablanca_hat` |
+| real_michael_kiss | YOUR PICK iter 15 (packaged 05:05); kiss on the rim vs the baseline's sip | `user_study/real_michael_kiss` |
+| real_casablanca (laugh) | no room: the baseline already laughs with the head back (0.95) | rejected |
+| real_steamboat_wheel | no gain: the baseline already spins the wheel and flings Mickey; ours dampens it | rejected, Mickey source closed |
+| real_chaplin_sneeze | fail: flat critic, face too small in a wide dark shot | rejected, Chaplin source closed |
+| real_leo_couch (spit) / real_leo_clap | fail: small dark figure; clap run also drifts | rejected; knee-slap two-part edit running as the last try |
+| real_michael_hiccup | fail: no hiccup; the liquid clause swaps the mug for a bottle | rejected |
+| gen_tyre / gen_lightbulb2 | fail: flat critic, static-object class (now 0 for 6) | rejected |
+
+**Lessons added tonight**
+- A facial or mouth event needs the face to fill the frame (Keaton close-up worked; Chaplin's and Leo's wide dark shots did not
+  register at the critic's 224 px).
+- Do not put an object-liquid clause in an edit unless the liquid is visible: "coffee sloshes out of the mug" was served by
+  swapping the mug for a transparent bottle (same failure as Tom's pillow -> basket).
+- Static-object bursts (tyre, bulb, kettle, door, balloon, glass) are a dead end: no subject whose sound the audio latent can carry.
+- Peak-then-collapse: three runs (cry, tony, kiss) hit their best iteration and lost the motion within one more step; harmless
+  because every iteration is saved, but it means the critic's "best" is often one step late or early - judge the previews.
+- Critic misses this round: the whole-hat throw in the Casablanca baseline (0.004), the kiss on the rim (0.03), the cry at iter 8.
+- The perceptual guard (0.25) rejected your hat pick (0.41); it is too strict for laughs with head/hand motion, as for falls.
+
+**Packaging state**: results/user_study now has 23 pairs (+ casablanca_hat, michael_kiss tonight), each with B_ours, alternates,
+B_criticbest and the A baseline; results/demo unchanged (gatsby_splash, tom_walk2). Tony shout and Michael cry wait for your
+call: say an iteration number and they go in the same way.
+
+**Infrastructure notes**: one stuck-GPU incident (rg31801, excluded) yesterday afternoon; five clean allocation renewals
+overnight; the coordinator session restarted at ~03:00 and now runs on rorqual1 while the runner stays on rorqual4 (ssh between
+login nodes needs MFA now, so the watcher uses log freshness instead of pgrep). Runner: night_run2.sh, queue empty after the
+knee slap -> it idles 15 min and releases the allocation.
