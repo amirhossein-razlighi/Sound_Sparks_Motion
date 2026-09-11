@@ -971,3 +971,5 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   real_leo_crush = "He crushes the can in his fist with a loud crunch, then bursts out laughing." (crunch = sound-linked hand
   event on the can he already holds, visible in the wide shot; H3 tends to be weak on object-state changes). Alternates if the
   user prefers: knee slap + laugh, or shakes the can and it sprays foam + laugh.
+- 04:30 user: swap the two-part Leo edit to "He slaps his knee and bursts out laughing." -> real_leo_kneeslap replaces
+  real_leo_crush in the queue (crush stays in the bank, not run).

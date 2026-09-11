@@ -552,5 +552,13 @@
   "edit": "He crushes the can in his fist with a loud crunch, then bursts out laughing.",
   "scene": "a man in a yellow shirt sitting on a couch holding a drink",
   "question": "Does the man crush the can or laugh at any point in this video? Answer only 'yes' or 'no'."
+ },
+ "real_leo_kneeslap": {
+  "group": "demo",
+  "src": "/scratch/amirrz/H3_exp/inputs/real/real_leo_couch__real_89f.mp4",
+  "wav": "/scratch/amirrz/H3_exp/inputs/real/real_leo_couch_audio_89f.wav",
+  "edit": "He slaps his knee and bursts out laughing.",
+  "scene": "a man in a yellow shirt sitting on a couch holding a drink",
+  "question": "Does the man slap his knee or laugh at any point in this video? Answer only 'yes' or 'no'."
  }
 }
