@@ -1017,3 +1017,6 @@ knee slap -> it idles 15 min and releases the allocation.
 - 05:20 user: put the two open candidates into results/user_study as well, to review everything in one place -> real_tony_shout
   (provisional iter 10 = critic best, alts 9/8) and real_michael_cry (provisional iter 6, alt 7, critic best 4 alongside). Marked
   PROVISIONAL in picks.json/INDEX until the user names an iteration; nothing removed from user_study_candidates.
+- 05:40 user (run at iter 10/16): real_leo_kneeslap iter 7 is "really good" -> packaged into results/user_study/real_leo_kneeslap
+  now (B_ours = iter 7); critic best + alternates to be added when the run finishes. Baseline critic 0.95 on "slaps his knee or
+  laughs" (H3 does part of the two-part edit on its own); ours iter 7 critic 0.99, perceptual 0.08.

@@ -204,5 +204,12 @@
   ],
   "edit": "He suddenly bursts into tears, sobbing loudly, his face crumpling.",
   "note": "PROVISIONAL (auto-pick 09-11 05:20, awaiting the user's verdict): iter 6 = the biggest open-mouthed sob with the head dropping; iter 7 alternate; critic best iter 4 alongside. Baseline: talking, a frown/cry only in the last ~20 frames. Ours: the cry starts ~0.6 s earlier and is a full sob; demo-grade for sure, study pair if the baseline's late frown does not count as crying."
+ },
+ "real_leo_kneeslap": {
+  "run": "/scratch/amirrz/H3_exp/outputs/overnight/real_leo_kneeslap/opt",
+  "iter": 7,
+  "alts": [],
+  "edit": "He slaps his knee and bursts out laughing.",
+  "note": "user (09-11 05:40, run still in progress at iter 10/16): iter 7 is really good -> packaged now; the critic's best and any alternate get added when the run finishes (~06:00). Two-part edit on the Leo couch source (user's idea after the spit-take failed): the baseline scores 0.95 on 'slaps his knee or laughs' so H3 does part of it; ours = the full laugh."
  }
 }
