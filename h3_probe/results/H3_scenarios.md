@@ -842,7 +842,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
 | real_nosferatu | real (demo B&W) | bares fangs, hisses, lunges | baseline: rises and looms (source motion), mouth shut (0.03/0.07) | ours iter 2: mouth opens, fangs show at frames 6-7 (critic 0.28, perc 0.01); iters 4, 9 fainter | candidate (subtle) |
 | real_keaton | real (demo B&W) | bursts out laughing | baseline: looks around, deadpan (0.01/0.04) | ours iter 5-6: broad laugh from frame ~5, identity + B&W look kept (critic 0.9999, perc 0.07); 9-16 drift (second person, colour, other face) | STRONG WIN (demo) |
 | real_chaplin | real (demo B&W) | bread rolls dance | INVALID: the cut window (39-42.7 s) is the start of the roll dance itself (user, 05:10) | run cancelled at iter ~8 | dropped; re-queued as real_chaplin_sneeze / real_chaplin_sleep |
-| real_casablanca | real (demo B&W) | bursts out laughing | baseline: soft smile from frame 7 (0.40/0.50) | ours queued (low) | opt |
+| real_casablanca | real (demo B&W) | bursts out laughing, head thrown back | baseline does it in full with this seed: laugh from frame ~45, head back at the end (0.71/0.95) | ours iters 2-4 laugh slightly earlier with a changed framing (perc 0.27-0.35, guard-rejected); 8-16 drift to a crowd scene | NO ROOM (01:00): saturated critic, drift |
 | real_steamboat | real (demo cartoon) | startled, jumps into the air | baseline: keeps steering, swing at frames 10-12 (0.09/0.41) | ours: identical to the baseline in all 16 iterations (critic flat ~0.4) | failed |
 | real_tom_walk | real (demo cartoon) | trips and falls flat | baseline trips him at frames 10-12 (0.35/0.50, late) | ours iter 3: trips at frame ~8, sprawled 9-12 (0.80, perc 0.13); iters 4-5 similar; 8+ drift | modest (timing) |
 | real_tom_hammock | real (demo cartoon) | eyes pop out, screams | baseline does it at frames 5-8 (0.45/0.67) | - | skip |
@@ -932,3 +932,7 @@ laugh, leap, splash, blow-out) on single centred subjects; generate sources at r
   too. Same class as chaplin_sneeze: the face is a small part of a dark wide frame. real_leo_clap (same source, later in the
   queue) will most likely fail the same way; it stays because the user asked for it. Allocation renewed (20897392, rg31902);
   real_casablanca running since ~23:58.
+
+- 01:00 real_casablanca (laugh) NO ROOM: the baseline laughs and throws her head back by itself (critic 0.95 with this seed; the
+  screen seed had 0.50). Ours can only start the laugh ~0.3 s earlier at the price of a re-framed shot (perc 0.27-0.35), then
+  drifts to a crowd scene. Rejected. real_casablanca_hat running since ~01:00 (baseline there was 0.004 -> real room).
