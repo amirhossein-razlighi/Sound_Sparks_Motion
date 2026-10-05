@@ -13,7 +13,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css?v=6">
+  <link rel="stylesheet" href="assets/css/style.css?v=8">
+  <link rel="stylesheet" href="assets/css/supp.css?v=1">
 </head>
 <body>
 
@@ -24,7 +25,13 @@
       <ul class="nav-links">
         <li><a href="#abstract">Abstract</a></li>
         <li><a href="#method">Method</a></li>
-        <li><a href="#results">Results</a></li>
+        <li><a href="#videos">Videos</a></li>
+        <li><a href="#ltx">Results</a></li>
+        <li><a href="#h3">H3</a></li>
+        <li><a href="#baselines">Baselines</a></li>
+        <li><a href="#transfer">Transfer</a></li>
+        <li><a href="#attention">Attention</a></li>
+        <li><a href="#ablations">Ablations</a></li>
         <li><a href="#bibtex">BibTeX</a></li>
       </ul>
     </div>
@@ -195,18 +202,49 @@
     </div>
   </section>
 
-  <!-- ── Results ──────────────────────────────────────────────── -->
-  <section id="results">
-    <div class="container">
-      <h2 class="section-title">Results</h2>
-      <p class="section-lead">
-        Every clip below starts as its untouched source. Hit <strong>Spark the motion!</strong> and the edit is applied in place — same shot, same framing, new motion. <span class="transfer-inline-badge">Transfer</span> results reuse controls learned on a different video.
-      </p>
+  <!-- ── Supplementary results ─────────────────────────────── -->
+<section id="videos">
+  <div class="container">
+    <h2 class="section-title">Videos</h2>
+    <p class="section-lead">The full supplementary video and the baseline comparison reel.</p>
+    <div class="reel-grid">
+        <div class="reel">
+          <video src="assets/reels/supplementary_v2.mp4" controls preload="none" playsinline
+                 poster="assets/posters/reel_demo.jpg"></video>
+          <div class="reel-meta">
+            <span class="reel-title">Supplementary video</span>
+            <span class="reel-sub">Method, qualitative results, transfer, and generalization to H3 · 6:05</span>
+            <div class="reel-chapters" aria-label="chapters"><button type="button" data-t="0"><b>0:00</b>Introduction</button><button type="button" data-t="20.8"><b>0:20</b>Motivation</button><button type="button" data-t="51.2"><b>0:51</b>Audio as a handle</button><button type="button" data-t="95.1"><b>1:35</b>Results on LTX-2</button><button type="button" data-t="172.2"><b>2:52</b>Motion transfer</button><button type="button" data-t="209.5"><b>3:29</b>Generalization to H3</button></div>
+          </div>
+        </div>
+        <div class="reel">
+          <video src="assets/reels/comparison_v2.mp4" controls preload="none" playsinline
+                 poster="assets/posters/reel_cmp.jpg"></video>
+          <div class="reel-meta">
+            <span class="reel-title">Baseline comparison</span>
+            <span class="reel-sub">12 scenarios against 7 baselines, plus the H3 study · 6:40</span>
+            <div class="reel-chapters" aria-label="chapters"><button type="button" data-t="0"><b>0:00</b>Title</button><button type="button" data-t="6.5"><b>0:06</b>Human evaluation</button><button type="button" data-t="22.1"><b>0:22</b>VLM evaluation</button><button type="button" data-t="35.2"><b>0:35</b>Per-scenario comparisons</button><button type="button" data-t="222.4"><b>3:42</b>Generalization to H3</button><button type="button" data-t="233.2"><b>3:53</b>H3 human study</button><button type="button" data-t="253.0"><b>4:13</b>H3 samples</button></div>
+          </div>
+        </div>
     </div>
+  </div>
+</section>
 
-    <div class="carousel-wrapper">
-      <div class="results-carousel" id="results-carousel">
-
+<section id="ltx">
+  <div class="container">
+    <h2 class="section-title">Results on LTX-2</h2>
+    <p class="section-lead">
+      Hit <strong>Spark the motion!</strong> on any card to apply its edit.
+    </p>
+  </div>
+  <div class="carousel-wrapper">
+    <button class="carousel-arrow arrow-left" type="button" aria-label="Previous">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="carousel-arrow arrow-right" type="button" aria-label="Next">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="results-carousel" id="ltx-carousel">
         <div class="comparison-card" data-id="bird" data-source-label="Source" data-result-label="Sparked">
           <div class="card-header">
             <span class="card-prompt">"The bird opens its wings."</span>
@@ -214,21 +252,18 @@
           </div>
           <div class="spark-stage">
             <video class="sv-out" data-out-src="assets/videos/bird_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
-            <video class="sv-in" data-src="assets/videos/bird_input.mp4" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <video class="sv-in" data-src="assets/videos/bird_input.mp4" data-poster="assets/posters/bird_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
             <div class="spark-fx" aria-hidden="true">
-              <span class="fx-glow"></span>
-              <span class="fx-ring"></span>
-              <span class="fx-sweep"></span>
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
               <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
             </div>
             <div class="vc-skeleton"></div>
           </div>
           <div class="card-actions">
             <button class="spark-btn" type="button" data-spark>
-              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg>
-              <span data-spark-text>Spark the motion!</span>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
             </button>
-            <span class="spark-hint" data-spark-hint>Same clip — watch the motion appear</span>
+            <span class="spark-hint" data-spark-hint></span>
           </div>
         </div>
         <div class="comparison-card" data-id="rose" data-source-label="Source" data-result-label="Sparked">
@@ -238,21 +273,18 @@
           </div>
           <div class="spark-stage">
             <video class="sv-out" data-out-src="assets/videos/rose_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
-            <video class="sv-in" data-src="assets/videos/rose_input.mp4" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <video class="sv-in" data-src="assets/videos/rose_input.mp4" data-poster="assets/posters/rose_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
             <div class="spark-fx" aria-hidden="true">
-              <span class="fx-glow"></span>
-              <span class="fx-ring"></span>
-              <span class="fx-sweep"></span>
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
               <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
             </div>
             <div class="vc-skeleton"></div>
           </div>
           <div class="card-actions">
             <button class="spark-btn" type="button" data-spark>
-              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg>
-              <span data-spark-text>Spark the motion!</span>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
             </button>
-            <span class="spark-hint" data-spark-hint>Same clip — watch the motion appear</span>
+            <span class="spark-hint" data-spark-hint></span>
           </div>
         </div>
         <div class="comparison-card" data-id="dog" data-source-label="Source" data-result-label="Sparked">
@@ -262,21 +294,18 @@
           </div>
           <div class="spark-stage">
             <video class="sv-out" data-out-src="assets/videos/dog_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
-            <video class="sv-in" data-src="assets/videos/dog_input.mp4" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <video class="sv-in" data-src="assets/videos/dog_input.mp4" data-poster="assets/posters/dog_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
             <div class="spark-fx" aria-hidden="true">
-              <span class="fx-glow"></span>
-              <span class="fx-ring"></span>
-              <span class="fx-sweep"></span>
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
               <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
             </div>
             <div class="vc-skeleton"></div>
           </div>
           <div class="card-actions">
             <button class="spark-btn" type="button" data-spark>
-              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg>
-              <span data-spark-text>Spark the motion!</span>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
             </button>
-            <span class="spark-hint" data-spark-hint>Same clip — watch the motion appear</span>
+            <span class="spark-hint" data-spark-hint></span>
           </div>
         </div>
         <div class="comparison-card" data-id="fish" data-source-label="Source" data-result-label="Sparked">
@@ -286,21 +315,18 @@
           </div>
           <div class="spark-stage">
             <video class="sv-out" data-out-src="assets/videos/fish_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
-            <video class="sv-in" data-src="assets/videos/fish_input.mp4" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <video class="sv-in" data-src="assets/videos/fish_input.mp4" data-poster="assets/posters/fish_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
             <div class="spark-fx" aria-hidden="true">
-              <span class="fx-glow"></span>
-              <span class="fx-ring"></span>
-              <span class="fx-sweep"></span>
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
               <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
             </div>
             <div class="vc-skeleton"></div>
           </div>
           <div class="card-actions">
             <button class="spark-btn" type="button" data-spark>
-              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg>
-              <span data-spark-text>Spark the motion!</span>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
             </button>
-            <span class="spark-hint" data-spark-hint>Same clip — watch the motion appear</span>
+            <span class="spark-hint" data-spark-hint></span>
           </div>
         </div>
         <div class="comparison-card" data-id="raise" data-source-label="Source" data-result-label="Sparked">
@@ -310,45 +336,39 @@
           </div>
           <div class="spark-stage">
             <video class="sv-out" data-out-src="assets/videos/raise_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
-            <video class="sv-in" data-src="assets/videos/raise_input.mp4" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <video class="sv-in" data-src="assets/videos/raise_input.mp4" data-poster="assets/posters/raise_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
             <div class="spark-fx" aria-hidden="true">
-              <span class="fx-glow"></span>
-              <span class="fx-ring"></span>
-              <span class="fx-sweep"></span>
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
               <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
             </div>
             <div class="vc-skeleton"></div>
           </div>
           <div class="card-actions">
             <button class="spark-btn" type="button" data-spark>
-              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg>
-              <span data-spark-text>Spark the motion!</span>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
             </button>
-            <span class="spark-hint" data-spark-hint>Same clip — watch the motion appear</span>
+            <span class="spark-hint" data-spark-hint></span>
           </div>
         </div>
         <div class="comparison-card" data-id="carlights" data-source-label="Source" data-result-label="Sparked">
           <div class="card-header">
-            <span class="card-prompt">"The car's lights flash on."</span>
+            <span class="card-prompt">"The car front lights turn on and off periodically."</span>
             <span class="state-chip" data-state-chip>Source</span>
           </div>
           <div class="spark-stage">
             <video class="sv-out" data-out-src="assets/videos/carlights_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
-            <video class="sv-in" data-src="assets/videos/carlights_input.mp4" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <video class="sv-in" data-src="assets/videos/carlights_input.mp4" data-poster="assets/posters/carlights_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
             <div class="spark-fx" aria-hidden="true">
-              <span class="fx-glow"></span>
-              <span class="fx-ring"></span>
-              <span class="fx-sweep"></span>
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
               <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
             </div>
             <div class="vc-skeleton"></div>
           </div>
           <div class="card-actions">
             <button class="spark-btn" type="button" data-spark>
-              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg>
-              <span data-spark-text>Spark the motion!</span>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
             </button>
-            <span class="spark-hint" data-spark-hint>Same clip — watch the motion appear</span>
+            <span class="spark-hint" data-spark-hint></span>
           </div>
         </div>
         <div class="comparison-card" data-id="pets" data-source-label="Source" data-result-label="Sparked">
@@ -358,110 +378,674 @@
           </div>
           <div class="spark-stage">
             <video class="sv-out" data-out-src="assets/videos/pets_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
-            <video class="sv-in" data-src="assets/videos/pets_input.mp4" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <video class="sv-in" data-src="assets/videos/pets_input.mp4" data-poster="assets/posters/pets_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
             <div class="spark-fx" aria-hidden="true">
-              <span class="fx-glow"></span>
-              <span class="fx-ring"></span>
-              <span class="fx-sweep"></span>
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
               <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
             </div>
             <div class="vc-skeleton"></div>
           </div>
           <div class="card-actions">
             <button class="spark-btn" type="button" data-spark>
-              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg>
-              <span data-spark-text>Spark the motion!</span>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
             </button>
-            <span class="spark-hint" data-spark-hint>Same clip — watch the motion appear</span>
+            <span class="spark-hint" data-spark-hint></span>
           </div>
         </div>
-        <div class="comparison-card is-transfer" data-id="t-bird" data-source-label="New video" data-result-label="Transferred">
+        <div class="comparison-card" data-id="turtle" data-source-label="Source" data-result-label="Sparked">
           <div class="card-header">
-            <span class="card-prompt">"The bird opens its wings."</span>
-            <span class="transfer-badge"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true"><path d="M1.5 5.5h8M6 2l3.5 3.5L6 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Transfer</span>
-            <span class="state-chip" data-state-chip>New video</span>
+            <span class="card-prompt">"Turtle <em>extending</em> its neck."</span>
+            <span class="state-chip" data-state-chip>Source</span>
           </div>
           <div class="spark-stage">
-            <video class="sv-out" data-out-src="assets/videos/t_bird_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
-            <video class="sv-in" data-src="assets/videos/t_bird_input.mp4" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <video class="sv-out" data-out-src="assets/videos/turtle_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/turtle_input.mp4" data-poster="assets/posters/turtle_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
             <div class="spark-fx" aria-hidden="true">
-              <span class="fx-glow"></span>
-              <span class="fx-ring"></span>
-              <span class="fx-sweep"></span>
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
               <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
             </div>
             <div class="vc-skeleton"></div>
           </div>
           <div class="card-actions">
             <button class="spark-btn" type="button" data-spark>
-              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg>
-              <span data-spark-text>Spark the motion!</span>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
             </button>
-            <span class="spark-hint" data-spark-hint>Same clip — watch the motion appear</span>
+            <span class="spark-hint" data-spark-hint></span>
           </div>
         </div>
-        <div class="comparison-card is-transfer" data-id="t-boy" data-source-label="New video" data-result-label="Transferred">
+        <div class="comparison-card" data-id="robot" data-source-label="Source" data-result-label="Sparked">
           <div class="card-header">
-            <span class="card-prompt">"The boy laughs out loud."</span>
-            <span class="transfer-badge"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true"><path d="M1.5 5.5h8M6 2l3.5 3.5L6 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Transfer</span>
-            <span class="state-chip" data-state-chip>New video</span>
+            <span class="card-prompt">"The robot <em>waving its hand</em>."</span>
+            <span class="state-chip" data-state-chip>Source</span>
           </div>
           <div class="spark-stage">
-            <video class="sv-out" data-out-src="assets/videos/t_boy_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
-            <video class="sv-in" data-src="assets/videos/t_boy_input.mp4" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <video class="sv-out" data-out-src="assets/videos/robot_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/robot_input.mp4" data-poster="assets/posters/robot_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
             <div class="spark-fx" aria-hidden="true">
-              <span class="fx-glow"></span>
-              <span class="fx-ring"></span>
-              <span class="fx-sweep"></span>
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
               <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
             </div>
             <div class="vc-skeleton"></div>
           </div>
           <div class="card-actions">
             <button class="spark-btn" type="button" data-spark>
-              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg>
-              <span data-spark-text>Spark the motion!</span>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
             </button>
-            <span class="spark-hint" data-spark-hint>Same clip — watch the motion appear</span>
+            <span class="spark-hint" data-spark-hint></span>
           </div>
         </div>
-        <div class="comparison-card is-transfer" data-id="t-cat" data-source-label="New video" data-result-label="Transferred">
+        <div class="comparison-card" data-id="cardoor" data-source-label="Source" data-result-label="Sparked">
           <div class="card-header">
-            <span class="card-prompt">"The cat yawns."</span>
-            <span class="transfer-badge"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true"><path d="M1.5 5.5h8M6 2l3.5 3.5L6 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Transfer</span>
-            <span class="state-chip" data-state-chip>New video</span>
+            <span class="card-prompt">"A red car door <em>opens</em>."</span>
+            <span class="state-chip" data-state-chip>Source</span>
           </div>
           <div class="spark-stage">
-            <video class="sv-out" data-out-src="assets/videos/t_cat_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
-            <video class="sv-in" data-src="assets/videos/t_cat_input.mp4" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <video class="sv-out" data-out-src="assets/videos/cardoor_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/cardoor_input.mp4" data-poster="assets/posters/cardoor_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
             <div class="spark-fx" aria-hidden="true">
-              <span class="fx-glow"></span>
-              <span class="fx-ring"></span>
-              <span class="fx-sweep"></span>
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
               <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
             </div>
             <div class="vc-skeleton"></div>
           </div>
           <div class="card-actions">
             <button class="spark-btn" type="button" data-spark>
-              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg>
-              <span data-spark-text>Spark the motion!</span>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
             </button>
-            <span class="spark-hint" data-spark-hint>Same clip — watch the motion appear</span>
+            <span class="spark-hint" data-spark-hint></span>
           </div>
         </div>
+        <div class="comparison-card" data-id="laugh" data-source-label="Source" data-result-label="Sparked">
+          <div class="card-header">
+            <span class="card-prompt">"A man is <em>laughing out loud</em>."</span>
+            <span class="state-chip" data-state-chip>Source</span>
+          </div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/laugh_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/laugh_input.mp4" data-poster="assets/posters/laugh_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
+            <div class="vc-skeleton"></div>
+          </div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint></span>
+          </div>
+        </div>
+        <div class="comparison-card" data-id="dogjump" data-source-label="Source" data-result-label="Sparked">
+          <div class="card-header">
+            <span class="card-prompt">"The dog <em>jumps up</em> into the air."</span>
+            <span class="state-chip" data-state-chip>Source</span>
+          </div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/dogjump_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/dogjump_input.mp4" data-poster="assets/posters/dogjump_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
+            <div class="vc-skeleton"></div>
+          </div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint></span>
+          </div>
+        </div>
+        <div class="comparison-card" data-id="surprised" data-source-label="Source" data-result-label="Sparked">
+          <div class="card-header">
+            <span class="card-prompt">"A <em>surprised</em> man."</span>
+            <span class="state-chip" data-state-chip>Source</span>
+          </div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/surprised_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/surprised_input.mp4" data-poster="assets/posters/surprised_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
+            <div class="vc-skeleton"></div>
+          </div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint></span>
+          </div>
+        </div>
+        <div class="comparison-card" data-id="crouch" data-source-label="Source" data-result-label="Sparked">
+          <div class="card-header">
+            <span class="card-prompt">"Boy <em>crouching</em> slightly and <em>touching the water</em>."</span>
+            <span class="state-chip" data-state-chip>Source</span>
+          </div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/crouch_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/crouch_input.mp4" data-poster="assets/posters/crouch_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
+            <div class="vc-skeleton"></div>
+          </div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint></span>
+          </div>
+        </div>
+        <div class="comparison-card" data-id="real_bird" data-source-label="Source" data-result-label="Sparked">
+          <div class="card-header">
+            <span class="card-prompt">"An eagle <em>opening its wings</em> and <em>flying</em>."</span>
+            <span class="state-chip" data-state-chip>Source</span>
+          </div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/real_bird_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/real_bird_input.mp4" data-poster="assets/posters/real_bird_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
+            <div class="vc-skeleton"></div>
+          </div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint></span>
+          </div>
+        </div>
+        <div class="comparison-card" data-id="real_raise" data-source-label="Source" data-result-label="Sparked">
+          <div class="card-header">
+            <span class="card-prompt">"A man <em>raising</em> his <em>right hand</em> up and <em>holding it</em> there."</span>
+            <span class="state-chip" data-state-chip>Source</span>
+          </div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/real_raise_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/real_raise_input.mp4" data-poster="assets/posters/real_raise_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
+            <div class="vc-skeleton"></div>
+          </div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint></span>
+          </div>
+        </div>
+        <div class="comparison-card" data-id="real_child" data-source-label="Source" data-result-label="Sparked">
+          <div class="card-header">
+            <span class="card-prompt">"A child is <em>waving</em> his hand."</span>
+            <span class="state-chip" data-state-chip>Source</span>
+          </div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/real_child_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/real_child_input.mp4" data-poster="assets/posters/real_child_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
+            <div class="vc-skeleton"></div>
+          </div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint></span>
+          </div>
+        </div>
+        <div class="comparison-card" data-id="real_cardoor" data-source-label="Source" data-result-label="Sparked">
+          <div class="card-header">
+            <span class="card-prompt">"The <em>car door</em> <em>opens</em>."</span>
+            <span class="state-chip" data-state-chip>Source</span>
+          </div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/real_cardoor_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/real_cardoor_input.mp4" data-poster="assets/posters/real_cardoor_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
+            <div class="vc-skeleton"></div>
+          </div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint></span>
+          </div>
+        </div>
+    </div>
+  </div>
+</section>
 
-      </div><!-- /.results-carousel -->
+<section id="h3">
+  <div class="container">
+    <h2 class="section-title">Generalization to H3</h2>
+    <p class="section-lead">
+      Percentages are from a human study of 25 scenarios with
+      15 participants (375 judgements):
+      on each card, how often ours was preferred, judged more natural, and judged
+      the stronger edit, against the same for H3 alone. Ties make up the rest.
+      These clips carry sound.
+    </p>
+  </div>
+  <div class="carousel-wrapper">
+    <button class="carousel-arrow arrow-left" type="button" aria-label="Previous">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="carousel-arrow arrow-right" type="button" aria-label="Next">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="results-carousel" id="h3-carousel">
+        <div class="comparison-card" data-id="h3_goldfish" data-source-label="Source" data-result-label="Sparked">
+          <div class="card-header">
+            <span class="card-prompt">"The goldfish <em>jumps out of the fish tank</em> into the air."</span>
+            <span class="state-chip" data-state-chip>Source</span>
+          </div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/h3/goldfish_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/h3/goldfish_input.mp4" data-poster="assets/posters/goldfish_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
+            <div class="vc-skeleton"></div>
+          <button class="snd-btn" type="button" data-snd><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.2 4.6 5H2.4A.4.4 0 0 0 2 5.4v5.2c0 .2.2.4.4.4h2.2L8 13.8c.3.2.7 0 .7-.3V2.5c0-.4-.4-.5-.7-.3zm3 2.3a.6.6 0 0 0-.5 1 3 3 0 0 1 0 5 .6.6 0 0 0 .5 1 4.2 4.2 0 0 0 0-7z"/></svg></button>
+          </div>
+      <div class="card-stats"><span class="card-stat s-pref">preferred <b>100%</b><i>vs 0%</i></span><span class="card-stat s-nat">natural <b>80%</b><i>vs 13%</i></span><span class="card-stat s-str">stronger <b>87%</b><i>vs 7%</i></span></div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint></span>
+          </div>
+        </div>
+        <div class="comparison-card" data-id="h3_gen_dolphin_sea" data-source-label="Source" data-result-label="Sparked">
+          <div class="card-header">
+            <span class="card-prompt">"The dolphin <em>leaps out of the water</em>."</span>
+            <span class="state-chip" data-state-chip>Source</span>
+          </div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/h3/gen_dolphin_sea_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/h3/gen_dolphin_sea_input.mp4" data-poster="assets/posters/gen_dolphin_sea_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
+            <div class="vc-skeleton"></div>
+          <button class="snd-btn" type="button" data-snd><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.2 4.6 5H2.4A.4.4 0 0 0 2 5.4v5.2c0 .2.2.4.4.4h2.2L8 13.8c.3.2.7 0 .7-.3V2.5c0-.4-.4-.5-.7-.3zm3 2.3a.6.6 0 0 0-.5 1 3 3 0 0 1 0 5 .6.6 0 0 0 .5 1 4.2 4.2 0 0 0 0-7z"/></svg></button>
+          </div>
+      <div class="card-stats"><span class="card-stat s-pref">preferred <b>100%</b><i>vs 0%</i></span><span class="card-stat s-nat">natural <b>93%</b><i>vs 0%</i></span><span class="card-stat s-str">stronger <b>93%</b><i>vs 7%</i></span></div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint></span>
+          </div>
+        </div>
+        <div class="comparison-card" data-id="h3_real_mrbean" data-source-label="Source" data-result-label="Sparked">
+          <div class="card-header">
+            <span class="card-prompt">"He <em>faints and falls backwards</em> into the field."</span>
+            <span class="state-chip" data-state-chip>Source</span>
+          </div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/h3/real_mrbean_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/h3/real_mrbean_input.mp4" data-poster="assets/posters/real_mrbean_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
+            <div class="vc-skeleton"></div>
+          <button class="snd-btn" type="button" data-snd><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.2 4.6 5H2.4A.4.4 0 0 0 2 5.4v5.2c0 .2.2.4.4.4h2.2L8 13.8c.3.2.7 0 .7-.3V2.5c0-.4-.4-.5-.7-.3zm3 2.3a.6.6 0 0 0-.5 1 3 3 0 0 1 0 5 .6.6 0 0 0 .5 1 4.2 4.2 0 0 0 0-7z"/></svg></button>
+          </div>
+      <div class="card-stats"><span class="card-stat s-pref">preferred <b>100%</b><i>vs 0%</i></span><span class="card-stat s-nat">natural <b>73%</b><i>vs 27%</i></span><span class="card-stat s-str">stronger <b>93%</b><i>vs 7%</i></span></div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint></span>
+          </div>
+        </div>
+        <div class="comparison-card" data-id="h3_man_shouts" data-source-label="Source" data-result-label="Sparked">
+          <div class="card-header">
+            <span class="card-prompt">"The man <em>shouts loudly</em>."</span>
+            <span class="state-chip" data-state-chip>Source</span>
+          </div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/h3/man_shouts_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/h3/man_shouts_input.mp4" data-poster="assets/posters/man_shouts_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
+            <div class="vc-skeleton"></div>
+          <button class="snd-btn" type="button" data-snd><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.2 4.6 5H2.4A.4.4 0 0 0 2 5.4v5.2c0 .2.2.4.4.4h2.2L8 13.8c.3.2.7 0 .7-.3V2.5c0-.4-.4-.5-.7-.3zm3 2.3a.6.6 0 0 0-.5 1 3 3 0 0 1 0 5 .6.6 0 0 0 .5 1 4.2 4.2 0 0 0 0-7z"/></svg></button>
+          </div>
+      <div class="card-stats"><span class="card-stat s-pref">preferred <b>93%</b><i>vs 0%</i></span><span class="card-stat s-nat">natural <b>93%</b><i>vs 0%</i></span><span class="card-stat s-str">stronger <b>93%</b><i>vs 0%</i></span></div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint></span>
+          </div>
+        </div>
+        <div class="comparison-card" data-id="h3_gen_cat_vase" data-source-label="Source" data-result-label="Sparked">
+          <div class="card-header">
+            <span class="card-prompt">"The cat <em>pushes the vase over</em> and it <em>shatters</em> on the floor."</span>
+            <span class="state-chip" data-state-chip>Source</span>
+          </div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/h3/gen_cat_vase_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/h3/gen_cat_vase_input.mp4" data-poster="assets/posters/gen_cat_vase_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
+            <div class="vc-skeleton"></div>
+          <button class="snd-btn" type="button" data-snd><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.2 4.6 5H2.4A.4.4 0 0 0 2 5.4v5.2c0 .2.2.4.4.4h2.2L8 13.8c.3.2.7 0 .7-.3V2.5c0-.4-.4-.5-.7-.3zm3 2.3a.6.6 0 0 0-.5 1 3 3 0 0 1 0 5 .6.6 0 0 0 .5 1 4.2 4.2 0 0 0 0-7z"/></svg></button>
+          </div>
+      <div class="card-stats"><span class="card-stat s-pref">preferred <b>93%</b><i>vs 7%</i></span><span class="card-stat s-nat">natural <b>87%</b><i>vs 7%</i></span><span class="card-stat s-str">stronger <b>53%</b><i>vs 40%</i></span></div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint></span>
+          </div>
+        </div>
+        <div class="comparison-card" data-id="h3_real_keaton" data-source-label="Source" data-result-label="Sparked">
+          <div class="card-header">
+            <span class="card-prompt">"He <em>bursts out laughing</em>."</span>
+            <span class="state-chip" data-state-chip>Source</span>
+          </div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/h3/real_keaton_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/h3/real_keaton_input.mp4" data-poster="assets/posters/real_keaton_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
+            <div class="vc-skeleton"></div>
+          <button class="snd-btn" type="button" data-snd><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.2 4.6 5H2.4A.4.4 0 0 0 2 5.4v5.2c0 .2.2.4.4.4h2.2L8 13.8c.3.2.7 0 .7-.3V2.5c0-.4-.4-.5-.7-.3zm3 2.3a.6.6 0 0 0-.5 1 3 3 0 0 1 0 5 .6.6 0 0 0 .5 1 4.2 4.2 0 0 0 0-7z"/></svg></button>
+          </div>
+      <div class="card-stats"><span class="card-stat s-pref">preferred <b>93%</b><i>vs 7%</i></span><span class="card-stat s-nat">natural <b>80%</b><i>vs 13%</i></span><span class="card-stat s-str">stronger <b>93%</b><i>vs 7%</i></span></div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint></span>
+          </div>
+        </div>
+        <div class="comparison-card" data-id="h3_cat_yawns" data-source-label="Source" data-result-label="Sparked">
+          <div class="card-header">
+            <span class="card-prompt">"The cat <em>yawns widely</em>."</span>
+            <span class="state-chip" data-state-chip>Source</span>
+          </div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/h3/cat_yawns_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/h3/cat_yawns_input.mp4" data-poster="assets/posters/cat_yawns_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
+            <div class="vc-skeleton"></div>
+          <button class="snd-btn" type="button" data-snd><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.2 4.6 5H2.4A.4.4 0 0 0 2 5.4v5.2c0 .2.2.4.4.4h2.2L8 13.8c.3.2.7 0 .7-.3V2.5c0-.4-.4-.5-.7-.3zm3 2.3a.6.6 0 0 0-.5 1 3 3 0 0 1 0 5 .6.6 0 0 0 .5 1 4.2 4.2 0 0 0 0-7z"/></svg></button>
+          </div>
+      <div class="card-stats"><span class="card-stat s-pref">preferred <b>80%</b><i>vs 13%</i></span><span class="card-stat s-nat">natural <b>67%</b><i>vs 27%</i></span><span class="card-stat s-str">stronger <b>80%</b><i>vs 13%</i></span></div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint></span>
+          </div>
+        </div>
+        <div class="comparison-card" data-id="h3_gen_cow_field" data-source-label="Source" data-result-label="Sparked">
+          <div class="card-header">
+            <span class="card-prompt">"The cow <em>moos loudly</em>."</span>
+            <span class="state-chip" data-state-chip>Source</span>
+          </div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/h3/gen_cow_field_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/h3/gen_cow_field_input.mp4" data-poster="assets/posters/gen_cow_field_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
+            <div class="vc-skeleton"></div>
+          <button class="snd-btn" type="button" data-snd><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.2 4.6 5H2.4A.4.4 0 0 0 2 5.4v5.2c0 .2.2.4.4.4h2.2L8 13.8c.3.2.7 0 .7-.3V2.5c0-.4-.4-.5-.7-.3zm3 2.3a.6.6 0 0 0-.5 1 3 3 0 0 1 0 5 .6.6 0 0 0 .5 1 4.2 4.2 0 0 0 0-7z"/></svg></button>
+          </div>
+      <div class="card-stats"><span class="card-stat s-pref">preferred <b>73%</b><i>vs 0%</i></span><span class="card-stat s-nat">natural <b>80%</b><i>vs 7%</i></span><span class="card-stat s-str">stronger <b>67%</b><i>vs 0%</i></span></div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint></span>
+          </div>
+        </div>
+        <div class="comparison-card" data-id="h3_real_leo_kneeslap" data-source-label="Source" data-result-label="Sparked">
+          <div class="card-header">
+            <span class="card-prompt">"He <em>slaps his knee</em> and <em>bursts out laughing</em>."</span>
+            <span class="state-chip" data-state-chip>Source</span>
+          </div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/h3/real_leo_kneeslap_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/h3/real_leo_kneeslap_input.mp4" data-poster="assets/posters/real_leo_kneeslap_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
+            <div class="vc-skeleton"></div>
+          <button class="snd-btn" type="button" data-snd><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.2 4.6 5H2.4A.4.4 0 0 0 2 5.4v5.2c0 .2.2.4.4.4h2.2L8 13.8c.3.2.7 0 .7-.3V2.5c0-.4-.4-.5-.7-.3zm3 2.3a.6.6 0 0 0-.5 1 3 3 0 0 1 0 5 .6.6 0 0 0 .5 1 4.2 4.2 0 0 0 0-7z"/></svg></button>
+          </div>
+      <div class="card-stats"><span class="card-stat s-pref">preferred <b>67%</b><i>vs 20%</i></span><span class="card-stat s-nat">natural <b>53%</b><i>vs 20%</i></span><span class="card-stat s-str">stronger <b>60%</b><i>vs 20%</i></span></div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint></span>
+          </div>
+        </div>
+        <div class="comparison-card" data-id="h3_gen_firecracker" data-source-label="Source" data-result-label="Sparked">
+          <div class="card-header">
+            <span class="card-prompt">"The firecracker <em>explodes</em> with a bang and <em>a puff of smoke</em>."</span>
+            <span class="state-chip" data-state-chip>Source</span>
+          </div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/h3/gen_firecracker_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/h3/gen_firecracker_input.mp4" data-poster="assets/posters/gen_firecracker_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
+            <div class="vc-skeleton"></div>
+          <button class="snd-btn" type="button" data-snd><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.2 4.6 5H2.4A.4.4 0 0 0 2 5.4v5.2c0 .2.2.4.4.4h2.2L8 13.8c.3.2.7 0 .7-.3V2.5c0-.4-.4-.5-.7-.3zm3 2.3a.6.6 0 0 0-.5 1 3 3 0 0 1 0 5 .6.6 0 0 0 .5 1 4.2 4.2 0 0 0 0-7z"/></svg></button>
+          </div>
+      <div class="card-stats"><span class="card-stat s-pref">preferred <b>67%</b><i>vs 13%</i></span><span class="card-stat s-nat">natural <b>53%</b><i>vs 20%</i></span><span class="card-stat s-str">stronger <b>87%</b><i>vs 0%</i></span></div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint></span>
+          </div>
+        </div>
+        <div class="comparison-card" data-id="h3_gen_tyre" data-source-label="Source" data-result-label="Sparked">
+          <div class="card-header">
+            <span class="card-prompt">"The tyre <em>bursts</em> with a loud bang and <em>goes flat</em>."</span>
+            <span class="state-chip" data-state-chip>Source</span>
+          </div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/h3/gen_tyre_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/h3/gen_tyre_input.mp4" data-poster="assets/posters/gen_tyre_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
+            <div class="vc-skeleton"></div>
+          <button class="snd-btn" type="button" data-snd><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.2 4.6 5H2.4A.4.4 0 0 0 2 5.4v5.2c0 .2.2.4.4.4h2.2L8 13.8c.3.2.7 0 .7-.3V2.5c0-.4-.4-.5-.7-.3zm3 2.3a.6.6 0 0 0-.5 1 3 3 0 0 1 0 5 .6.6 0 0 0 .5 1 4.2 4.2 0 0 0 0-7z"/></svg></button>
+          </div>
+      <div class="card-stats"><span class="card-stat s-pref">preferred <b>60%</b><i>vs 0%</i></span><span class="card-stat s-nat">natural <b>60%</b><i>vs 7%</i></span><span class="card-stat s-str">stronger <b>60%</b><i>vs 0%</i></span></div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint></span>
+          </div>
+        </div>
+        <div class="comparison-card" data-id="h3_gen_woman_scream" data-source-label="Source" data-result-label="Sparked">
+          <div class="card-header">
+            <span class="card-prompt">"The woman <em>screams</em> in fright."</span>
+            <span class="state-chip" data-state-chip>Source</span>
+          </div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/h3/gen_woman_scream_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/h3/gen_woman_scream_input.mp4" data-poster="assets/posters/gen_woman_scream_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
+            <div class="vc-skeleton"></div>
+          <button class="snd-btn" type="button" data-snd><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.2 4.6 5H2.4A.4.4 0 0 0 2 5.4v5.2c0 .2.2.4.4.4h2.2L8 13.8c.3.2.7 0 .7-.3V2.5c0-.4-.4-.5-.7-.3zm3 2.3a.6.6 0 0 0-.5 1 3 3 0 0 1 0 5 .6.6 0 0 0 .5 1 4.2 4.2 0 0 0 0-7z"/></svg></button>
+          </div>
+      <div class="card-stats"><span class="card-stat s-pref">preferred <b>53%</b><i>vs 13%</i></span><span class="card-stat s-nat">natural <b>40%</b><i>vs 20%</i></span><span class="card-stat s-str">stronger <b>60%</b><i>vs 7%</i></span></div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint></span>
+          </div>
+        </div>
+        <div class="comparison-card" data-id="h3_real_casablanca_hat" data-source-label="Source" data-result-label="Sparked">
+          <div class="card-header">
+            <span class="card-prompt">"She <em>grabs her hat</em>, <em>throws it up into the air</em> and <em>laughs</em>."</span>
+            <span class="state-chip" data-state-chip>Source</span>
+          </div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/h3/real_casablanca_hat_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/h3/real_casablanca_hat_input.mp4" data-poster="assets/posters/real_casablanca_hat_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
+            <div class="vc-skeleton"></div>
+          <button class="snd-btn" type="button" data-snd><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.2 4.6 5H2.4A.4.4 0 0 0 2 5.4v5.2c0 .2.2.4.4.4h2.2L8 13.8c.3.2.7 0 .7-.3V2.5c0-.4-.4-.5-.7-.3zm3 2.3a.6.6 0 0 0-.5 1 3 3 0 0 1 0 5 .6.6 0 0 0 .5 1 4.2 4.2 0 0 0 0-7z"/></svg></button>
+          </div>
+      <div class="card-stats"><span class="card-stat s-pref">preferred <b>47%</b><i>vs 33%</i></span><span class="card-stat s-nat">natural <b>53%</b><i>vs 27%</i></span><span class="card-stat s-str">stronger <b>47%</b><i>vs 40%</i></span></div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint></span>
+          </div>
+        </div>
+        <div class="comparison-card" data-id="h3_real_michael_cry" data-source-label="Source" data-result-label="Sparked">
+          <div class="card-header">
+            <span class="card-prompt">"He suddenly <em>bursts into tears</em>, <em>sobbing loudly</em>, his face crumpling."</span>
+            <span class="state-chip" data-state-chip>Source</span>
+          </div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/h3/real_michael_cry_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/h3/real_michael_cry_input.mp4" data-poster="assets/posters/real_michael_cry_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
+            <div class="vc-skeleton"></div>
+          <button class="snd-btn" type="button" data-snd><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.2 4.6 5H2.4A.4.4 0 0 0 2 5.4v5.2c0 .2.2.4.4.4h2.2L8 13.8c.3.2.7 0 .7-.3V2.5c0-.4-.4-.5-.7-.3zm3 2.3a.6.6 0 0 0-.5 1 3 3 0 0 1 0 5 .6.6 0 0 0 .5 1 4.2 4.2 0 0 0 0-7z"/></svg></button>
+          </div>
+      <div class="card-stats"><span class="card-stat s-pref">preferred <b>47%</b><i>vs 27%</i></span><span class="card-stat s-nat">natural <b>40%</b><i>vs 27%</i></span><span class="card-stat s-str">stronger <b>47%</b><i>vs 20%</i></span></div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint></span>
+          </div>
+        </div>
+        <div class="comparison-card" data-id="h3_gen_woman_door" data-source-label="Source" data-result-label="Sparked">
+          <div class="card-header">
+            <span class="card-prompt">"The woman <em>opens the door</em> and <em>walks inside</em>."</span>
+            <span class="state-chip" data-state-chip>Source</span>
+          </div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/h3/gen_woman_door_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/h3/gen_woman_door_input.mp4" data-poster="assets/posters/gen_woman_door_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
+            <div class="vc-skeleton"></div>
+          <button class="snd-btn" type="button" data-snd><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.2 4.6 5H2.4A.4.4 0 0 0 2 5.4v5.2c0 .2.2.4.4.4h2.2L8 13.8c.3.2.7 0 .7-.3V2.5c0-.4-.4-.5-.7-.3zm3 2.3a.6.6 0 0 0-.5 1 3 3 0 0 1 0 5 .6.6 0 0 0 .5 1 4.2 4.2 0 0 0 0-7z"/></svg></button>
+          </div>
+      <div class="card-stats"><span class="card-stat s-pref">preferred <b>33%</b><i>vs 20%</i></span><span class="card-stat s-nat">natural <b>47%</b><i>vs 20%</i></span><span class="card-stat s-str">stronger <b>40%</b><i>vs 27%</i></span></div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint></span>
+          </div>
+        </div>
+        <div class="comparison-card" data-id="h3_car_door_opens" data-source-label="Source" data-result-label="Sparked">
+          <div class="card-header">
+            <span class="card-prompt">"The car door <em>swings open</em>."</span>
+            <span class="state-chip" data-state-chip>Source</span>
+          </div>
+          <div class="spark-stage">
+            <video class="sv-out" data-out-src="assets/videos/h3/car_door_opens_output.mp4" loop muted playsinline preload="none" aria-label="Edited result"></video>
+            <video class="sv-in" data-src="assets/videos/h3/car_door_opens_input.mp4" data-poster="assets/posters/car_door_opens_input.jpg" loop muted playsinline preload="none" aria-label="Source video"></video>
+            <div class="spark-fx" aria-hidden="true">
+              <span class="fx-glow"></span><span class="fx-ring"></span><span class="fx-sweep"></span>
+              <span class="fx-particles"><i style="--x:18%;--y:62%;--dx:-26px;--dy:-40px;--d:60ms"></i><i style="--x:31%;--y:38%;--dx:14px;--dy:-52px;--d:150ms"></i><i style="--x:46%;--y:70%;--dx:-8px;--dy:-58px;--d:20ms"></i><i style="--x:58%;--y:30%;--dx:30px;--dy:-34px;--d:210ms"></i><i style="--x:69%;--y:58%;--dx:22px;--dy:-48px;--d:110ms"></i><i style="--x:80%;--y:42%;--dx:-18px;--dy:-44px;--d:260ms"></i><i style="--x:26%;--y:50%;--dx:-34px;--dy:-24px;--d:300ms"></i><i style="--x:52%;--y:52%;--dx:4px;--dy:-66px;--d:0ms"></i><i style="--x:88%;--y:64%;--dx:26px;--dy:-30px;--d:180ms"></i><i style="--x:12%;--y:40%;--dx:-20px;--dy:-36px;--d:240ms"></i></span>
+            </div>
+            <div class="vc-skeleton"></div>
+          <button class="snd-btn" type="button" data-snd><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.2 4.6 5H2.4A.4.4 0 0 0 2 5.4v5.2c0 .2.2.4.4.4h2.2L8 13.8c.3.2.7 0 .7-.3V2.5c0-.4-.4-.5-.7-.3zm3 2.3a.6.6 0 0 0-.5 1 3 3 0 0 1 0 5 .6.6 0 0 0 .5 1 4.2 4.2 0 0 0 0-7z"/></svg></button>
+          </div>
+      <div class="card-stats"><span class="card-stat s-pref">preferred <b>33%</b><i>vs 33%</i></span><span class="card-stat s-nat">natural <b>27%</b><i>vs 20%</i></span><span class="card-stat s-str">stronger <b>33%</b><i>vs 33%</i></span></div>
+          <div class="card-actions">
+            <button class="spark-btn" type="button" data-spark>
+              <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-spark-text>Spark the motion!</span>
+            </button>
+            <span class="spark-hint" data-spark-hint></span>
+          </div>
+        </div>
+    </div>
+  </div>
+  <div class="container subsection">
+    <h3 class="subsection-title">Audio, text, or both</h3>
+    <p class="section-lead">
+      The audio latent alone, the text residual alone, and the two together, beside
+      H3 with no editing. The reel opens with the human study over all
+      12 scenarios (15 participants),
+      then shows the 5 where the combination won clearly.
+    </p>
+    <div class="reel-grid reel-grid-single">
+        <div class="reel">
+          <video src="assets/reels/ablation_modality.mp4" controls preload="none" playsinline
+                 poster="assets/posters/reel_abl_mod.jpg"></video>
+          <div class="reel-meta">
+            <span class="reel-title">Audio, text, or both</span>
+            <span class="reel-sub">The two tuned signals ablated on H3, with the human study · 1:57</span>
+          </div>
+        </div>
+    </div>
+  </div>
+</section>
 
-      <button class="carousel-arrow arrow-left" id="arrow-left" aria-label="Scroll left">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12 4l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <button class="carousel-arrow arrow-right" id="arrow-right" aria-label="Scroll right">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M8 4l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-    </div><!-- /.carousel-wrapper -->
-
-    <div class="container eval-block">
+<section id="baselines">
+  <div class="container">
+    <h2 class="section-title">Baseline comparison</h2>
+    <p class="section-lead">
+      Twelve scenarios against seven baselines. Pick a scenario to compare. In a
+      study of 21 participants, our result was ranked first in 56.3% of trials,
+      against 21.4% for the next best method.
+    </p>
+    <div class="eval-block">
       <div class="eval-head">
         <h3 class="eval-title">How it compares</h3>
         <p class="eval-sub">
@@ -577,7 +1161,338 @@
 
       </div>
     </div>
-  </section>
+    <div class="cmp-wrap">
+      <div class="cmp-list" role="tablist" aria-label="scenarios">
+        <button type="button" role="tab" aria-selected="true" class="cmp-pick is-on" data-cmp="man_pets_dog"><img src="assets/posters/cmp_man_pets_dog_input.jpg" alt="" loading="lazy"><span>"The man <em>pets the dog</em>."</span></button>
+        <button type="button" role="tab" aria-selected="false" class="cmp-pick" data-cmp="car_lights"><img src="assets/posters/cmp_car_lights_input.jpg" alt="" loading="lazy"><span>"The car front lights <em>turn on and off</em> <em>periodically</em>."</span></button>
+        <button type="button" role="tab" aria-selected="false" class="cmp-pick" data-cmp="robot_wave"><img src="assets/posters/cmp_robot_wave_input.jpg" alt="" loading="lazy"><span>"The robot waving its hand."</span></button>
+        <button type="button" role="tab" aria-selected="false" class="cmp-pick" data-cmp="dog_yawn"><img src="assets/posters/cmp_dog_yawn_input.jpg" alt="" loading="lazy"><span>"A dog <em>yawning</em>."</span></button>
+        <button type="button" role="tab" aria-selected="false" class="cmp-pick" data-cmp="goldfish"><img src="assets/posters/cmp_goldfish_input.jpg" alt="" loading="lazy"><span>"A goldfish <em>jumps out</em> of the fish tank into the air."</span></button>
+        <button type="button" role="tab" aria-selected="false" class="cmp-pick" data-cmp="man_raises_hand"><img src="assets/posters/cmp_man_raises_hand_input.jpg" alt="" loading="lazy"><span>"A man <em>raising</em> his <em>right hand</em> up and <em>holding it</em> there."</span></button>
+        <button type="button" role="tab" aria-selected="false" class="cmp-pick" data-cmp="man_climbs_rock"><img src="assets/posters/cmp_man_climbs_rock_input.jpg" alt="" loading="lazy"><span>"The man climbs up the rocks and looks at the horizon from the top."</span></button>
+        <button type="button" role="tab" aria-selected="false" class="cmp-pick" data-cmp="monkey_reaching_for_fruit"><img src="assets/posters/cmp_monkey_reaching_for_fruit_input.jpg" alt="" loading="lazy"><span>"Monkey reaching for a fruit."</span></button>
+        <button type="button" role="tab" aria-selected="false" class="cmp-pick" data-cmp="turtle_neck_extend"><img src="assets/posters/cmp_turtle_neck_extend_input.jpg" alt="" loading="lazy"><span>"Turtle extending its neck."</span></button>
+        <button type="button" role="tab" aria-selected="false" class="cmp-pick" data-cmp="red_car_door"><img src="assets/posters/cmp_red_car_door_input.jpg" alt="" loading="lazy"><span>"A red car door <em>opens</em>."</span></button>
+        <button type="button" role="tab" aria-selected="false" class="cmp-pick" data-cmp="red_rose_bloom"><img src="assets/posters/cmp_red_rose_bloom_input.jpg" alt="" loading="lazy"><span>"A red rose <em>blooming</em>."</span></button>
+        <button type="button" role="tab" aria-selected="false" class="cmp-pick" data-cmp="bird_opens_wing"><img src="assets/posters/cmp_bird_opens_wing_input.jpg" alt="" loading="lazy"><span>"A bird <em>opening its wing</em>."</span></button>
+      </div>
+      <div class="cmp-detail">
+        <div class="cmp-head">
+          <span class="cmp-prompt" data-cmp-prompt></span>
+          <button type="button" class="cmp-play" data-cmp-play aria-label="play or pause">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.5h2.2v9H5zM8.8 3.5H11v9H8.8z"/></svg>
+            <span data-cmp-play-text>Pause</span>
+          </button>
+        </div>
+        <div class="cmp-chips" data-cmp-chips role="group" aria-label="compare against"></div>
+        <div class="cmp-grid" data-cmp-grid></div>
+      </div>
+    </div>
+  </div>
+  <script type="application/json" id="cmp-data">{"man_pets_dog":{"prompt":"The man {pets the dog}.","methods":["ltx2","runway","lora","vacewan","vaceltx","kiwi","uniedit"]},"car_lights":{"prompt":"The car front lights {turn on and off} {periodically}.","methods":["ltx2","runway","lora","vacewan","vaceltx","kiwi","uniedit"]},"robot_wave":{"prompt":"The robot waving its hand.","methods":["ltx2","runway","lora","vacewan","vaceltx","kiwi","uniedit"]},"dog_yawn":{"prompt":"A dog {yawning}.","methods":["ltx2","runway","lora","vacewan","vaceltx","kiwi","uniedit"]},"goldfish":{"prompt":"A goldfish {jumps out} of the fish tank into the air.","methods":["ltx2","runway","lora","vacewan","vaceltx","kiwi","uniedit"]},"man_raises_hand":{"prompt":"A man {raising} his {right hand} up and {holding it} there.","methods":["ltx2","runway","lora","vacewan","vaceltx","kiwi","uniedit"]},"man_climbs_rock":{"prompt":"The man climbs up the rocks and looks at the horizon from the top.","methods":["ltx2","runway","lora","vacewan","vaceltx","kiwi","uniedit"]},"monkey_reaching_for_fruit":{"prompt":"Monkey reaching for a fruit.","methods":["ltx2","runway","lora","vacewan","vaceltx","kiwi","uniedit"]},"turtle_neck_extend":{"prompt":"Turtle extending its neck.","methods":["ltx2","runway","lora","vacewan","vaceltx","kiwi","uniedit"]},"red_car_door":{"prompt":"A red car door {opens}.","methods":["ltx2","runway","lora","vacewan","vaceltx","kiwi","uniedit"]},"red_rose_bloom":{"prompt":"A red rose {blooming}.","methods":["ltx2","runway","lora","vacewan","vaceltx","kiwi","uniedit"]},"bird_opens_wing":{"prompt":"A bird {opening its wing}.","methods":["ltx2","runway","lora","vacewan","vaceltx","kiwi","uniedit"]}}</script>
+  <script type="application/json" id="cmp-labels">{"input":"Input","ours":"Sound Sparks Motion","ltx2":"LTX-2 Retake","runway":"Runway-Aleph","lora":"LoRA-Edit","vacewan":"VACE-Wan","vaceltx":"VACE-LTX","kiwi":"Kiwi-Edit","uniedit":"UniEdit"}</script>
+  <script type="application/json" id="cmp-order">["input","ours","ltx2","runway","lora","vacewan","vaceltx","kiwi","uniedit"]</script>
+</section>
+
+<section id="transfer">
+  <div class="container">
+    <h2 class="section-title">Motion transfer</h2>
+    <p class="section-lead">
+      The audio latent and text residual tuned on one clip, applied to another.
+      Hit <strong>Transfer the motion!</strong> to carry them across.
+    </p>
+      <div class="transfer-card" data-id="t_boy">
+        <div class="tc-head">
+          <span class="tc-prompt">The boy is <em>laughing out loud</em>.</span>
+        </div>
+        <div class="tc-stage">
+          <div class="tc-panel tc-donor">
+            <video src="assets/videos/transfer/t_boy_source.mp4" data-poster="assets/posters/t_boy_source.jpg" loop muted playsinline preload="none" aria-label="Video the latent was tuned on"></video>
+            <div class="tc-label">Optimized on<small>A man laughing out loud</small></div>
+          </div>
+          <div class="tc-beam">
+            <span class="rail"></span><span class="pip"></span>
+            <span class="chips"><span class="chip">audio latent</span><span class="chip">text residual</span></span>
+          </div>
+          <div class="tc-panel tc-recipient">
+            <video class="sv-out" data-out-src="assets/videos/transfer/t_boy_output.mp4" loop muted playsinline preload="none" aria-label="Transferred result"></video>
+            <video class="sv-in" src="assets/videos/transfer/t_boy_input.mp4" data-poster="assets/posters/t_boy_input.jpg" loop muted playsinline preload="none" aria-label="New input video"></video>
+            <div class="tc-label">New input</div>
+          </div>
+        </div>
+        <div class="tc-actions">
+          <button class="spark-btn" type="button" data-xfer>
+            <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-xfer-text>Transfer the motion!</span>
+          </button>
+          <span class="tc-hint" data-xfer-hint></span>
+        </div>
+      </div>
+      <div class="transfer-card" data-id="t_cat">
+        <div class="tc-head">
+          <span class="tc-prompt">A cat <em>yawning</em>.</span>
+        </div>
+        <div class="tc-stage">
+          <div class="tc-panel tc-donor">
+            <video src="assets/videos/transfer/t_cat_source.mp4" data-poster="assets/posters/t_cat_source.jpg" loop muted playsinline preload="none" aria-label="Video the latent was tuned on"></video>
+            <div class="tc-label">Optimized on<small>A dog yawning</small></div>
+          </div>
+          <div class="tc-beam">
+            <span class="rail"></span><span class="pip"></span>
+            <span class="chips"><span class="chip">audio latent</span><span class="chip">text residual</span></span>
+          </div>
+          <div class="tc-panel tc-recipient">
+            <video class="sv-out" data-out-src="assets/videos/transfer/t_cat_output.mp4" loop muted playsinline preload="none" aria-label="Transferred result"></video>
+            <video class="sv-in" src="assets/videos/transfer/t_cat_input.mp4" data-poster="assets/posters/t_cat_input.jpg" loop muted playsinline preload="none" aria-label="New input video"></video>
+            <div class="tc-label">New input</div>
+          </div>
+        </div>
+        <div class="tc-actions">
+          <button class="spark-btn" type="button" data-xfer>
+            <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-xfer-text>Transfer the motion!</span>
+          </button>
+          <span class="tc-hint" data-xfer-hint></span>
+        </div>
+      </div>
+      <div class="transfer-card" data-id="t_shout">
+        <div class="tc-head">
+          <span class="tc-prompt">A man <em>shouting</em>.</span>
+        </div>
+        <div class="tc-stage">
+          <div class="tc-panel tc-donor">
+            <video src="assets/videos/transfer/t_shout_source.mp4" data-poster="assets/posters/t_shout_source.jpg" loop muted playsinline preload="none" aria-label="Video the latent was tuned on"></video>
+            <div class="tc-label">Optimized on<small>An angry man shouting</small></div>
+          </div>
+          <div class="tc-beam">
+            <span class="rail"></span><span class="pip"></span>
+            <span class="chips"><span class="chip">audio latent</span><span class="chip">text residual</span></span>
+          </div>
+          <div class="tc-panel tc-recipient">
+            <video class="sv-out" data-out-src="assets/videos/transfer/t_shout_output.mp4" loop muted playsinline preload="none" aria-label="Transferred result"></video>
+            <video class="sv-in" src="assets/videos/transfer/t_shout_input.mp4" data-poster="assets/posters/t_shout_input.jpg" loop muted playsinline preload="none" aria-label="New input video"></video>
+            <div class="tc-label">New input</div>
+          </div>
+        </div>
+        <div class="tc-actions">
+          <button class="spark-btn" type="button" data-xfer>
+            <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-xfer-text>Transfer the motion!</span>
+          </button>
+          <span class="tc-hint" data-xfer-hint></span>
+        </div>
+      </div>
+      <div class="transfer-card" data-id="t_bird">
+        <div class="tc-head">
+          <span class="tc-prompt">A red bird <em>opening its wings</em>.</span>
+        </div>
+        <div class="tc-stage">
+          <div class="tc-panel tc-donor">
+            <video src="assets/videos/transfer/t_bird_source.mp4" data-poster="assets/posters/t_bird_source.jpg" loop muted playsinline preload="none" aria-label="Video the latent was tuned on"></video>
+            <div class="tc-label">Optimized on<small>A bird opening its wings</small></div>
+          </div>
+          <div class="tc-beam">
+            <span class="rail"></span><span class="pip"></span>
+            <span class="chips"><span class="chip">audio latent</span><span class="chip">text residual</span></span>
+          </div>
+          <div class="tc-panel tc-recipient">
+            <video class="sv-out" data-out-src="assets/videos/transfer/t_bird_output.mp4" loop muted playsinline preload="none" aria-label="Transferred result"></video>
+            <video class="sv-in" src="assets/videos/transfer/t_bird_input.mp4" data-poster="assets/posters/t_bird_input.jpg" loop muted playsinline preload="none" aria-label="New input video"></video>
+            <div class="tc-label">New input</div>
+          </div>
+        </div>
+        <div class="tc-actions">
+          <button class="spark-btn" type="button" data-xfer>
+            <svg class="spark-icon" width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0.6l1.5 4.3 4.3 1.5-4.3 1.5L8 12.2 6.5 7.9 2.2 6.4l4.3-1.5L8 .6zM13 10.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9zM3.2 10.9l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4L1.3 12.8l1.4-.5.5-1.4z"/></svg><span data-xfer-text>Transfer the motion!</span>
+          </button>
+          <span class="tc-hint" data-xfer-hint></span>
+        </div>
+      </div>
+  </div>
+</section>
+
+
+<section id="attention">
+  <div class="container">
+    <h2 class="section-title">Where each signal attends</h2>
+    <p class="section-lead">
+      Average cross-attention for the two tuned signals, over the first frame of the
+      result. <strong>A2V</strong> is audio-to-video, <strong>T2V</strong> is
+      text-to-video; switch between them on any card.
+    </p>
+    <div class="att-grid">
+        <figure class="att-card" data-att="bird_opens_wing">
+          <div class="att-stage">
+            <video class="att-v is-on" data-mode="a2v" data-att-src="assets/videos/attention/bird_opens_wing_a2v.mp4"
+                   data-poster="assets/posters/att_bird_opens_wing.jpg"
+                   loop muted playsinline preload="none" aria-label="Audio-to-video attention"></video>
+            <video class="att-v" data-mode="t2v" data-att-src="assets/videos/attention/bird_opens_wing_t2v.mp4"
+                   data-poster="assets/posters/att_bird_opens_wing.jpg"
+                   loop muted playsinline preload="none" aria-label="Text-to-video attention"></video>
+            <div class="vc-skeleton"></div>
+          </div>
+          <figcaption class="att-foot">
+            <span class="att-prompt">"A bird opening its wing."</span>
+            <span class="att-toggle" role="group" aria-label="attention source">
+              <button type="button" data-mode="a2v" class="is-on">A2V</button>
+              <button type="button" data-mode="t2v">T2V</button>
+            </span>
+          </figcaption>
+        </figure>
+        <figure class="att-card" data-att="turtle_extends_neck">
+          <div class="att-stage">
+            <video class="att-v is-on" data-mode="a2v" data-att-src="assets/videos/attention/turtle_extends_neck_a2v.mp4"
+                   data-poster="assets/posters/att_turtle_extends_neck.jpg"
+                   loop muted playsinline preload="none" aria-label="Audio-to-video attention"></video>
+            <video class="att-v" data-mode="t2v" data-att-src="assets/videos/attention/turtle_extends_neck_t2v.mp4"
+                   data-poster="assets/posters/att_turtle_extends_neck.jpg"
+                   loop muted playsinline preload="none" aria-label="Text-to-video attention"></video>
+            <div class="vc-skeleton"></div>
+          </div>
+          <figcaption class="att-foot">
+            <span class="att-prompt">"Turtle extending its neck."</span>
+            <span class="att-toggle" role="group" aria-label="attention source">
+              <button type="button" data-mode="a2v" class="is-on">A2V</button>
+              <button type="button" data-mode="t2v">T2V</button>
+            </span>
+          </figcaption>
+        </figure>
+        <figure class="att-card" data-att="goldfish">
+          <div class="att-stage">
+            <video class="att-v is-on" data-mode="a2v" data-att-src="assets/videos/attention/goldfish_a2v.mp4"
+                   data-poster="assets/posters/att_goldfish.jpg"
+                   loop muted playsinline preload="none" aria-label="Audio-to-video attention"></video>
+            <video class="att-v" data-mode="t2v" data-att-src="assets/videos/attention/goldfish_t2v.mp4"
+                   data-poster="assets/posters/att_goldfish.jpg"
+                   loop muted playsinline preload="none" aria-label="Text-to-video attention"></video>
+            <div class="vc-skeleton"></div>
+          </div>
+          <figcaption class="att-foot">
+            <span class="att-prompt">"A goldfish jumps out of the fish tank into the air."</span>
+            <span class="att-toggle" role="group" aria-label="attention source">
+              <button type="button" data-mode="a2v" class="is-on">A2V</button>
+              <button type="button" data-mode="t2v">T2V</button>
+            </span>
+          </figcaption>
+        </figure>
+        <figure class="att-card" data-att="man_climbs_rock">
+          <div class="att-stage">
+            <video class="att-v is-on" data-mode="a2v" data-att-src="assets/videos/attention/man_climbs_rock_a2v.mp4"
+                   data-poster="assets/posters/att_man_climbs_rock.jpg"
+                   loop muted playsinline preload="none" aria-label="Audio-to-video attention"></video>
+            <video class="att-v" data-mode="t2v" data-att-src="assets/videos/attention/man_climbs_rock_t2v.mp4"
+                   data-poster="assets/posters/att_man_climbs_rock.jpg"
+                   loop muted playsinline preload="none" aria-label="Text-to-video attention"></video>
+            <div class="vc-skeleton"></div>
+          </div>
+          <figcaption class="att-foot">
+            <span class="att-prompt">"The man climbs up the rock."</span>
+            <span class="att-toggle" role="group" aria-label="attention source">
+              <button type="button" data-mode="a2v" class="is-on">A2V</button>
+              <button type="button" data-mode="t2v">T2V</button>
+            </span>
+          </figcaption>
+        </figure>
+        <figure class="att-card" data-att="man_laugh">
+          <div class="att-stage">
+            <video class="att-v is-on" data-mode="a2v" data-att-src="assets/videos/attention/man_laugh_a2v.mp4"
+                   data-poster="assets/posters/att_man_laugh.jpg"
+                   loop muted playsinline preload="none" aria-label="Audio-to-video attention"></video>
+            <video class="att-v" data-mode="t2v" data-att-src="assets/videos/attention/man_laugh_t2v.mp4"
+                   data-poster="assets/posters/att_man_laugh.jpg"
+                   loop muted playsinline preload="none" aria-label="Text-to-video attention"></video>
+            <div class="vc-skeleton"></div>
+          </div>
+          <figcaption class="att-foot">
+            <span class="att-prompt">"A man is laughing out loud."</span>
+            <span class="att-toggle" role="group" aria-label="attention source">
+              <button type="button" data-mode="a2v" class="is-on">A2V</button>
+              <button type="button" data-mode="t2v">T2V</button>
+            </span>
+          </figcaption>
+        </figure>
+        <figure class="att-card" data-att="man_pets_dog">
+          <div class="att-stage">
+            <video class="att-v is-on" data-mode="a2v" data-att-src="assets/videos/attention/man_pets_dog_a2v.mp4"
+                   data-poster="assets/posters/att_man_pets_dog.jpg"
+                   loop muted playsinline preload="none" aria-label="Audio-to-video attention"></video>
+            <video class="att-v" data-mode="t2v" data-att-src="assets/videos/attention/man_pets_dog_t2v.mp4"
+                   data-poster="assets/posters/att_man_pets_dog.jpg"
+                   loop muted playsinline preload="none" aria-label="Text-to-video attention"></video>
+            <div class="vc-skeleton"></div>
+          </div>
+          <figcaption class="att-foot">
+            <span class="att-prompt">"The man pets the dog."</span>
+            <span class="att-toggle" role="group" aria-label="attention source">
+              <button type="button" data-mode="a2v" class="is-on">A2V</button>
+              <button type="button" data-mode="t2v">T2V</button>
+            </span>
+          </figcaption>
+        </figure>
+        <figure class="att-card" data-att="robot_waves">
+          <div class="att-stage">
+            <video class="att-v is-on" data-mode="a2v" data-att-src="assets/videos/attention/robot_waves_a2v.mp4"
+                   data-poster="assets/posters/att_robot_waves.jpg"
+                   loop muted playsinline preload="none" aria-label="Audio-to-video attention"></video>
+            <video class="att-v" data-mode="t2v" data-att-src="assets/videos/attention/robot_waves_t2v.mp4"
+                   data-poster="assets/posters/att_robot_waves.jpg"
+                   loop muted playsinline preload="none" aria-label="Text-to-video attention"></video>
+            <div class="vc-skeleton"></div>
+          </div>
+          <figcaption class="att-foot">
+            <span class="att-prompt">"The robot waving its hand."</span>
+            <span class="att-toggle" role="group" aria-label="attention source">
+              <button type="button" data-mode="a2v" class="is-on">A2V</button>
+              <button type="button" data-mode="t2v">T2V</button>
+            </span>
+          </figcaption>
+        </figure>
+        <figure class="att-card" data-att="dog_yawn">
+          <div class="att-stage">
+            <video class="att-v is-on" data-mode="a2v" data-att-src="assets/videos/attention/dog_yawn_a2v.mp4"
+                   data-poster="assets/posters/att_dog_yawn.jpg"
+                   loop muted playsinline preload="none" aria-label="Audio-to-video attention"></video>
+            <video class="att-v" data-mode="t2v" data-att-src="assets/videos/attention/dog_yawn_t2v.mp4"
+                   data-poster="assets/posters/att_dog_yawn.jpg"
+                   loop muted playsinline preload="none" aria-label="Text-to-video attention"></video>
+            <div class="vc-skeleton"></div>
+          </div>
+          <figcaption class="att-foot">
+            <span class="att-prompt">"A dog yawning."</span>
+            <span class="att-toggle" role="group" aria-label="attention source">
+              <button type="button" data-mode="a2v" class="is-on">A2V</button>
+              <button type="button" data-mode="t2v">T2V</button>
+            </span>
+          </figcaption>
+        </figure>
+    </div>
+  </div>
+</section>
+
+<section id="ablations">
+  <div class="container">
+    <h2 class="section-title">Ablations</h2>
+    <p class="section-lead">
+      Every variant of a scenario plays at once. Each reel replays its first
+      scenario at half speed.
+    </p>
+    <div class="reel-grid">
+        <div class="reel">
+          <video src="assets/reels/ablation_supervision.mp4" controls preload="none" playsinline
+                 poster="assets/posters/reel_abl_sup.jpg"></video>
+          <div class="reel-meta">
+            <span class="reel-title">Effect of the supervision signal</span>
+            <span class="reel-sub">CLIP vs. XCLIP vs. a vision-language model, on 4 scenarios · 1:31</span>
+          </div>
+        </div>
+        <div class="reel">
+          <video src="assets/reels/ablation_regularizers.mp4" controls preload="none" playsinline
+                 poster="assets/posters/reel_abl_reg.jpg"></video>
+          <div class="reel-meta">
+            <span class="reel-title">Effect of the regularizers</span>
+            <span class="reel-sub">None, LPIPS, temporal, latent, and all three, on 4 scenarios · 1:26</span>
+          </div>
+        </div>
+    </div>
+  </div>
+</section>
 
   <!-- ── BibTeX ────────────────────────────────────────────────── -->
   <section id="bibtex">
@@ -617,6 +1532,7 @@
     </div>
   </footer>
 
-  <script src="assets/js/main.js?v=2"></script>
+  <script src="assets/js/main.js?v=3"></script>
+  <script src="assets/js/supp.js?v=1"></script>
 </body>
 </html>

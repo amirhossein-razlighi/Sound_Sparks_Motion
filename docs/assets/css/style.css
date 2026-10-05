@@ -1127,6 +1127,14 @@ figcaption {
   color: var(--text-2);
 }
 
+/* ── Supplementary sections ──────────────────────────────────── */
+#videos, #ltx, #h3, #baselines, #transfer, #attention, #ablations {
+  padding-block: calc(var(--section-gap) * 0.55);
+}
+#videos { padding-top: calc(var(--section-gap) * 0.8); }
+#ltx .container, #h3 > .container:first-child { margin-bottom: 2rem; }
+#baselines .eval-block { margin: 0.5rem 0 3.5rem; }
+
 /* Loading skeleton (on top, hidden once videos ready) */
 .vc-skeleton {
   position: absolute;

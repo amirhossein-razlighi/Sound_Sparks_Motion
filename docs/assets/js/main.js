@@ -2,6 +2,7 @@
    Sound Sparks Motion — Main JS
    ═══════════════════════════════════════════════════════════════ */
 
+
 /* ── Waveform canvas animation ───────────────────────────────── */
 (function initWaveform() {
   const canvas = document.getElementById('waveform-canvas');
@@ -124,6 +125,21 @@
 
     let revealed = false;
     let busy     = false;
+    /* Which clip is on screen (or becoming so), and whether the card is.
+       Playback is decided in ONE place, sync(), from these two facts. It used
+       to be decided twice — by the visibility observer and by the end of the
+       animation — and whichever ran last won. A card scrolled out and back
+       within the one-second animation came back to a frozen frame. */
+    let showing  = 'in';
+    let inView   = false;
+
+    function sync() {
+      const on = showing === 'out' ? vOut : vIn, off = on === vOut ? vIn : vOut;
+      if (!inView) { vIn.pause(); vOut.pause(); return; }
+      on.play().catch(() => {});
+      /* Mid-transition both layers are on screen, cross-fading, so both run. */
+      if (busy) off.play().catch(() => {}); else off.pause();
+    }
 
     /* Pull the result clip in only when it is actually needed. */
     function ensureResult() {
@@ -151,8 +167,8 @@
 
     /* Only the visible layer plays. */
     const playObs = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) (revealed ? vOut : vIn).play().catch(() => {});
-      else { vIn.pause(); vOut.pause(); }
+      inView = e.isIntersecting;
+      sync();
     }, { threshold: 0.25 });
     playObs.observe(stage);
 
@@ -170,6 +186,7 @@
 
     function reveal() {
       busy = true;
+      showing = 'out';
       btn.disabled = true;
       btn.classList.remove('pulse');
       if (txt) txt.textContent = isTransfer ? 'Transferring…' : 'Sparking…';
@@ -178,41 +195,40 @@
         /* Hand the result the source's playhead so the cut is invisible. */
         const len = vOut.duration || vIn.duration || 0;
         if (len) { try { vOut.currentTime = vIn.currentTime % len; } catch (e) {} }
-        vOut.play().catch(() => {});
+        sync();
 
         stage.classList.add('sparking');
         setTimeout(() => setPhase('result'), reduce ? 0 : 340);
         setTimeout(() => {
           stage.classList.remove('sparking');
-          vIn.pause();
           revealed = true;
           busy = false;
+          sync();
           btn.disabled = false;
           if (txt)  txt.textContent  = 'Show the source';
-          if (hint) hint.textContent = isTransfer
-            ? 'Controls learned elsewhere — applied here'
-            : 'Motion applied — nothing else moved';
+          if (hint) hint.textContent = '';
         }, reduce ? 420 : 1050);
       });
     }
 
     function restore() {
       busy = true;
+      showing = 'in';
       btn.disabled = true;
       const len = vIn.duration || vOut.duration || 0;
       if (len) { try { vIn.currentTime = vOut.currentTime % len; } catch (e) {} }
-      vIn.play().catch(() => {});
+      sync();
 
       stage.classList.add('reverting');
       setPhase('source');
       setTimeout(() => {
         stage.classList.remove('reverting');
-        vOut.pause();
         revealed = false;
         busy = false;
+        sync();
         btn.disabled = false;
         if (txt)  txt.textContent  = isTransfer ? 'Transfer the motion!' : 'Spark the motion!';
-        if (hint) hint.textContent = 'Same clip — watch the motion appear';
+        if (hint) hint.textContent = '';
       }, reduce ? 400 : 720);
     }
 
@@ -224,6 +240,38 @@
       revealed ? restore() : reveal();
     });
   });
+})();
+
+
+/* ── Scroll-reveal ───────────────────────────────────────────── */
+(function initScrollReveal() {
+  const targets = document.querySelectorAll(
+    '.comparison-card, .method-step, .abstract-text, .teaser-figure, .method-figure, .eval-card, .eval-head'
+  );
+  if (!targets.length) return;
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.06, rootMargin: '0px 0px -40px 0px' });
+  targets.forEach(el => { el.classList.add('reveal'); obs.observe(el); });
+})();
+
+
+/* ── Active nav link on scroll ───────────────────────────────── */
+(function initActiveNav() {
+  const sections = document.querySelectorAll('section[id]');
+  const links    = document.querySelectorAll('.nav-links a');
+  if (!sections.length || !links.length) return;
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      links.forEach(a => {
+        a.style.color = a.getAttribute('href') === `#${e.target.id}` ? 'var(--text-1)' : '';
+      });
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  sections.forEach(s => obs.observe(s));
 })();
 
 
@@ -265,60 +313,6 @@
 
     obs.observe(chart);
   });
-})();
-
-
-/* ── Carousel arrow buttons ──────────────────────────────────── */
-(function initCarousel() {
-  const carousel = document.getElementById('results-carousel');
-  const btnLeft  = document.getElementById('arrow-left');
-  const btnRight = document.getElementById('arrow-right');
-  if (!carousel || !btnLeft || !btnRight) return;
-
-  function scrollAmt() { return Math.min(980, window.innerWidth - 80); }
-
-  function updateArrows() {
-    btnLeft.classList.toggle('hidden',  carousel.scrollLeft <= 8);
-    btnRight.classList.toggle('hidden', carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 8);
-  }
-
-  btnLeft.addEventListener('click',  () => carousel.scrollBy({ left: -scrollAmt(), behavior: 'smooth' }));
-  btnRight.addEventListener('click', () => carousel.scrollBy({ left:  scrollAmt(), behavior: 'smooth' }));
-  carousel.addEventListener('scroll', updateArrows, { passive: true });
-  updateArrows();
-})();
-
-
-/* ── Scroll-reveal ───────────────────────────────────────────── */
-(function initScrollReveal() {
-  const targets = document.querySelectorAll(
-    '.comparison-card, .method-step, .abstract-text, .teaser-figure, .method-figure, .eval-card, .eval-head'
-  );
-  if (!targets.length) return;
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
-    });
-  }, { threshold: 0.06, rootMargin: '0px 0px -40px 0px' });
-  targets.forEach(el => { el.classList.add('reveal'); obs.observe(el); });
-})();
-
-
-
-/* ── Active nav link on scroll ───────────────────────────────── */
-(function initActiveNav() {
-  const sections = document.querySelectorAll('section[id]');
-  const links    = document.querySelectorAll('.nav-links a');
-  if (!sections.length || !links.length) return;
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (!e.isIntersecting) return;
-      links.forEach(a => {
-        a.style.color = a.getAttribute('href') === `#${e.target.id}` ? 'var(--text-1)' : '';
-      });
-    });
-  }, { rootMargin: '-40% 0px -55% 0px' });
-  sections.forEach(s => obs.observe(s));
 })();
 
 

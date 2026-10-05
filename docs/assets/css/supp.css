@@ -1,0 +1,575 @@
+/* ═══════════════════════════════════════════════════════════════
+   Supplementary additions — layered on top of style.css.
+   The original stylesheet is left untouched so the two stay
+   independently reviewable.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Anonymous header ────────────────────────────────────────── */
+.anon-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border: 1px solid var(--border-hover);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-2);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.supp-note {
+  max-width: 720px;
+  margin: 18px auto 0;
+  color: var(--text-2);
+  font-size: 0.95rem;
+  line-height: 1.65;
+  text-align: center;
+}
+
+/* ── Reel players ────────────────────────────────────────────── */
+.reel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 28px;
+}
+
+.reel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.reel video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+
+/* Stacked, not a baseline row. Side by side, the subtitle's white-space:nowrap
+   forced one long line: it squeezed the title into a two-line wrap and ran
+   itself off the right edge of the card. */
+.reel-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 16px 20px 18px;
+  min-width: 0;
+}
+
+.reel-title {
+  color: var(--text-1);
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.reel-sub {
+  color: var(--text-3);
+  font-size: 0.85rem;
+  line-height: 1.45;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* ── Per-card study numbers (H3) ─────────────────────────────── */
+.card-stats {
+  display: flex;
+  gap: 14px;
+  padding: 0 16px 14px;
+  flex-wrap: wrap;
+}
+
+.card-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  font-size: 0.78rem;
+  color: var(--text-3);
+}
+
+.card-stat b {
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.card-stat.s-pref  b { color: var(--spark); }
+.card-stat.s-nat   b { color: #6fa8ff; }
+.card-stat.s-str   b { color: #b493ff; }
+/* H3's number sits beside ours, muted, so the comparison is on the card but
+   the eye still lands on our result first. */
+.card-stat i { font-style: normal; font-size: 0.74rem; color: var(--text-3); }
+
+/* Sound toggle — H3 outputs carry a meaningful soundtrack, so these
+   cards can be unmuted; the LTX-2 cards stay silent loops. */
+.snd-btn {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 4;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border-hover);
+  border-radius: 50%;
+  background: rgba(7, 7, 15, 0.72);
+  color: var(--text-2);
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.snd-btn:hover { color: var(--text-1); border-color: var(--spark); }
+.snd-btn.on    { color: var(--spark); border-color: var(--spark); }
+.snd-btn svg   { width: 15px; height: 15px; fill: currentColor; }
+
+/* ── Motion-transfer card: donor ▸ beam ▸ recipient ───────────── */
+.transfer-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 20px 18px;
+  margin-bottom: 26px;
+  transition: border-color 0.25s var(--ease-out);
+}
+
+.transfer-card:hover { border-color: var(--border-hover); }
+
+.tc-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.tc-prompt {
+  font-family: "Comic Sans MS", "Chalkboard SE", cursive;
+  color: var(--text-1);
+  font-size: 1.02rem;
+}
+
+.tc-prompt em { color: var(--spark); font-style: normal; }
+
+.tc-stage {
+  display: grid;
+  /* 78px was too narrow for the label, which had white-space:nowrap and so
+     spilled out of its track and over the right-hand video. */
+  grid-template-columns: 1fr 168px 1fr;
+  align-items: center;
+  gap: 0;
+}
+
+.tc-panel { position: relative; }
+
+.tc-panel video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border-radius: var(--radius);
+  background: #000;
+}
+
+.tc-label {
+  margin-top: 9px;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--text-2);
+}
+
+.tc-label small { display: block; color: var(--text-3); font-size: 0.75rem; }
+
+/* donor gets a quiet frame, recipient the live one */
+.tc-donor video     { border: 1px solid var(--border-hover); opacity: 0.92; }
+.tc-recipient video { border: 1px solid var(--spark-dim); }
+
+/* the recipient is a two-layer stage like the spark cards */
+.tc-recipient .sv-out {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.42s var(--ease-out);
+}
+
+.tc-recipient.revealed .sv-out { opacity: 1; }
+.tc-recipient.revealed .sv-in  { opacity: 0; }
+.tc-recipient .sv-in { transition: opacity 0.42s var(--ease-out); }
+
+/* ── The beam between them ───────────────────────────────────── */
+.tc-beam {
+  position: relative;
+  height: 100%;
+  min-height: 60px;
+  display: grid;
+  place-items: center;
+}
+
+.tc-beam .rail {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--border-hover), transparent);
+}
+
+.tc-beam .pip {
+  position: absolute;
+  left: 4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--spark);
+  box-shadow: 0 0 14px 4px var(--spark-glow);
+  opacity: 0;
+}
+
+.tc-beam .chips {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
+}
+
+.tc-beam .chip {
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border-hover);
+  background: var(--bg);
+  color: var(--text-3);
+  font-size: 0.66rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  transition: color 0.3s, border-color 0.3s;
+}
+
+.transfer-card.is-armed .tc-beam .chip { color: var(--spark); border-color: var(--spark); }
+
+.transfer-card.is-beaming .tc-beam .pip {
+  animation: tc-travel 900ms var(--ease-in-out) forwards;
+}
+
+@keyframes tc-travel {
+  0%   { opacity: 0; transform: translateX(0) scale(0.6); }
+  12%  { opacity: 1; transform: translateX(0) scale(1); }
+  88%  { opacity: 1; transform: translateX(var(--travel, 60px)) scale(1); }
+  100% { opacity: 0; transform: translateX(var(--travel, 60px)) scale(0.6); }
+}
+
+/* donor pulses as the latent is taken, recipient as it lands */
+.transfer-card.is-beaming .tc-donor video {
+  animation: tc-pulse 900ms var(--ease-out);
+}
+
+.transfer-card.is-landing .tc-recipient video {
+  animation: tc-pulse 700ms var(--ease-out);
+}
+
+@keyframes tc-pulse {
+  0%   { box-shadow: 0 0 0 0 var(--spark-glow); }
+  40%  { box-shadow: 0 0 0 5px var(--spark-glow); }
+  100% { box-shadow: 0 0 0 0 rgba(45, 226, 211, 0); }
+}
+
+.tc-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.tc-hint { color: var(--text-3); font-size: 0.82rem; }
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 980px) {
+  .reel-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 860px) {
+  /* Panels stack, so the beam runs horizontally between them. Rotating it
+     90deg (an earlier attempt) turned the chip on its side and pushed it out
+     of the grid track. */
+  .tc-stage { grid-template-columns: 1fr; gap: 6px; }
+  .tc-beam  { min-height: 52px; }
+  .tc-beam .rail { left: 18%; right: 18%; }
+  .tc-panel video { aspect-ratio: 16 / 9; }
+}
+
+@media (max-width: 560px) {
+  .transfer-card { padding: 14px 13px 13px; border-radius: var(--radius); }
+  .tc-prompt  { font-size: 0.92rem; }
+  .tc-label   { font-size: 0.76rem; }
+  .tc-beam .chip { font-size: 0.6rem; padding: 2px 7px; }
+  .card-stats { gap: 9px; padding: 0 13px 12px; }
+  .card-stat  { font-size: 0.72rem; }
+  .reel-meta  { padding: 13px 15px 15px; }
+  .supp-note  { font-size: 0.88rem; }
+  .anon-badge { font-size: 0.68rem; padding: 5px 11px; }
+}
+
+
+/* ── Scroll cue ──────────────────────────────────────────────────────────────
+   The hero fills the first screen and the videos sit below the fold, so
+   without a cue the page looks like it ends at the title. Fades out once the
+   reader has started scrolling (see supp.js).
+   ──────────────────────────────────────────────────────────────────────────── */
+.scroll-cue {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  margin-top: 54px;
+  color: var(--text-3);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: opacity 0.45s var(--ease-out), transform 0.45s var(--ease-out);
+}
+
+.scroll-cue.gone { opacity: 0; transform: translateY(8px); pointer-events: none; }
+
+.scroll-cue .mouse {
+  width: 24px;
+  height: 38px;
+  border: 1.6px solid var(--text-3);
+  border-radius: 13px;
+  position: relative;
+}
+
+.scroll-cue .mouse::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 7px;
+  width: 3px;
+  height: 7px;
+  margin-left: -1.5px;
+  border-radius: 2px;
+  background: var(--spark);
+  animation: cue-wheel 1.7s var(--ease-in-out) infinite;
+}
+
+.scroll-cue .chev { display: block; opacity: 0.75; animation: cue-bob 1.7s var(--ease-in-out) infinite; }
+
+@keyframes cue-wheel {
+  0%   { transform: translateY(0);   opacity: 0; }
+  22%  { opacity: 1; }
+  72%  { transform: translateY(13px); opacity: 0; }
+  100% { transform: translateY(13px); opacity: 0; }
+}
+
+@keyframes cue-bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(5px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue .mouse::after,
+  .scroll-cue .chev { animation: none; }
+}
+
+/* ── subsection: a reel that belongs inside another section ───────────────── */
+/* The modality ablation sits under Generalization. It needs to read as part of
+   that section, not as a new one, so the heading is smaller than .section-title
+   and the block is set off by a rule rather than by section padding. */
+.subsection {
+  margin-top: 52px;
+  padding-top: 34px;
+  border-top: 1px solid var(--border);
+}
+.subsection-title {
+  font-size: 1.32rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 10px;
+}
+/* One reel, so it must not stretch to the full container width on a wide
+   screen — auto-fit would give a single 1fr track and a 1200px-wide video. */
+.reel-grid-single { grid-template-columns: minmax(0, 620px); }
+
+@media (max-width: 680px) {
+  .subsection { margin-top: 38px; padding-top: 26px; }
+  .reel-grid-single { grid-template-columns: 1fr; }
+}
+
+/* ── attention cards ──────────────────────────────────────────────────────── */
+.att-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 22px;
+}
+.att-card {
+  margin: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.att-stage { position: relative; aspect-ratio: 16 / 10; background: #06070b; }
+/* Both modes are stacked and kept at the same playhead, so switching reads as
+   a filter over one clip rather than as two different videos. */
+.att-v {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover;
+  opacity: 0; transition: opacity .22s ease;
+}
+.att-v.is-on { opacity: 1; }
+.att-foot {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 16px 15px;
+  min-width: 0;
+}
+.att-prompt {
+  flex: 1 1 auto; min-width: 0;
+  font-size: 0.86rem; line-height: 1.4; color: var(--text-2);
+  overflow-wrap: anywhere;
+}
+.att-prompt em { font-style: normal; color: var(--spark); }
+/* Active vs inactive has to read in a glance: a filled accent pill against a
+   recessed track, not two similar words. */
+.att-toggle {
+  flex: 0 0 auto; display: inline-flex; gap: 2px; padding: 3px;
+  background: rgba(0, 0, 0, .35);
+  border: 1px solid var(--border); border-radius: 999px;
+}
+.att-toggle button {
+  appearance: none; border: 0; cursor: pointer;
+  padding: 5px 14px; border-radius: 999px;
+  font-family: inherit; font-size: 0.74rem; font-weight: 700;
+  line-height: 1; letter-spacing: .05em;
+  background: transparent; color: var(--text-3);
+  transition: background .18s ease, color .18s ease, box-shadow .18s ease;
+}
+.att-toggle button:hover:not(.is-on) { color: var(--text-2); background: rgba(255, 255, 255, .05); }
+.att-toggle button.is-on {
+  background: var(--spark); color: #05121a;
+  box-shadow: 0 0 0 1px var(--spark), 0 0 14px var(--spark-glow);
+}
+.att-toggle button:focus-visible { outline: 2px solid var(--spark); outline-offset: 2px; }
+
+/* ── baseline comparison: scenario list + grid ────────────────────────────── */
+.cmp-wrap { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 22px; align-items: start; }
+.cmp-list {
+  display: flex; flex-direction: column; gap: 8px;
+  max-height: 620px; overflow-y: auto; padding-right: 6px;
+  scrollbar-width: thin;
+}
+.cmp-pick {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 9px; width: 100%;
+  background: var(--card); color: var(--text-2);
+  border: 1px solid var(--border); border-radius: 10px;
+  cursor: pointer; text-align: left; font: inherit; font-size: 0.78rem; line-height: 1.32;
+  transition: border-color .18s ease, background .18s ease, color .18s ease;
+}
+.cmp-pick img { flex: 0 0 auto; width: 54px; height: 34px; object-fit: cover; border-radius: 5px; }
+.cmp-pick span { min-width: 0; overflow-wrap: anywhere; }
+.cmp-pick em { font-style: normal; color: var(--spark); }
+.cmp-pick:hover { border-color: var(--text-3); color: var(--text-1); }
+.cmp-pick.is-on { border-color: var(--spark); background: rgba(0, 220, 210, .07); color: var(--text-1); }
+
+.cmp-detail { min-width: 0; }
+.cmp-head { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; min-width: 0; }
+.cmp-prompt { flex: 1 1 auto; min-width: 0; font-size: 0.92rem; color: var(--text-2); overflow-wrap: anywhere; }
+.cmp-prompt em { font-style: normal; color: var(--spark); }
+.cmp-play {
+  flex: 0 0 auto; display: inline-flex; align-items: center; gap: 7px;
+  padding: 6px 13px; cursor: pointer;
+  background: var(--card); color: var(--text-2);
+  border: 1px solid var(--border); border-radius: 999px;
+  font-family: inherit; font-size: 0.76rem; font-weight: 600; line-height: 1;
+}
+.cmp-play:hover { border-color: var(--text-3); color: var(--text-1); }
+.cmp-play svg { width: 11px; height: 11px; fill: currentColor; }
+
+.cmp-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.cmp-cell { margin: 0; min-width: 0; }
+.cmp-cell video {
+  display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover;
+  background: #06070b; border: 1px solid var(--border); border-radius: 8px;
+}
+.cmp-cell figcaption {
+  margin-top: 5px; font-size: 0.72rem; color: var(--text-3);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cmp-cell.is-ours video { border-color: var(--spark); border-width: 2px; }
+.cmp-cell.is-ours figcaption { color: var(--spark); font-weight: 600; }
+.cmp-cell.is-input video { border-style: dashed; }
+
+@media (max-width: 860px) {
+  /* The list becomes a horizontal rail above the grid: a 250px column would
+     leave the videos too small to judge anything on a phone. */
+  .cmp-wrap { grid-template-columns: 1fr; }
+  .cmp-list { flex-direction: row; max-height: none; overflow-x: auto; padding-bottom: 6px; }
+  .cmp-pick { width: auto; flex: 0 0 210px; }
+  .cmp-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .cmp-grid { grid-template-columns: 1fr; }
+  .att-foot { flex-wrap: wrap; }
+}
+
+/* ── section nav ──────────────────────────────────────────────────────────── */
+/* Anchors land below the fixed bar instead of under it. */
+section[id], header[id] { scroll-margin-top: calc(var(--nav-h) + 14px); }
+.nav-logo { white-space: nowrap; }
+.nav-links { gap: 1.4rem; }
+.nav-links a { white-space: nowrap; }
+@media (max-width: 700px) {
+  /* style.css hides the links on phones; on a page this long they are the
+     only way around, so they scroll sideways instead. */
+  .nav-inner { width: 100%; padding-inline: 14px; gap: 14px; }
+  .nav-logo { display: none; }
+  .nav-links {
+    display: flex !important; gap: 1.1rem; margin: 0; padding: 0;
+    overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+  .nav-links::-webkit-scrollbar { display: none; }
+  .nav-links a { font-size: 0.82rem; }
+}
+
+/* ── reel chapters ────────────────────────────────────────────────────────── */
+.reel-chapters { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.reel-chapters button {
+  display: inline-flex; align-items: baseline; gap: 6px;
+  padding: 5px 10px; border-radius: 999px; cursor: pointer;
+  background: rgba(255, 255, 255, .03); color: var(--text-2);
+  border: 1px solid var(--border);
+  font-family: inherit; font-size: 0.74rem; line-height: 1.2;
+  transition: border-color .18s ease, color .18s ease, background .18s ease;
+}
+.reel-chapters button b { font-weight: 600; color: var(--text-3); font-variant-numeric: tabular-nums; }
+.reel-chapters button:hover { border-color: var(--border-hover); color: var(--text-1); }
+.reel-chapters button.is-on { border-color: var(--spark); color: var(--text-1); background: var(--spark-dim); }
+.reel-chapters button.is-on b { color: var(--spark); }
+
+/* ── baseline: phone pair mode ────────────────────────────────────────────── */
+.cmp-chips:empty { display: none; }
+.cmp-chips {
+  display: flex; gap: 6px; margin: 0 0 10px; padding-bottom: 4px;
+  overflow-x: auto; scrollbar-width: none;
+}
+.cmp-chips::-webkit-scrollbar { display: none; }
+.cmp-chips button {
+  flex: 0 0 auto; padding: 6px 12px; border-radius: 999px; cursor: pointer;
+  background: transparent; color: var(--text-3);
+  border: 1px solid var(--border);
+  font-family: inherit; font-size: 0.74rem; font-weight: 600; line-height: 1;
+}
+.cmp-chips button.is-on { background: var(--spark); border-color: var(--spark); color: #05121a; }
+.cmp-grid.is-pair { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+
+/* Arrows sit clear of the edge fade and above the cards. */
+.carousel-wrapper .carousel-arrow { z-index: 4; }
