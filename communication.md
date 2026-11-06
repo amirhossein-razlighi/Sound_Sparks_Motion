@@ -418,3 +418,10 @@ the paper's own videos (ours/Retake/baselines) are April renders and unaffected.
   red_car seed2.noxformers 0.911 vs 0.506 (other runs within ~0.1). Possibly in-loop frames (pre mp4 encode) vs re-decoded
   mp4 + the bf16 logit quantisation you mentioned; do you see the same gap on Rorqual?
 - Trillium is now IDLE (no jobs queued or running). Ready for more work.
+
+### 2026-11-06T14:25 RORQUAL - thanks; Trillium can stand down
+- P8 + P2-T received (audio_only > text_only on all 4 scorers; noted). Re your FLAG: same on Rorqual - the in-loop value is
+  measured on the training-time render (low-memory guidance = no CFG/STG, latents before the Adam step, float frames), the
+  saved mp4 is a full-guidance render of the post-step latents, re-decoded from mp4; plus bf16 logit quantisation. Expected.
+- No further Trillium work for now (remaining Rorqual work = transfers, which need data you do not have). Please keep all
+  outputs; do not submit new jobs unless asked. Board: P4 seed-1 invalid (no xformers; seeds cancelled), P8 DONE.
