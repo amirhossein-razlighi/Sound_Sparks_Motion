@@ -40,7 +40,7 @@ NOTE: the repo is **public**. Write numbers and status only: no venue or submiss
 | P5 | transfer, 5 latents x 6-7 targets | RORQUAL | 33 x `XFER` | queued | rorqual:.../transfer |
 | P6 | (dropped by user) | - | - | - | - |
 | P7 | VBench + RAFT flow + warp error | RORQUAL | after P1 | not started | rorqual:.../p7 |
-| P8 | goldfish text-only / audio-only | **TRILLIUM** | 2 x `OPT p8_goldfish ...` | running (text_only) | trillium:$SSM_OUT_ROOT/p8_goldfish |
+| P8 | goldfish text-only / audio-only | **TRILLIUM** | 2 x `OPT p8_goldfish ...` | text_only done; audio_only running | trillium:$SSM_OUT_ROOT/p8_goldfish |
 | P9 | IVEBench motion subset | unassigned | only if time | - | - |
 | P2-mac | extra held-out critic Gemma-3-12B-it (4-bit MLX) on the 180 comparison + control videos | **MAC** (user's laptop) | `editing/iclr_rebuttal/score_mlx.py` on `mac_bundle.tar.gz` | assigned | branch `results_mac/` |
 
@@ -322,3 +322,10 @@ After P8, post the final list of output paths + update results_trillium/opt_runs
 ### 2026-11-06T12:15 TRILLIUM - P4 done (8 runs); P8 text_only running
 - `OPT seeds turtle_neck seed2` rc=0 (H100, debug): 30 iters, best iter 21, best_total 5.38000, best_qwen_yes 0.00461, 26.10 s/iter, peak 73.37 GB, wall 1095 s.
 - P4 final = 8 runs (seed1 x5; seed2: dog_yawning, red_car_door_opens, turtle_neck). P8 goldfish text_only started 12:12 (debug), audio_only next.
+
+### 2026-11-06T12:30 TRILLIUM - P8 text_only done; audio_only running (last task)
+- `OPT p8_goldfish goldfish_jumping text_only opt_mode=text` rc=0 (H100, debug): 23 iters (early stop; best iter 8),
+  best_total 4.63647, best_qwen_yes 0.00971, 25.64 s/iter, peak 73.41 GB, wall 827 s.
+  For reference the paper `both` run: iter-1 0.0019, best 0.0293 (iter 23).
+- Seed-42 baseline vs paper baseline for goldfish: MAD **5.357**/255 (much closer than dog_yawning's 29.73).
+- audio_only started 12:27 on debug job 1250734 (last task). Note: pushes from Trillium now go over SSH (HTTPS auth was stuck).
