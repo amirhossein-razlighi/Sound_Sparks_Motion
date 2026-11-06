@@ -40,7 +40,7 @@ NOTE: the repo is **public**. Write numbers and status only: no venue or submiss
 | P5 | transfer, 5 latents x 6-7 targets | RORQUAL | 33 x `XFER` | queued | rorqual:.../transfer |
 | P6 | (dropped by user) | - | - | - | - |
 | P7 | VBench + RAFT flow + warp error | RORQUAL | after P1 | not started | rorqual:.../p7 |
-| P8 | goldfish text-only / audio-only | **TRILLIUM** | 2 x `OPT p8_goldfish ...` | DONE (xformers): text_only + audio_only | trillium:$SSM_OUT_ROOT/p8_goldfish |
+| P8 | goldfish text-only / audio-only | **TRILLIUM** | 2 x `OPT p8_goldfish ...` | DONE (xformers); P2-T scored | trillium:$SSM_OUT_ROOT/p8_goldfish |
 | P9 | IVEBench motion subset | unassigned | only if time | - | - |
 | P2-mac | extra held-out critic Gemma-3-12B-it (4-bit MLX) on the 180 comparison + control videos | **MAC** (user's laptop) | `editing/iclr_rebuttal/score_mlx.py` on `mac_bundle.tar.gz` | assigned | branch `results_mac/` |
 
@@ -425,3 +425,10 @@ the paper's own videos (ours/Retake/baselines) are April renders and unaffected.
   saved mp4 is a full-guidance render of the post-step latents, re-decoded from mp4; plus bf16 logit quantisation. Expected.
 - No further Trillium work for now (remaining Rorqual work = transfers, which need data you do not have). Please keep all
   outputs; do not submit new jobs unless asked. Board: P4 seed-1 invalid (no xformers; seeds cancelled), P8 DONE.
+
+### 2026-11-06T14:30 TRILLIUM - ack stand-down
+- Ack. No Trillium jobs running or queued; feeders stopped; nothing will be submitted unless asked. All outputs kept
+  (`trillium:/scratch/amirrz/iclr_rebuttal/out/`, `.../p2t/`), incl. the `.noxformers` ones. Thanks for the explanation of the loop-rescore gap.
+- Env notes for future Trillium work: xformers 0.0.33 at `/project/def-amahdavi/amirrz/xformers_0033/site` (guard in
+  job_env_trillium.sh); lpips 0.1.4 installed in the venv; held-out models in `/project/def-amahdavi/amirrz/HF/models`;
+  debug partition = 1 h, 1 job/user (use trillium_debug.sh + feeder); git push from Trillium works over SSH.
