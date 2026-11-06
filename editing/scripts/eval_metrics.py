@@ -81,9 +81,16 @@ def _pad_to_multiple(frames: torch.Tensor, m: int = 8) -> torch.Tensor:
 
 # ----------------------------------------------------------------------- metrics
 
-def _motion_raft(frames: torch.Tensor, raft, transforms) -> float:
-    """Mean per-frame optical-flow magnitude over the clip."""
-    flows = compute_raft_flows(_pad_to_multiple(frames), raft, transforms)  # [N-1, 2, H, W]
+def _motion_raft(frames: torch.Tensor, raft, transforms, disable_cudnn: bool = False) -> float:
+    """Mean per-frame optical-flow magnitude over the clip.
+
+    disable_cudnn (additive fix, --raft-disable-cudnn): RAFT's correlation/conv path raised
+    CUDNN_STATUS_NOT_SUPPORTED on our H100 nodes; running it with contiguous inputs and cuDNN
+    off for this call only gives the same flow without the crash.
+    """
+    x = _pad_to_multiple(frames).contiguous()
+    with torch.backends.cudnn.flags(enabled=not disable_cudnn):
+        flows = compute_raft_flows(x, raft, transforms)  # [N-1, 2, H, W]
     if flows.shape[0] == 0:
         return 0.0
     mag = torch.linalg.norm(flows, dim=1)  # [N-1, H, W]
@@ -205,8 +212,8 @@ def run(args) -> None:
     try:
         with torch.no_grad():
             raft, transforms = load_raft_components(device, args.raft_model, args.raft_weights)
-            mo = _motion_raft(opt, raft, transforms)
-            mb = _motion_raft(base, raft, transforms)
+            mo = _motion_raft(opt, raft, transforms, args.raft_disable_cudnn)
+            mb = _motion_raft(base, raft, transforms, args.raft_disable_cudnn)
         M["motion_strength_optimized"] = mo
         M["motion_strength_baseline"] = mb
         M["motion_strength_delta"] = mo - mb
@@ -277,6 +284,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--static-prefix-frames", type=int, default=8, help="Frames treated as the static prefix.")
     p.add_argument("--raft-model", default="raft_large", choices=["raft_large", "raft_small"])
     p.add_argument("--raft-weights", default=None, help="Local RAFT weights .pth (for offline nodes).")
+    p.add_argument("--raft-disable-cudnn", action="store_true",
+                   help="Run RAFT with cuDNN disabled (works around CUDNN_STATUS_NOT_SUPPORTED).")
     p.add_argument("--lpips-backbone", default="alex", choices=["alex", "vgg"])
     p.add_argument("--max-temporal-pairs", type=int, default=16)
     p.add_argument("--clip-model", default="openai/clip-vit-base-patch32")

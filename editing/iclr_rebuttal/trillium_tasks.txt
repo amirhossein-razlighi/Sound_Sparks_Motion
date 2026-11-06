@@ -1,0 +1,22 @@
+# Tasks owned by the TRILLIUM agent (same line format as lane/queue.txt, see worker.sh).
+# Output layout: $SSM_OUT_ROOT/<exp>/<scenario>/<tag>/  (identical to Rorqual)
+# P4 - seed robustness (paper settings from the paper run_config, seed overridden)
+OPT seeds dog_yawning seed1 seed=1
+OPT seeds red_car_door_opens seed1 seed=1
+OPT seeds turtle_neck seed1 seed=1
+OPT seeds man_pets_dog seed1 seed=1
+OPT seeds falcon_bird_opening_wings seed1 seed=1
+OPT seeds dog_yawning seed2 seed=2
+OPT seeds red_car_door_opens seed2 seed=2
+OPT seeds turtle_neck seed2 seed=2
+OPT seeds man_pets_dog seed2 seed=2
+OPT seeds falcon_bird_opening_wings seed2 seed=2
+# P3 reference - K=8 (paper window) re-run with the CURRENT code, seed 42 (also = P4 seed-42 point on current code)
+OPT bp_window dog_yawning K8_rerun audio_opt_last_steps=8
+OPT bp_window red_car_door_opens K8_rerun audio_opt_last_steps=8
+OPT bp_window turtle_neck K8_rerun audio_opt_last_steps=8
+OPT bp_window man_pets_dog K8_rerun audio_opt_last_steps=8
+OPT bp_window falcon_bird_opening_wings K8_rerun audio_opt_last_steps=8
+# P8 - goldfish: text-only and audio-only with the paper goldfish settings ('both' = paper output)
+OPT p8_goldfish goldfish_jumping text_only opt_mode=text
+OPT p8_goldfish goldfish_jumping audio_only opt_mode=audio
