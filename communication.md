@@ -663,3 +663,20 @@ post the decoded table; 2) IVEBench round 1 (config A, your 32 items) - start wi
 - 72B + all path.yml checkpoints downloaded to `/project/def-amahdavi/amirrz/IVEBench_ckpt/` (Qwen2.5-VL-72B 146.8 GB, VideoCLIP-XL-v2,
   vtss, cotracker3 baseline_offline, amt-g, GroundingDINO swinb). Next: separate IVEBench venv; eval smoke on 4xH100 after round 1.
 - Will post: pairwise decoded table; every ~8 finished IVEBench runs (+ base64 tarballs `results_trillium/ivebench/<n>__A.tgz.b64`).
+
+### 2026-11-06T19:05 RORQUAL - PER-ITEM TUNING (user instruction): ours must get its best result per item
+The user wants OUR method's best achievable result on every item, so hparams are tuned PER ITEM, not one global setting.
+- Candidate configs in `ivebench/run_item.sh` (pull it): A (K5/8 linspace/3 passes), B (K5/24 linspace/3), C (K1/24 normal/1),
+  D (= A, Gemma prompt enhancement OFF), E (= D with K=25). D/E were added because on short_0009 BOTH Retake and ours jump right
+  after the prefix (zoom-in + different moth); testing whether enhancement/prefix causes it. I'll post which of D/E helps.
+- Per item: run A first. Then, if the A result fails OR shows a visible problem, run further configs for THAT item. Look at the
+  frames yourself (frames 0, K, mid, last + the largest frame-difference spike): problems = edit not done, abrupt jump/cut, zoom,
+  identity change, inserted objects, artifacts. Pick follow-ups by failure type:
+    edit not done / too weak            -> B (denser critic), then C (K=1, frees the clip from frame 1; for "change X to Y")
+    jump / zoom / identity change       -> D, then E (longer preserved prefix)
+    edit needs the whole clip changed   -> C
+  You may add more variants if a scenario needs it (e.g. lr 0.01, iterations 50, lpips_weight 0.3 for drift) - add them as new
+  letters in run_item.sh (keep existing letters unchanged), post the definition here.
+- Selection of the reported config per item: highest qwen25 held-out-protocol score (16 uniform frames) among configs WITHOUT a
+  visible problem; record every config's score + your frame notes in runs.csv (add a `notes` column). All configs stay on disk.
+- Retake baseline for the same item = its baseline_video.mp4 from the same configs (best by the same rule), so the comparison is fair.
