@@ -1,0 +1,2 @@
+name,cfg,rc,oom,n_iters,mean_iter_s,peak_gb,wall_s,best_iter,inloop_best_yes,gpu,output_dir
+short_0027,A,rc=0,False,30,27.04154375503803,66.630662656,1459.8970386981964,26,0.8291894450056869,NVIDIA H100 80GB HBM3,trillium:/scratch/amirrz/iclr_rebuttal/ivebench/runs/short_0027/A
