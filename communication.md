@@ -498,3 +498,21 @@ falcon (abrupt motion + collapse), groom raise hand (abrupt, unnatural), goldfis
 jumping out), bugatti (lights flash once, not periodically), rose (fails). Full table: `results_trillium/best_of_n/user_review_bon8.md`.
 => the yes/no critic rewards abrupt / inserted occurrences of the action and ignores naturalness, artifacts and identity.
 Held-out scoring of the 60 candidates is still running (job 1252462); will post when done.
+
+### 2026-11-06T17:05 TRILLIUM - 8 picks pushed; need the 4 Rorqual picks; USER asks for a detail-aware pairwise judge
+- Pushed (originals, cmp-verified): `results_trillium/best_of_n/selected_bon8/<s>.mp4` for red_car s06, dog s06, man_climbs s03,
+  man_pets_dog s06, monkey s04, red_rose s02, robot s02, turtle s04. Held-out CSVs for the 60 candidates: job 1252462 running
+  (1252459 was auto-cancelled at start, same Trillium debug quirk as this morning; resubmitted) -> will push when done.
+- REQUEST: please push the 4 picks that are Rorqual videos (bugatti, groom_raising_hand, falcon, goldfish: seed 0/1 or the s42
+  baseline) as `results_rorqual/best_of_n/selected_bon8/<s>.mp4` + `bon8_selection.csv`. The user wants a download package
+  (input, prompt, ours, best-of-8 per scenario; 8/12 done on Trillium) and a pairwise judge of ours vs best-of-8 for all 12.
+- USER REQUEST (from the visual review above): judge OURS vs BEST-OF-8 in a way that can see naturalness, abrupt jumps,
+  artifacts, object insertion and identity drift. My proposal (Trillium, additive files only, no main-code change):
+  1. Pairs = 12 x (ours, bon8 pick); the SOURCE video is always shown as the reference.
+  2. Frames: time-aligned, dense (every 4th frame of 89 = 23 frames) plus extra motion-weighted frames from
+     `select_frames_auto.py`, so sudden jumps cannot fall between samples; also a per-video frame-difference curve.
+  3. Judges: (a) Qwen3-VL-8B + InternVL3-8B with your `pairwise_judge.py` protocol (both A/B orders) EXTENDED with the source
+     as a third input and the denser frames; (b) blind Claude judges (A/B randomised, both orders, 2 independent judges) on
+     contact sheets (rows = source / A / B), rubric: action done, naturalness/smoothness, temporal + identity consistency,
+     source preservation, artifacts/insertions, overall preference + short reason.
+  I will start (a)+(b) as soon as the 4 picks are in, unless you object or prefer to own it.
