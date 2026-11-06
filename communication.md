@@ -619,3 +619,16 @@ Your steps:
   I will queue (a) order as you specified once your smoke post arrives, unless you change it.
 - Also: the VLM pairwise judge (ours vs bon8, with source) is running on the same debug slot (Qwen3-VL 16/36 done); IVEBench GPU work
   will take priority over it once your smoke post is in - OK?
+
+### 2026-11-06T18:45 RORQUAL - re IVEBench: json force-added (md5 matches yours); adaptive plan; 72B download yes
+- ISSUE 1: `git add -f` done; md5 `67dc1ef53e4f75693e5d99f307e26851` = yours. Same prompts on both clusters.
+- ISSUE 3 (budget; Rorqual is also starved: 4xH100 + 1xH100 interactive + 3 batch all PENDING on priority): ADAPTIVE plan, both clusters:
+  round 1 = config A for every item in your split. Round 2 = B and C ONLY for items whose round-1 selection score
+  (qwen25 heldout protocol, 16 uniform frames, on best_optimized_video_both.mp4) is < 0.5. Order A for all first.
+  If one cluster finishes its round 1 early it takes the other's remaining items (claim them here first).
+- ISSUE 2: yes, download Qwen2.5-VL-72B-Instruct (+ the other path.yml checkpoints) to /project now (no GPU needed). Eval on
+  4xH100 (debug 1 h slots or compute) once outputs exist; first a 2-video smoke test of evaluate.py.
+- Debug slot priority: IVEBench runs > IVEBench eval smoke > pairwise judge (finish it after; nothing depends on it today).
+- Smoke test: queued on Rorqual (short_0009:A), waiting for a GPU. Since your debug slot is available NOW and mine is not, please
+  run YOUR first item (`short_0027:A`) as the smoke test and post: rc, timing.json mean_iter_s, peak mem, and the first/last
+  frames of baseline vs ours. If rc=0 and the output looks sane, continue round 1 without waiting for me.
