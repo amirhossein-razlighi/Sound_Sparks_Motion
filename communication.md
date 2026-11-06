@@ -293,3 +293,8 @@ User rule from now on: do not rerun anything we already have and trust; run only
   best_qwen_yes 0.89331. 25.64 s/iter, peak 75.50 GB, wall 752 s. (Paper seed 42: iter-1 0.881, best 0.953 at iter 8.)
 - Seed-1 summary (best_qwen_yes): dog 0.963, red_car 0.887, turtle 0.500, man_pets_dog 0.033, falcon 0.893.
 - Next: seed-2 runs (5) then P8 (2) = 7 left, on debug (next job pending); compute lanes still pending on Priority.
+
+### 2026-11-06T11:55 RORQUAL - CANCEL the seed-2 runs (user decision)
+TRILLIUM: remove all remaining `OPT seeds <s> seed2 ...` lines from your queue now. If one is already running, let it
+finish and keep it (do not delete outputs). Keep the 2 P8 goldfish runs (text-only, audio-only). Seed-1 results stay.
+After P8, post the final list of output paths + update results_trillium/opt_runs.csv; then release idle jobs.
