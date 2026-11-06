@@ -36,11 +36,11 @@ NOTE: the repo is **public**. Write numbers and status only: no venue or submiss
 | P2 | held-out VLM scoring (Qwen2.5 / Qwen3-VL-8B / InternVL3-8B) | RORQUAL | comparisons, controls, BoN, transfer, P3/P4 outputs | queued | rorqual:.../heldout |
 | P3 | backprop window K in {2,4,12}, 5 scen | RORQUAL | 15 x `OPT bp_window ... K{2,4,12}` | queued | rorqual:.../bp_window |
 | P3-ref | K=8 rerun on current code, 5 scen | **TRILLIUM** | 5 x `OPT bp_window ... K8_rerun` | DROPPED (user: reuse paper K=8 runs) | trillium:$SSM_OUT_ROOT/bp_window |
-| P4 | seeds {1,2}, 5 scen | **TRILLIUM** | 10 x `OPT seeds ...` | seed-2 CANCELLED (user); done: seed1 x5, seed2 dog + red_car; turtle seed2 finishing | trillium:$SSM_OUT_ROOT/seeds |
+| P4 | seeds {1,2}, 5 scen | **TRILLIUM** | 10 x `OPT seeds ...` | seed-2 CANCELLED (user); done: seed1 x5, seed2 dog + red_car; turtle seed2 = 8 runs, DONE | trillium:$SSM_OUT_ROOT/seeds |
 | P5 | transfer, 5 latents x 6-7 targets | RORQUAL | 33 x `XFER` | queued | rorqual:.../transfer |
 | P6 | (dropped by user) | - | - | - | - |
 | P7 | VBench + RAFT flow + warp error | RORQUAL | after P1 | not started | rorqual:.../p7 |
-| P8 | goldfish text-only / audio-only | **TRILLIUM** | 2 x `OPT p8_goldfish ...` | queued (next) | trillium:$SSM_OUT_ROOT/p8_goldfish |
+| P8 | goldfish text-only / audio-only | **TRILLIUM** | 2 x `OPT p8_goldfish ...` | running (text_only) | trillium:$SSM_OUT_ROOT/p8_goldfish |
 | P9 | IVEBench motion subset | unassigned | only if time | - | - |
 | P2-mac | extra held-out critic Gemma-3-12B-it (4-bit MLX) on the 180 comparison + control videos | **MAC** (user's laptop) | `editing/iclr_rebuttal/score_mlx.py` on `mac_bundle.tar.gz` | assigned | branch `results_mac/` |
 
@@ -318,3 +318,7 @@ After P8, post the final list of output paths + update results_trillium/opt_runs
 - Queue now = P8 text_only, P8 audio_only only. Cancelled 4 of my 6 pending compute lanes (1249207-10); kept 2 (1249205/6)
   as backup in case one starts before debug frees up; they exit at once on an empty queue.
 - After P8: final output-path list + opt_runs.csv, release idle jobs, then P2-T (held-out scoring) unless you say otherwise.
+
+### 2026-11-06T12:15 TRILLIUM - P4 done (8 runs); P8 text_only running
+- `OPT seeds turtle_neck seed2` rc=0 (H100, debug): 30 iters, best iter 21, best_total 5.38000, best_qwen_yes 0.00461, 26.10 s/iter, peak 73.37 GB, wall 1095 s.
+- P4 final = 8 runs (seed1 x5; seed2: dog_yawning, red_car_door_opens, turtle_neck). P8 goldfish text_only started 12:12 (debug), audio_only next.
