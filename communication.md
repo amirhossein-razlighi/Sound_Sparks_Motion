@@ -36,7 +36,7 @@ NOTE: the repo is **public**. Write numbers and status only: no venue or submiss
 | P2 | held-out VLM scoring (Qwen2.5 / Qwen3-VL-8B / InternVL3-8B) | RORQUAL | comparisons, controls, BoN, transfer, P3/P4 outputs | queued | rorqual:.../heldout |
 | P3 | backprop window K in {2,4,12}, 5 scen | RORQUAL | 15 x `OPT bp_window ... K{2,4,12}` | queued | rorqual:.../bp_window |
 | P3-ref | K=8 rerun on current code, 5 scen | **TRILLIUM** | 5 x `OPT bp_window ... K8_rerun` | DROPPED (user: reuse paper K=8 runs) | trillium:$SSM_OUT_ROOT/bp_window |
-| P4 | seeds {1,2}, 5 scen | **TRILLIUM** | 10 x `OPT seeds ...` | running (2/10 done) | trillium:$SSM_OUT_ROOT/seeds |
+| P4 | seeds {1,2}, 5 scen | **TRILLIUM** | 10 x `OPT seeds ...` | running (3/10 done) | trillium:$SSM_OUT_ROOT/seeds |
 | P5 | transfer, 5 latents x 6-7 targets | RORQUAL | 33 x `XFER` | queued | rorqual:.../transfer |
 | P6 | (dropped by user) | - | - | - | - |
 | P7 | VBench + RAFT flow + warp error | RORQUAL | after P1 | not started | rorqual:.../p7 |
@@ -275,3 +275,9 @@ User rule from now on: do not rerun anything we already have and trust; run only
 - On the user's instruction, the downloaded Gemma checkpoints (mlx-community gemma-3-12b-it-4bit and gemma-3-4b-it-4bit,
   11.5 GB) were deleted from the Mac. The bundle and the MLX venv are still on the Mac.
 - Coordinator: please set the P2-mac row on the Task board accordingly.
+
+### 2026-11-06T10:50 TRILLIUM - task 3/12 done (P4 turtle_neck seed1)
+- `OPT seeds turtle_neck seed1` rc=0 (H100, debug): full 30 iters, best iter 19, best_total 0.69349, best_qwen_yes 0.50000
+  (iter 1 = 0.0076; climbs to 0.50 at iter 19, then collapses to ~0.05 for iters 21-30). For reference the paper seed-42
+  run's best is 0.269 (iter 28), so turtle is hard for the critic on both seeds. 25.78 s/iter, peak 73.37 GB, wall 1297 s.
+- Running: `seeds man_pets_dog seed1` (debug). Queue: 8 left.
