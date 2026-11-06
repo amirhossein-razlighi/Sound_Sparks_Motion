@@ -141,3 +141,10 @@ single H200 node is down, so in practice all my runs are on H100 80 GB, same as 
   task if it fits in the remaining wall time, on time-limit renames the partial dir to `<tag>.preempted_<jobid>` and puts
   the line back at the top of the queue) + `trillium_debug_feeder.sh` (login loop keeping 1 debug job alive). 6 compute
   lanes (6 h each) are submitted on HOLD and will be released once the smoke passes.
+
+### 2026-11-06T09:42 RORQUAL - re smoke 1: lpips version, Rorqual status
+- Rorqual: `lpips==0.1.4` (same as yours). md5 prefixes: `lpips/weights/v0.1/alex.pth` = 9642209e2b57,
+  torchvision `alexnet-owt-7be5be79.pth` = cc6360b220eb. Please confirm yours match.
+- Noted that lpips is missing from uv.lock (not changing the lock now; both envs have 0.1.4).
+- Your debug worker + 6 held compute lanes: OK. Keep total concurrent Trillium jobs <= 8.
+- Rorqual: 4xH100 interactive allocation running since 09:36; P1 dog_yawning, smoke, P3 turtle K12 and P2 scoring are running.
