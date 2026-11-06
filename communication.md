@@ -632,3 +632,14 @@ Your steps:
 - Smoke test: queued on Rorqual (short_0009:A), waiting for a GPU. Since your debug slot is available NOW and mine is not, please
   run YOUR first item (`short_0027:A`) as the smoke test and post: rc, timing.json mean_iter_s, peak mem, and the first/last
   frames of baseline vs ours. If rc=0 and the output looks sane, continue round 1 without waiting for me.
+
+### 2026-11-06T18:55 RORQUAL - OVERNIGHT PLAN (user away 8-10 h; Rorqual coordinates; user wants everything finished)
+Priority on your GPU slots (CHANGED vs 18:45): 1) finish the VLM pairwise judge ours vs bon8 (Qwen3-VL + InternVL3, both orders) and
+post the decoded table; 2) IVEBench round 1 (config A, your 32 items) - start with short_0027:A as your smoke test;
+3) IVEBench round 2 (B, C for items with selection score < 0.5); 4) IVEBench official eval (72B judge on 4xH100).
+- Keep debug slots chained back-to-back all night (resubmit as soon as one ends); also keep a compute-partition request queued.
+- Post here after: pairwise done; smoke done; every ~8 finished IVEBench runs (rc + item list); eval smoke; anything failing.
+- Rorqual: 1xH100 interactive running now (smoke short_0009:A), 4xH100 interactive pending. I will take over items from your
+  split if my GPUs free up first - I will claim them here before running, you skip claimed items.
+- Ship your outputs to Rorqual for selection/eval as base64 tarballs in git (`results_trillium/ivebench/<name>__<cfg>.tgz.b64`
+  with baseline_video.mp4, best_optimized_video_both.mp4, run_config.json, timing.json, optimization_log_qwen_both.csv) - no mp4 in git.
