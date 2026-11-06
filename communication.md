@@ -40,7 +40,7 @@ NOTE: the repo is **public**. Write numbers and status only: no venue or submiss
 | P5 | transfer, 5 latents x 6-7 targets | RORQUAL | 33 x `XFER` | queued | rorqual:.../transfer |
 | P6 | (dropped by user) | - | - | - | - |
 | P7 | VBench + RAFT flow + warp error | RORQUAL | after P1 | not started | rorqual:.../p7 |
-| P8 | goldfish text-only / audio-only | **TRILLIUM** | 2 x `OPT p8_goldfish ...` | noxformers pair done; xformers rerun running | trillium:$SSM_OUT_ROOT/p8_goldfish |
+| P8 | goldfish text-only / audio-only | **TRILLIUM** | 2 x `OPT p8_goldfish ...` | DONE (xformers): text_only + audio_only | trillium:$SSM_OUT_ROOT/p8_goldfish |
 | P9 | IVEBench motion subset | unassigned | only if time | - | - |
 | P2-mac | extra held-out critic Gemma-3-12B-it (4-bit MLX) on the 180 comparison + control videos | **MAC** (user's laptop) | `editing/iclr_rebuttal/score_mlx.py` on `mac_bundle.tar.gz` | assigned | branch `results_mac/` |
 
@@ -384,3 +384,21 @@ the paper's own videos (ours/Retake/baselines) are April renders and unaffected.
   Output `trillium:/scratch/amirrz/iclr_rebuttal/out/p8_goldfish/goldfish_jumping/text_only` (row xformers=1).
 - Goldfish seed-42 baseline vs paper now MAD 2.117/255 = 0.0083 (was 5.357/255 without xformers).
 - audio_only (xformers) started 13:22 on the same debug job (~32 min). Then final path list + P2-T.
+
+### 2026-11-06T13:55 TRILLIUM - P8 DONE with xformers; final output list; P2-T scoring submitted
+- `OPT p8_goldfish goldfish_jumping audio_only opt_mode=audio` WITH xformers, rc=0 (H100, debug): full 30 iters, best iter 27,
+  best_total 0.59374, best_qwen_yes 0.56218, 39.37 s/iter, peak 72.31 GB, wall 1584 s.
+- P8 summary (xformers, best_qwen_yes): text_only 0.01099 (iter 12) vs audio_only 0.56218 (iter 27);
+  paper `both` run 0.0293. (noxformers pair, superseded: text 0.00971 / audio 0.56218.)
+- Final Trillium outputs (all on `trillium:/scratch/amirrz/iclr_rebuttal/out/`; rows in results_trillium/opt_runs.csv):
+  - VALID (xformers=1): `p8_goldfish/goldfish_jumping/text_only`, `p8_goldfish/goldfish_jumping/audio_only`,
+    plus the repro check `_smoke/dog_yawning/K4_it2_xf` (baseline MAD 0.0119).
+  - SUPERSEDED (xformers=0, kept): `seeds/{dog_yawning,red_car_door_opens,turtle_neck,man_pets_dog,falcon_bird_opening_wings}/seed1.noxformers`,
+    `seeds/{dog_yawning,red_car_door_opens,turtle_neck}/seed2.noxformers`, `p8_goldfish/goldfish_jumping/{text_only,audio_only}.noxformers`,
+    `_smoke/dog_yawning/K4_it2{,.failed_nolpips}.noxformers`.
+  Videos: `<dir>/mode_<m>/best_optimized_video_<m>.mp4` and `<dir>/baseline_video.mp4` (for the user's rsync).
+- No idle jobs left on Trillium (feeder exited, compute lanes cancelled).
+- P2-T: manifest `trillium:/scratch/amirrz/iclr_rebuttal/p2t/manifest_trillium.csv` = 24 rows: the 2 xformers P8 runs (group
+  `p8_goldfish`) + the 10 noxformers runs (groups `seeds_noxformers`, `p8_goldfish_noxformers`, cheap, ignore if not wanted),
+  each with its baseline. Job 1251419 (debug, new `trillium_p2t.sbatch`): loop_rescore + heldout_score qwen25,qwen3vl,internvl3.
+- I will have free capacity after P2-T (~1 h): ready for more work (debug partition gives an H100 within seconds, 1 h jobs).
