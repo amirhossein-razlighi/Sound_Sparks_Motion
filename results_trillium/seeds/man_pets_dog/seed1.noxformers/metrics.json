@@ -1,0 +1,30 @@
+{
+  "baseline_video": "/scratch/amirrz/iclr_rebuttal/out/seeds/man_pets_dog/seed1/baseline_video.mp4",
+  "edit_prompt": "The man pets the dog.",
+  "errors": {},
+  "metrics": {
+    "clip_edit_alignment_gain": 0.007356060354897109,
+    "clip_edit_baseline": 0.2705374098895641,
+    "clip_edit_minus_static_baseline": -0.025398633788140945,
+    "clip_edit_minus_static_optimized": -0.018042573433243836,
+    "clip_edit_optimized": 0.2770623427428556,
+    "final_qwen_yes_prob_critic": 0.03308598859635223,
+    "motion_proxy_framediff_baseline": 0.002085278509184718,
+    "motion_proxy_framediff_delta": 0.0003268651198595762,
+    "motion_proxy_framediff_optimized": 0.0024121436290442944,
+    "motion_strength_baseline": 0.0702906921505928,
+    "motion_strength_delta": 0.0067603811621665955,
+    "motion_strength_optimized": 0.0770510733127594,
+    "motion_strength_ratio": 1.0961774732233815,
+    "source_preservation_lpips": 0.020643433555960655,
+    "source_preservation_lpips_static_prefix": 0.016452010720968246,
+    "temporal_flicker_baseline": 0.002373054390773177,
+    "temporal_flicker_optimized": 0.0023344955407083035
+  },
+  "mode": "both",
+  "n_frames_baseline": 89,
+  "n_frames_optimized": 89,
+  "optimized_video": "/scratch/amirrz/iclr_rebuttal/out/seeds/man_pets_dog/seed1/mode_both/best_optimized_video_both.mp4",
+  "output_dir": "/scratch/amirrz/iclr_rebuttal/out/seeds/man_pets_dog/seed1",
+  "static_prompt": "A man cooking in a kitchen."
+}

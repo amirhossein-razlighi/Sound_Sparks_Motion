@@ -1,0 +1,30 @@
+{
+  "baseline_video": "/scratch/amirrz/iclr_rebuttal/out/seeds/falcon_bird_opening_wings/seed1/baseline_video.mp4",
+  "edit_prompt": "A bird openning its wings.",
+  "errors": {},
+  "metrics": {
+    "clip_edit_alignment_gain": 0.0016542241144716363,
+    "clip_edit_baseline": 0.26061570443464127,
+    "clip_edit_minus_static_baseline": -0.022847823882370888,
+    "clip_edit_minus_static_optimized": -0.02119359976789925,
+    "clip_edit_optimized": 0.25850903150740634,
+    "final_qwen_yes_prob_critic": 0.8933094122075369,
+    "motion_proxy_framediff_baseline": 0.016947265714406967,
+    "motion_proxy_framediff_delta": 0.0020119845867156982,
+    "motion_proxy_framediff_optimized": 0.018959250301122665,
+    "motion_strength_baseline": 0.8932826519012451,
+    "motion_strength_delta": -0.27539271116256714,
+    "motion_strength_optimized": 0.617889940738678,
+    "motion_strength_ratio": 0.6917070866915116,
+    "source_preservation_lpips": 0.1005430668592453,
+    "source_preservation_lpips_static_prefix": 0.006931462325155735,
+    "temporal_flicker_baseline": 0.039681028574705124,
+    "temporal_flicker_optimized": 0.05426783114671707
+  },
+  "mode": "both",
+  "n_frames_baseline": 89,
+  "n_frames_optimized": 89,
+  "optimized_video": "/scratch/amirrz/iclr_rebuttal/out/seeds/falcon_bird_opening_wings/seed1/mode_both/best_optimized_video_both.mp4",
+  "output_dir": "/scratch/amirrz/iclr_rebuttal/out/seeds/falcon_bird_opening_wings/seed1",
+  "static_prompt": "A bird sitting on a branch of tree."
+}

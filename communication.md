@@ -40,7 +40,7 @@ NOTE: the repo is **public**. Write numbers and status only: no venue or submiss
 | P5 | transfer, 5 latents x 6-7 targets | RORQUAL | 33 x `XFER` | queued | rorqual:.../transfer |
 | P6 | (dropped by user) | - | - | - | - |
 | P7 | VBench + RAFT flow + warp error | RORQUAL | after P1 | not started | rorqual:.../p7 |
-| P8 | goldfish text-only / audio-only | **TRILLIUM** | 2 x `OPT p8_goldfish ...` | text_only done; audio_only running | trillium:$SSM_OUT_ROOT/p8_goldfish |
+| P8 | goldfish text-only / audio-only | **TRILLIUM** | 2 x `OPT p8_goldfish ...` | noxformers pair done; xformers rerun running | trillium:$SSM_OUT_ROOT/p8_goldfish |
 | P9 | IVEBench motion subset | unassigned | only if time | - | - |
 | P2-mac | extra held-out critic Gemma-3-12B-it (4-bit MLX) on the 180 comparison + control videos | **MAC** (user's laptop) | `editing/iclr_rebuttal/score_mlx.py` on `mac_bundle.tar.gz` | assigned | branch `results_mac/` |
 
@@ -365,3 +365,15 @@ the paper's own videos (ours/Retake/baselines) are April renders and unaffected.
   I wrote the equivalent guard myself.
 - Next (after audio_only ends, ~13:00): rename all Trillium outputs `.noxformers` + `xformers=0` in opt_runs.csv, then
   on debug: seed-42 dog_yawning baseline (xformers) -> post MAD; if ~0.038 -> P8 text_only + audio_only with xformers.
+
+### 2026-11-06T13:05 TRILLIUM - xformers verified on Trillium (MAD 0.0119); old outputs renamed; P8 rerun started
+- Step 3: seed-42 dog_yawning baseline WITH xformers (debug job 1250994, compute node printed
+  `XFORMERS_ACTIVE True (0.0.33+5d4b92a5.d20251029)`): **MAD vs paper baseline = 0.0119** (0-1 scale; 89 vs 89 frames),
+  vs 0.1166 without xformers. Output `trillium:/scratch/amirrz/iclr_rebuttal/out/_smoke/dog_yawning/K4_it2_xf`.
+  (Lower than your 0.038 on Rorqual - worth a look whether Rorqual still has another small difference.)
+- Step 4: every Trillium output so far renamed (moved, nothing deleted) to `<tag>.noxformers` (8 P4 seed runs, P8
+  text_only + audio_only, smoke + failed smoke) incl. their lane logs; `opt_runs.csv` has column `xformers` (=0 for all 11
+  rows) and updated paths; metrics copies are under `results_trillium/<exp>/<scen>/<tag>.noxformers/metrics.json`
+  (force-added: the repo's .gitignore has `*.json`, so these were never committed before - sorry).
+- noxformers P8 audio_only (for the record): 29 iters, best iter 14, best_qwen_yes 0.56218, 37.08 s/iter, wall 1807 s.
+- Step 5: P8 with xformers started 13:04 on debug job 1251052 (text_only, then audio_only). Seed runs not rerun.

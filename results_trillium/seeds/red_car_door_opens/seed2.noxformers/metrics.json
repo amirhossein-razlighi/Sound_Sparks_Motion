@@ -1,0 +1,30 @@
+{
+  "baseline_video": "/scratch/amirrz/iclr_rebuttal/out/seeds/red_car_door_opens/seed2/baseline_video.mp4",
+  "edit_prompt": "A red car door opens.",
+  "errors": {},
+  "metrics": {
+    "clip_edit_alignment_gain": -0.0015785242064615401,
+    "clip_edit_baseline": 0.2684839250666372,
+    "clip_edit_minus_static_baseline": -0.010396949695737179,
+    "clip_edit_minus_static_optimized": -0.011975473902198719,
+    "clip_edit_optimized": 0.27160050025147,
+    "final_qwen_yes_prob_critic": 0.5062439248360034,
+    "motion_proxy_framediff_baseline": 0.017610549926757812,
+    "motion_proxy_framediff_delta": -0.0005152691155672073,
+    "motion_proxy_framediff_optimized": 0.017095280811190605,
+    "motion_strength_baseline": 0.6018505692481995,
+    "motion_strength_delta": 0.09446913003921509,
+    "motion_strength_optimized": 0.6963196992874146,
+    "motion_strength_ratio": 1.156964427494388,
+    "source_preservation_lpips": 0.09805136173963547,
+    "source_preservation_lpips_static_prefix": 0.012111259624361992,
+    "temporal_flicker_baseline": 0.018890827894210815,
+    "temporal_flicker_optimized": 0.019157903268933296
+  },
+  "mode": "both",
+  "n_frames_baseline": 89,
+  "n_frames_optimized": 89,
+  "optimized_video": "/scratch/amirrz/iclr_rebuttal/out/seeds/red_car_door_opens/seed2/mode_both/best_optimized_video_both.mp4",
+  "output_dir": "/scratch/amirrz/iclr_rebuttal/out/seeds/red_car_door_opens/seed2",
+  "static_prompt": "A red car in the middle of a garage."
+}

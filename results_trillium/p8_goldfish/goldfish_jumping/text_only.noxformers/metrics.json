@@ -1,0 +1,30 @@
+{
+  "baseline_video": "/scratch/amirrz/iclr_rebuttal/out/p8_goldfish/goldfish_jumping/text_only/baseline_video.mp4",
+  "edit_prompt": "A goldfish jumps out of the fish tank into the air.",
+  "errors": {},
+  "metrics": {
+    "clip_edit_alignment_gain": -0.002827339627769543,
+    "clip_edit_baseline": 0.33993254987041605,
+    "clip_edit_minus_static_baseline": -0.005027061432934854,
+    "clip_edit_minus_static_optimized": -0.007854401060704397,
+    "clip_edit_optimized": 0.33476653661620753,
+    "final_qwen_yes_prob_critic": 0.009708488648677027,
+    "motion_proxy_framediff_baseline": 0.014422268606722355,
+    "motion_proxy_framediff_delta": -0.0014462005347013474,
+    "motion_proxy_framediff_optimized": 0.012976068072021008,
+    "motion_strength_baseline": 0.37260597944259644,
+    "motion_strength_delta": -0.029431581497192383,
+    "motion_strength_optimized": 0.34317439794540405,
+    "motion_strength_ratio": 0.9210115158612837,
+    "source_preservation_lpips": 0.09008532017469406,
+    "source_preservation_lpips_static_prefix": 0.02228839509189129,
+    "temporal_flicker_baseline": 0.033277109265327454,
+    "temporal_flicker_optimized": 0.028111271560192108
+  },
+  "mode": "text",
+  "n_frames_baseline": 89,
+  "n_frames_optimized": 89,
+  "optimized_video": "/scratch/amirrz/iclr_rebuttal/out/p8_goldfish/goldfish_jumping/text_only/mode_text/best_optimized_video_text.mp4",
+  "output_dir": "/scratch/amirrz/iclr_rebuttal/out/p8_goldfish/goldfish_jumping/text_only",
+  "static_prompt": "three goldfish swimming in a fish tank."
+}

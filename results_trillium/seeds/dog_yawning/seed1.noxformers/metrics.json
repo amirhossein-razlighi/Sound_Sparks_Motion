@@ -1,0 +1,30 @@
+{
+  "baseline_video": "/scratch/amirrz/iclr_rebuttal/out/seeds/dog_yawning/seed1/baseline_video.mp4",
+  "edit_prompt": "A dog yawning",
+  "errors": {},
+  "metrics": {
+    "clip_edit_alignment_gain": 0.004492039760846778,
+    "clip_edit_baseline": 0.28812946797756667,
+    "clip_edit_minus_static_baseline": -0.033916916405217046,
+    "clip_edit_minus_static_optimized": -0.029424876644370268,
+    "clip_edit_optimized": 0.2938168025418614,
+    "final_qwen_yes_prob_critic": 0.9626730694627891,
+    "motion_proxy_framediff_baseline": 0.017036760225892067,
+    "motion_proxy_framediff_delta": 0.0006024520844221115,
+    "motion_proxy_framediff_optimized": 0.01763921231031418,
+    "motion_strength_baseline": 0.52305006980896,
+    "motion_strength_delta": 0.01660788059234619,
+    "motion_strength_optimized": 0.5396579504013062,
+    "motion_strength_ratio": 1.0317519900119927,
+    "source_preservation_lpips": 0.018758751451969147,
+    "source_preservation_lpips_static_prefix": 0.011024227365851402,
+    "temporal_flicker_baseline": 0.013997301459312439,
+    "temporal_flicker_optimized": 0.014205141924321651
+  },
+  "mode": "both",
+  "n_frames_baseline": 89,
+  "n_frames_optimized": 89,
+  "optimized_video": "/scratch/amirrz/iclr_rebuttal/out/seeds/dog_yawning/seed1/mode_both/best_optimized_video_both.mp4",
+  "output_dir": "/scratch/amirrz/iclr_rebuttal/out/seeds/dog_yawning/seed1",
+  "static_prompt": "A dog sitting on a chair"
+}

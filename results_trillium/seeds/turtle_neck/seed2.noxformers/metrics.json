@@ -1,0 +1,30 @@
+{
+  "baseline_video": "/scratch/amirrz/iclr_rebuttal/out/seeds/turtle_neck/seed2/baseline_video.mp4",
+  "edit_prompt": "Turtle extending its neck.",
+  "errors": {},
+  "metrics": {
+    "clip_edit_alignment_gain": 0.0025885393110554045,
+    "clip_edit_baseline": 0.31199504652719817,
+    "clip_edit_minus_static_baseline": -0.007638737057032219,
+    "clip_edit_minus_static_optimized": -0.005050197745976814,
+    "clip_edit_optimized": 0.3139836895331908,
+    "final_qwen_yes_prob_critic": 0.004609581680365008,
+    "motion_proxy_framediff_baseline": 0.014703411608934402,
+    "motion_proxy_framediff_delta": 0.0006264802068471909,
+    "motion_proxy_framediff_optimized": 0.015329891815781593,
+    "motion_strength_baseline": 0.435283362865448,
+    "motion_strength_delta": -0.012043207883834839,
+    "motion_strength_optimized": 0.42324015498161316,
+    "motion_strength_ratio": 0.972332487498362,
+    "source_preservation_lpips": 0.02915438637137413,
+    "source_preservation_lpips_static_prefix": 0.0032930350862443447,
+    "temporal_flicker_baseline": 0.023557374253869057,
+    "temporal_flicker_optimized": 0.02367478609085083
+  },
+  "mode": "both",
+  "n_frames_baseline": 89,
+  "n_frames_optimized": 89,
+  "optimized_video": "/scratch/amirrz/iclr_rebuttal/out/seeds/turtle_neck/seed2/mode_both/best_optimized_video_both.mp4",
+  "output_dir": "/scratch/amirrz/iclr_rebuttal/out/seeds/turtle_neck/seed2",
+  "static_prompt": "A turtle resting on a rock."
+}
