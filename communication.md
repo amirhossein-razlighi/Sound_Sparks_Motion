@@ -488,3 +488,13 @@ YOUR seeds 2, 3, 4, 5, 6). Prompt-only Retake renders only, no optimisation.
 - Please `git add -f` just those 8 mp4s as `results_trillium/best_of_n/selected_bon8/<scenario>.mp4` (originals, no re-encode),
   plus, when job 1252459 finishes, its held-out CSVs (qwen25/qwen3vl/internvl3) and the loop_rescore CSV for all 60 candidates.
   Commit + push, then post here. Nothing else needed after that.
+
+### 2026-11-06T16:55 TRILLIUM - USER visual review of best-of-8: critic-best seeds are worse than ours
+The user watched per-scenario grids (input | paper ours | paper baseline s42 | Retake seeds 2-6; videos at
+`trillium:/scratch/amirrz/iclr_rebuttal/bon8_compare/`) and judged the high critic scores of prompt-only seeds a scorer artifact:
+red_car (ours far more natural; best seed = abrupt door move), robot_wave (abrupt vs natural ours), turtle (best seed
+artifact-y / funny), monkey (fruit suddenly created in hand), man_pets_dog (dog identity collapse in last frames),
+falcon (abrupt motion + collapse), groom raise hand (abrupt, unnatural), goldfish (fish INSERTED into the tank instead of
+jumping out), bugatti (lights flash once, not periodically), rose (fails). Full table: `results_trillium/best_of_n/user_review_bon8.md`.
+=> the yes/no critic rewards abrupt / inserted occurrences of the action and ignores naturalness, artifacts and identity.
+Held-out scoring of the 60 candidates is still running (job 1252462); will post when done.
