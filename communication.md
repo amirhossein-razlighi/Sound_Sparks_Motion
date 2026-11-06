@@ -449,3 +449,34 @@ YOUR seeds 2, 3, 4, 5, 6). Prompt-only Retake renders only, no optimisation.
    `python heldout_score.py --manifest M --out O --models qwen25,qwen3vl,internvl3`.
 4. Commit numbers only: `results_trillium/best_of_n/<s>/scores.json` (all 12) and `results_trillium/best_of_n/heldout/*.csv`.
    Post a message when the scores.json files are in (step 4 may follow later). Keep all videos on Trillium.
+
+### 2026-11-06T15:40 TRILLIUM - ack best-of-8 (seeds 2-6, 12 scen): started
+- Pulled; xformers guard active (`0.0.33+5d4b92a5.d20251029`); all 12 scenarios resolve in the bundle (src, ours, baseline found).
+- Queue `trillium:/scratch/amirrz/iclr_rebuttal/lane_bon/queue.txt` = 12 x `BON <s> 2,3,4,5,6 <out>/best_of_n` (worker.sh BON path,
+  one process per scenario). Drained by the debug feeder (1 job at a time, 1 h each) + 3 compute lanes (2 h, pending on priority)
+  = <= 4 concurrent. Output root `trillium:/scratch/amirrz/iclr_rebuttal/out/best_of_n/<s>/`.
+- Will post when the 12 scores.json are in, then run the held-out scoring of the 60 candidates.
+
+### 2026-11-06T16:35 TRILLIUM - best-of-8: all 12 scores.json in (60 candidates, seeds 2-6, xformers)
+- All 12 `BON <s> 2,3,4,5,6` rc=0 in ONE debug job (1252177, H100, 15:37-16:26; ~35 s/render after first-load warmup).
+  Committed `results_trillium/best_of_n/<s>/scores.json` (12). Videos: `trillium:/scratch/amirrz/iclr_rebuttal/out/best_of_n/<s>/candidates/seed_0{2..6}.mp4`.
+- In-loop critic yes_prob, seeds 2/3/4/5/6 | max | paper ours / paper baseline (as re-scored by best_of_n.py):
+  | scenario | seeds 2..6 | max | ours | base |
+  |---|---|---|---|---|
+  | bugatti_lights_flash | .004 .016 .002 .005 .005 | .016 | .005 | .009 |
+  | dog_yawning | .967 .971 .940 .818 .990 | .990 | .967 | .798 |
+  | falcon_bird_opening_wings | .924 .940 .971 .905 .967 | .971 | .984 | .971 |
+  | goldfish_jumping | .000 .378 .001 .010 .002 | .378 | .469 | .500 |
+  | groom_raising_hand | .989 .974 .986 .986 .989 | .989 | .990 | .980 |
+  | man_climbs_rocks | .096 .725 .158 .358 .037 | .725 | .092 | .030 |
+  | man_pets_dog | .005 .005 .016 .016 .977 | .977 | .905 | .060 |
+  | monkey_reaching_fruit | .000 .005 .622 .018 .378 | .622 | .005 | .202 |
+  | red_car_door_opens | .403 .199 .649 .130 .687 | .687 | .024 | .002 |
+  | red_rose_blooming | .018 .010 .011 .007 .010 | .018 | .026 | .011 |
+  | robot_waving | .984 .870 .868 .969 .800 | .984 | .090 | .088 |
+  | turtle_neck | .002 .004 .953 .706 .107 | .953 | .378 | .006 |
+  Note: on red_car, robot_waving, monkey, man_climbs and turtle some prompt-only seeds score far above paper ours on this
+  critic; the held-out scores (next) are the real check.
+- Held-out scoring of the 60 candidates: manifest `trillium:/scratch/amirrz/iclr_rebuttal/p2t_bon/manifest_bon8.csv`
+  (id `bon8/<s>/seed_NN`, group best_of_n8), job 1252459 (debug): loop_rescore + heldout_score qwen25,qwen3vl,internvl3.
+- Compute lanes cancelled (not needed). Only the scoring job is on Trillium.
