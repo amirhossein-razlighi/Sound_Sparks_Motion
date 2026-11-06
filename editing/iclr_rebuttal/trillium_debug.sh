@@ -40,7 +40,7 @@ while true; do
   (( LEFT < EST_S )) && { log "only ${LEFT}s left (< EST ${EST_S}s), exiting"; exit 0; }
   CUR=$(flock "$LANE/.lock" bash -c "l=\$(grep -v '^\s*\(#\|$\)' $LANE/queue.txt | head -1); [[ -n \"\$l\" ]] && { grep -vxF \"\$l\" $LANE/queue.txt > $LANE/.q.tmp; mv $LANE/.q.tmp $LANE/queue.txt; echo \"\$l\"; }")
   [[ -z "$CUR" ]] && { log "queue empty"; exit 0; }
-  if [[ $CUR == CMD* ]]; then log "run $CUR"; bash -c "${CUR#CMD }"; CUR=""; continue; fi
+  if [[ $CUR == "CMD touch "*STOP ]]; then log "run $CUR"; bash -c "${CUR#CMD }"; CUR=""; continue; fi  # other CMD tasks go through worker.sh (env sourced)
   PRIV=$LANE/dbg_$SLURM_JOB_ID; mkdir -p "$PRIV"; touch "$PRIV/.lock"
   printf '%s\nCMD touch %s/STOP\n' "$CUR" "$PRIV" > "$PRIV/queue.txt"; rm -f "$PRIV/STOP"
   log "START $CUR (left ${LEFT}s)"

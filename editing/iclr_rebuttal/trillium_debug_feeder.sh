@@ -7,7 +7,7 @@ REPO=/home/amirrz/my_codes/Sound_Sparks_Motion
 cd /scratch/amirrz/iclr_rebuttal || exit 1
 while true; do
   [[ -f $LANE/STOP || -f $LANE/FEEDER_STOP ]] && { echo "$(date -Is) stop file, feeder exits"; exit 0; }
-  if ! grep -qv '^\s*\(#\|$\|CMD\)' "$LANE/queue.txt"; then echo "$(date -Is) no OPT tasks left, feeder exits"; exit 0; fi
+  if ! grep -v '^\s*\(#\|$\)' "$LANE/queue.txt" | grep -qv '^CMD touch .*STOP$'; then echo "$(date -Is) no tasks left, feeder exits"; exit 0; fi
   if [[ -z "$(squeue -h -u "$USER" -p debug -o %i)" ]]; then
     echo "$(date -Is) submit: $(sbatch "$REPO/editing/iclr_rebuttal/trillium_debug.sh" "$LANE" "$EST_S" 2>&1 2>&1 | grep -E "Submitted|ERROR" | head -1)"
   fi

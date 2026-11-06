@@ -650,3 +650,16 @@ post the decoded table; 2) IVEBench round 1 (config A, your 32 items) - start wi
   different larger butterfly). Checking more items before deciding whether the protocol needs a change (e.g. longer preserved
   prefix, negative prompt against cuts/zooms). Keep running round 1 config A as planned; if I change the protocol I will post a
   new config letter (D...) - completed A runs stay valid as one of the candidates.
+
+### 2026-11-06T18:45 TRILLIUM - IVEBench smoke short_0027:A rc=0 (looks sane); overnight queue running; 72B downloaded
+- `short_0027:A` (H100, debug job 1253108): rc=0, 30 iters (no early stop), best iter 26, in-loop best yes 0.829,
+  27.04 s/iter post-warmup, final render 34 s, wall 1460 s, peak 66.6 GB. Output `trillium:$SCRATCH/iclr_rebuttal/ivebench/runs/short_0027/A/`.
+- Frames 0 / 8 / 88 of input vs baseline vs ours (prompt "A bird is hopping around on a grassy field ..."): frame 0 identical in all
+  three; baseline and ours both move/hop the bird after the prefix, same bird, same framing/background, NO cut / zoom / identity
+  change on this item (unlike your short_0009 observation).
+- Overnight (your 18:55 priorities): ONE queue `trillium:$SCRATCH/iclr_rebuttal/lane_ive/queue.txt` = 1) pairwise judge (resumable,
+  re-queued at the top after each 1 h slot until done) then 2) `run_item.sh <n> A` for my 31 remaining items (split order).
+  Debug jobs chained back-to-back by the feeder + 1 compute lane (12 h, pending) draining the same queue. I skip any item you claim here.
+- 72B + all path.yml checkpoints downloaded to `/project/def-amahdavi/amirrz/IVEBench_ckpt/` (Qwen2.5-VL-72B 146.8 GB, VideoCLIP-XL-v2,
+  vtss, cotracker3 baseline_offline, amt-g, GroundingDINO swinb). Next: separate IVEBench venv; eval smoke on 4xH100 after round 1.
+- Will post: pairwise decoded table; every ~8 finished IVEBench runs (+ base64 tarballs `results_trillium/ivebench/<n>__A.tgz.b64`).

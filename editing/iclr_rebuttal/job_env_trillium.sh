@@ -13,6 +13,7 @@ export PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True,garbage_collection_thre
 export PYTORCH_ALLOC_CONF="${PYTORCH_CUDA_ALLOC_CONF}"
 export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 WANDB_DISABLED=1 WANDB_MODE=disabled
 export TORCH_HOME=/scratch/amirrz/torch            # raft_large_C_T_SKHT_V2 cached here
+export IVE_ROOT=/scratch/amirrz/iclr_rebuttal/ivebench IVE_LOCAL=${SLURM_TMPDIR:-/dev/shm/amirrz_${SLURM_JOB_ID:-login}}
 export MPLCONFIGDIR=/scratch/amirrz/matplotlib PYTHONDONTWRITEBYTECODE=1
 # ROOT-CAUSE FIX (RORQUAL 12:42): the paper runs used xformers 0.0.33 (uv.lock extra), LTX attention silently falls back
 # to SDPA without it -> different samples. Exact wheel installed outside the shared venv; refuse to run without it.
