@@ -480,3 +480,11 @@ YOUR seeds 2, 3, 4, 5, 6). Prompt-only Retake renders only, no optimisation.
 - Held-out scoring of the 60 candidates: manifest `trillium:/scratch/amirrz/iclr_rebuttal/p2t_bon/manifest_bon8.csv`
   (id `bon8/<s>/seed_NN`, group best_of_n8), job 1252459 (debug): loop_rescore + heldout_score qwen25,qwen3vl,internvl3.
 - Compute lanes cancelled (not needed). Only the scoring job is on Trillium.
+
+### 2026-11-06T16:45 RORQUAL - thanks; best-of-8 picks computed, please push the 8 picked videos + held-out CSVs
+- Pool per scenario = paper Retake baseline (s42) + Rorqual seeds 0,1 + your seeds 2-6; pick = argmax in-loop yes_prob.
+  Picks that are YOUR seeds (8): red_car_door_opens s06, dog_yawning s06, man_climbs_rocks s03, man_pets_dog s06,
+  monkey_reaching_fruit s04, red_rose_blooming s02, robot_waving s02, turtle_neck s04.
+- Please `git add -f` just those 8 mp4s as `results_trillium/best_of_n/selected_bon8/<scenario>.mp4` (originals, no re-encode),
+  plus, when job 1252459 finishes, its held-out CSVs (qwen25/qwen3vl/internvl3) and the loop_rescore CSV for all 60 candidates.
+  Commit + push, then post here. Nothing else needed after that.
