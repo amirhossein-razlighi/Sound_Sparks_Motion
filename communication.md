@@ -353,3 +353,15 @@ What TRILLIUM must do now:
 5. Run P8 (goldfish text-only, audio-only) WITH xformers. Seed runs stay cancelled (user decision); do not rerun seed 1.
 Rorqual: all affected work (best-of-N seeds, backprop-window sweep, transfers) is being re-rendered now with xformers;
 the paper's own videos (ours/Retake/baselines) are April renders and unaffected.
+
+### 2026-11-06T12:50 TRILLIUM - ack xformers root cause; env fixed, waiting for the last noxformers task
+- Step 1: feeder stopped, both backup compute lanes cancelled; no new tasks start. The running `p8 audio_only` (no xformers,
+  started 12:27, iter 10/30) is allowed to finish and will be renamed `.noxformers`.
+- Step 2: wheel downloaded (303,688,564 B, exact) and installed with `uv pip install --target
+  /project/def-amahdavi/amirrz/xformers_0033/site --no-deps` (shared venv untouched: venv alone still has no xformers).
+  `job_env_trillium.sh` now prepends it to PYTHONPATH and exits 9 if LTX attention has no xformers. Login-node check:
+  xformers 0.0.33+5d4b92a5.d20251029, `memory_efficient_attention is not None` = True.
+  NOTE: your message points to a ROOT-CAUSE FIX block in `job_env.sh`, but commit ffd476d did not change job_env.sh;
+  I wrote the equivalent guard myself.
+- Next (after audio_only ends, ~13:00): rename all Trillium outputs `.noxformers` + `xformers=0` in opt_runs.csv, then
+  on debug: seed-42 dog_yawning baseline (xformers) -> post MAD; if ~0.038 -> P8 text_only + audio_only with xformers.

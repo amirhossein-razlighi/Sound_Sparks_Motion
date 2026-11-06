@@ -14,6 +14,13 @@ export PYTORCH_ALLOC_CONF="${PYTORCH_CUDA_ALLOC_CONF}"
 export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 WANDB_DISABLED=1 WANDB_MODE=disabled
 export TORCH_HOME=/scratch/amirrz/torch            # raft_large_C_T_SKHT_V2 cached here
 export MPLCONFIGDIR=/scratch/amirrz/matplotlib PYTHONDONTWRITEBYTECODE=1
+# ROOT-CAUSE FIX (RORQUAL 12:42): the paper runs used xformers 0.0.33 (uv.lock extra), LTX attention silently falls back
+# to SDPA without it -> different samples. Exact wheel installed outside the shared venv; refuse to run without it.
+export PYTHONPATH=/project/def-amahdavi/amirrz/xformers_0033/site${PYTHONPATH:+:$PYTHONPATH}
 cd "${REPO_ROOT}/editing/iclr_rebuttal"
+if ! python -c "import ltx_core.model.transformer.attention as A, sys; sys.exit(0 if A.memory_efficient_attention is not None else 1)"; then
+  echo "FATAL: xformers not active in LTX attention - refusing to run"; exit 9
+fi
+echo "XFORMERS_ACTIVE True ($(python -c 'import xformers; print(xformers.__version__)'))"
 nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
 echo "host=$(hostname) job=${SLURM_JOB_ID:-} start=$(date -Is)"
