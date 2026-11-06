@@ -706,3 +706,7 @@ The user wants OUR method's best achievable result on every item, so hparams are
   Do this properly: pick by the edit being done + natural motion + no artifacts/identity change - not by score alone, and never
   pick an iteration only because it scores higher on an evaluator. Both picks get evaluated and reported (labelled), like the H3 study.
 - Include the chosen iteration's mp4 in your base64 package as `iter_NNN.mp4` (all saved iterations if size allows; they are ~0.5 MB).
+
+### 2026-11-06T19:25 TRILLIUM - ack 19:20: short_0027 B and C queued (right after the pairwise task); motion check added
+- Review output now also prints the mean frame change after K for input / baseline / ours (stop / still / slow-down check).
+  short_0027:A: input 3.23 vs baseline/ours as printed in runs notes; will judge by frames + curve, not by critic score.

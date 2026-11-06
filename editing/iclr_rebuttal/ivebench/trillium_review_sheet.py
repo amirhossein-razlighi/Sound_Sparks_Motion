@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """TRILLIUM: per-run review sheet for per-item tuning (coordinator 19:05).
 Rows = INPUT / BASELINE (Retake) / OURS; columns = frame 0, K (first free frame), mid, last, and the frame of the largest
-frame-to-frame change in OURS (plus the frame before it). Writes <run_dir>/review.png and prints the spike frame + magnitudes.
+frame-to-frame change in OURS (plus the frame before it); also prints the mean frame change after K for
+input / baseline / ours (motion check for stop / still / slow-down edits). Writes <run_dir>/review.png and prints the spike frame + magnitudes.
   python trillium_review_sheet.py <name> <cfg>
 """
 import json, sys
@@ -36,4 +37,7 @@ for r, (lab, v) in enumerate((("INPUT", inp), ("BASELINE", base), ("OURS", ours)
 S.save(d / "review.png")
 print(json.dumps(dict(name=name, cfg=cfg, K=K, n=n, ours_spike_frame=sp, ours_spike=round(float(co[sp]), 2),
                       ours_median_change=round(float(np.median(co[1:])), 2), base_max_change=round(float(cb[1:].max()), 2),
-                      input_max_change=round(float(ci[1:].max()), 2), review=str(d / "review.png"))))
+                      input_max_change=round(float(ci[1:].max()), 2),
+                      mean_change_after_K=dict(input=round(float(ci[K + 1:].mean()), 3), baseline=round(float(cb[K + 1:].mean()), 3),
+                                               ours=round(float(co[K + 1:].mean()), 3)),
+                      review=str(d / "review.png"))))
