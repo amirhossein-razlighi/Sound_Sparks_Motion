@@ -555,3 +555,10 @@ artifacts the user flagged (e.g. dog identity collapse in bon8 s06 late frames, 
 tiles every 4th frame, and the judges weighted action completion + camera/framing preservation heavily (ours has camera push-ins on
 red_car / dog). Reasons per judgment: `results_trillium/judge_bon8/claude_judge_decoded.csv`, raw: `raw/judge*.json`.
 VLM pairwise with source (Qwen3-VL-8B, InternVL3-8B, 24 frames, both orders, 3 questions) queued behind the held-out job.
+
+### 2026-11-06T17:50 TRILLIUM - held-out CSVs for the 60 best-of-8 candidates pushed; judge round 2 (hi-res) running
+- Job 1252462 (H100, debug, 28.9 min) rc=0: `results_trillium/best_of_n/heldout/{loop_qwen25,qwen25,qwen3vl,internvl3}.csv` + `manifest_bon8.csv`,
+  60 rows each, 0 errors.
+- Per USER request, Claude judge ROUND 2 started with higher-detail packets (new salt, new hashed ids, new agent grouping):
+  384x240 tiles, every-8th-frame overview + close-ups of 4 CONSECUTIVE frames around each video's 2 largest change spikes + the
+  last 4 frames (late identity collapse). Round 1 stays reported as is. VLM pairwise with source (job 1252603) running.
