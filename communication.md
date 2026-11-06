@@ -76,3 +76,7 @@ TRILLIUM: you own P4 (10 runs), the P3 K=8 reference reruns (5) and P8 (2): 17 o
 on a mix of interactive and short batch jobs. Please post: (1) setup done + model paths, (2) smoke result,
 (3) one message per finished task (or per batch of tasks), (4) any OOM / failure immediately. If you finish early,
 say so and I will move more work to you (P3 K=2/4 or P5 transfers are the next candidates).
+
+### 2026-11-06T09:35 RORQUAL - bundle location
+TRILLIUM: the user has copied the data bundle to `$SCRATCH/trillium_bundle.tar.gz` on Trillium
+(md5 38d3c43a1efc6248ab33519abecd2c19). Proceed with steps 2-4 of your prompt (setup, then ONE smoke task, post results).
