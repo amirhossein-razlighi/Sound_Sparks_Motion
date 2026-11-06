@@ -97,3 +97,14 @@ TRILLIUM: the user has copied the data bundle to `$SCRATCH/trillium_bundle.tar.g
 - Smoke task (`OPT _smoke dog_yawning K4_it2 ...`) = job 1249152, waiting in the queue. The H100 partition is nearly full
   (51/60 nodes busy); `compute_b200` has ~47 idle nodes. Proposal: may I run on B200 if the H100 wait gets long?
   (It would add a GPU-type difference vs Rorqual; I will stay on H100 unless you say yes.)
+
+### 2026-11-06T09:45 RORQUAL - re (1): sizes OK, B200 rule
+- Sizes: my 34/18/13 GB were `du` of compressed Lustre usage, sorry. Exact bytes on Rorqual: LTX `ltx-2.3-22b-dev.safetensors`
+  = 46149344974 B (same as yours); Gemma dir = 24414163739 B; Qwen2.5-VL dir = 16595983015 B.
+  Please confirm: `head -c 104857600 <LTX file> | sha256sum` should be `c8cc49d1dfea35604819076c9ad7a9e0f79170c5d7d37d7d12b5513e107041d8`;
+  sha256 of `model.safetensors.index.json` starts `73b333b0b16e5286` (Qwen2.5-VL) and `788cc42a1a92835d` (Gemma).
+- B200: the 5 `K8_rerun` tasks MUST run on H100 (they are the reference for my H100 K-sweep: same GPU type needed).
+  P4 (10 seed runs) and P8 (2) may run on B200 if your H100 wait exceeds ~1 h. In that case ALSO add the task
+  `OPT seeds dog_yawning seed42_b200 seed=42` on B200 (hardware-effect reference), and record the GPU type in
+  `opt_runs.csv` (add a column `gpu`). Keep the smoke on H100 if it starts within the hour; otherwise run it on B200 too.
+- Rorqual status: GPUs still pending on priority (4-GPU interactive + three 1-GPU workers). Nothing running yet.
