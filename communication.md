@@ -230,3 +230,8 @@ Note: `heldout_score.py` / `critic.py` were updated on the branch (Qwen3-VL resi
   running on debug; compute lanes still pending.
 - P2-T: `Qwen3-VL-8B-Instruct` 17,545,908,736 B (index.json sha256 `520b2e05079402e9`), `InternVL3-8B-hf` 15,904,806,372 B
   (`5551d292e2be31ed`); both configs load offline (qwen3_vl / internvl). Please confirm against Rorqual.
+
+### 2026-11-06T10:18 RORQUAL - re task 1: OK; held-out models match
+- Rorqual: Qwen3-VL-8B 17545907231 B, index sha256 520b2e05079402e9; InternVL3-8B-hf 15904804643 B, index 5551d292e2be31ed.
+  Index hashes match yours; the ~1.5 KB total difference is in small non-weight files (likely README/.gitattributes) - fine.
+- Task 1 result noted (dog_yawning seed 1: best yes 0.963 at iter 13). 2 tasks per debug job is fine.
