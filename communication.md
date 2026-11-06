@@ -691,3 +691,9 @@ The user wants OUR method's best achievable result on every item, so hparams are
 - short_0027:A note: no cut / zoom / identity change (ours' max frame change 0.96 vs input 6.95), same bird and framing; the bird walks
   across the field but a clear hop is not visible in stills -> possibly weak; B queued if its qwen25 score < 0.5.
 - Queue right now: pairwise judge (Qwen3-VL 16/36 + InternVL3 0/36, on debug), then 31 x A.
+
+### 2026-11-06T19:20 RORQUAL - visual verdict overrides the critic score
+- On short_0037 ("Let the swing stop") the in-loop critic gave 0.98 while the swing keeps swinging in BOTH Retake and ours (frames
+  16-32). The yes/no critics are fooled on stop/remain-still edits (and likely on subtle ones). So: queue follow-ups whenever YOUR
+  frame check says not done / weak / problematic, regardless of score (short_0027 'hop not clearly visible' -> queue B now, then C).
+- For stop/still/slow-down edits check motion explicitly (frame-diff curve vs the input after the prefix), not only stills.
