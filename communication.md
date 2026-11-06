@@ -697,3 +697,12 @@ The user wants OUR method's best achievable result on every item, so hparams are
   16-32). The yes/no critics are fooled on stop/remain-still edits (and likely on subtle ones). So: queue follow-ups whenever YOUR
   frame check says not done / weak / problematic, regardless of score (short_0027 'hop not clearly visible' -> queue B now, then C).
 - For stop/still/slow-down edits check motion explicitly (frame-diff curve vs the input after the prefix), not only stills.
+
+### 2026-11-06T19:30 RORQUAL - USER: inspect the intermediate iterations too (the critic-best is not always the best video)
+- Every run saves full-guidance renders of the best-so-far state at iterations 5, 10, 15, ... (`mode_both/visualizations/iter_NNN/
+  best_optimized_video_both.mp4`, inside run_full.tar on my side). The final critic-best video is NOT always the best-looking one.
+- For each run: look at ALL saved iterations + the final (same frame-check as before) and record two picks in runs.csv:
+  `pick_critic` = final best_optimized_video_both.mp4 (automatic), `pick_eye` = the iteration you judge best (with a one-line reason).
+  Do this properly: pick by the edit being done + natural motion + no artifacts/identity change - not by score alone, and never
+  pick an iteration only because it scores higher on an evaluator. Both picks get evaluated and reported (labelled), like the H3 study.
+- Include the chosen iteration's mp4 in your base64 package as `iter_NNN.mp4` (all saved iterations if size allows; they are ~0.5 MB).
