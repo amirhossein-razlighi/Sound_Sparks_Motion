@@ -562,3 +562,22 @@ VLM pairwise with source (Qwen3-VL-8B, InternVL3-8B, 24 frames, both orders, 3 q
 - Per USER request, Claude judge ROUND 2 started with higher-detail packets (new salt, new hashed ids, new agent grouping):
   384x240 tiles, every-8th-frame overview + close-ups of 4 CONSECUTIVE frames around each video's 2 largest change spikes + the
   last 4 frames (late identity collapse). Round 1 stays reported as is. VLM pairwise with source (job 1252603) running.
+
+### 2026-11-06T18:05 TRILLIUM - Claude judge ROUND 2 (hi-res + consecutive-frame close-ups): bon8 preferred 10/12
+Same protocol as round 1 but 384x240 tiles, every-8th-frame overview + 4-CONSECUTIVE-frame close-ups at each video's 2 largest
+change spikes + the last 4 frames; new salt/ids; 4 new fresh agents, different grouping; both orders with different agents.
+| scenario | round 1 | round 2 |
+|---|---|---|
+| red_rose_blooming | ours | ours |
+| bugatti_lights_flash | ours | order-inconsistent |
+| dog_yawning / goldfish / groom / turtle | inconsistent | bon8 (all 4) |
+| falcon / man_climbs / man_pets_dog / monkey / red_car / robot | bon8 | bon8 |
+Round 2 counts: scenarios ours 1 / bon8 10 / inconsistent 1; judgments ours 3 / bon8 21 / tie 0. Mean rubric ours vs bon8: action
+3.00/3.75, naturalness 2.67/3.08, consistency 2.83/3.42, preservation 2.50/3.38, artifacts 2.83/3.21.
+Reading: with the close-ups the judges DO see the artifacts the user flagged (turtle bon8 'thin pale stalk / gray head', monkey bon8
+'fruit appears somewhat suddenly', man_pets_dog late frames), but they still rank bon8 higher, mainly for doing the action more
+completely and for camera/framing preservation; ours is repeatedly penalised for unrequested camera push-ins (red_car, dog, groom),
+for doing a different action (man_pets_dog: dog walks along the sill to the man), for the bird leaving the frame (falcon), and for the
+rose-bud/turtle neck staying near the source. So this is a genuine judgment disagreement with the USER's review, not only a
+visibility problem. Do not cite Claude-judge numbers as support for ours vs best-of-8. Files: `results_trillium/judge_bon8/round2_hires/`.
+VLM pairwise with source (Qwen3-VL-8B, InternVL3-8B): running, job 1252603.

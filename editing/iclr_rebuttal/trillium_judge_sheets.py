@@ -50,7 +50,21 @@ def tile(img: np.ndarray, label: str, w: int, h: int, font) -> Image.Image:
     return im
 
 
-def sheets(src, a, b, idx, out: Path, w=256, h=160, per=6):
+def spike_windows(ca, cb, n, k=2, width=4):
+    """v2: for each edited video, its k largest change spikes as `width` CONSECUTIVE frames [t-2, t+1]."""
+    wins = []
+    for c in (ca, cb):
+        for t in np.argsort(c[:n])[::-1]:
+            t = int(t)
+            if any(abs(t - (w0 + 2)) < width for w0 in wins):
+                continue
+            wins.append(max(0, min(t - 2, n - width)))
+            if sum(1 for _ in wins) >= k * (1 if c is ca else 2):
+                break
+    return sorted(wins)
+
+
+def sheets(src, a, b, idx, out: Path, w=256, h=160, per=6, prefix="sheet", start=1):
     font = ImageFont.truetype(FONT, 13)
     rows = [("SOURCE", src), ("A", a), ("B", b)]
     paths = []
@@ -62,7 +76,7 @@ def sheets(src, a, b, idx, out: Path, w=256, h=160, per=6):
             d.text((6, r * h + h // 2 - 8), name, fill=(255, 255, 0), font=ImageFont.truetype(FONT, 16))
             for c, t in enumerate(chunk):
                 S.paste(tile(v[min(t, len(v) - 1)], f"{name} frame {t}", w, h, font), (70 + c * w, r * h))
-        p = out / f"sheet_{si // per + 1}.png"
+        p = out / f"{prefix}_{si // per + start}.png"
         S.save(p)
         paths.append(p.name)
     return paths
@@ -91,6 +105,7 @@ def main():
     ap.add_argument("--out", default="/scratch/amirrz/iclr_rebuttal/judge_blind", help="judge-visible folder (no key)")
     ap.add_argument("--key", default="/scratch/amirrz/iclr_rebuttal/judge_key.json", help="key file, OUTSIDE --out")
     ap.add_argument("--salt", default="trillium-bon8-2026-11-06")
+    ap.add_argument("--v2", action="store_true", help="hi-res: 384x240 tiles, every 8th frame overview + consecutive-frame spike windows")
     a = ap.parse_args()
     import hashlib
     P, O = Path(a.package), Path(a.out)
@@ -108,13 +123,23 @@ def main():
             od = O / hid; od.mkdir(parents=True, exist_ok=True)
             cs, ca, cb = change(src), change(A), change(B)
             n = min(len(src), len(A), len(B))
-            idx = pick_frames(n, ca[:n], cb[:n])
-            files = sheets(src, A, B, idx, od)
+            if a.v2:
+                idx = sorted(set(range(0, n, 8)) | {n - 1})
+                files = sheets(src, A, B, idx, od, w=384, h=240, per=4, prefix="overview")
+                wins = spike_windows(ca, cb, n)
+                if all(w0 + 4 <= n - 4 for w0 in wins):
+                    wins.append(n - 4)  # always show the final 4 frames (late identity collapse / drift)
+                for wi, w0 in enumerate(wins):
+                    files += sheets(src, A, B, list(range(w0, w0 + 4)), od, w=384, h=240, per=4, prefix="closeup", start=wi + 1)
+                idx = {"overview": idx, "closeup_windows": [list(range(w0, w0 + 4)) for w0 in wins]}
+            else:
+                idx = pick_frames(n, ca[:n], cb[:n])
+                files = sheets(src, A, B, idx, od)
             motion_plot(cs[:n], ca[:n], cb[:n], od)
             (od / "prompt.txt").write_text(prompt + "\n")
             key[hid] = {"scenario": d.name, "order": order, "A": a_is, "B": "bon8" if a_is == "ours" else "ours",
                         "bon8_file": bon[0].name, "frames": idx}
-            print(d.name, f"order{order}", hid, len(idx), "frames", len(files), "sheets")
+            print(d.name, f"order{order}", hid, len(files), "sheets", files)
     Path(a.key).write_text(json.dumps(key, indent=1))
     print("key ->", a.key, len(key), "packets")
 
