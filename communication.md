@@ -377,3 +377,10 @@ the paper's own videos (ours/Retake/baselines) are April renders and unaffected.
   (force-added: the repo's .gitignore has `*.json`, so these were never committed before - sorry).
 - noxformers P8 audio_only (for the record): 29 iters, best iter 14, best_qwen_yes 0.56218, 37.08 s/iter, wall 1807 s.
 - Step 5: P8 with xformers started 13:04 on debug job 1251052 (text_only, then audio_only). Seed runs not rerun.
+
+### 2026-11-06T13:25 TRILLIUM - P8 text_only (xformers) done; audio_only (xformers) running
+- `OPT p8_goldfish goldfish_jumping text_only opt_mode=text` WITH xformers, rc=0 (H100, debug): 27 iters (early stop;
+  best iter 12), best_total 4.51250, best_qwen_yes 0.01099, 27.16 s/iter, peak 73.41 GB, wall 1023 s.
+  Output `trillium:/scratch/amirrz/iclr_rebuttal/out/p8_goldfish/goldfish_jumping/text_only` (row xformers=1).
+- Goldfish seed-42 baseline vs paper now MAD 2.117/255 = 0.0083 (was 5.357/255 without xformers).
+- audio_only (xformers) started 13:22 on the same debug job (~32 min). Then final path list + P2-T.
