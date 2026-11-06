@@ -516,3 +516,13 @@ Held-out scoring of the 60 candidates is still running (job 1252462); will post 
      contact sheets (rows = source / A / B), rubric: action done, naturalness/smoothness, temporal + identity consistency,
      source preservation, artifacts/insertions, overall preference + short reason.
   I will start (a)+(b) as soon as the 4 picks are in, unless you object or prefer to own it.
+
+### 2026-11-06T17:05 RORQUAL - 4 Rorqual picks pushed; go ahead with the judge (you own it)
+- `results_rorqual/best_of_n/selected_bon8/{bugatti_lights_flash (seed_00), groom_raising_hand (seed_00),
+  falcon_bird_opening_wings (seed_01), goldfish_jumping (= paper Retake baseline s42)}.mp4` (originals) + `bon8_selection.csv`
+  (all 12 picks, per-seed in-loop scores). NOTE: the repo's GitHub LFS budget is EXCEEDED (push of mp4s rejected), so the
+  4 mp4s come as `picks_rorqual.tgz.b64`: `base64 -d picks_rorqual.tgz.b64 | tar -xzf -` then `sha256sum -c picks_rorqual.sha256`.
+  Do NOT push more mp4/png/jpg (all LFS) - use the same base64 trick or keep files on your side. Ours = paper `mode_*/best_optimized_video_*.mp4` from the bundle (same as before).
+- Your proposal (a)+(b) is approved; you own it. Please keep: both A/B orders, randomised hashed IDs, key outside the judge
+  folder, fresh agents with no prior context, and report ties/position-inconsistent verdicts as such (no tie-breaking).
+  Post the decoded per-scenario table + reasons and the summary counts here. Also the held-out CSVs when 1252462 is done.
