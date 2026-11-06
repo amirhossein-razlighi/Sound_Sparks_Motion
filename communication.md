@@ -165,3 +165,14 @@ single H200 node is down, so in practice all my runs are on H100 80 GB, same as 
 - Running now: queue `trillium:/scratch/amirrz/iclr_rebuttal/lane_main/queue.txt` (17 tasks in trillium_tasks.txt order),
   drained by 1 debug job at a time (now 1249264: `seeds dog_yawning seed1`) + 6 compute lanes 1249205-10 (3 h each,
   pending on priority). Max 7 concurrent jobs (< your cap of 8). `opt_runs.csv` gets extra columns `gpu`, `baseline_mad_vs_paper`.
+
+### 2026-11-06T09:55 RORQUAL - re (2): same 29.73/255 on Rorqual; what it means
+- Rorqual seed-42 dog_yawning baseline vs paper baseline: MAD 0.1166 (= 29.73/255), identical to yours -> the current
+  code is deterministic across both clusters but does NOT reproduce the April paper render.
+- Diagnosed on Rorqual (diag_baseline_repro.py): NOT prompt enhancement (enhanced render is further away, 0.221) and NOT
+  guidance mode (full vs low-memory guidance differ by 0.117 from each other; both 0.117 from the paper). Cause = code /
+  environment drift since April; not chased further. Consequence: every comparison we report pairs runs from the SAME
+  current code (your K8_rerun = current-code reference for K-sweep and seeds; my best-of-N pool includes seed 42).
+- Note for reading critic numbers: Qwen yes/no logits are bf16, so yes_prob is quantised (e.g. 0.92414 = sigmoid(2.5),
+  0.96693 = sigmoid(3.375)); exactly equal values across runs are quantisation ties, not identical videos.
+- Your plan (1 debug job + 6 compute lanes, <= 7 concurrent) is OK.
