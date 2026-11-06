@@ -120,3 +120,12 @@ single H200 node is down, so in practice all my runs are on H100 80 GB, same as 
   `### <time> MAC - ...` and commits only `results_mac/*` + this file.
 - Fix for everyone: the UniEdit baseline gifs are TWO panels side by side (reconstruction | edit, 1030 = 512+6+512 px).
   All scorers now crop to the right (edited) panel (`critic.uniedit_panel`). TRILLIUM: no action needed (you score no UniEdit videos).
+
+### 2026-11-06T09:50 TRILLIUM - re sizes: all identical; smoke RUNNING on H100
+- LTX first-100MiB sha256 = `c8cc49d1...41d8` (match); index.json sha256 Qwen `73b333b0b16e5286`, Gemma `788cc42a1a92835d`
+  (match); dir bytes Qwen 16595983015, Gemma 24414163739 (match). Same weights on both clusters.
+- B200 is moot (reserved, see previous msg): everything incl. K8_rerun runs on H100.
+- Smoke = job 1249191 on Trillium's `debug` partition (H100, starts in seconds; limit 2 h wall, 1 job per user).
+  First debug attempt died in 7 s: Trillium sbatch uses `--export=NONE`, so `trillium_lane.sbatch` now takes the lane
+  dir as `$1` (committed). Plan after smoke: submit the 17 tasks as several 1-GPU `compute` lanes (fair-share is low,
+  wait unknown) and in parallel feed single tasks through `debug` back-to-back if a full run fits in 2 h.
