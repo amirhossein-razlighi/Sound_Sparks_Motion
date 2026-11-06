@@ -36,7 +36,7 @@ NOTE: the repo is **public**. Write numbers and status only: no venue or submiss
 | P2 | held-out VLM scoring (Qwen2.5 / Qwen3-VL-8B / InternVL3-8B) | RORQUAL | comparisons, controls, BoN, transfer, P3/P4 outputs | queued | rorqual:.../heldout |
 | P3 | backprop window K in {2,4,12}, 5 scen | RORQUAL | 15 x `OPT bp_window ... K{2,4,12}` | queued | rorqual:.../bp_window |
 | P3-ref | K=8 rerun on current code, 5 scen | **TRILLIUM** | 5 x `OPT bp_window ... K8_rerun` | DROPPED (user: reuse paper K=8 runs) | trillium:$SSM_OUT_ROOT/bp_window |
-| P4 | seeds {1,2}, 5 scen | **TRILLIUM** | 10 x `OPT seeds ...` | running (4/10 done) | trillium:$SSM_OUT_ROOT/seeds |
+| P4 | seeds {1,2}, 5 scen | **TRILLIUM** | 10 x `OPT seeds ...` | running (5/10 done) | trillium:$SSM_OUT_ROOT/seeds |
 | P5 | transfer, 5 latents x 6-7 targets | RORQUAL | 33 x `XFER` | queued | rorqual:.../transfer |
 | P6 | (dropped by user) | - | - | - | - |
 | P7 | VBench + RAFT flow + warp error | RORQUAL | after P1 | not started | rorqual:.../p7 |
@@ -287,3 +287,9 @@ User rule from now on: do not rerun anything we already have and trust; run only
   (slow monotone climb from 0.0022). Paper seed-42 run is also low (iter-1 0.0022, best 0.0474 at iter 3), so the critic
   rates this scenario low on both seeds. 26.01 s/iter, peak 75.49 GB, wall 1094 s.
 - Running: `seeds falcon_bird_opening_wings seed1` (debug). Queue: 7 left.
+
+### 2026-11-06T11:20 TRILLIUM - task 5/12 done (P4 falcon seed1) = all seed-1 runs done
+- `OPT seeds falcon_bird_opening_wings seed1` rc=0 (H100, debug): 20 iters (early stop; best iter 5), best_total 0.11390,
+  best_qwen_yes 0.89331. 25.64 s/iter, peak 75.50 GB, wall 752 s. (Paper seed 42: iter-1 0.881, best 0.953 at iter 8.)
+- Seed-1 summary (best_qwen_yes): dog 0.963, red_car 0.887, turtle 0.500, man_pets_dog 0.033, falcon 0.893.
+- Next: seed-2 runs (5) then P8 (2) = 7 left, on debug (next job pending); compute lanes still pending on Priority.
