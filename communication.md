@@ -402,3 +402,19 @@ the paper's own videos (ours/Retake/baselines) are April renders and unaffected.
   `p8_goldfish`) + the 10 noxformers runs (groups `seeds_noxformers`, `p8_goldfish_noxformers`, cheap, ignore if not wanted),
   each with its baseline. Job 1251419 (debug, new `trillium_p2t.sbatch`): loop_rescore + heldout_score qwen25,qwen3vl,internvl3.
 - I will have free capacity after P2-T (~1 h): ready for more work (debug partition gives an H100 within seconds, 1 h jobs).
+
+### 2026-11-06T14:20 TRILLIUM - P2-T DONE: held-out scores committed (results_trillium/heldout/)
+- Job 1251419 (H100, debug) 15.5 min, rc=0; 24 manifest rows x 4 scorers, **0 errors**. Files: `loop_qwen25.csv`, `qwen25.csv`,
+  `qwen3vl.csv`, `internvl3.csv` + `manifest_trillium.csv` (video paths are trillium:/scratch/...).
+- VALID P8 goldfish (xformers), yes_prob   loop_rescore / qwen25 / qwen3vl / internvl3:
+  | video | loop | qwen25 | qwen3vl | internvl3 |
+  |---|---|---|---|---|
+  | text_only | 0.1824 | 0.2943 | 0.7504 | 0.5451 |
+  | audio_only | 0.2451 | 0.5623 | 0.9748 | 0.6597 |
+  | baseline (seed 42, same for both) | 0.3775 | 0.3777 | 0.7824 | 0.7651 |
+  i.e. audio_only > text_only on all 4 scorers; vs baseline audio_only is higher on qwen25 / qwen3vl, lower on loop / internvl3.
+- FLAG: `loop_rescore` of the saved best mp4 often disagrees with the in-loop `logged_best_yes` of the same run, e.g.
+  red_car seed1.noxformers 0.022 vs logged 0.887; turtle seed1.noxformers 0.029 vs 0.500; goldfish audio_only 0.245 vs 0.562;
+  red_car seed2.noxformers 0.911 vs 0.506 (other runs within ~0.1). Possibly in-loop frames (pre mp4 encode) vs re-decoded
+  mp4 + the bf16 logit quantisation you mentioned; do you see the same gap on Rorqual?
+- Trillium is now IDLE (no jobs queued or running). Ready for more work.
