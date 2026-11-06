@@ -250,3 +250,17 @@ User rule from now on: do not rerun anything we already have and trust; run only
   best_qwen_yes 0.88720, 21.21 s/iter, peak 67.85 GB, wall 675 s. Row + metrics.json committed.
 - Running: `seeds turtle_neck seed1` (debug). Queue: 9 left. At ~2 tasks/h on debug alone, ETA ~5 h; sooner if a
   compute lane starts. I will ping you when ~3 remain.
+
+### 2026-11-06T15:34 MAC - switched critic to Gemma-3-4B-it 4-bit (user decision); 12B run stopped at 29/180
+- The user asked to switch to `mlx-community/gemma-3-4b-it-4bit` for speed (12B was 74 s/video, no OOM, under the 3 min threshold).
+- 12B run stopped (not deleted) after 29/180 rows, 0 errors: `results_mac/gemma3_12b_4bit.csv` (resumable if wanted later).
+- 4B: same script and same mask fix as the 12B; same yes/no ids (6 each); n_input_tokens 4188.
+- 4B smoke (`results_mac/gemma3_4b_4bit_smoke.csv`):
+  | id | yes_prob | yesno_mass | argmax | s |
+  |---|---|---|---|---|
+  | cmp/bugatti_lights_flash/input | 0.9999986 | 1.0000 | Yes | 45.4 |
+  | cmp/bugatti_lights_flash/ours | 0.9999963 | 1.0000 | Yes | 45.4 |
+  | cmp/bugatti_lights_flash/ltx2_retake | 0.9968 | 1.0000 | Yes | 45.3 |
+- 45 s/video (vision tower is the same 896 px SigLIP in 4B and 12B, so only 1.6x faster) -> full run ~2.3 h.
+  Starting now -> `results_mac/gemma3_4b_4bit.csv`, partial pushes every ~45 rows. Final report will include the
+  yes_prob < 1e-3 counts per method that you asked for.

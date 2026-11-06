@@ -1,0 +1,30 @@
+id,group,scenario,method,edit_prompt,model,yes_prob,yesno_mass,argmax_token,n_input_tokens,error,seconds
+cmp/bugatti_lights_flash/input,comparisons,bugatti_lights_flash,input,The car front lights turn on and off periodically.,mlx-community/gemma-3-12b-it-4bit,1.6722355710099163e-05,0.999977142471393,No,4188,,74.0
+cmp/bugatti_lights_flash/ours,comparisons,bugatti_lights_flash,ours,The car front lights turn on and off periodically.,mlx-community/gemma-3-12b-it-4bit,3.125212344415101e-05,0.9999824915381414,No,4188,,73.9
+cmp/bugatti_lights_flash/ltx2_retake,comparisons,bugatti_lights_flash,ltx2_retake,The car front lights turn on and off periodically.,mlx-community/gemma-3-12b-it-4bit,0.00010905171728810963,0.9999614736821258,No,4188,,74.1
+cmp/bugatti_lights_flash/lora_edit,comparisons,bugatti_lights_flash,lora_edit,The car front lights turn on and off periodically.,mlx-community/gemma-3-12b-it-4bit,1.0132924609868042e-05,0.9999866488095689,No,4188,,74.5
+cmp/bugatti_lights_flash/runway_aleph,comparisons,bugatti_lights_flash,runway_aleph,The car front lights turn on and off periodically.,mlx-community/gemma-3-12b-it-4bit,3.124682998477371e-05,0.9999601971764192,No,4188,,74.0
+cmp/bugatti_lights_flash/kiwi_edit,comparisons,bugatti_lights_flash,kiwi_edit,The car front lights turn on and off periodically.,mlx-community/gemma-3-12b-it-4bit,7.901951237323788e-06,0.9999858437365828,No,4188,,74.0
+cmp/bugatti_lights_flash/uniedit,comparisons,bugatti_lights_flash,uniedit,The car front lights turn on and off periodically.,mlx-community/gemma-3-12b-it-4bit,0.7312211016065423,0.9985878099095065,Yes,4188,,73.8
+cmp/bugatti_lights_flash/vace_wan,comparisons,bugatti_lights_flash,vace_wan,The car front lights turn on and off periodically.,mlx-community/gemma-3-12b-it-4bit,4.547380977071839e-05,0.9999637829101435,No,4188,,73.8
+cmp/bugatti_lights_flash/vace_ltx,comparisons,bugatti_lights_flash,vace_ltx,The car front lights turn on and off periodically.,mlx-community/gemma-3-12b-it-4bit,1.4751578024112068e-05,0.9999510934196013,No,4188,,74.2
+cmp/red_car_door_opens/input,comparisons,red_car_door_opens,input,A red car door opens.,mlx-community/gemma-3-12b-it-4bit,6.477229616790876e-07,0.9999954025059004,No,4184,,73.6
+cmp/red_car_door_opens/ours,comparisons,red_car_door_opens,ours,A red car door opens.,mlx-community/gemma-3-12b-it-4bit,0.9999785570274077,1.0000000970999157,Yes,4184,,74.2
+cmp/red_car_door_opens/ltx2_retake,comparisons,red_car_door_opens,ltx2_retake,A red car door opens.,mlx-community/gemma-3-12b-it-4bit,9.423226624637432e-07,0.9999953394955388,No,4184,,73.6
+cmp/red_car_door_opens/lora_edit,comparisons,red_car_door_opens,lora_edit,A red car door opens.,mlx-community/gemma-3-12b-it-4bit,0.997529322044603,0.9999267400594979,Yes,4184,,73.6
+cmp/red_car_door_opens/runway_aleph,comparisons,red_car_door_opens,runway_aleph,A red car door opens.,mlx-community/gemma-3-12b-it-4bit,0.9984993384717615,0.9999275981421957,Yes,4184,,74.2
+cmp/red_car_door_opens/kiwi_edit,comparisons,red_car_door_opens,kiwi_edit,A red car door opens.,mlx-community/gemma-3-12b-it-4bit,0.996827795485196,0.9999257950475001,Yes,4184,,73.8
+cmp/red_car_door_opens/uniedit,comparisons,red_car_door_opens,uniedit,A red car door opens.,mlx-community/gemma-3-12b-it-4bit,0.9242747712006811,0.9984760071427653,Yes,4184,,74.3
+cmp/red_car_door_opens/vace_wan,comparisons,red_car_door_opens,vace_wan,A red car door opens.,mlx-community/gemma-3-12b-it-4bit,1.210129215154458e-06,0.9999875010551785,No,4184,,74.0
+cmp/red_car_door_opens/vace_ltx,comparisons,red_car_door_opens,vace_ltx,A red car door opens.,mlx-community/gemma-3-12b-it-4bit,1.3716897353026945e-06,0.9999898082614458,No,4184,,73.7
+cmp/groom_raising_hand/input,comparisons,groom_raising_hand,input,A man raising his right hand up and holding it there,mlx-community/gemma-3-12b-it-4bit,2.430451091984097e-05,0.9999325159013756,No,4189,,74.1
+cmp/groom_raising_hand/ours,comparisons,groom_raising_hand,ours,A man raising his right hand up and holding it there,mlx-community/gemma-3-12b-it-4bit,0.0002960664014177887,0.9999210807524653,No,4189,,73.6
+cmp/groom_raising_hand/ltx2_retake,comparisons,groom_raising_hand,ltx2_retake,A man raising his right hand up and holding it there,mlx-community/gemma-3-12b-it-4bit,0.0009112520627510888,0.999933795778309,No,4189,,74.2
+cmp/groom_raising_hand/lora_edit,comparisons,groom_raising_hand,lora_edit,A man raising his right hand up and holding it there,mlx-community/gemma-3-12b-it-4bit,0.3208740066014846,0.999347687036533,No,4189,,73.7
+cmp/groom_raising_hand/runway_aleph,comparisons,groom_raising_hand,runway_aleph,A man raising his right hand up and holding it there,mlx-community/gemma-3-12b-it-4bit,6.605836522070861e-05,0.9998755718297435,No,4189,,74.1
+cmp/groom_raising_hand/kiwi_edit,comparisons,groom_raising_hand,kiwi_edit,A man raising his right hand up and holding it there,mlx-community/gemma-3-12b-it-4bit,0.00010891605737438763,0.9999330904965082,No,4189,,74.7
+cmp/groom_raising_hand/uniedit,comparisons,groom_raising_hand,uniedit,A man raising his right hand up and holding it there,mlx-community/gemma-3-12b-it-4bit,0.9933093712171551,0.9997623309362788,Yes,4189,,74.3
+cmp/groom_raising_hand/vace_wan,comparisons,groom_raising_hand,vace_wan,A man raising his right hand up and holding it there,mlx-community/gemma-3-12b-it-4bit,0.00015846377337045276,0.9998987243877668,No,4189,,74.1
+cmp/groom_raising_hand/vace_ltx,comparisons,groom_raising_hand,vace_ltx,A man raising his right hand up and holding it there,mlx-community/gemma-3-12b-it-4bit,7.890226622786742e-06,0.9999610417622112,No,4189,,74.8
+cmp/dog_yawning/input,comparisons,dog_yawning,input,A dog yawning,mlx-community/gemma-3-12b-it-4bit,1.371360449473225e-06,0.9999895696906633,No,4181,,76.0
+cmp/dog_yawning/ours,comparisons,dog_yawning,ours,A dog yawning,mlx-community/gemma-3-12b-it-4bit,5.839203698893787e-05,0.9998731297744813,No,4181,,74.1

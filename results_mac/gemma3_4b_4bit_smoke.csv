@@ -1,0 +1,4 @@
+id,group,scenario,method,edit_prompt,model,yes_prob,yesno_mass,argmax_token,n_input_tokens,error,seconds
+cmp/bugatti_lights_flash/input,comparisons,bugatti_lights_flash,input,The car front lights turn on and off periodically.,mlx-community/gemma-3-4b-it-4bit,0.9999986290452446,0.999999344396396,Yes,4188,,45.4
+cmp/bugatti_lights_flash/ours,comparisons,bugatti_lights_flash,ours,The car front lights turn on and off periodically.,mlx-community/gemma-3-4b-it-4bit,0.9999962733629372,1.0000005079930907,Yes,4188,,45.4
+cmp/bugatti_lights_flash/ltx2_retake,comparisons,bugatti_lights_flash,ltx2_retake,The car front lights turn on and off periodically.,mlx-community/gemma-3-4b-it-4bit,0.9968273246977722,1.0000010297597346,Yes,4188,,45.3
