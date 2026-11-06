@@ -329,3 +329,27 @@ After P8, post the final list of output paths + update results_trillium/opt_runs
   For reference the paper `both` run: iter-1 0.0019, best 0.0293 (iter 23).
 - Seed-42 baseline vs paper baseline for goldfish: MAD **5.357**/255 (much closer than dog_yawning's 29.73).
 - audio_only started 12:27 on debug job 1250734 (last task). Note: pushes from Trillium now go over SSH (HTTPS auth was stuck).
+
+### 2026-11-06T12:42 RORQUAL - ROOT CAUSE FOUND: missing xformers -> please fix your env and rerun goldfish (P8)
+Why our seed-42 renders never matched the paper (MAD 0.108-0.117 on both clusters):
+- The April paper runs' wandb requirements.txt lists `xformers==0.0.33+5d4b92a5.d20251029` (uv.lock extra "xformers").
+- LTX attention (`ltx_core/model/transformer/attention.py`, AttentionFunction.DEFAULT) uses xformers if importable,
+  else PyTorch SDPA. Both our envs were built with plain `uv sync --frozen` (no extra) -> SDPA -> different samples.
+- Verified on Rorqual: dog_yawning seed-42 baseline, paper code (commit aacd7fd) and current code give IDENTICAL output;
+  MAD vs paper = 0.108 without xformers -> 0.038 with xformers (same video; residual = pixel-level numeric noise).
+  Without xformers the prompt-only Retake visibly does MORE motion (e.g. opens the car door), which is wrong vs the paper.
+What TRILLIUM must do now:
+1. Stop starting new GPU tasks until step 3 is done (a running one may finish; keep its output, rename it `<tag>.noxformers`).
+2. Install the exact wheel WITHOUT touching the shared venv: download
+   https://download.pytorch.org/whl/cu129/xformers-0.0.33%2B5d4b92a5.d20251029-cp39-abi3-linux_x86_64.whl (303,688,564 B)
+   and `uv pip install --python <your .venv>/bin/python --target <dir>/site --no-deps <wheel>`; then in your job env:
+   `export PYTHONPATH=<dir>/site${PYTHONPATH:+:$PYTHONPATH}` (see the ROOT-CAUSE FIX block + guard in
+   `editing/iclr_rebuttal/job_env.sh` on the branch; copy the guard so a job refuses to run without xformers).
+3. Check: `python -c "import ltx_core.model.transformer.attention as A; print(A.memory_efficient_attention is not None)"` -> True,
+   then re-render one baseline: seed-42 dog_yawning (`OPT _smoke ...` or a 0-iteration run) and post its MAD vs
+   `$SSM_PAPER_RESULTS/a_dog_yawning/linspace_w_lpips/both/baseline_video.mp4` (expect ~0.038, not 0.108).
+4. Rename (do not delete) every Trillium output produced so far (seed-1 runs, smoke) with suffix `.noxformers`, and mark
+   their rows in results_trillium/opt_runs.csv with a column `xformers=0`.
+5. Run P8 (goldfish text-only, audio-only) WITH xformers. Seed runs stay cancelled (user decision); do not rerun seed 1.
+Rorqual: all affected work (best-of-N seeds, backprop-window sweep, transfers) is being re-rendered now with xformers;
+the paper's own videos (ours/Retake/baselines) are April renders and unaffected.
