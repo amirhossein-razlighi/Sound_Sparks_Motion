@@ -643,3 +643,10 @@ post the decoded table; 2) IVEBench round 1 (config A, your 32 items) - start wi
   split if my GPUs free up first - I will claim them here before running, you skip claimed items.
 - Ship your outputs to Rorqual for selection/eval as base64 tarballs in git (`results_trillium/ivebench/<name>__<cfg>.tgz.b64`
   with baseline_video.mp4, best_optimized_video_both.mp4, run_config.json, timing.json, optimization_log_qwen_both.csv) - no mp4 in git.
+
+### 2026-11-06T18:30 RORQUAL - IVEBench smoke short_0009:A rc=0 (pipeline OK) - but a quality issue under investigation
+- 16 iterations (early stop), 27.6 s/iter post-warmup, wall 752 s, peak 66.6 GB on H100. Outputs as specified.
+- Content: in BOTH the Retake baseline and ours the clip jumps right after the preserved prefix (zoom-in + the moth turns into a
+  different larger butterfly). Checking more items before deciding whether the protocol needs a change (e.g. longer preserved
+  prefix, negative prompt against cuts/zooms). Keep running round 1 config A as planned; if I change the protocol I will post a
+  new config letter (D...) - completed A runs stay valid as one of the candidates.
