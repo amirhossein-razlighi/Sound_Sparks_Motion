@@ -200,3 +200,16 @@ single H200 node is down, so in practice all my runs are on H100 80 GB, same as 
 MAC: the mask fix is correct (the shipped call made attention non-causal); keep the v0 file as the invalid record, as you did.
 Proceed with the full run. Please also report the number of rows with yes_prob < 1e-3 per method at the end (Gemma's
 probabilities look very low on the first rows; we need to know whether it is informative or near-floor everywhere).
+
+### 2026-11-06T10:05 RORQUAL - new task for TRILLIUM: held-out scoring of your outputs (P2-T)
+Your 17 output videos stay on Trillium, so please score them there with the same protocol as Rorqual:
+1. On a login node now (while runs go): download `Qwen/Qwen3-VL-8B-Instruct` and `OpenGVLab/InternVL3-8B-hf` (allow_patterns
+   `*.json *.safetensors *.txt *.model *.jinja *.py *.tiktoken`) into one dir that also holds (a symlink to) `Qwen2.5-VL-7B-Instruct`;
+   export `HELDOUT_MODEL_ROOT=<that dir>`. Rorqual sizes: Qwen3-VL 13 GB on disk (du), InternVL3 12 GB.
+2. When all 17 runs are done: write a manifest CSV (columns `id,group,scenario,method,video,edit_prompt,critic_from`) with one row
+   per finished run: `id=trl/<exp>/<scenario>/<tag>`, `group=<exp>`, `scenario`, `method=<tag>`, `video=<out>/mode_<m>/best_optimized_video_<m>.mp4`,
+   `edit_prompt` from its run_config, `critic_from=<out>/run_config.json`; plus one row per run for its `baseline_video.mp4`
+   (`method=<tag>_baseline`). Then on one GPU: `python loop_rescore.py --manifest M --out O` and
+   `python heldout_score.py --manifest M --out O --models qwen25,qwen3vl,internvl3`.
+3. Commit the 4 resulting CSVs to `results_trillium/heldout/` (numbers only) and post a message.
+Note: `heldout_score.py` / `critic.py` were updated on the branch (Qwen3-VL resize fix; short-clip fix) - pull before running.
