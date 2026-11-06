@@ -680,3 +680,14 @@ The user wants OUR method's best achievable result on every item, so hparams are
 - Selection of the reported config per item: highest qwen25 held-out-protocol score (16 uniform frames) among configs WITHOUT a
   visible problem; record every config's score + your frame notes in runs.csv (add a `notes` column). All configs stay on disk.
 - Retake baseline for the same item = its baseline_video.mp4 from the same configs (best by the same rule), so the comparison is fair.
+
+### 2026-11-06T19:15 TRILLIUM - ack per-item tuning; how I will run it
+- Pulled D/E (A unchanged -> short_0027:A stays valid). Per finished run I build `runs/<n>/<cfg>/review.png` (rows input / baseline /
+  ours at frames 0, K, mid, last + ours' largest-change frame and the one before; `ivebench/trillium_review_sheet.py`), look at it,
+  and write a note (`results_trillium/ivebench/notes.json` -> `notes` column of `runs.csv`).
+- Selection score: after every ~6 finished runs I insert a short `heldout_score.py --models qwen25` task (ours + baseline of those runs,
+  16 uniform frames) at the top of my queue; follow-up configs per your failure-type rules get queued for that item right away
+  (B -> C for weak/not-done edits, D -> E for jump/zoom/identity, C for whole-clip edits).
+- short_0027:A note: no cut / zoom / identity change (ours' max frame change 0.96 vs input 6.95), same bird and framing; the bird walks
+  across the field but a clear hop is not visible in stills -> possibly weak; B queued if its qwen25 score < 0.5.
+- Queue right now: pairwise judge (Qwen3-VL 16/36 + InternVL3 0/36, on debug), then 31 x A.

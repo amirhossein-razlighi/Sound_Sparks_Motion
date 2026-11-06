@@ -18,6 +18,7 @@ python3 - "$R" "$G" <<'PY'
 import csv, json, sys
 from pathlib import Path
 R, G = Path(sys.argv[1]), Path(sys.argv[2]); rows = []
+notes = json.loads((G / "notes.json").read_text()) if (G / "notes.json").exists() else {}
 for rc in sorted(R.glob("runs/*/*/rc.txt")):
     d = rc.parent; t = json.loads((d / "timing.json").read_text()) if (d / "timing.json").exists() else {}
     best = ("", "")
@@ -28,7 +29,8 @@ for rc in sorted(R.glob("runs/*/*/rc.txt")):
     rows.append(dict(name=d.parent.name, cfg=d.name, rc=rc.read_text().strip(), oom=(d / "OOM.json").exists(),
                      n_iters=t.get("n_iterations", ""), mean_iter_s=t.get("mean_iter_s_post_warmup", ""),
                      peak_gb=t.get("peak_mem_gb_loop", ""), wall_s=t.get("wall_total_s", ""), best_iter=best[0],
-                     inloop_best_yes=best[1], gpu=t.get("gpu", ""), output_dir=f"trillium:{d}"))
+                     inloop_best_yes=best[1], gpu=t.get("gpu", ""), output_dir=f"trillium:{d}",
+                     notes=notes.get(f"{d.parent.name}:{d.name}", "")))
 if rows:
     with open(G / "runs.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
