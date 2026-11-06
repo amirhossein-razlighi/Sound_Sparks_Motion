@@ -1,0 +1,1 @@
+exp,scenario,tag,status,best_iter,best_total_loss,best_qwen_yes,n_iters,mean_iter_s_post_warmup,peak_mem_gb_loop,wall_total_s,output_dir,gpu,baseline_mad_vs_paper

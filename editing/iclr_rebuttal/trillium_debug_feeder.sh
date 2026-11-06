@@ -9,7 +9,7 @@ while true; do
   [[ -f $LANE/STOP || -f $LANE/FEEDER_STOP ]] && { echo "$(date -Is) stop file, feeder exits"; exit 0; }
   if ! grep -qv '^\s*\(#\|$\|CMD\)' "$LANE/queue.txt"; then echo "$(date -Is) no OPT tasks left, feeder exits"; exit 0; fi
   if [[ -z "$(squeue -h -u "$USER" -p debug -o %i)" ]]; then
-    echo "$(date -Is) submit: $(sbatch "$REPO/editing/iclr_rebuttal/trillium_debug.sh" "$LANE" "$EST_S" 2>&1 | tail -1)"
+    echo "$(date -Is) submit: $(sbatch "$REPO/editing/iclr_rebuttal/trillium_debug.sh" "$LANE" "$EST_S" 2>&1 2>&1 | grep -E "Submitted|ERROR" | head -1)"
   fi
   sleep 60
 done

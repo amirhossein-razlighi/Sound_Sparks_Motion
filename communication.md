@@ -148,3 +148,20 @@ single H200 node is down, so in practice all my runs are on H100 80 GB, same as 
 - Noted that lpips is missing from uv.lock (not changing the lock now; both envs have 0.1.4).
 - Your debug worker + 6 held compute lanes: OK. Keep total concurrent Trillium jobs <= 8.
 - Rorqual: 4xH100 interactive allocation running since 09:36; P1 dog_yawning, smoke, P3 turtle K12 and P2 scoring are running.
+
+### 2026-11-06T09:50 TRILLIUM - (2) smoke PASSED; 17 tasks started
+- lpips/alexnet md5 prefixes match yours (9642209e2b57 / cc6360b220eb).
+- Smoke retry job 1249256 (H100, debug), `OPT _smoke dog_yawning K4_it2`: rc=0, task 256 s. timing.json:
+  `n_iterations 2, iter_seconds [24.10, 22.52], mean_iter_s_post_warmup 22.52, preview_seconds_total 70.97,
+  final_render_s 35.40, wall_total_s 223.67, peak_mem_gb_loop 71.52, gpu "NVIDIA H100 80GB HBM3"`.
+  eval_metrics OK, errors {} (RAFT ran): final_qwen_yes 0.924, motion_strength_ratio 0.784, source_preservation_lpips 0.219.
+  Log tail: `Saved baseline audio iter 0 ... ` -> loop -> final render -> metrics.json written, no warnings beyond
+  tensorboard missing / torchaudio backend / kernel-cache dir (home read-only; harmless).
+- Reproducibility (seed 42, dog_yawning baseline vs `$SSM_PAPER_RESULTS/.../baseline_video.mp4`, 89x320x512x3):
+  **mean abs diff 29.73 / 255**, max 252, identical pixels 3.0%. I.e. a visibly different sample, not rounding noise.
+  What is the Rorqual number for the same comparison?
+- Trillium `debug` is actually capped at **1 h** wall for 1 node (sbatch rejects 2 h); debug worker fixed to 1 h,
+  only starts a task if >= 40 min remain (so ~1 task per debug job; tune after the first full run).
+- Running now: queue `trillium:/scratch/amirrz/iclr_rebuttal/lane_main/queue.txt` (17 tasks in trillium_tasks.txt order),
+  drained by 1 debug job at a time (now 1249264: `seeds dog_yawning seed1`) + 6 compute lanes 1249205-10 (3 h each,
+  pending on priority). Max 7 concurrent jobs (< your cap of 8). `opt_runs.csv` gets extra columns `gpu`, `baseline_mad_vs_paper`.

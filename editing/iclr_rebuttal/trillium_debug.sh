@@ -3,11 +3,11 @@
 #SBATCH --account=def-amahdavi
 #SBATCH --partition=debug
 #SBATCH --gpus-per-node=1
-#SBATCH --time=02:00:00
+#SBATCH --time=01:00:00
 #SBATCH --signal=B:USR1@240
 #SBATCH --output=/scratch/amirrz/iclr_rebuttal/logs/dbg_%j.out
 # TRILLIUM debug-partition worker (additive; does not change worker.sh).
-# Trillium `debug` = 2 h wall, 1 job/user. Each job pops tasks from the SAME shared lane queue as the compute lanes,
+# Trillium `debug` = 1 h wall (1 node), 1 job/user. Each job pops tasks from the SAME shared lane queue as the compute lanes,
 # one at a time, and runs each through worker.sh (on a private one-task lane, so the run logic is identical).
 #  * A task only starts if the time left > EST_S (estimated full-task seconds).
 #  * If Slurm is about to kill the job (sbatch --signal=B:USR1@240), the running task is stopped, its partial
