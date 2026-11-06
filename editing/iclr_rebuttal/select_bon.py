@@ -22,6 +22,8 @@ from pathlib import Path
 from common import OUT_ROOT, TWELVE, paper_baseline_video, paper_ours_video
 
 ORDER = [42] + list(range(23))
+import os
+PAPER_S42 = os.environ.get("BON_SEED42", "paper") == "paper"
 NS_ALL = [1, 3, 4, 8, 16, 24]  # evaluated up to the pool size that exists (user: start with N=3)
 OURS_SECONDS = 589.6  # paper end-to-end LTX-2 edit cost (turtle, 1x H100); see Table 7 caveats
 
@@ -45,6 +47,10 @@ def main():
         if len(seeds) not in NS:
             NS.append(len(seeds))
         y = {x: d["seeds"][str(x)]["yes_prob"] for x in seeds}
+        # User rule (2026-11-06): the seed-42 pool member is the paper's FINALIZED Retake baseline (same file the paper and
+        # the human study used), not our current-code re-render of seed 42. Its critic score is already in scores.json.
+        if PAPER_S42 and 42 in y:
+            y[42] = d["reference"]["paper_baseline"]["yes_prob"]
         cost = {x: d["seeds"][str(x)]["render_s"] + d["seeds"][str(x)]["score_s"] for x in seeds}
         sel = root / "selected" / s
         sel.mkdir(parents=True, exist_ok=True)
@@ -60,8 +66,10 @@ def main():
             r[f"bon{n}_yes"] = y[best]
             r[f"bon{n}_cost_s"] = sum(cost[x] for x in pre)
             r[f"E_bon{n}_yes"] = expected_max(list(y.values()), n)
+            r[f"bon{n}_src"] = "paper_baseline" if (best == 42 and PAPER_S42) else f"seed_{best:02d}"
             if n > 1:
-                shutil.copy2(root / s / "candidates" / f"seed_{best:02d}.mp4", sel / f"bon{n}.mp4")
+                src = paper_baseline_video(s) if (best == 42 and PAPER_S42) else root / s / "candidates" / f"seed_{best:02d}.mp4"
+                shutil.copy2(src, sel / f"bon{n}.mp4")
         r["pool_frac_seeds_beating_ours"] = sum(v > r["ours_yes"] for v in y.values()) / len(y)
         shutil.copy2(paper_ours_video(s), sel / "ours.mp4")
         shutil.copy2(root / s / "candidates" / "seed_42.mp4", sel / "retake_seed42.mp4")

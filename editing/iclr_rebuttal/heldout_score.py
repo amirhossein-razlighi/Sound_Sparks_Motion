@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 import math
 import time
 from pathlib import Path
@@ -36,11 +37,17 @@ MODELS = {
 }
 QUESTION = ('Does this video clearly show the action or state change described by the edit prompt: '
             '"{p}"? Answer yes or no.')
+# Additional question (default off): motion naturalness / artifacts, independent of the edit prompt.
+QUESTIONS = {
+    "task": QUESTION,
+    "natural": ("Is the motion in this video natural and physically plausible, without sudden jumps, abrupt appearance "
+                "changes, objects appearing out of nowhere, or visual artifacts? Answer yes or no."),
+}
 N_FRAMES = 16
 LONG_SIDE = 512
 
 
-def read_frames(path: str) -> tuple[list[np.ndarray], float, int, list[int]]:
+def read_frames(path: str, n_frames: int | None = None, indices: list[int] | None = None) -> tuple[list[np.ndarray], float, int, list[int]]:
     """Return 16 uniformly sampled RGB uint8 frames, source fps, total frames, indices."""
     p = Path(path)
     if p.suffix.lower() == ".gif":
@@ -61,7 +68,8 @@ def read_frames(path: str) -> tuple[list[np.ndarray], float, int, list[int]]:
         frames = [f.to_ndarray(format="rgb24") for f in c.decode(vs)]
         c.close()
     T = len(frames)
-    idx = np.linspace(0, T - 1, N_FRAMES).round().astype(int).tolist()
+    idx = [min(int(i), T - 1) for i in indices] if indices is not None else \
+        np.linspace(0, T - 1, n_frames or N_FRAMES).round().astype(int).tolist()
     from PIL import Image
     out = []
     for i in idx:
@@ -84,7 +92,8 @@ def _variant_ids(tok, words):
 
 
 class Scorer:
-    def __init__(self, name: str, device="cuda"):
+    def __init__(self, name: str, device="cuda", question: str = "task", n_frames: int = N_FRAMES):
+        self.qtext, self.n_frames = QUESTIONS[question], n_frames
         from transformers import AutoProcessor
         self.name, self.device = name, device
         path = MODELS[name]
@@ -106,11 +115,11 @@ class Scorer:
         self.tok = tok
 
     def _inputs(self, frames, fps, T, idx, prompt):
-        msgs = [{"role": "user", "content": [{"type": "video"}, {"type": "text", "text": QUESTION.format(p=prompt)}]}]
+        msgs = [{"role": "user", "content": [{"type": "video"}, {"type": "text", "text": self.qtext.format(p=prompt)}]}]
         text = self.proc.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True)
         video = np.stack(frames)  # [T,H,W,C] uint8
         if self.name == "qwen25":
-            eff_fps = N_FRAMES / (T / fps)
+            eff_fps = len(frames) / (T / fps)
             return self.proc(text=[text], videos=[video], fps=[eff_fps], return_tensors="pt")
         if self.name == "qwen3vl":
             from transformers.video_utils import VideoMetadata
@@ -121,8 +130,8 @@ class Scorer:
         return self.proc(text=[text], videos=[video], return_tensors="pt")
 
     @torch.no_grad()
-    def score(self, video: str, prompt: str) -> dict:
-        frames, fps, T, idx = read_frames(video)
+    def score(self, video: str, prompt: str, indices: list[int] | None = None) -> dict:
+        frames, fps, T, idx = read_frames(video, self.n_frames, indices)
         inp = self._inputs(frames, fps, T, idx, prompt).to(self.device)
         for k, v in inp.items():
             if torch.is_tensor(v) and v.is_floating_point():
@@ -146,25 +155,35 @@ def main():
     ap.add_argument("--manifest", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--models", default="qwen25,qwen3vl,internvl3")
+    ap.add_argument("--question", default="task", choices=sorted(QUESTIONS))
+    ap.add_argument("--n-frames", type=int, default=N_FRAMES)
+    ap.add_argument("--frame-index-file", default=None,
+                    help="JSON {manifest id: [frame indices]} (e.g. select_frames_auto.py); overrides uniform sampling")
+    ap.add_argument("--tag", default="", help="output-file suffix for this sampling variant")
     a = ap.parse_args()
     rows = list(csv.DictReader(open(a.manifest)))
+    fidx = json.loads(Path(a.frame_index_file).read_text()) if a.frame_index_file else None
+    if fidx is not None:
+        rows = [r for r in rows if r["id"] in fidx]
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     for name in a.models.split(","):
-        dst = out / f"{name}.csv"
+        suffix = ("" if a.question == "task" else f"_{a.question}") + ("" if a.n_frames == N_FRAMES else f"_{a.n_frames}f") \
+            + (f"_{a.tag}" if a.tag else "")
+        dst = out / f"{name}{suffix}.csv"
         done = {r["id"] for r in csv.DictReader(open(dst))} if dst.exists() else set()
         todo = [r for r in rows if r["id"] not in done]
         if not todo:
             print(f"[{name}] all {len(rows)} done"); continue
         t0 = time.time()
-        sc = Scorer(name)
+        sc = Scorer(name, question=a.question, n_frames=a.n_frames)
         print(f"[{name}] loaded in {time.time()-t0:.0f}s; yes ids={sc.yes} no ids={sc.no}; {len(todo)} videos", flush=True)
         new = not dst.exists()
         with open(dst, "a", newline="") as f:
             w = None
             for r in todo:
                 try:
-                    res = sc.score(r["video"], r["edit_prompt"])
+                    res = sc.score(r["video"], r["edit_prompt"], fidx[r["id"]] if fidx else None)
                     res["error"] = ""
                 except Exception as e:  # keep going; record the failure
                     res = {"yes_prob": "", "yesno_mass": "", "argmax_token": "", "src_frames": "", "src_fps": "",

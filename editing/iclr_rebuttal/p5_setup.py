@@ -21,9 +21,16 @@ H3 = Path("/scratch/amirrz/H3_exp/inputs")
 LATENTS = {  # learned latent -> paper run (mode_both holds best_audio_latent_both.pt / best_text_delta_both.pt)
     "dog_yawning": "a_dog_yawning/linspace_w_lpips/both",
     "falcon_bird_opening_wings": "a_bird_openning_its_wings./linspace_w_lpips/both",
-    "groom_angry_shouting": "a_angry_man_is_shouting./normal_w_lpips/both",
+    "groom_angry_shouting": "a_angry_man_is_shouting./normal_wo_lpips/both",  # = latent of the paper's man-shouting transfer
     "groom_laughing": "a_man_is_laughing_outloud/normal_wo_lpips/both",
     "man_pets_dog": "the_man_pets_the_dog./linspace_w_lpips/both",
+}
+# Paper transfers that already exist (finalized; reused, NOT rerun). transfer_both.mp4 + baseline_video.mp4 in each dir.
+PAPER_XFER = {
+    ("dog_yawning", "cat_sunglasses"): PAPER_RESULTS / "transfer/a_cat_yawning./linspace_w_lpips",
+    ("falcon_bird_opening_wings", "parrot"): PAPER_RESULTS / "transfer/a_red_bird_openning_its/linspace_w_lpips",
+    ("groom_angry_shouting", "person_room"): PAPER_RESULTS / "transfer/a_man_shouting./normal_wo_lpips",
+    ("man_pets_dog", "man_dog_park"): PAPER_RESULTS / "transfer/the_man_pets_the_dog./linspace_w_lpips",
 }
 # (latent, target_id, video, edit_prompt, static_prompt, subject_category_match, style, note)
 T = [
@@ -96,7 +103,9 @@ def main():
         src_prompt = __import__("json").loads((PAPER_RESULTS / LATENTS[lat] / "run_config.json").read_text())["args"]["edit_prompt"]
         rows.append(dict(latent=lat, target=tid, config=str(cp), target_video=str(src), orig_video=str(vid),
                          source_prompt=src_prompt, edit_prompt=ep, static_prompt=sp, subject_category_match=cat,
-                         style=style, note=note, out_dir=str(root / "runs" / lat / tid)))
+                         style=style, note=note,
+                         out_dir=str(PAPER_XFER.get((lat, tid), root / "runs" / lat / tid)),
+                         reused_paper_output=int((lat, tid) in PAPER_XFER)))
     with open(root / "targets.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
     print(len(rows), "targets ->", root / "targets.csv")

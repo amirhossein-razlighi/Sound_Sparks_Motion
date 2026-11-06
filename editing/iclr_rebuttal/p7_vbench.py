@@ -22,11 +22,18 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--manifest", action="append", required=True)
     ap.add_argument("--out", required=True)
+    ap.add_argument("--dims", default=",".join(DIMS), help="comma-separated VBench dimensions")
+    ap.add_argument("--tag", default="", help="separate results subfolder/CSV for another dimension set")
     a = ap.parse_args()
+    dims = a.dims.split(",")
+    import typing
     import torch
+    # VBench's AMT-S checkpoint (motion_smoothness) pickles typing.OrderedDict; torch>=2.6 loads weights_only=True by
+    # default. Allow just that type (trusted, offline-cached VBench release file) instead of disabling weights_only.
+    torch.serialization.add_safe_globals([typing.OrderedDict])
     from vbench import VBench
     import vbench as vb
-    out = Path(a.out) / "vbench"
+    out = Path(a.out) / ("vbench" + (f"_{a.tag}" if a.tag else ""))
     rows = [r for m in a.manifest for r in csv.DictReader(open(m))]
     by_method: dict[str, list[dict]] = {}
     for r in rows:
@@ -51,14 +58,14 @@ def main():
         res_json.mkdir(parents=True, exist_ok=True)
         if not list(res_json.glob("*_eval_results.json")):
             bench = VBench(torch.device("cuda"), str(Path(vb.__file__).parent / "VBench_full_info.json"), str(res_json))
-            bench.evaluate(videos_path=str(vdir), name=meth, dimension_list=DIMS, local=True, mode="custom_input")
+            bench.evaluate(videos_path=str(vdir), name=meth, dimension_list=dims, local=True, mode="custom_input")
         res = json.loads(next(res_json.glob("*_eval_results.json")).read_text())
-        for dim in DIMS:
+        for dim in dims:
             for v in res[dim][1]:
                 per_video.append(dict(method=meth, scenario=Path(v["video_path"]).stem, dim=dim,
                                       score=v["video_results"]))
-        print(meth, {d: res[d][0] for d in DIMS}, flush=True)
-    with open(Path(a.out) / "vbench_per_video.csv", "w", newline="") as f:
+        print(meth, {d: res[d][0] for d in dims}, flush=True)
+    with open(Path(a.out) / ("vbench_per_video" + (f"_{a.tag}" if a.tag else "") + ".csv"), "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=["method", "scenario", "dim", "score"]); w.writeheader(); w.writerows(per_video)
 
 
