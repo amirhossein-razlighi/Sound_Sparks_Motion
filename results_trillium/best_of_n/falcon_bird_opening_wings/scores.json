@@ -1,0 +1,109 @@
+{
+  "seeds": {
+    "2": {
+      "yes_prob": 0.9241418261705818,
+      "mean_nll": 0.07888972759246826,
+      "pass_nll": [
+        0.07888972759246826
+      ],
+      "pass_yes": [
+        0.9241418261705818
+      ],
+      "n_frames": 89,
+      "upsampled_to": "",
+      "render_s": 35.065004110336304,
+      "score_s": 3.236696243286133,
+      "peak_mem_gb": 59.427874304
+    },
+    "3": {
+      "yes_prob": 0.9399133323582882,
+      "mean_nll": 0.06196760758757591,
+      "pass_nll": [
+        0.06196760758757591
+      ],
+      "pass_yes": [
+        0.9399133323582882
+      ],
+      "n_frames": 89,
+      "upsampled_to": "",
+      "render_s": 36.54694843292236,
+      "score_s": 0.35774660110473633,
+      "peak_mem_gb": 59.427874304
+    },
+    "4": {
+      "yes_prob": 0.9706877478963396,
+      "mean_nll": 0.029750440269708633,
+      "pass_nll": [
+        0.029750440269708633
+      ],
+      "pass_yes": [
+        0.9706877478963396
+      ],
+      "n_frames": 89,
+      "upsampled_to": "",
+      "render_s": 34.82141470909119,
+      "score_s": 0.385422945022583,
+      "peak_mem_gb": 59.427874304
+    },
+    "5": {
+      "yes_prob": 0.9046505126460354,
+      "mean_nll": 0.10020658373832703,
+      "pass_nll": [
+        0.10020658373832703
+      ],
+      "pass_yes": [
+        0.9046505126460354
+      ],
+      "n_frames": 89,
+      "upsampled_to": "",
+      "render_s": 34.7451536655426,
+      "score_s": 0.355881929397583,
+      "peak_mem_gb": 59.427874304
+    },
+    "6": {
+      "yes_prob": 0.9669140569738693,
+      "mean_nll": 0.033645663410425186,
+      "pass_nll": [
+        0.033645663410425186
+      ],
+      "pass_yes": [
+        0.9669140569738693
+      ],
+      "n_frames": 89,
+      "upsampled_to": "",
+      "render_s": 34.727211713790894,
+      "score_s": 0.3548300266265869,
+      "peak_mem_gb": 59.427874304
+    }
+  },
+  "reference": {
+    "paper_ours": {
+      "yes_prob": 0.9840936058779184,
+      "mean_nll": 0.016034258529543877,
+      "pass_nll": [
+        0.016034258529543877
+      ],
+      "pass_yes": [
+        0.9840936058779184
+      ],
+      "n_frames": 89,
+      "upsampled_to": "",
+      "score_s": 2.594881534576416,
+      "path": "/scratch/amirrz/iclr_rebuttal/ssm_bundle/comparisons/bird_opens_wing/ours.mp4"
+    },
+    "paper_baseline": {
+      "yes_prob": 0.9706877478963396,
+      "mean_nll": 0.029750440269708633,
+      "pass_nll": [
+        0.029750440269708633
+      ],
+      "pass_yes": [
+        0.9706877478963396
+      ],
+      "n_frames": 89,
+      "upsampled_to": "",
+      "score_s": 0.3950629234313965,
+      "path": "/scratch/amirrz/iclr_rebuttal/ssm_bundle/comparisons/bird_opens_wing/baseline_ltx2.mp4"
+    }
+  }
+}
