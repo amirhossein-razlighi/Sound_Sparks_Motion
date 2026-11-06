@@ -526,3 +526,32 @@ Held-out scoring of the 60 candidates is still running (job 1252462); will post 
 - Your proposal (a)+(b) is approved; you own it. Please keep: both A/B orders, randomised hashed IDs, key outside the judge
   folder, fresh agents with no prior context, and report ties/position-inconsistent verdicts as such (no tie-breaking).
   Post the decoded per-scenario table + reasons and the summary counts here. Also the held-out CSVs when 1252462 is done.
+
+### 2026-11-06T17:35 TRILLIUM - Claude blind pairwise judge, OURS vs BEST-OF-8: decoded (prefers bon8 6/12; 4 order-inconsistent)
+Protocol: 24 packets = 12 scenarios x 2 orders, hashed ids, key outside the judge folder (`results_trillium/judge_bon8/judge_key.json`),
+4 fresh general-purpose Claude agents x 6 packets, both orders of a scenario always with DIFFERENT agents. Each packet: 5 time-aligned
+contact sheets (rows SOURCE / A / B, every 4th frame + max-change frames, 25-27 frames, 256x160 tiles) + per-frame change curve +
+prompt. Rubric 1-5: action, naturalness, consistency, preservation, artifacts; overall A/B/tie + confidence + frame-cited reason.
+No tie-breaking: a scenario counts only if both orders agree.
+| scenario | order1 (A=ours) | order2 (A=bon8) | verdict |
+|---|---|---|---|
+| bugatti_lights_flash | ours | ours | **ours** (ours toggles lights periodically; bon8 s00 turns on once) |
+| red_rose_blooming | ours | ours | **ours** (ours blooms; bon8 s02 stays a bud) |
+| falcon_bird_opening_wings | bon8 | bon8 | bon8 (ours: bird flies out of frame, empty branch 64-88) |
+| man_climbs_rocks | bon8 | bon8 | bon8 (bon8 s03 climbs the boulder; ours only starts stepping at 72-88 + added wave splash) |
+| man_pets_dog | bon8 | bon8 | bon8 (ours: dog walks along the sill to the man, no petting; bon8 s06: man pets the dog) |
+| monkey_reaching_fruit | bon8 | bon8 | bon8 (bon8 s04: fruit appears ~f40 'somewhat suddenly' then grabbed; ours: no fruit, blur) |
+| red_car_door_opens | bon8 | bon8 | bon8 (ours: unrequested zoom-in + door only opens late 68-88; bon8 s06 opens a door at 20-32) |
+| robot_waving | bon8 | bon8 | bon8 (ours: arm smeared 32-36, hand cut off 42-64; bon8 s02 waves cleanly) |
+| dog_yawning | bon8 | ours | order-inconsistent |
+| goldfish_jumping | ours | bon8 | order-inconsistent (both judged poor: action 2/5) |
+| groom_raising_hand | ours | bon8 | order-inconsistent (low confidence, both raise the hand) |
+| turtle_neck | ours | bon8 | order-inconsistent (bon8 s04 neck = 'pale pipe-like stalk' artifact; ours subtle) |
+Counts: scenarios ours 2 / bon8 6 / inconsistent 4; judgments ours 8 / bon8 16 / tie 0. Mean rubric (ours vs bon8): action 3.21/3.75,
+naturalness 3.00/3.08, consistency 3.08/3.50, preservation 2.88/3.54, artifacts 3.04/3.21.
+HONEST CAVEAT: this disagrees with the USER's visual review (ours better on red_car, robot, turtle, monkey, man_pets_dog, falcon, groom,
+goldfish). Spot check: the judges' descriptions are accurate at sheet resolution (verified man_pets_dog sheet 5), but fine temporal
+artifacts the user flagged (e.g. dog identity collapse in bon8 s06 late frames, abrupt door/arm snaps) are barely visible in 256x160
+tiles every 4th frame, and the judges weighted action completion + camera/framing preservation heavily (ours has camera push-ins on
+red_car / dog). Reasons per judgment: `results_trillium/judge_bon8/claude_judge_decoded.csv`, raw: `raw/judge*.json`.
+VLM pairwise with source (Qwen3-VL-8B, InternVL3-8B, 24 frames, both orders, 3 questions) queued behind the held-out job.
