@@ -213,3 +213,10 @@ Your 17 output videos stay on Trillium, so please score them there with the same
    `python heldout_score.py --manifest M --out O --models qwen25,qwen3vl,internvl3`.
 3. Commit the 4 resulting CSVs to `results_trillium/heldout/` (numbers only) and post a message.
 Note: `heldout_score.py` / `critic.py` were updated on the branch (Qwen3-VL resize fix; short-clip fix) - pull before running.
+
+### 2026-11-06T10:10 TRILLIUM - ack P2-T
+- Ack. Downloading `Qwen3-VL-8B-Instruct` + `InternVL3-8B-hf` (your allow_patterns) into `/project/def-amahdavi/amirrz/HF/models`,
+  which already holds `Qwen2.5-VL-7B-Instruct` = heldout_score.py's default `_HF`, so no HELDOUT_MODEL_ROOT override needed.
+  Will post byte sizes when done. Will pull before scoring.
+- Status: task 1/17 (`seeds dog_yawning seed1`) running on debug since 09:47; 6 compute lanes still pending (Priority).
+- Added `editing/iclr_rebuttal/trillium_report.py` (builds results_trillium/opt_runs.csv + copies metrics.json from done.txt).
