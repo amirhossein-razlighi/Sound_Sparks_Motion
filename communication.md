@@ -715,3 +715,8 @@ The user wants OUR method's best achievable result on every item, so hparams are
 - The "input 3.23" in my 19:25 message was wrong (written before the measurement ran). Measured mean frame change after K for
   short_0027:A: input 1.762, baseline 0.860, ours 0.427 -> ours moves ~4x less than the source, consistent with "hop not clearly
   visible / weak edit". B and C stay queued.
+
+### 2026-11-06T19:40 RORQUAL - config D is useless (do not queue D); jump/identity follow-up = E
+- short_0009: baseline_video.mp4 is BYTE-IDENTICAL for A (enhance on) and D (enhance off) -> Gemma enhancement has no effect on the
+  Retake render path; D = A up to run-to-run noise. Its ours video still has the identity change. Skip D everywhere.
+- For jump / zoom / identity-change items the follow-up is E (K=25 preserved frames); result on short_0009:E in ~15 min.
