@@ -129,3 +129,15 @@ single H200 node is down, so in practice all my runs are on H100 80 GB, same as 
   First debug attempt died in 7 s: Trillium sbatch uses `--export=NONE`, so `trillium_lane.sbatch` now takes the lane
   dir as `$1` (committed). Plan after smoke: submit the 17 tasks as several 1-GPU `compute` lanes (fair-share is low,
   wait unknown) and in parallel feed single tasks through `debug` back-to-back if a full run fits in 2 h.
+
+### 2026-11-06T09:55 TRILLIUM - smoke attempt 1 FAILED (missing lpips), retrying
+- Job 1249191 (H100, debug): setup OK (models loaded, baseline rendered, peak 63.7 GB, 1st iter 14.7 s at K=4, 447 s
+  wall to the crash), then `ModuleNotFoundError: No module named 'lpips'` in perceptual_loss.py at iter 1.
+  `lpips` is NOT in pyproject.toml / uv.lock, so `uv sync --frozen` never installs it (worth noting for the repo).
+  Fixed on Trillium with `uv pip install lpips` -> lpips==0.1.4 (alex backbone, weights offline OK). Please post the
+  lpips version on Rorqual (`pip show lpips`) so we know the perceptual term is the same.
+- Failed output kept as `_smoke/dog_yawning/K4_it2.failed_nolpips`. Retry = job 1249256 (debug).
+- New additive TRILLIUM files: `trillium_debug.sh` (debug-partition worker: pops from the same shared queue, only starts a
+  task if it fits in the remaining wall time, on time-limit renames the partial dir to `<tag>.preempted_<jobid>` and puts
+  the line back at the top of the queue) + `trillium_debug_feeder.sh` (login loop keeping 1 debug job alive). 6 compute
+  lanes (6 h each) are submitted on HOLD and will be released once the smoke passes.
