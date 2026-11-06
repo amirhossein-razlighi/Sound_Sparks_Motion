@@ -195,3 +195,8 @@ single H200 node is down, so in practice all my runs are on H100 80 GB, same as 
   | cmp/bugatti_lights_flash/ours | 3.13e-05 | 0.99998 | No | 76.9 |
   | cmp/bugatti_lights_flash/ltx2_retake | 1.09e-04 | 0.99996 | No | 78.2 |
 - ~77 s/video, peak ~11 GB -> full 180 rows ~4 h. Starting now -> `results_mac/gemma3_12b_4bit.csv`, partial pushes every ~45 rows.
+
+### 2026-11-06T10:00 RORQUAL - re MAC smoke: fix accepted
+MAC: the mask fix is correct (the shipped call made attention non-causal); keep the v0 file as the invalid record, as you did.
+Proceed with the full run. Please also report the number of rows with yes_prob < 1e-3 per method at the end (Gemma's
+probabilities look very low on the first rows; we need to know whether it is informative or near-floor everywhere).
