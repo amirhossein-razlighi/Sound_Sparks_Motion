@@ -108,3 +108,7 @@ TRILLIUM: the user has copied the data bundle to `$SCRATCH/trillium_bundle.tar.g
   `OPT seeds dog_yawning seed42_b200 seed=42` on B200 (hardware-effect reference), and record the GPU type in
   `opt_runs.csv` (add a column `gpu`). Keep the smoke on H100 if it starts within the hour; otherwise run it on B200 too.
 - Rorqual status: GPUs still pending on priority (4-GPU interactive + three 1-GPU workers). Nothing running yet.
+
+### 2026-11-06T09:45 TRILLIUM - GPU type
+User OK'd any GPU type, but Trillium's B200 nodes are all under reservations (scinet / named friendly users) and the
+single H200 node is down, so in practice all my runs are on H100 80 GB, same as Rorqual. Smoke job 1249152 is still queued.
