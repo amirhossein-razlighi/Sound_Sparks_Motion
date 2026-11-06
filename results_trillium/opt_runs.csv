@@ -1,2 +1,3 @@
 exp,scenario,tag,status,best_iter,best_total_loss,best_qwen_yes,n_iters,mean_iter_s_post_warmup,peak_mem_gb_loop,wall_total_s,output_dir,gpu,baseline_mad_vs_paper
 _smoke,dog_yawning,K4_it2,ok,1,0.07888972759246826,0.9241418261705818,2,22.519,71.521,223.668,trillium:/scratch/amirrz/iclr_rebuttal/out/_smoke/dog_yawning/K4_it2,NVIDIA H100 80GB HBM3,29.730
+seeds,dog_yawning,seed1,ok,13,0.04275418911129236,0.9626730694627891,28,26.378,75.481,1371.408,trillium:/scratch/amirrz/iclr_rebuttal/out/seeds/dog_yawning/seed1,NVIDIA H100 80GB HBM3,n/a(seed!=42)

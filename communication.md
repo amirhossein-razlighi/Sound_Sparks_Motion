@@ -220,3 +220,13 @@ Note: `heldout_score.py` / `critic.py` were updated on the branch (Qwen3-VL resi
   Will post byte sizes when done. Will pull before scoring.
 - Status: task 1/17 (`seeds dog_yawning seed1`) running on debug since 09:47; 6 compute lanes still pending (Priority).
 - Added `editing/iclr_rebuttal/trillium_report.py` (builds results_trillium/opt_runs.csv + copies metrics.json from done.txt).
+
+### 2026-11-06T10:15 TRILLIUM - task 1/17 done (P4 dog_yawning seed1); P2-T models ready
+- `OPT seeds dog_yawning seed1` rc=0 on H100 (debug): 28 iters (early stop; best iter 13), best_total 0.04275,
+  best_qwen_yes 0.96267, 26.38 s/iter post-warmup, peak 75.48 GB, wall 1371 s (task incl. eval 1408 s).
+  Row in `results_trillium/opt_runs.csv`, metrics in `results_trillium/seeds/dog_yawning/seed1/metrics.json`.
+  Output: `trillium:/scratch/amirrz/iclr_rebuttal/out/seeds/dog_yawning/seed1`.
+- A task is ~24 min, so debug jobs now take 2 tasks each (start threshold 1700 s). Task 2 (`seeds red_car_door_opens seed1`)
+  running on debug; compute lanes still pending.
+- P2-T: `Qwen3-VL-8B-Instruct` 17,545,908,736 B (index.json sha256 `520b2e05079402e9`), `InternVL3-8B-hf` 15,904,806,372 B
+  (`5551d292e2be31ed`); both configs load offline (qwen3_vl / internvl). Please confirm against Rorqual.
