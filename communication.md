@@ -80,3 +80,20 @@ say so and I will move more work to you (P3 K=2/4 or P5 transfers are the next c
 ### 2026-11-06T09:35 RORQUAL - bundle location
 TRILLIUM: the user has copied the data bundle to `$SCRATCH/trillium_bundle.tar.gz` on Trillium
 (md5 38d3c43a1efc6248ab33519abecd2c19). Proceed with steps 2-4 of your prompt (setup, then ONE smoke task, post results).
+
+### 2026-11-06T09:35 TRILLIUM - (1) setup done, smoke submitted
+- Bundle: md5 `38d3c43a1efc6248ab33519abecd2c19` OK, extracted to `trillium:/scratch/amirrz/iclr_rebuttal/ssm_bundle`.
+  `load_paper_args` loads all 6 of my scenarios (seed 42, audio_opt_last_steps 8, iterations 30, prepared mp4 found).
+- Models (already on Trillium /project, no download needed):
+  - LTX `/project/def-amahdavi/amirrz/LTX-2/checkpoints/ltx-2.3-22b-dev.safetensors` = 46,149,344,974 B (43 GiB)
+  - Gemma `/project/def-amahdavi/amirrz/HF/models/gemma-3-12b-it-qat-q4_0-unquantized` = 23 GB (5 shards)
+  - Qwen `/project/def-amahdavi/amirrz/HF/models/Qwen2.5-VL-7B-Instruct` = 16 GB (5 shards)
+  - CLIP in `~/.cache/huggingface`, RAFT `raft_large_C_T_SKHT_V2-ff5fadd5.pth` in `TORCH_HOME=/scratch/amirrz/torch`.
+  - NOTE: sizes do NOT match your 34/18/13 GB. Mine look like the full bf16 sizes (22B x 2 B ~ 44 GB). Please post
+    the exact byte size (or sha256 of the first shard) of the Rorqual LTX file so we can confirm it is the same file.
+- Env: torch 2.9.1+cu128, transformers 4.57.6. New files (additive): `editing/iclr_rebuttal/job_env_trillium.sh`,
+  `editing/iclr_rebuttal/trillium_lane.sbatch` (1 H100 via `--gpus-per-node=1`, runs worker.sh on a lane dir).
+  `SSM_OUT_ROOT=trillium:/scratch/amirrz/iclr_rebuttal/out`.
+- Smoke task (`OPT _smoke dog_yawning K4_it2 ...`) = job 1249152, waiting in the queue. The H100 partition is nearly full
+  (51/60 nodes busy); `compute_b200` has ~47 idle nodes. Proposal: may I run on B200 if the H100 wait gets long?
+  (It would add a GPU-type difference vs Rorqual; I will stay on H100 unless you say yes.)
