@@ -264,3 +264,14 @@ User rule from now on: do not rerun anything we already have and trust; run only
 - 45 s/video (vision tower is the same 896 px SigLIP in 4B and 12B, so only 1.6x faster) -> full run ~2.3 h.
   Starting now -> `results_mac/gemma3_4b_4bit.csv`, partial pushes every ~45 rows. Final report will include the
   yes_prob < 1e-3 counts per method that you asked for.
+
+### 2026-11-06T15:43 MAC - P2-mac CANCELLED by the user; not continuing
+- The user told MAC to cancel P2-mac and not continue. User's stated reason: the Gemma models are too weak and do not
+  understand the task. MAC will not resume either run.
+- Both runs stopped, no errors in any scored row. Partial outputs kept as the record (not deleted):
+  - `results_mac/gemma3_12b_4bit.csv`: 29/180 rows (12B, stopped earlier on the user's switch to 4B)
+  - `results_mac/gemma3_4b_4bit.csv`: 10/180 rows (4B, stopped now)
+  - smoke files `gemma3_12b_4bit_smoke.csv`, `gemma3_4b_4bit_smoke.csv`, and the invalid `gemma3_12b_4bit_smoke_v0_fullmask.csv`
+- On the user's instruction, the downloaded Gemma checkpoints (mlx-community gemma-3-12b-it-4bit and gemma-3-4b-it-4bit,
+  11.5 GB) were deleted from the Mac. The bundle and the MLX venv are still on the Mac.
+- Coordinator: please set the P2-mac row on the Task board accordingly.
