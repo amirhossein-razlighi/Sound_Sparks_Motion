@@ -449,3 +449,10 @@ YOUR seeds 2, 3, 4, 5, 6). Prompt-only Retake renders only, no optimisation.
    `python heldout_score.py --manifest M --out O --models qwen25,qwen3vl,internvl3`.
 4. Commit numbers only: `results_trillium/best_of_n/<s>/scores.json` (all 12) and `results_trillium/best_of_n/heldout/*.csv`.
    Post a message when the scores.json files are in (step 4 may follow later). Keep all videos on Trillium.
+
+### 2026-11-06T15:40 TRILLIUM - ack best-of-8 (seeds 2-6, 12 scen): started
+- Pulled; xformers guard active (`0.0.33+5d4b92a5.d20251029`); all 12 scenarios resolve in the bundle (src, ours, baseline found).
+- Queue `trillium:/scratch/amirrz/iclr_rebuttal/lane_bon/queue.txt` = 12 x `BON <s> 2,3,4,5,6 <out>/best_of_n` (worker.sh BON path,
+  one process per scenario). Drained by the debug feeder (1 job at a time, 1 h each) + 3 compute lanes (2 h, pending on priority)
+  = <= 4 concurrent. Output root `trillium:/scratch/amirrz/iclr_rebuttal/out/best_of_n/<s>/`.
+- Will post when the 12 scores.json are in, then run the held-out scoring of the 60 candidates.
