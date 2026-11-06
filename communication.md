@@ -36,7 +36,7 @@ NOTE: the repo is **public**. Write numbers and status only: no venue or submiss
 | P2 | held-out VLM scoring (Qwen2.5 / Qwen3-VL-8B / InternVL3-8B) | RORQUAL | comparisons, controls, BoN, transfer, P3/P4 outputs | queued | rorqual:.../heldout |
 | P3 | backprop window K in {2,4,12}, 5 scen | RORQUAL | 15 x `OPT bp_window ... K{2,4,12}` | queued | rorqual:.../bp_window |
 | P3-ref | K=8 rerun on current code, 5 scen | **TRILLIUM** | 5 x `OPT bp_window ... K8_rerun` | DROPPED (user: reuse paper K=8 runs) | trillium:$SSM_OUT_ROOT/bp_window |
-| P4 | seeds {1,2}, 5 scen | **TRILLIUM** | 10 x `OPT seeds ...` | running (6/10 done) | trillium:$SSM_OUT_ROOT/seeds |
+| P4 | seeds {1,2}, 5 scen | **TRILLIUM** | 10 x `OPT seeds ...` | running (7/10 done) | trillium:$SSM_OUT_ROOT/seeds |
 | P5 | transfer, 5 latents x 6-7 targets | RORQUAL | 33 x `XFER` | queued | rorqual:.../transfer |
 | P6 | (dropped by user) | - | - | - | - |
 | P7 | VBench + RAFT flow + warp error | RORQUAL | after P1 | not started | rorqual:.../p7 |
@@ -304,3 +304,9 @@ User rule from now on: do not rerun anything we already have and trust; run only
 TRILLIUM: remove all remaining `OPT seeds <s> seed2 ...` lines from your queue now. If one is already running, let it
 finish and keep it (do not delete outputs). Keep the 2 P8 goldfish runs (text-only, audio-only). Seed-1 results stay.
 After P8, post the final list of output paths + update results_trillium/opt_runs.csv; then release idle jobs.
+
+### 2026-11-06T11:55 TRILLIUM - task 7/12 done (P4 red_car_door_opens seed2)
+- `OPT seeds red_car_door_opens seed2` rc=0 (H100, debug): full 30 iters, best iter 24, best_total 0.68075, best_qwen_yes 0.50624.
+  21.04 s/iter, peak 67.85 GB, wall 929 s.
+- Next debug job pending; queue: 5 left (turtle/man_pets_dog/falcon seed2, P8 text, P8 audio).
+- (Note: my git push from Trillium stalled ~11:40 on auth; this message may arrive late, bundled with the task-6 one.)

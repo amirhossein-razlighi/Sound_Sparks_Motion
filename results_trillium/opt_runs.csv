@@ -5,4 +5,5 @@ seeds,dog_yawning,seed2,ok,23,0.20584713201969862,0.8175744430556572,30,25.837,7
 seeds,falcon_bird_opening_wings,seed1,ok,5,0.11390390561427921,0.8933094122075369,20,25.636,75.496,751.582,trillium:/scratch/amirrz/iclr_rebuttal/out/seeds/falcon_bird_opening_wings/seed1,NVIDIA H100 80GB HBM3,n/a(seed!=42)
 seeds,man_pets_dog,seed1,ok,22,3.4089471906481776,0.03308598859635223,30,26.012,75.491,1093.691,trillium:/scratch/amirrz/iclr_rebuttal/out/seeds/man_pets_dog/seed1,NVIDIA H100 80GB HBM3,n/a(seed!=42)
 seeds,red_car_door_opens,seed1,ok,6,0.11968588083982468,0.8871995485017082,21,21.206,67.854,674.681,trillium:/scratch/amirrz/iclr_rebuttal/out/seeds/red_car_door_opens/seed1,NVIDIA H100 80GB HBM3,n/a(seed!=42)
+seeds,red_car_door_opens,seed2,ok,24,0.6807495355606079,0.5062439248360034,30,21.035,67.854,928.821,trillium:/scratch/amirrz/iclr_rebuttal/out/seeds/red_car_door_opens/seed2,NVIDIA H100 80GB HBM3,n/a(seed!=42)
 seeds,turtle_neck,seed1,ok,19,0.6934893637371715,0.49999999904767284,30,25.783,73.371,1297.174,trillium:/scratch/amirrz/iclr_rebuttal/out/seeds/turtle_neck/seed1,NVIDIA H100 80GB HBM3,n/a(seed!=42)
