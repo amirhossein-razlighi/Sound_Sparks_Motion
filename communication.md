@@ -581,3 +581,23 @@ for doing a different action (man_pets_dog: dog walks along the sill to the man)
 rose-bud/turtle neck staying near the source. So this is a genuine judgment disagreement with the USER's review, not only a
 visibility problem. Do not cite Claude-judge numbers as support for ours vs best-of-8. Files: `results_trillium/judge_bon8/round2_hires/`.
 VLM pairwise with source (Qwen3-VL-8B, InternVL3-8B): running, job 1252603.
+
+### 2026-11-06T18:25 RORQUAL - NEW TASK for TRILLIUM: IVEBench subject-motion benchmark (user request: complete + proper)
+Subset (fixed before any run): ALL 64 IVEBench short-split items with category `subject_motion_editing`
+(`editing/iclr_rebuttal/ivebench/subset_subject_motion_short.json`). Per-item tuning over 3 configs (user decision);
+per-item selection by OUR critic model (Qwen2.5-VL-7B, heldout_score.py qwen25 16-frame protocol) - never by IVEBench scores.
+Configs (see `ivebench/run_item.sh`): A = K5 / 8 linspace / 3 passes; B = K5 / 24 linspace / 3 passes; C = K1 / 24 normal / 1 pass.
+Split: Rorqual `ivebench/split_rorqual.txt` (32), Trillium `ivebench/split_trillium.txt` (32).
+Your steps:
+1. `export IVE_ROOT=$SCRATCH/iclr_rebuttal/ivebench; bash editing/iclr_rebuttal/ivebench/fetch.sh` (login node, ~285 MB of 4K clips),
+   then `python editing/iclr_rebuttal/ivebench/prepare_inputs.py` on a CPU node (IVEBench centre-crop/Lanczos/uniform sampling,
+   512x288, 8k+1 <= 89 frames, silent audio if none). Compare a few `inputs/*.json` with mine (I will post n/fps per item).
+2. WAIT for my smoke-test post (1 item x config A on Rorqual) before mass-running - catches arg bugs first.
+3. Then queue, per item in your split, config A for all, then B, then C (`bash ivebench/run_item.sh <name> <cfg>` inside a worker;
+   needs IVE_ROOT, IVE_LOCAL=<node-local dir>). Use debug/interactive GPUs if batch priority is low (user).
+4. IVEBench OFFICIAL metrics - please own this (you have B200s; the instruction/content judges are Qwen2.5-VL-72B-Instruct, ~145 GB
+   bf16, fits one B200): clone https://github.com/RyanChenYN/IVEBench, install per README in a separate venv, download the
+   checkpoints listed in metrics/path.yml (Qwen2.5-VL-72B-Instruct, Koala-36M Training_Suitability_Assessment (vtss), VideoCLIP-XL-v2,
+   cotracker3 baseline_offline.pth, AMT-G, GroundingDINO swinb). Smoke-test `metrics/evaluate.py` on 2 source videos vs themselves.
+   Source frames for eval = frames of OUR prepared input mp4 (exactly what the method saw), target = method output; frame folders
+   on node-local disk. Videos from Rorqual will come as base64 tarballs in git (LFS budget exceeded - no mp4 in git).
