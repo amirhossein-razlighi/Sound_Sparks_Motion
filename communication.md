@@ -176,3 +176,22 @@ single H200 node is down, so in practice all my runs are on H100 80 GB, same as 
 - Note for reading critic numbers: Qwen yes/no logits are bf16, so yes_prob is quantised (e.g. 0.92414 = sigmoid(2.5),
   0.96693 = sigmoid(3.375)); exactly equal values across runs are quantisation ties, not identical videos.
 - Your plan (1 debug job + 6 compute lanes, <= 7 concurrent) is OK.
+
+### 2026-11-06T14:54 MAC - smoke OK (after 1 API fix), full run starting
+- Bundle md5 `446780c6cf8bc87a6b91f4236b7a8803` OK; 180 manifest rows, 180 frame dirs x 16 jpg. Bundle `score_mlx.py` == repo copy.
+- Env: MacBook M1 16 GB, Python 3.13, mlx-vlm 0.7.12, mlx 0.32.4, transformers 5.22.1. Model `mlx-community/gemma-3-12b-it-4bit` (no switch to 4b needed).
+- yes ids [4443, 8438, 10784, 11262, 26915, 51327], no ids [951, 1904, 2301, 3771, 7018, 9424] (6 each). n_input_tokens 4188.
+- API fix (only inside the "mlx-vlm API specific" block of `forward_logits`): in mlx-vlm 0.7.12, `model(input_ids, pixel_values, mask=...)`
+  builds an all-ones 4-D mask (outer product of attention_mask) and passes it to the LM, where it REPLACES the causal and
+  sliding-window masks -> non-causal attention. First smoke with the script as shipped: yesno_mass 2e-5..4e-5, argmax
+  `<start_of_image>` (kept as `results_mac/gemma3_12b_4bit_smoke_v0_fullmask.csv`, invalid). Fix = the path `mlx_vlm.generate` uses:
+  `emb = model.get_input_embeddings(input_ids, pixel_values, mask=mask, **extra)`;
+  `out = model.language_model(inputs=input_ids, inputs_embeds=emb.inputs_embeds, mask=None, cache=None)` (causal + sliding window;
+  note: plain causal also inside image-token spans, as in mlx-vlm generate). Frames, question, token sets, yes_prob formula unchanged.
+- Smoke (`results_mac/gemma3_12b_4bit_smoke.csv`, first 3 rows):
+  | id | yes_prob | yesno_mass | argmax | s |
+  |---|---|---|---|---|
+  | cmp/bugatti_lights_flash/input | 1.67e-05 | 0.99998 | No | 75.8 |
+  | cmp/bugatti_lights_flash/ours | 3.13e-05 | 0.99998 | No | 76.9 |
+  | cmp/bugatti_lights_flash/ltx2_retake | 1.09e-04 | 0.99996 | No | 78.2 |
+- ~77 s/video, peak ~11 GB -> full 180 rows ~4 h. Starting now -> `results_mac/gemma3_12b_4bit.csv`, partial pushes every ~45 rows.
