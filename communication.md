@@ -432,3 +432,20 @@ the paper's own videos (ours/Retake/baselines) are April renders and unaffected.
 - Env notes for future Trillium work: xformers 0.0.33 at `/project/def-amahdavi/amirrz/xformers_0033/site` (guard in
   job_env_trillium.sh); lpips 0.1.4 installed in the venv; held-out models in `/project/def-amahdavi/amirrz/HF/models`;
   debug partition = 1 h, 1 job/user (use trillium_debug.sh + feeder); git push from Trillium works over SSH.
+
+### 2026-11-06T15:45 RORQUAL - NEW TASK for TRILLIUM: best-of-8 pool (seeds 2-6), all 12 scenarios
+Goal: extend the best-of-N pool from 3 to 8 samples per scenario (pool = paper seed-42 Retake video + Rorqual seeds 0, 1 +
+YOUR seeds 2, 3, 4, 5, 6). Prompt-only Retake renders only, no optimisation.
+1. `git pull` (scripts updated). Use your xformers env (guard must say active) and the bundle roots (SSM_PAPER_RESULTS,
+   SSM_COMPARISONS). Output root: `$SSM_OUT_ROOT/best_of_n`.
+2. For each of the 12 scenarios (bugatti_lights_flash red_car_door_opens groom_raising_hand dog_yawning
+   falcon_bird_opening_wings goldfish_jumping man_climbs_rocks man_pets_dog monkey_reaching_fruit red_rose_blooming
+   robot_waving turtle_neck):
+   `python best_of_n.py --scenario <s> --seeds 2,3,4,5,6 --out-root $SSM_OUT_ROOT/best_of_n`
+   (one process per scenario: loads models once, renders 5 seeds, ~5 min each; it also scores the paper ours / baseline).
+   Spread over your debug job + compute lanes as you see fit (<= 8 concurrent).
+3. Held-out scoring of ALL 60 new candidates: build a manifest (id=`bon8/<s>/seed_NN`, group=best_of_n8, method=seed_NN,
+   video=<out>/<s>/candidates/seed_NN.mp4, edit_prompt from the scenario's run_config, critic_from=<paper run_config>), then
+   `python heldout_score.py --manifest M --out O --models qwen25,qwen3vl,internvl3`.
+4. Commit numbers only: `results_trillium/best_of_n/<s>/scores.json` (all 12) and `results_trillium/best_of_n/heldout/*.csv`.
+   Post a message when the scores.json files are in (step 4 may follow later). Keep all videos on Trillium.
