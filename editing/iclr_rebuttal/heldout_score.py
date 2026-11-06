@@ -45,8 +45,9 @@ def read_frames(path: str) -> tuple[list[np.ndarray], float, int, list[int]]:
     p = Path(path)
     if p.suffix.lower() == ".gif":
         import imageio.v3 as iio
+        from critic import uniedit_panel  # right (edited) panel of the 2-panel UniEdit gifs
         arr = iio.imread(str(p), index=None)
-        frames = [np.asarray(f)[..., :3] for f in arr]
+        frames = uniedit_panel([np.asarray(f)[..., :3] for f in arr], p)
         try:
             meta = iio.immeta(str(p))
             fps = 1000.0 / float(meta.get("duration", 40))

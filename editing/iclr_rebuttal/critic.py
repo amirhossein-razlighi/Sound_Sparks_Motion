@@ -25,6 +25,15 @@ from motion_opt.qwen_loss import build_qwen_model, build_qwen_rubric_inputs, com
 CRN_SEED = 1234  # fixed window seed for passes >= 1
 
 
+def uniedit_panel(frames: list, path: Path) -> list:
+    """The UniEdit baseline gifs are two panels side by side (left: UniEdit's source reconstruction,
+    6-px gap, right: the edited video; 1030 = 512 + 6 + 512 px). Score only the right (edited) panel."""
+    if path.name == "uniedit.gif" and frames and frames[0].shape[1] > 1.8 * frames[0].shape[0]:
+        w = frames[0].shape[1]
+        return [f[:, (w + 6) // 2:] for f in frames]
+    return frames
+
+
 def load_video_chw(path: str | Path, device, max_frames: int | None = None) -> torch.Tensor:
     path = Path(path)
     if path.suffix.lower() == ".gif":
@@ -32,7 +41,7 @@ def load_video_chw(path: str | Path, device, max_frames: int | None = None) -> t
         import numpy as np
 
         arr = iio.imread(str(path), index=None)  # [T,H,W,C]
-        frames = [np.asarray(f)[..., :3] for f in arr]
+        frames = uniedit_panel([np.asarray(f)[..., :3] for f in arr], path)
     else:
         frames = decode_video_frames_rgb(str(path), max_frames=max_frames, frame_stride=1, resize_to=None)
     if not frames:

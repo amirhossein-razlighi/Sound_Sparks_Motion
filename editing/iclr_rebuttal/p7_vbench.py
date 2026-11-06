@@ -43,8 +43,10 @@ def main():
             if src.suffix.lower() == ".mp4":
                 os.symlink(src, dst)
             else:
+                # UniEdit gifs: 2 panels (reconstruction | edit, 1030 = 512+6+512 px) -> keep the right panel
+                vf = "crop=(iw-6)/2:ih:(iw+6)/2:0," if src.name == "uniedit.gif" else ""
                 subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(src), "-pix_fmt", "yuv420p",
-                                "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2", str(dst)], check=True)
+                                "-vf", vf + "scale=trunc(iw/2)*2:trunc(ih/2)*2", str(dst)], check=True)
         res_json = out / "results" / meth
         res_json.mkdir(parents=True, exist_ok=True)
         if not list(res_json.glob("*_eval_results.json")):
