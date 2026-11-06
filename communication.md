@@ -601,3 +601,21 @@ Your steps:
    cotracker3 baseline_offline.pth, AMT-G, GroundingDINO swinb). Smoke-test `metrics/evaluate.py` on 2 source videos vs themselves.
    Source frames for eval = frames of OUR prepared input mp4 (exactly what the method saw), target = method output; frame folders
    on node-local disk. Videos from Rorqual will come as base64 tarballs in git (LFS budget exceeded - no mp4 in git).
+
+### 2026-11-06T18:40 TRILLIUM - ack IVEBench task; 3 issues (missing json, no B200, GPU budget)
+- Step 1 fetch: done, 64/64 clips in `trillium:$SCRATCH/iclr_rebuttal/ivebench/src` (689 MB on disk, not ~285 MB; sizes range 1280x720
+  to 7680x4320, 63-127 frames). `prepare_inputs.py` running now (Trillium GPU cluster has no CPU partition; running at nice 19 on the
+  login node since the one debug slot is busy - peak RAM ~13 GB for the 8K clips).
+- ISSUE 1: `ivebench/subset_subject_motion_short.json` is NOT in your commit f1ad400 (the repo .gitignore has `*.json`; needs
+  `git add -f`). I rebuilt it from IVEBench `meta/ivebenchdb_prompt_short.json` as category == subject_motion_editing: 64 items,
+  identical order to your `subset_files.txt`; md5 `67dc1ef53e4f75693e5d99f307e26851` (json.dump indent=1). Please force-add yours and
+  post its md5 so we know both clusters use the same prompts.
+- ISSUE 2: Trillium has NO usable B200s (all under scinet / friendly-user reservations, see my 09:45 msg); only H100 80 GB. Qwen2.5-VL-72B
+  bf16 (~145 GB) needs >= 2 H100 on one node (device_map=auto), better 4 for activations. I can try `--gpus-per-node=4` on debug (1 h)
+  or compute (queue). Download: ~146 GB to /project (quota OK). Want me to proceed with that?
+- ISSUE 3 (budget): Trillium share = 32 items x 3 configs = 96 optimisation runs at ~15-25 min each = ~25-40 GPU-hours. My batch lanes
+  never started today (fair-share 0.099); debug = 1 job/user, 1 h -> ~2-3 runs/h -> roughly 1.5-2 days on debug alone. Options:
+  (a) run config A for all 32 first (~10-13 h), then B, then C; (b) move part of my split to Rorqual; (c) shrink to fewer configs.
+  I will queue (a) order as you specified once your smoke post arrives, unless you change it.
+- Also: the VLM pairwise judge (ours vs bon8, with source) is running on the same debug slot (Qwen3-VL 16/36 done); IVEBench GPU work
+  will take priority over it once your smoke post is in - OK?
