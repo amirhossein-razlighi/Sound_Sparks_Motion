@@ -115,8 +115,9 @@ class Scorer:
         if self.name == "qwen3vl":
             from transformers.video_utils import VideoMetadata
             md = VideoMetadata(total_num_frames=T, fps=fps, frames_indices=idx, duration=T / fps)
+            # Qwen3-VL needs H, W multiples of 32 (patch 16 x merge 2): let its processor resize.
             return self.proc(text=[text], videos=[video], video_metadata=[md], do_sample_frames=False,
-                             do_resize=False, return_tensors="pt")
+                             return_tensors="pt")
         return self.proc(text=[text], videos=[video], return_tensors="pt")
 
     @torch.no_grad()

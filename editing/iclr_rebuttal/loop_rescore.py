@@ -75,9 +75,11 @@ def main():
                 ls, ll = logged_score(r["video"])
                 row = {**r, "loop_yes_prob": res["yes_prob"], "loop_mean_nll": res["mean_nll"],
                        "pass_yes": json.dumps([round(x, 5) for x in res["pass_yes"]]), "critic_spec": spec,
+                       "n_frames": res["n_frames"], "upsampled_to": res["upsampled_to"],
                        "logged_best_yes": ls, "logged_best_total_loss": ll, "error": ""}
             except Exception as e:
                 row = {**r, "loop_yes_prob": "", "loop_mean_nll": "", "pass_yes": "", "critic_spec": "",
+                       "n_frames": "", "upsampled_to": "",
                        "logged_best_yes": "", "logged_best_total_loss": "", "error": repr(e)[:300]}
             if w is None:
                 w = csv.DictWriter(f, fieldnames=list(row))

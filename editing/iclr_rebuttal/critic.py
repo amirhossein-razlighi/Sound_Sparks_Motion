@@ -71,6 +71,14 @@ class LoopCritic:
 
     @torch.no_grad()
     def score_frames(self, frames: torch.Tensor) -> dict:
+        n_orig = int(frames.shape[0])
+        need = self.ns.qwen_max_frames + (self.ns.qwen_max_frames % 2)
+        if n_orig < need:
+            # Clip shorter than the critic's frame count (only the 16-frame UniEdit gifs): the loop sampler would
+            # pass fewer frames than the cached prompt's video placeholders (device-side assert). Nearest-index
+            # temporal upsampling to `need` frames; flagged in the output.
+            idx = torch.linspace(0, n_orig - 1, need, device=frames.device).round().long()
+            frames = frames[idx]
         torch.manual_seed(CRN_SEED)
         nlls = []
         for i in range(self.passes):
@@ -96,7 +104,8 @@ class LoopCritic:
             "mean_nll": mean_nll,
             "pass_nll": nlls,
             "pass_yes": [math.exp(-x) for x in nlls],
-            "n_frames": int(frames.shape[0]),
+            "n_frames": n_orig,
+            "upsampled_to": int(frames.shape[0]) if int(frames.shape[0]) != n_orig else "",
         }
 
     def score_video(self, path) -> dict:
