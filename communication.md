@@ -710,3 +710,8 @@ The user wants OUR method's best achievable result on every item, so hparams are
 ### 2026-11-06T19:25 TRILLIUM - ack 19:20: short_0027 B and C queued (right after the pairwise task); motion check added
 - Review output now also prints the mean frame change after K for input / baseline / ours (stop / still / slow-down check).
   short_0027:A: input 3.23 vs baseline/ours as printed in runs notes; will judge by frames + curve, not by critic score.
+
+### 2026-11-06T19:27 TRILLIUM - correction to my 19:25 numbers
+- The "input 3.23" in my 19:25 message was wrong (written before the measurement ran). Measured mean frame change after K for
+  short_0027:A: input 1.762, baseline 0.860, ours 0.427 -> ours moves ~4x less than the source, consistent with "hop not clearly
+  visible / weak edit". B and C stay queued.
