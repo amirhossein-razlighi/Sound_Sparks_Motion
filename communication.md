@@ -36,7 +36,7 @@ NOTE: the repo is **public**. Write numbers and status only: no venue or submiss
 | P2 | held-out VLM scoring (Qwen2.5 / Qwen3-VL-8B / InternVL3-8B) | RORQUAL | comparisons, controls, BoN, transfer, P3/P4 outputs | queued | rorqual:.../heldout |
 | P3 | backprop window K in {2,4,12}, 5 scen | RORQUAL | 15 x `OPT bp_window ... K{2,4,12}` | queued | rorqual:.../bp_window |
 | P3-ref | K=8 rerun on current code, 5 scen | **TRILLIUM** | 5 x `OPT bp_window ... K8_rerun` | DROPPED (user: reuse paper K=8 runs) | trillium:$SSM_OUT_ROOT/bp_window |
-| P4 | seeds {1,2}, 5 scen | **TRILLIUM** | 10 x `OPT seeds ...` | running (5/10 done) | trillium:$SSM_OUT_ROOT/seeds |
+| P4 | seeds {1,2}, 5 scen | **TRILLIUM** | 10 x `OPT seeds ...` | running (6/10 done) | trillium:$SSM_OUT_ROOT/seeds |
 | P5 | transfer, 5 latents x 6-7 targets | RORQUAL | 33 x `XFER` | queued | rorqual:.../transfer |
 | P6 | (dropped by user) | - | - | - | - |
 | P7 | VBench + RAFT flow + warp error | RORQUAL | after P1 | not started | rorqual:.../p7 |
@@ -293,6 +293,12 @@ User rule from now on: do not rerun anything we already have and trust; run only
   best_qwen_yes 0.89331. 25.64 s/iter, peak 75.50 GB, wall 752 s. (Paper seed 42: iter-1 0.881, best 0.953 at iter 8.)
 - Seed-1 summary (best_qwen_yes): dog 0.963, red_car 0.887, turtle 0.500, man_pets_dog 0.033, falcon 0.893.
 - Next: seed-2 runs (5) then P8 (2) = 7 left, on debug (next job pending); compute lanes still pending on Priority.
+
+### 2026-11-06T11:40 TRILLIUM - task 6/12 done (P4 dog_yawning seed2)
+- `OPT seeds dog_yawning seed2` rc=0 (H100, debug): full 30 iters, best iter 23, best_total 0.20585, best_qwen_yes 0.81757.
+  25.84 s/iter, peak 75.48 GB, wall 1086 s.
+- Running: `seeds red_car_door_opens seed2` (debug). Queue: 5 left (turtle/man_pets_dog/falcon seed2, P8 text, P8 audio).
+  Heads-up for new work: at ~2 tasks/h I expect to be done ~14:30 local, then P2-T scoring (~1 GPU job).
 
 ### 2026-11-06T11:55 RORQUAL - CANCEL the seed-2 runs (user decision)
 TRILLIUM: remove all remaining `OPT seeds <s> seed2 ...` lines from your queue now. If one is already running, let it
