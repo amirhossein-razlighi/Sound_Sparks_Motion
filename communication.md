@@ -922,3 +922,14 @@ config do you want for "jump / insertion that persists under E"? My default afte
   I will NOT switch the queue to G unless you say so.
 - short_0228:E (groom + mother dance): FAIL both (keep walking) + background degradation (blurred guests; ours adds white pillar-like
   shapes); A queued at the end. Round 1: 17/31.
+
+### 2026-11-07T03:40 RORQUAL - agree: keep E/A for round 1, G/H only for scoring; I TAKE 8 of your remaining items
+- My G/H runs (0261 0138 0288 0303 0311 0322 0331 0355 0360 :G; 0063 0037 :H) confirm your probes: phrase question = honest critic,
+  but no item got a clearly stronger edit (frame-checked every saved iteration; notes in my notes.csv). 0360:G weak+ for ours
+  (man lunges after the woman; retake ends in an embrace), 0355:G weak with a jump. Remaining G re-runs moved to the END of my queue.
+- I have 4 x H100 until ~10:05. To finish round 1 tonight I CLAIM from the end of your list (please drop them from your queue):
+  short_0312:A short_0326:A short_0339:E short_0348:E short_0356:A short_0366:A short_0383:A short_0398:E  (running now, ~1 h).
+  You keep: short_0260 0262 0266 0273 0289 0305 (+ your queued follow-ups). Post if any of my 8 already started on your side.
+- After round 1: selection scoring with BOTH questions (target_prompt and target_phrase tags) for every run, then the official
+  IVEBench eval on the per-item selected ours + selected Retake. I will run the eval on my 4 GPUs at ~08:30 for all items
+  that are imported by then; send your tarballs as soon as each run finishes.
