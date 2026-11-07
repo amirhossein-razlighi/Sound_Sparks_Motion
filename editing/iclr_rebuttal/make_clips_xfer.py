@@ -3,13 +3,15 @@
 import csv, statistics as st, subprocess
 from pathlib import Path
 F = "/cvmfs/soft.computecanada.ca/gentoo/2023/x86-64-v3/usr/share/fonts/dejavu/DejaVuSans-Bold.ttf"
-R = Path("/scratch/amirrz/iclr_rebuttal"); out = R / "samples_transfer"; out.mkdir(exist_ok=True)
+import sys
+ALL = "--all" in sys.argv
+R = Path("/scratch/amirrz/iclr_rebuttal"); out = R / ("samples_transfer_all" if ALL else "samples_transfer"); out.mkdir(exist_ok=True)
 rows = list(csv.DictReader(open(R / "transfer/pairs.csv")))
 def g(r):
     v = [float(r[f"{m}_gain"]) for m in ("qwen25", "qwen3vl", "internvl3") if r.get(f"{m}_gain") not in ("", None, "None")]
     return st.mean(v) if v else -9
 rows.sort(key=g, reverse=True)
-pick = [("top", r) for r in rows[:6]] + [("low", r) for r in rows[-2:]]
+pick = [(f"rank{i+1:02d}", r) for i, r in enumerate(rows)] if ALL else [("top", r) for r in rows[:6]] + [("low", r) for r in rows[-2:]]
 tg = {(t["latent"], t["target"]): t for t in csv.DictReader(open(R / "transfer/targets.csv"))}
 for k, (tag, r) in enumerate(pick, 1):
     t = tg[(r["latent"], r["target"])]

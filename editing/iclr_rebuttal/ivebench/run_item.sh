@@ -11,6 +11,7 @@
 #   F: = E with stronger source anchoring (lpips_weight 0.3, temporal_weight 0.2) - for jumps / insertions that persist under E
 #   G: = E but the CRITIC question uses IVEBench's short target_phrase (paper-style action description) instead of the long
 #      target_prompt (the long scene description is already satisfied by the unedited source: no edit signal). LTX prompt unchanged.
+#   H: = A with the target_phrase critic question (for n < 73 frames)
 # LTX prompt and critic question use IVEBench's target_prompt (the paper uses one string for both).
 set -o pipefail
 N=$1; CFG=$2
@@ -28,6 +29,7 @@ case $CFG in
   E) SETS=(retake_start_frames=25 qwen_max_frames=8 qwen_sample_mode=linspace qwen_grad_accum_steps=3 enhance_prompt=false) ;;
   F) SETS=(retake_start_frames=25 qwen_max_frames=8 qwen_sample_mode=linspace qwen_grad_accum_steps=3 enhance_prompt=false lpips_weight=0.3 temporal_weight=0.2) ;;
   G) SETS=(retake_start_frames=25 qwen_max_frames=8 qwen_sample_mode=linspace qwen_grad_accum_steps=3 enhance_prompt=false); QPHRASE=1 ;;
+  H) SETS=(retake_start_frames=5 qwen_max_frames=8 qwen_sample_mode=linspace qwen_grad_accum_steps=3); QPHRASE=1 ;;
   *) echo "bad cfg $CFG"; exit 2 ;;
 esac
 mapfile -t P < <(QPHRASE=${QPHRASE:-0} python - "$R" "$N" <<'PY'

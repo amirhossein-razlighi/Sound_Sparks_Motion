@@ -21,7 +21,7 @@ idle=0
 while true; do
   [[ -f $L/STOP ]] && { echo "[w$WID] STOP file"; exit 0; }
   LINE=$(flock $L/.lock bash -c "l=\$(grep -v '^\s*\(#\|$\)' $L/queue.txt | head -1); [[ -n \"\$l\" ]] && { grep -vxF \"\$l\" $L/queue.txt > $L/.q.tmp; mv $L/.q.tmp $L/queue.txt; echo \"\$l\"; }")
-  if [[ -z "$LINE" ]]; then idle=$((idle+1)); [[ $idle -gt 40 ]] && { echo "[w$WID] idle exit"; exit 0; }; sleep 30; continue; fi
+  if [[ -z "$LINE" ]]; then idle=$((idle+1)); [[ $idle -gt ${IDLE_MAX:-480} ]] && { echo "[w$WID] idle exit"; exit 0; }; sleep 30; continue; fi
   idle=0
   read -r TYPE A1 A2 A3 REST <<< "$LINE"
   NAME=$(echo "${A1}_${A2}_${A3}" | tr -c 'A-Za-z0-9_.\n-' '_' | cut -c1-120)

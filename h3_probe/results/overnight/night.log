@@ -250,3 +250,603 @@ wrote /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/ablation/README
 [09-09 09:26:07] ABL DONE gen_woman_door/audio
 [09-09 09:26:07] task done (ok): ABL|gen_woman_door|audio
 [09-09 09:40:10] idle 15 min with empty queue -> releasing 20638196
+[09-09 11:50:10] requesting allocation (2xH100, 3h) ...
+[09-09 11:50:15] requesting allocation (2xH100, 3h) ...
+[09-09 11:58:32] allocation 20652872 RUNNING on rg31902, 10800s
+[09-09 11:58:32] staging models to /localscratch/amirrz.20652872.0/models ...
+[09-09 12:04:00] staged: 134G	/localscratch/amirrz.20652872.0/models/ckpt 16G	/localscratch/amirrz.20652872.0/models/qwen 
+[09-09 12:04:00] step -> h3_probe/results/overnight/logs/gen_120400.log (gpus=1, timeout=2100s, alloc=20652872)
+[09-09 12:26:01] step <- h3_probe/results/overnight/logs/gen_120400.log rc=0
+[ok] gen_piano_lid
+[ok] gen_cat_vase
+[ok] gen_bike_tips
+[ok] gen_ladder
+[ok] gen_firecracker
+[ok] gen_kettle
+[ok] gen_plate_counter
+[ok] gen_car_window
+[missing] gen_bubblegum /scratch/amirrz/H3_exp/inputs/gen/gen_bubblegum__t2va.mp4
+[missing] gen_spit_take /scratch/amirrz/H3_exp/inputs/gen/gen_spit_take__t2va.mp4
+[ok] gen_frame_wall
+[ok] gen_lightbulb
+[missing] gen_gorilla /scratch/amirrz/H3_exp/inputs/gen/gen_gorilla__t2va.mp4
+[missing] gen_horse_neigh /scratch/amirrz/H3_exp/inputs/gen/gen_horse_neigh__t2va.mp4
+[missing] gen_popcorn /scratch/amirrz/H3_exp/inputs/gen/gen_popcorn__t2va.mp4
+[missing] gen_soda_can /scratch/amirrz/H3_exp/inputs/gen/gen_soda_can__t2va.mp4
+[missing] gen_elephant /scratch/amirrz/H3_exp/inputs/gen/gen_elephant__t2va.mp4
+[ok] gen_bowling
+[ok] gen_car_shatter
+[ok] gen_balloon
+[ok] gen_tyre
+[missing] gen_door_slam /scratch/amirrz/H3_exp/inputs/gen/gen_door_slam__t2va.mp4
+[missing] gen_glass_note /scratch/amirrz/H3_exp/inputs/gen/gen_glass_note__t2va.mp4
+[missing] gen_branch /scratch/amirrz/H3_exp/inputs/gen/gen_branch__t2va.mp4
+[missing] gen_gatsby_toast /scratch/amirrz/H3_exp/inputs/gen/gen_gatsby_toast__t2va.mp4
+[missing] gen_mic_drop /scratch/amirrz/H3_exp/inputs/gen/gen_mic_drop__t2va.mp4
+[missing] gen_table_flip /scratch/amirrz/H3_exp/inputs/gen/gen_table_flip__t2va.mp4
+[missing] gen_party_popper /scratch/amirrz/H3_exp/inputs/gen/gen_party_popper__t2va.mp4
+[missing] gen_cat_dinner /scratch/amirrz/H3_exp/inputs/gen/gen_cat_dinner__t2va.mp4
+[missing] gen_guitar_smash /scratch/amirrz/H3_exp/inputs/gen/gen_guitar_smash__t2va.mp4
+[09-09 12:26:02] source sheet: /scratch/amirrz/H3_exp/inputs/gen/gen_frame_wall__src_sheet.jpg
+[09-09 12:26:03] source sheet: /scratch/amirrz/H3_exp/inputs/gen/gen_lightbulb__src_sheet.jpg
+[09-09 12:26:03] source sheet: /scratch/amirrz/H3_exp/inputs/gen/gen_bowling__src_sheet.jpg
+[09-09 12:26:03] source sheet: /scratch/amirrz/H3_exp/inputs/gen/gen_balloon__src_sheet.jpg
+[09-09 12:26:03] source sheet: /scratch/amirrz/H3_exp/inputs/gen/gen_tyre__src_sheet.jpg
+[09-09 12:26:03] task done (ok): GEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/gen_inputs_bank.json|gen_frame_wall;gen_lightbulb;gen_bowling;gen_balloon;gen_tyre|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-09 12:26:03] step -> h3_probe/results/overnight/logs/opt_gen_kettle.log (gpus=2, timeout=5400s, alloc=20652872)
+[09-09 13:29:37] step <- h3_probe/results/overnight/logs/opt_gen_kettle.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/gen_kettle best {'iter': 2, 'yes_lin': 0.14992127148526135, 'yes_any': 0.14992127148526135, 'perc': 0.020283006131649017} auto_verdict no_gain
+[09-09 13:29:39] OPT DONE gen_kettle: baseline any=0.092 -> best iter 2, final any=0.143, fd=0.013
+[09-09 13:29:39] task done (ok): OPT|gen_kettle|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-09 13:29:39] waiting for 'SOURCES_OK_b1' in h3_probe/results/overnight/gate.txt
+[09-09 13:29:39] found 'SOURCES_OK_b1' in h3_probe/results/overnight/gate.txt
+[09-09 13:29:39] task done (ok): WAITLOG|h3_probe/results/overnight/gate.txt|SOURCES_OK_b1
+[09-09 13:29:39] step -> h3_probe/results/overnight/logs/screen_132939.log (gpus=1, timeout=3900s, alloc=20652872)
+[09-09 13:49:17] step <- h3_probe/results/overnight/logs/screen_132939.log rc=0
+[09-09 13:49:17] SCREENED gen_frame_wall baseline lin/any = 0.971 0.863  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/gen_frame_wall_sheet.png
+[09-09 13:49:17] auto: no room / no auto for gen_frame_wall (any=0.863)
+[09-09 13:49:17] SCREENED gen_balloon baseline lin/any = 0.003 0.024  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/gen_balloon_sheet.png
+[09-09 13:49:17] auto: no room / no auto for gen_balloon (any=0.024)
+[09-09 13:49:17] SCREENED gen_tyre baseline lin/any = 0.001 0.009  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/gen_tyre_sheet.png
+[09-09 13:49:17] auto: no room / no auto for gen_tyre (any=0.009)
+[09-09 13:49:17] task done (ok): SCREEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json|gen_frame_wall;gen_balloon;gen_tyre
+[09-09 13:49:17] step -> h3_probe/results/overnight/logs/gen_134917.log (gpus=1, timeout=2100s, alloc=20652872)
+[09-09 14:14:42] step <- h3_probe/results/overnight/logs/gen_134917.log rc=0
+[ok] gen_piano_lid
+[ok] gen_cat_vase
+[ok] gen_bike_tips
+[ok] gen_ladder
+[ok] gen_firecracker
+[ok] gen_kettle
+[ok] gen_plate_counter
+[ok] gen_car_window
+[missing] gen_bubblegum /scratch/amirrz/H3_exp/inputs/gen/gen_bubblegum__t2va.mp4
+[missing] gen_spit_take /scratch/amirrz/H3_exp/inputs/gen/gen_spit_take__t2va.mp4
+[ok] gen_frame_wall
+[ok] gen_lightbulb
+[missing] gen_gorilla /scratch/amirrz/H3_exp/inputs/gen/gen_gorilla__t2va.mp4
+[ok] gen_horse_neigh
+[missing] gen_popcorn /scratch/amirrz/H3_exp/inputs/gen/gen_popcorn__t2va.mp4
+[missing] gen_soda_can /scratch/amirrz/H3_exp/inputs/gen/gen_soda_can__t2va.mp4
+[ok] gen_elephant
+[ok] gen_bowling
+[ok] gen_car_shatter
+[ok] gen_balloon
+[ok] gen_tyre
+[ok] gen_door_slam
+[ok] gen_glass_note
+[ok] gen_branch
+[missing] gen_gatsby_toast /scratch/amirrz/H3_exp/inputs/gen/gen_gatsby_toast__t2va.mp4
+[missing] gen_mic_drop /scratch/amirrz/H3_exp/inputs/gen/gen_mic_drop__t2va.mp4
+[missing] gen_table_flip /scratch/amirrz/H3_exp/inputs/gen/gen_table_flip__t2va.mp4
+[missing] gen_party_popper /scratch/amirrz/H3_exp/inputs/gen/gen_party_popper__t2va.mp4
+[missing] gen_cat_dinner /scratch/amirrz/H3_exp/inputs/gen/gen_cat_dinner__t2va.mp4
+[missing] gen_guitar_smash /scratch/amirrz/H3_exp/inputs/gen/gen_guitar_smash__t2va.mp4
+[ok] gen_lightbulb2
+[ok] gen_bowling2
+[missing] real_gatsby /scratch/amirrz/H3_exp/inputs/real/real_gatsby__real.mp4
+[missing] real_gatsby_fw /scratch/amirrz/H3_exp/inputs/real/real_gatsby__real.mp4
+[missing] real_leo_couch /scratch/amirrz/H3_exp/inputs/real/real_leo_couch__real.mp4
+[missing] real_travolta /scratch/amirrz/H3_exp/inputs/real/real_travolta__real.mp4
+[missing] real_mrbean /scratch/amirrz/H3_exp/inputs/real/real_mrbean__real.mp4
+[missing] real_grumpy /scratch/amirrz/H3_exp/inputs/real/real_grumpy__real.mp4
+[missing] real_thug_cat /scratch/amirrz/H3_exp/inputs/real/real_thug_cat__real.mp4
+[09-09 14:14:44] source sheet: /scratch/amirrz/H3_exp/inputs/gen/gen_door_slam__src_sheet.jpg
+[09-09 14:14:44] source sheet: /scratch/amirrz/H3_exp/inputs/gen/gen_glass_note__src_sheet.jpg
+[09-09 14:14:44] source sheet: /scratch/amirrz/H3_exp/inputs/gen/gen_branch__src_sheet.jpg
+[09-09 14:14:44] source sheet: /scratch/amirrz/H3_exp/inputs/gen/gen_horse_neigh__src_sheet.jpg
+[09-09 14:14:44] source sheet: /scratch/amirrz/H3_exp/inputs/gen/gen_elephant__src_sheet.jpg
+[09-09 14:14:44] source sheet: /scratch/amirrz/H3_exp/inputs/gen/gen_lightbulb2__src_sheet.jpg
+[09-09 14:14:44] source sheet: /scratch/amirrz/H3_exp/inputs/gen/gen_bowling2__src_sheet.jpg
+[09-09 14:14:44] task done (ok): GEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/gen_inputs_bank.json|gen_door_slam;gen_glass_note;gen_branch;gen_horse_neigh;gen_elephant;gen_lightbulb2;gen_bowling2|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-09 14:14:44] allocation 20652872 has only 2628s left (< 5700s) -> releasing
+[09-09 14:14:44] requesting allocation (2xH100, 3h) ...
+[09-09 14:14:51] allocation 20678872 RUNNING on rg31902, 10799s
+[09-09 14:14:51] staging models to /localscratch/amirrz.20678872.0/models ...
+[09-09 14:20:15] staged: 134G	/localscratch/amirrz.20678872.0/models/ckpt 15G	/localscratch/amirrz.20678872.0/models/qwen 
+[09-09 14:20:15] step -> h3_probe/results/overnight/logs/opt_gen_balloon.log (gpus=2, timeout=5400s, alloc=20678872)
+[09-09 15:18:58] step <- h3_probe/results/overnight/logs/opt_gen_balloon.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/gen_balloon best {'iter': 1, 'yes_lin': 0.02469236057560442, 'yes_any': 0.02469236057560442, 'perc': 0.0001022925935103558} auto_verdict no_gain
+[09-09 15:19:00] OPT DONE gen_balloon: baseline any=0.024 -> best iter 1, final any=0.024, fd=0.000
+[09-09 15:19:00] task done (ok): OPT|gen_balloon|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-09 15:19:00] waiting for 'SOURCES_OK_b2' in h3_probe/results/overnight/gate.txt
+[09-09 15:19:00] found 'SOURCES_OK_b2' in h3_probe/results/overnight/gate.txt
+[09-09 15:19:00] task done (ok): WAITLOG|h3_probe/results/overnight/gate.txt|SOURCES_OK_b2
+[09-09 15:19:00] allocation 20678872 has only 6950s left (< 7200s) -> releasing
+[09-09 15:19:00] requesting allocation (2xH100, 3h) ...
+[09-09 15:19:09] allocation 20700282 RUNNING on rg31902, 10800s
+[09-09 15:19:09] staging models to /localscratch/amirrz.20700282.0/models ...
+[09-09 15:24:28] staged: 134G	/localscratch/amirrz.20700282.0/models/ckpt 16G	/localscratch/amirrz.20700282.0/models/qwen 
+[09-09 15:24:28] step -> h3_probe/results/overnight/logs/screen_152428.log (gpus=1, timeout=6900s, alloc=20700282)
+[09-09 15:55:09] step <- h3_probe/results/overnight/logs/screen_152428.log rc=0
+[09-09 15:55:09] SCREENED gen_door_slam baseline lin/any = 0.003 0.012  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/gen_door_slam_sheet.png
+[09-09 15:55:09] auto: no room / no auto for gen_door_slam (any=0.012)
+[09-09 15:55:09] SCREENED gen_branch baseline lin/any = 0.736 0.583  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/gen_branch_sheet.png
+[09-09 15:55:09] auto: no room / no auto for gen_branch (any=0.583)
+[09-09 15:55:09] SCREENED gen_horse_neigh baseline lin/any = 0.232 0.069  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/gen_horse_neigh_sheet.png
+[09-09 15:55:09] auto: no room / no auto for gen_horse_neigh (any=0.069)
+[09-09 15:55:09] SCREENED gen_elephant baseline lin/any = 0.912 0.989  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/gen_elephant_sheet.png
+[09-09 15:55:09] auto: no room / no auto for gen_elephant (any=0.989)
+[09-09 15:55:09] SCREENED gen_lightbulb2 baseline lin/any = 0.001 0.005  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/gen_lightbulb2_sheet.png
+[09-09 15:55:09] auto: no room / no auto for gen_lightbulb2 (any=0.005)
+[09-09 15:55:10] SCREENED gen_bowling2 baseline lin/any = 0.979 0.923  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/gen_bowling2_sheet.png
+[09-09 15:55:10] auto: no room / no auto for gen_bowling2 (any=0.923)
+[09-09 15:55:10] task done (ok): SCREEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json|gen_door_slam;gen_branch;gen_horse_neigh;gen_elephant;gen_lightbulb2;gen_bowling2
+[09-09 15:55:10] waiting for 'SOURCES_OK_demo' in h3_probe/results/overnight/gate.txt
+[09-09 15:55:10] found 'SOURCES_OK_demo' in h3_probe/results/overnight/gate.txt
+[09-09 15:55:10] task done (ok): WAITLOG|h3_probe/results/overnight/gate.txt|SOURCES_OK_demo
+[09-09 15:55:10] step -> h3_probe/results/overnight/logs/screen_155510.log (gpus=1, timeout=7900s, alloc=20700282)
+[09-09 16:32:09] step <- h3_probe/results/overnight/logs/screen_155510.log rc=0
+[09-09 16:32:09] SCREENED real_gatsby baseline lin/any = 0.003 0.037  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_gatsby_sheet.png
+[09-09 16:32:09] auto: no room / no auto for real_gatsby (any=0.037)
+[09-09 16:32:09] SCREENED real_gatsby_fw baseline lin/any = 0.130 0.492  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_gatsby_fw_sheet.png
+[09-09 16:32:09] auto: no room / no auto for real_gatsby_fw (any=0.492)
+[09-09 16:32:09] SCREENED real_leo_couch baseline lin/any = 0.006 0.029  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_leo_couch_sheet.png
+[09-09 16:32:09] auto: no room / no auto for real_leo_couch (any=0.029)
+[09-09 16:32:09] SCREENED real_travolta baseline lin/any = 0.668 0.822  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_travolta_sheet.png
+[09-09 16:32:09] auto: no room / no auto for real_travolta (any=0.822)
+[09-09 16:32:09] SCREENED real_mrbean baseline lin/any = 0.004 0.015  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_mrbean_sheet.png
+[09-09 16:32:09] auto: no room / no auto for real_mrbean (any=0.015)
+[09-09 16:32:09] SCREENED real_grumpy baseline lin/any = 0.988 1.000  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_grumpy_sheet.png
+[09-09 16:32:09] auto: no room / no auto for real_grumpy (any=1.000)
+[09-09 16:32:09] SCREENED real_thug_cat baseline lin/any = 0.007 0.079  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_thug_cat_sheet.png
+[09-09 16:32:09] auto: no room / no auto for real_thug_cat (any=0.079)
+[09-09 16:32:09] task done (ok): SCREEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json|real_gatsby;real_gatsby_fw;real_leo_couch;real_travolta;real_mrbean;real_grumpy;real_thug_cat
+[09-09 16:32:09] step -> h3_probe/results/overnight/logs/opt_gen_door_slam.log (gpus=2, timeout=5400s, alloc=20700282)
+[09-09 17:37:23] step <- h3_probe/results/overnight/logs/opt_gen_door_slam.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/gen_door_slam best {'iter': 10, 'yes_lin': 0.017487362916567717, 'yes_any': 0.017487362916567717, 'perc': 0.041182681918144226} auto_verdict no_gain
+[09-09 17:37:25] OPT DONE gen_door_slam: baseline any=0.011 -> best iter 10, final any=0.015, fd=0.014
+[09-09 17:37:25] task done (ok): OPT|gen_door_slam|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-09 17:37:25] allocation 20700282 has only 2504s left (< 5700s) -> releasing
+[09-09 17:37:25] requesting allocation (2xH100, 3h) ...
+[09-09 17:37:26] allocation 20736897 RUNNING on rg31605, 10800s
+[09-09 17:37:26] staging models to /localscratch/amirrz.20736897.0/models ...
+[09-09 17:42:53] staged: 134G	/localscratch/amirrz.20736897.0/models/ckpt 15G	/localscratch/amirrz.20736897.0/models/qwen 
+[09-09 17:42:53] step -> h3_probe/results/overnight/logs/opt_gen_horse_neigh.log (gpus=2, timeout=5400s, alloc=20736897)
+[09-09 18:50:03] step <- h3_probe/results/overnight/logs/opt_gen_horse_neigh.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/gen_horse_neigh best {'iter': 5, 'yes_lin': 0.07325249124599488, 'yes_any': 0.07325249124599488, 'perc': 0.18772795796394348} auto_verdict no_gain
+[09-09 18:50:06] OPT DONE gen_horse_neigh: baseline any=0.051 -> best iter 5, final any=0.064, fd=0.060
+[09-09 18:50:06] task done (ok): OPT|gen_horse_neigh|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-09 18:50:06] step -> h3_probe/results/overnight/logs/gen_185006.log (gpus=1, timeout=2100s, alloc=20736897)
+[09-09 18:53:20] step <- h3_probe/results/overnight/logs/gen_185006.log rc=0
+[ok] gen_piano_lid
+[ok] gen_cat_vase
+[ok] gen_bike_tips
+[ok] gen_ladder
+[ok] gen_firecracker
+[ok] gen_kettle
+[ok] gen_plate_counter
+[ok] gen_car_window
+[missing] gen_bubblegum /scratch/amirrz/H3_exp/inputs/gen/gen_bubblegum__t2va.mp4
+[missing] gen_spit_take /scratch/amirrz/H3_exp/inputs/gen/gen_spit_take__t2va.mp4
+[ok] gen_frame_wall
+[ok] gen_lightbulb
+[missing] gen_gorilla /scratch/amirrz/H3_exp/inputs/gen/gen_gorilla__t2va.mp4
+[ok] gen_horse_neigh
+[missing] gen_popcorn /scratch/amirrz/H3_exp/inputs/gen/gen_popcorn__t2va.mp4
+[missing] gen_soda_can /scratch/amirrz/H3_exp/inputs/gen/gen_soda_can__t2va.mp4
+[ok] gen_elephant
+[ok] gen_bowling
+[ok] gen_car_shatter
+[ok] gen_balloon
+[ok] gen_tyre
+[ok] gen_door_slam
+[ok] gen_glass_note
+[ok] gen_branch
+[missing] gen_gatsby_toast /scratch/amirrz/H3_exp/inputs/gen/gen_gatsby_toast__t2va.mp4
+[missing] gen_mic_drop /scratch/amirrz/H3_exp/inputs/gen/gen_mic_drop__t2va.mp4
+[missing] gen_table_flip /scratch/amirrz/H3_exp/inputs/gen/gen_table_flip__t2va.mp4
+[missing] gen_party_popper /scratch/amirrz/H3_exp/inputs/gen/gen_party_popper__t2va.mp4
+[missing] gen_cat_dinner /scratch/amirrz/H3_exp/inputs/gen/gen_cat_dinner__t2va.mp4
+[missing] gen_guitar_smash /scratch/amirrz/H3_exp/inputs/gen/gen_guitar_smash__t2va.mp4
+[ok] gen_lightbulb2
+[ok] gen_bowling2
+[missing] real_gatsby /scratch/amirrz/H3_exp/inputs/real/real_gatsby__real.mp4
+[missing] real_gatsby_fw /scratch/amirrz/H3_exp/inputs/real/real_gatsby__real.mp4
+[missing] real_leo_couch /scratch/amirrz/H3_exp/inputs/real/real_leo_couch__real.mp4
+[missing] real_travolta /scratch/amirrz/H3_exp/inputs/real/real_travolta__real.mp4
+[missing] real_mrbean /scratch/amirrz/H3_exp/inputs/real/real_mrbean__real.mp4
+[missing] real_grumpy /scratch/amirrz/H3_exp/inputs/real/real_grumpy__real.mp4
+[missing] real_thug_cat /scratch/amirrz/H3_exp/inputs/real/real_thug_cat__real.mp4
+[ok] gen_glass_note2
+[missing] real_casablanca /scratch/amirrz/H3_exp/inputs/real/real_casablanca__real.mp4
+[missing] real_nosferatu /scratch/amirrz/H3_exp/inputs/real/real_nosferatu__real.mp4
+[missing] real_keaton /scratch/amirrz/H3_exp/inputs/real/real_keaton__real.mp4
+[missing] real_chaplin /scratch/amirrz/H3_exp/inputs/real/real_chaplin__real.mp4
+[missing] real_steamboat /scratch/amirrz/H3_exp/inputs/real/real_steamboat__real.mp4
+[missing] real_tom_walk /scratch/amirrz/H3_exp/inputs/real/real_tom_walk__real.mp4
+[missing] real_tom_hammock /scratch/amirrz/H3_exp/inputs/real/real_tom_hammock__real.mp4
+[missing] real_travolta_jump /scratch/amirrz/H3_exp/inputs/real/real_travolta__real.mp4
+[missing] real_gatsby_wink /scratch/amirrz/H3_exp/inputs/real/real_gatsby__real.mp4
+[missing] real_leo_clap /scratch/amirrz/H3_exp/inputs/real/real_leo_couch__real.mp4
+[09-09 18:53:20] source sheet: /scratch/amirrz/H3_exp/inputs/gen/gen_glass_note2__src_sheet.jpg
+[09-09 18:53:20] task done (ok): GEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/gen_inputs_bank.json|gen_glass_note2|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-09 18:53:20] waiting for 'SOURCES_OK_b3' in h3_probe/results/overnight/gate.txt
+[09-09 19:02:20] found 'SOURCES_OK_b3' in h3_probe/results/overnight/gate.txt
+[09-09 19:02:20] task done (ok): WAITLOG|h3_probe/results/overnight/gate.txt|SOURCES_OK_b3
+[09-09 19:02:20] waiting for 'SOURCES_OK_demo2' in h3_probe/results/overnight/gate.txt
+[09-09 19:02:20] found 'SOURCES_OK_demo2' in h3_probe/results/overnight/gate.txt
+[09-09 19:02:20] task done (ok): WAITLOG|h3_probe/results/overnight/gate.txt|SOURCES_OK_demo2
+[09-09 19:02:20] allocation 20736897 has only 5706s left (< 11200s) -> releasing
+[09-09 19:02:21] requesting allocation (2xH100, 3h) ...
+[09-09 19:02:30] allocation 20740859 RUNNING on rg31605, 10800s
+[09-09 19:02:30] staging models to /localscratch/amirrz.20740859.0/models ...
+[09-09 19:07:48] staged: 134G	/localscratch/amirrz.20740859.0/models/ckpt 16G	/localscratch/amirrz.20740859.0/models/qwen 
+[09-09 19:07:48] step -> h3_probe/results/overnight/logs/screen_190748.log (gpus=1, timeout=10900s, alloc=20740859)
+[09-09 19:52:54] step <- h3_probe/results/overnight/logs/screen_190748.log rc=0
+[09-09 19:52:54] SCREENED real_casablanca baseline lin/any = 0.401 0.500  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_casablanca_sheet.png
+[09-09 19:52:54] auto: no room / no auto for real_casablanca (any=0.500)
+[09-09 19:52:54] SCREENED real_nosferatu baseline lin/any = 0.027 0.072  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_nosferatu_sheet.png
+[09-09 19:52:54] auto: no room / no auto for real_nosferatu (any=0.072)
+[09-09 19:52:54] SCREENED real_keaton baseline lin/any = 0.012 0.042  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_keaton_sheet.png
+[09-09 19:52:54] auto: no room / no auto for real_keaton (any=0.042)
+[09-09 19:52:54] SCREENED real_chaplin baseline lin/any = 0.030 0.217  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_chaplin_sheet.png
+[09-09 19:52:54] auto: no room / no auto for real_chaplin (any=0.217)
+[09-09 19:52:54] SCREENED real_steamboat baseline lin/any = 0.085 0.412  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_steamboat_sheet.png
+[09-09 19:52:54] auto: no room / no auto for real_steamboat (any=0.412)
+[09-09 19:52:54] SCREENED real_tom_walk baseline lin/any = 0.351 0.496  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_tom_walk_sheet.png
+[09-09 19:52:54] auto: no room / no auto for real_tom_walk (any=0.496)
+[09-09 19:52:54] SCREENED real_tom_hammock baseline lin/any = 0.454 0.669  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_tom_hammock_sheet.png
+[09-09 19:52:54] auto: no room / no auto for real_tom_hammock (any=0.669)
+[09-09 19:52:54] SCREENED real_travolta_jump baseline lin/any = 0.903 0.986  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_travolta_jump_sheet.png
+[09-09 19:52:54] auto: no room / no auto for real_travolta_jump (any=0.986)
+[09-09 19:52:54] SCREENED real_gatsby_wink baseline lin/any = 0.670 0.913  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_gatsby_wink_sheet.png
+[09-09 19:52:54] auto: no room / no auto for real_gatsby_wink (any=0.913)
+[09-09 19:52:54] SCREENED real_leo_clap baseline lin/any = 0.029 0.160  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_leo_clap_sheet.png
+[09-09 19:52:54] auto: no room / no auto for real_leo_clap (any=0.160)
+[09-09 19:52:54] task done (ok): SCREEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json|real_casablanca;real_nosferatu;real_keaton;real_chaplin;real_steamboat;real_tom_walk;real_tom_hammock;real_travolta_jump;real_gatsby_wink;real_leo_clap
+[09-09 19:52:54] step -> h3_probe/results/overnight/logs/gen_195254.log (gpus=1, timeout=2100s, alloc=20740859)
+[09-09 19:57:11] step <- h3_probe/results/overnight/logs/gen_195254.log rc=0
+[ok] gen_piano_lid
+[ok] gen_cat_vase
+[ok] gen_bike_tips
+[ok] gen_ladder
+[ok] gen_firecracker
+[ok] gen_kettle
+[ok] gen_plate_counter
+[ok] gen_car_window
+[missing] gen_bubblegum /scratch/amirrz/H3_exp/inputs/gen/gen_bubblegum__t2va.mp4
+[missing] gen_spit_take /scratch/amirrz/H3_exp/inputs/gen/gen_spit_take__t2va.mp4
+[ok] gen_frame_wall
+[ok] gen_lightbulb
+[missing] gen_gorilla /scratch/amirrz/H3_exp/inputs/gen/gen_gorilla__t2va.mp4
+[ok] gen_horse_neigh
+[missing] gen_popcorn /scratch/amirrz/H3_exp/inputs/gen/gen_popcorn__t2va.mp4
+[missing] gen_soda_can /scratch/amirrz/H3_exp/inputs/gen/gen_soda_can__t2va.mp4
+[ok] gen_elephant
+[ok] gen_bowling
+[ok] gen_car_shatter
+[ok] gen_balloon
+[ok] gen_tyre
+[ok] gen_door_slam
+[ok] gen_glass_note
+[ok] gen_branch
+[missing] gen_gatsby_toast /scratch/amirrz/H3_exp/inputs/gen/gen_gatsby_toast__t2va.mp4
+[missing] gen_mic_drop /scratch/amirrz/H3_exp/inputs/gen/gen_mic_drop__t2va.mp4
+[missing] gen_table_flip /scratch/amirrz/H3_exp/inputs/gen/gen_table_flip__t2va.mp4
+[missing] gen_party_popper /scratch/amirrz/H3_exp/inputs/gen/gen_party_popper__t2va.mp4
+[missing] gen_cat_dinner /scratch/amirrz/H3_exp/inputs/gen/gen_cat_dinner__t2va.mp4
+[missing] gen_guitar_smash /scratch/amirrz/H3_exp/inputs/gen/gen_guitar_smash__t2va.mp4
+[ok] gen_lightbulb2
+[ok] gen_bowling2
+[missing] real_gatsby /scratch/amirrz/H3_exp/inputs/real/real_gatsby__real.mp4
+[missing] real_gatsby_fw /scratch/amirrz/H3_exp/inputs/real/real_gatsby__real.mp4
+[missing] real_leo_couch /scratch/amirrz/H3_exp/inputs/real/real_leo_couch__real.mp4
+[missing] real_travolta /scratch/amirrz/H3_exp/inputs/real/real_travolta__real.mp4
+[missing] real_mrbean /scratch/amirrz/H3_exp/inputs/real/real_mrbean__real.mp4
+[missing] real_grumpy /scratch/amirrz/H3_exp/inputs/real/real_grumpy__real.mp4
+[missing] real_thug_cat /scratch/amirrz/H3_exp/inputs/real/real_thug_cat__real.mp4
+[ok] gen_glass_note2
+[missing] real_casablanca /scratch/amirrz/H3_exp/inputs/real/real_casablanca__real.mp4
+[missing] real_nosferatu /scratch/amirrz/H3_exp/inputs/real/real_nosferatu__real.mp4
+[missing] real_keaton /scratch/amirrz/H3_exp/inputs/real/real_keaton__real.mp4
+[missing] real_chaplin /scratch/amirrz/H3_exp/inputs/real/real_chaplin__real.mp4
+[missing] real_steamboat /scratch/amirrz/H3_exp/inputs/real/real_steamboat__real.mp4
+[missing] real_tom_walk /scratch/amirrz/H3_exp/inputs/real/real_tom_walk__real.mp4
+[missing] real_tom_hammock /scratch/amirrz/H3_exp/inputs/real/real_tom_hammock__real.mp4
+[missing] real_travolta_jump /scratch/amirrz/H3_exp/inputs/real/real_travolta__real.mp4
+[missing] real_gatsby_wink /scratch/amirrz/H3_exp/inputs/real/real_gatsby__real.mp4
+[missing] real_leo_clap /scratch/amirrz/H3_exp/inputs/real/real_leo_couch__real.mp4
+[ok] gen_glass_note3
+[09-09 19:57:11] source sheet: /scratch/amirrz/H3_exp/inputs/gen/gen_glass_note3__src_sheet.jpg
+[09-09 19:57:11] task done (ok): GEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/gen_inputs_bank.json|gen_glass_note3|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-09 19:57:11] waiting for 'SOURCES_OK_b4' in h3_probe/results/overnight/gate.txt
+[09-09 20:00:11] found 'SOURCES_OK_b4' in h3_probe/results/overnight/gate.txt
+[09-09 20:00:11] task done (ok): WAITLOG|h3_probe/results/overnight/gate.txt|SOURCES_OK_b4
+[09-09 20:00:14] step -> h3_probe/results/overnight/logs/screen_200014.log (gpus=1, timeout=1900s, alloc=20740859)
+[09-09 20:06:52] step <- h3_probe/results/overnight/logs/screen_200014.log rc=0
+[09-09 20:06:52] SCREENED gen_glass_note3 baseline lin/any = 0.076 0.063  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/gen_glass_note3_sheet.png
+[09-09 20:06:52] auto: no room / no auto for gen_glass_note3 (any=0.063)
+[09-09 20:06:52] task done (ok): SCREEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json|gen_glass_note3
+[09-09 20:06:52] step -> h3_probe/results/overnight/logs/opt_real_gatsby.log (gpus=2, timeout=5400s, alloc=20740859)
+[09-09 21:07:52] step <- h3_probe/results/overnight/logs/opt_real_gatsby.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/real_gatsby best {'iter': 7, 'yes_lin': 0.08342752378322983, 'yes_any': 0.08342752378322983, 'perc': 0.19195155799388885} auto_verdict no_gain
+[09-09 21:07:55] OPT DONE real_gatsby: baseline any=0.015 -> best iter 7, final any=0.079, fd=0.115
+[09-09 21:07:55] task done (ok): OPT|real_gatsby|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-09 21:07:55] allocation 20740859 has only 3275s left (< 5700s) -> releasing
+[09-09 21:07:55] requesting allocation (2xH100, 3h) ...
+[09-09 21:08:03] allocation 20746305 RUNNING on rg31605, 10800s
+[09-09 21:08:03] staging models to /localscratch/amirrz.20746305.0/models ...
+[09-09 21:13:18] staged: 134G	/localscratch/amirrz.20746305.0/models/ckpt 16G	/localscratch/amirrz.20746305.0/models/qwen 
+[09-09 21:13:18] step -> h3_probe/results/overnight/logs/opt_real_nosferatu.log (gpus=2, timeout=5400s, alloc=20746305)
+[09-09 22:14:10] step <- h3_probe/results/overnight/logs/opt_real_nosferatu.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/real_nosferatu best {'iter': 2, 'yes_lin': 0.27577228429751355, 'yes_any': 0.27577228429751355, 'perc': 0.010191712528467178} auto_verdict no_gain
+[09-09 22:14:13] OPT DONE real_nosferatu: baseline any=0.070 -> best iter 2, final any=0.265, fd=0.010
+[09-09 22:14:13] task done (ok): OPT|real_nosferatu|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-09 22:14:15] step -> h3_probe/results/overnight/logs/opt_real_keaton.log (gpus=2, timeout=5400s, alloc=20746305)
+[09-09 23:13:52] step <- h3_probe/results/overnight/logs/opt_real_keaton.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/real_keaton best {'iter': 5, 'yes_lin': 0.9998986158073557, 'yes_any': 0.9998986158073557, 'perc': 0.06921945512294769} auto_verdict strong_win
+[09-09 23:13:55] OPT DONE real_keaton: baseline any=0.041 -> best iter 8, final any=0.997, fd=0.023
+[09-09 23:13:55] task done (ok): OPT|real_keaton|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-09 23:13:55] allocation 20746305 has only 3248s left (< 5700s) -> releasing
+[09-09 23:13:55] requesting allocation (2xH100, 3h) ...
+[09-09 23:13:58] allocation 20755156 RUNNING on rg32602, 10800s
+[09-09 23:13:58] staging models to /localscratch/amirrz.20755156.0/models ...
+[09-09 23:19:18] staged: 134G	/localscratch/amirrz.20755156.0/models/ckpt 16G	/localscratch/amirrz.20755156.0/models/qwen 
+[09-09 23:19:18] step -> h3_probe/results/overnight/logs/opt_real_thug_cat.log (gpus=2, timeout=5400s, alloc=20755156)
+[09-10 00:21:37] step <- h3_probe/results/overnight/logs/opt_real_thug_cat.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/real_thug_cat best {'iter': 2, 'yes_lin': 0.09967906553991944, 'yes_any': 0.09967906553991944, 'perc': 0.06063050404191017} auto_verdict no_gain
+[09-10 00:21:42] OPT DONE real_thug_cat: baseline any=0.094 -> best iter 2, final any=0.116, fd=0.025
+[09-10 00:21:42] task done (ok): OPT|real_thug_cat|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-10 00:21:42] step -> h3_probe/results/overnight/logs/opt_gen_plate_counter.log (gpus=2, timeout=5400s, alloc=20755156)
+[09-10 01:20:49] step <- h3_probe/results/overnight/logs/opt_gen_plate_counter.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/gen_plate_counter best {'iter': 1, 'yes_lin': 0.1758893395345692, 'yes_any': 0.1758893395345692, 'perc': 0.00012187357060611248} auto_verdict no_gain
+[09-10 01:20:51] OPT DONE gen_plate_counter: baseline any=0.147 -> best iter 1, final any=0.147, fd=0.000
+[09-10 01:20:51] task done (ok): OPT|gen_plate_counter|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-10 01:20:52] allocation 20755156 has only 3186s left (< 5700s) -> releasing
+[09-10 01:20:52] requesting allocation (2xH100, 3h) ...
+[09-10 01:24:05] allocation 20790513 RUNNING on rg32602, 10798s
+[09-10 01:24:05] staging models to /localscratch/amirrz.20790513.0/models ...
+[09-10 01:29:26] staged: 134G	/localscratch/amirrz.20790513.0/models/ckpt 16G	/localscratch/amirrz.20790513.0/models/qwen 
+[09-10 01:29:26] step -> h3_probe/results/overnight/logs/opt_real_tom_walk.log (gpus=2, timeout=5400s, alloc=20790513)
+[09-10 02:31:13] step <- h3_probe/results/overnight/logs/opt_real_tom_walk.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/real_tom_walk best {'iter': 6, 'yes_lin': 0.8448353329298598, 'yes_any': 0.8448353329298598, 'perc': 0.10509522259235382} auto_verdict improved
+[09-10 02:31:16] OPT DONE real_tom_walk: baseline any=0.633 -> best iter 6, final any=0.820, fd=0.038
+[09-10 02:31:16] task done (ok): OPT|real_tom_walk|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-10 02:31:16] step -> h3_probe/results/overnight/logs/opt_gen_glass_note3.log (gpus=2, timeout=5400s, alloc=20790513)
+[09-10 03:28:19] step <- h3_probe/results/overnight/logs/opt_gen_glass_note3.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/gen_glass_note3 best {'iter': 1, 'yes_lin': 0.07381047547794306, 'yes_any': 0.07381047547794306, 'perc': 3.9479076804127544e-05} auto_verdict no_gain
+[09-10 03:28:21] OPT DONE gen_glass_note3: baseline any=0.062 -> best iter 1, final any=0.062, fd=0.000
+[09-10 03:28:21] task done (ok): OPT|gen_glass_note3|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-10 03:28:21] allocation 20790513 has only 3342s left (< 5700s) -> releasing
+[09-10 03:28:21] requesting allocation (2xH100, 3h) ...
+[09-10 03:28:23] allocation 20816514 RUNNING on rg32203, 10800s
+[09-10 03:28:23] staging models to /localscratch/amirrz.20816514.0/models ...
+[09-10 03:33:40] staged: 134G	/localscratch/amirrz.20816514.0/models/ckpt 16G	/localscratch/amirrz.20816514.0/models/qwen 
+[09-10 03:33:40] step -> h3_probe/results/overnight/logs/opt_real_steamboat.log (gpus=2, timeout=5400s, alloc=20816514)
+[09-10 04:36:10] step <- h3_probe/results/overnight/logs/opt_real_steamboat.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/real_steamboat best {'iter': 8, 'yes_lin': 0.4586787297219259, 'yes_any': 0.4586787297219259, 'perc': 0.006561464164406061} auto_verdict no_gain
+[09-10 04:36:13] OPT DONE real_steamboat: baseline any=0.365 -> best iter 8, final any=0.529, fd=0.008
+[09-10 04:36:13] task done (ok): OPT|real_steamboat|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-10 04:36:14] step -> h3_probe/results/overnight/logs/opt_real_chaplin.log (gpus=2, timeout=5400s, alloc=20816514)
+[09-10 05:13:28] step <- h3_probe/results/overnight/logs/opt_real_chaplin.log rc=137
+[09-10 05:13:28] OPT FAILED real_chaplin (no results.json) - see h3_probe/results/overnight/logs/opt_real_chaplin.log
+[09-10 05:13:28] task done (fail): OPT|real_chaplin|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-10 05:13:28] allocation 20816514 has only 4495s left (< 5700s) -> releasing
+[09-10 05:13:28] requesting allocation (2xH100, 3h) ...
+[09-10 05:13:29] allocation 20826081 RUNNING on rg32101, 10800s
+[09-10 05:13:29] staging models to /localscratch/amirrz.20826081.0/models ...
+[09-10 05:18:46] staged: 134G	/localscratch/amirrz.20826081.0/models/ckpt 16G	/localscratch/amirrz.20826081.0/models/qwen 
+[09-10 05:18:46] step -> h3_probe/results/overnight/logs/opt_real_mrbean.log (gpus=2, timeout=5400s, alloc=20826081)
+[09-10 06:19:15] step <- h3_probe/results/overnight/logs/opt_real_mrbean.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/real_mrbean best {'iter': 9, 'yes_lin': 0.04042663432788019, 'yes_any': 0.04042663432788019, 'perc': 0.15271639823913574} auto_verdict no_gain
+[09-10 06:19:18] OPT DONE real_mrbean: baseline any=0.014 -> best iter 9, final any=0.039, fd=0.046
+[09-10 06:19:18] task done (ok): OPT|real_mrbean|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-10 06:19:18] allocation 20826081 has only 6851s left (< 9200s) -> releasing
+[09-10 06:19:18] requesting allocation (2xH100, 3h) ...
+[09-10 06:20:44] allocation 20827739 RUNNING on rg31901, 10795s
+[09-10 06:20:44] staging models to /localscratch/amirrz.20827739.0/models ...
+[09-10 06:26:06] staged: 134G	/localscratch/amirrz.20827739.0/models/ckpt 16G	/localscratch/amirrz.20827739.0/models/qwen 
+[09-10 06:26:06] step -> h3_probe/results/overnight/logs/screen_062606.log (gpus=1, timeout=8900s, alloc=20827739)
+[09-10 07:03:25] step <- h3_probe/results/overnight/logs/screen_062606.log rc=0
+[09-10 07:03:25] SCREENED real_chaplin_sneeze baseline lin/any = 0.092 0.225  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_chaplin_sneeze_sheet.png
+[09-10 07:03:25] auto: no room / no auto for real_chaplin_sneeze (any=0.225)
+[09-10 07:03:25] SCREENED real_chaplin_sleep baseline lin/any = 0.805 0.867  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_chaplin_sleep_sheet.png
+[09-10 07:03:25] auto: no room / no auto for real_chaplin_sleep (any=0.867)
+[09-10 07:03:25] SCREENED real_gatsby_splash baseline lin/any = 0.335 0.504  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_gatsby_splash_sheet.png
+[09-10 07:03:25] auto: no room / no auto for real_gatsby_splash (any=0.504)
+[09-10 07:03:25] SCREENED real_tom_walk2 baseline lin/any = 0.773 0.929  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_tom_walk2_sheet.png
+[09-10 07:03:25] auto: no room / no auto for real_tom_walk2 (any=0.929)
+[09-10 07:03:25] SCREENED real_steamboat_laugh baseline lin/any = 0.448 0.978  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_steamboat_laugh_sheet.png
+[09-10 07:03:25] auto: no room / no auto for real_steamboat_laugh (any=0.978)
+[09-10 07:03:25] SCREENED real_steamboat_shout baseline lin/any = 0.053 0.129  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_steamboat_shout_sheet.png
+[09-10 07:03:25] auto: no room / no auto for real_steamboat_shout (any=0.129)
+[09-10 07:03:25] SCREENED real_steamboat_wheel baseline lin/any = 0.189 0.480  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_steamboat_wheel_sheet.png
+[09-10 07:03:25] auto: no room / no auto for real_steamboat_wheel (any=0.480)
+[09-10 07:03:25] SCREENED real_steamboat_sneeze baseline lin/any = 0.099 0.295  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_steamboat_sneeze_sheet.png
+[09-10 07:03:25] auto: no room / no auto for real_steamboat_sneeze (any=0.295)
+[09-10 07:03:25] task done (ok): SCREEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json|real_chaplin_sneeze;real_chaplin_sleep;real_gatsby_splash;real_tom_walk2;real_steamboat_laugh;real_steamboat_shout;real_steamboat_wheel;real_steamboat_sneeze
+[09-10 07:03:26] step -> h3_probe/results/overnight/logs/screen_070326.log (gpus=1, timeout=5900s, alloc=20827739)
+[09-10 07:27:28] step <- h3_probe/results/overnight/logs/screen_070326.log rc=0
+[09-10 07:27:28] SCREENED gen_plate_counter2 baseline lin/any = 0.119 0.021  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/gen_plate_counter2_sheet.png
+[09-10 07:27:28] auto: no room / no auto for gen_plate_counter2 (any=0.021)
+[09-10 07:27:28] SCREENED real_tony_laugh baseline lin/any = 0.903 0.999  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_tony_laugh_sheet.png
+[09-10 07:27:28] auto: no room / no auto for real_tony_laugh (any=0.999)
+[09-10 07:27:28] SCREENED real_tony_shout baseline lin/any = 0.076 0.417  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_tony_shout_sheet.png
+[09-10 07:27:28] auto: no room / no auto for real_tony_shout (any=0.417)
+[09-10 07:27:28] SCREENED real_casablanca_yawn baseline lin/any = 0.927 0.997  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_casablanca_yawn_sheet.png
+[09-10 07:27:28] auto: no room / no auto for real_casablanca_yawn (any=0.997)
+[09-10 07:27:28] SCREENED real_casablanca_hat baseline lin/any = 0.004 0.004  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_casablanca_hat_sheet.png
+[09-10 07:27:28] auto: no room / no auto for real_casablanca_hat (any=0.004)
+[09-10 07:27:28] task done (ok): SCREEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json|gen_plate_counter2;real_tony_laugh;real_tony_shout;real_casablanca_yawn;real_casablanca_hat
+[09-10 07:27:28] waiting for 'SWAP_RUNNER2_OK' in h3_probe/results/overnight/gate.txt
+[09-10 07:28:31] waiting for 'SWAP_RUNNER2_OK' in h3_probe/results/overnight/gate.txt
+[09-10 07:28:31] found 'SWAP_RUNNER2_OK' in h3_probe/results/overnight/gate.txt
+[09-10 07:28:31] task done (ok): WAITLOG|h3_probe/results/overnight/gate.txt|SWAP_RUNNER2_OK
+[09-10 07:28:31] staging models to /localscratch/amirrz.20827739.0/models ...
+[09-10 07:28:33] staged: 134G	/localscratch/amirrz.20827739.0/models/ckpt 16G	/localscratch/amirrz.20827739.0/models/qwen 
+[09-10 07:28:33] step -> h3_probe/results/overnight/logs/opt_real_gatsby_splash.log (gpus=2, timeout=5400s, alloc=20827739)
+[09-10 08:27:18] step <- h3_probe/results/overnight/logs/opt_real_gatsby_splash.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/real_gatsby_splash best {'iter': 1, 'yes_lin': 0.41354134957620403, 'yes_any': 0.41354134957620403, 'perc': 0.00013696704991161823} auto_verdict no_gain
+[09-10 08:27:22] OPT DONE real_gatsby_splash: baseline any=0.420 -> best iter 1, final any=0.420, fd=0.000
+[09-10 08:27:22] task done (ok): OPT|real_gatsby_splash|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-10 08:27:22] allocation 20827739 has only 3197s left (< 5700s) -> releasing
+[09-10 08:27:22] requesting allocation (2xH100, 3h) ...
+[09-10 08:27:23] allocation 20830889 RUNNING on rg32503, 10800s
+[09-10 08:27:23] staging models to /localscratch/amirrz.20830889.0/models ...
+[09-10 08:32:44] staged: 134G	/localscratch/amirrz.20830889.0/models/ckpt 16G	/localscratch/amirrz.20830889.0/models/qwen 
+[09-10 08:32:44] step -> h3_probe/results/overnight/logs/opt_real_tom_walk2.log (gpus=2, timeout=5400s, alloc=20830889)
+[09-10 09:30:48] step <- h3_probe/results/overnight/logs/opt_real_tom_walk2.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/real_tom_walk2 best {'iter': 1, 'yes_lin': 0.9362787187279438, 'yes_any': 0.9362787187279438, 'perc': 0.0003726907598320395} auto_verdict no_gain
+[09-10 09:30:51] OPT DONE real_tom_walk2: baseline any=0.957 -> best iter 1, final any=0.957, fd=0.000
+[09-10 09:30:51] task done (ok): OPT|real_tom_walk2|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-10 09:30:52] step -> h3_probe/results/overnight/logs/opt_gen_plate_counter2.log (gpus=2, timeout=5400s, alloc=20830889)
+[09-10 10:31:24] step <- h3_probe/results/overnight/logs/opt_gen_plate_counter2.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/gen_plate_counter2 best {'iter': 4, 'yes_lin': 0.03179569054819831, 'yes_any': 0.03179569054819831, 'perc': 0.17834952473640442} auto_verdict no_gain
+[09-10 10:31:27] OPT DONE gen_plate_counter2: baseline any=0.025 -> best iter 2, final any=0.028, fd=0.021
+[09-10 10:31:27] task done (ok): OPT|gen_plate_counter2|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-10 10:31:27] allocation 20830889 has only 3356s left (< 5700s) -> releasing
+[09-10 10:31:27] requesting allocation (2xH100, 3h) ...
+[09-10 12:59:13] allocation 20835204 RUNNING on rg13603, 10799s
+[09-10 12:59:13] staging models to /localscratch/amirrz.20835204.0/models ...
+[09-10 13:04:34] staged: 134G	/localscratch/amirrz.20835204.0/models/ckpt 16G	/localscratch/amirrz.20835204.0/models/qwen 
+[09-10 13:04:34] step -> h3_probe/results/overnight/logs/opt_real_tom_walk.log (gpus=2, timeout=5400s, alloc=20835204)
+[09-10 13:56:54] step <- h3_probe/results/overnight/logs/opt_real_tom_walk.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/real_tom_walk_anchor best {'iter': 1, 'yes_lin': 0.8215287768638465, 'yes_any': 0.8215287768638465, 'perc': 0.0005586192710325122} auto_verdict no_gain
+[09-10 13:56:57] OPT DONE real_tom_walk_anchor: baseline any=0.633 -> best iter 1, final any=0.633, fd=0.000
+[09-10 13:56:57] task done (ok): OPT|real_tom_walk|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json|TEMPORAL_W=0.5 LPIPS_W=1.5 TAG=anchor
+[09-10 13:56:57] step -> h3_probe/results/overnight/logs/opt_real_steamboat_shout.log (gpus=2, timeout=5400s, alloc=20835204)
+[09-10 14:56:34] step <- h3_probe/results/overnight/logs/opt_real_steamboat_shout.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/real_steamboat_shout best {'iter': 9, 'yes_lin': 0.35916956639836384, 'yes_any': 0.35916956639836384, 'perc': 0.15655174851417542} auto_verdict no_gain
+[09-10 14:56:37] OPT DONE real_steamboat_shout: baseline any=0.149 -> best iter 9, final any=0.332, fd=0.078
+[09-10 14:56:37] task done (ok): OPT|real_steamboat_shout|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-10 14:56:39] allocation 20835204 has only 3753s left (< 5700s) -> releasing
+[09-10 14:56:39] requesting allocation (2xH100, 3h) ...
+[09-10 14:56:41] allocation 20843961 RUNNING on rg31801, 10800s
+[09-10 14:56:41] staging models to /localscratch/amirrz.20843961.0/models ...
+[09-10 15:02:06] staged: 134G	/localscratch/amirrz.20843961.0/models/ckpt 16G	/localscratch/amirrz.20843961.0/models/qwen 
+[09-10 15:02:06] step -> h3_probe/results/overnight/logs/opt_real_chaplin_sneeze.log (gpus=2, timeout=5400s, alloc=20843961)
+[09-10 15:41:46] step <- h3_probe/results/overnight/logs/opt_real_chaplin_sneeze.log rc=143
+[09-10 15:41:46] OPT FAILED real_chaplin_sneeze (no results.json) - see h3_probe/results/overnight/logs/opt_real_chaplin_sneeze.log
+[09-10 15:41:46] task done (fail): OPT|real_chaplin_sneeze|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-10 15:41:46] waiting for 'SWAP_EXCL_OK' in h3_probe/results/overnight/gate.txt
+[09-10 15:41:58] requesting allocation (2xH100, 3h) ...
+[09-10 15:42:00] allocation 20847774 RUNNING on rg31802, 10800s
+[09-10 15:42:00] staging models to /localscratch/amirrz.20847774.0/models ...
+[09-10 15:47:19] staged: 134G	/localscratch/amirrz.20847774.0/models/ckpt 16G	/localscratch/amirrz.20847774.0/models/qwen 
+[09-10 15:47:19] step -> h3_probe/results/overnight/logs/opt_real_chaplin_sneeze.log (gpus=2, timeout=5400s, alloc=20847774)
+[09-10 16:39:10] step <- h3_probe/results/overnight/logs/opt_real_chaplin_sneeze.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/real_chaplin_sneeze best {'iter': 1, 'yes_lin': 0.2967169659764608, 'yes_any': 0.2967169659764608, 'perc': 0.00013113321620039642} auto_verdict no_gain
+[09-10 16:39:12] OPT DONE real_chaplin_sneeze: baseline any=0.300 -> best iter 1, final any=0.300, fd=0.000
+[09-10 16:39:12] task done (ok): OPT|real_chaplin_sneeze|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-10 16:39:12] step -> h3_probe/results/overnight/logs/screen_163912.log (gpus=1, timeout=4900s, alloc=20847774)
+[09-10 17:11:36] step <- h3_probe/results/overnight/logs/screen_163912.log rc=0
+[09-10 17:11:36] SCREENED real_michael_cry baseline lin/any = 0.442 0.463  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_michael_cry_sheet.png
+[09-10 17:11:36] auto: no room / no auto for real_michael_cry (any=0.463)
+[09-10 17:11:36] SCREENED real_michael_slam baseline lin/any = 0.004 0.013  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_michael_slam_sheet.png
+[09-10 17:11:36] auto: no room / no auto for real_michael_slam (any=0.013)
+[09-10 17:11:36] SCREENED real_michael_kiss baseline lin/any = 0.005 0.022  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_michael_kiss_sheet.png
+[09-10 17:11:36] auto: no room / no auto for real_michael_kiss (any=0.022)
+[09-10 17:11:36] SCREENED real_michael_hiccup baseline lin/any = 0.002 0.013  sheet: /scratch/amirrz/H3_exp/outputs/overnight/screen/real_michael_hiccup_sheet.png
+[09-10 17:11:36] auto: no room / no auto for real_michael_hiccup (any=0.013)
+[09-10 17:11:36] task done (ok): SCREEN|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json|real_michael_cry;real_michael_slam;real_michael_kiss;real_michael_hiccup
+[09-10 17:11:36] allocation 20847774 has only 5424s left (< 5700s) -> releasing
+[09-10 17:11:36] requesting allocation (2xH100, 3h) ...
+[09-10 17:11:43] allocation 20853610 RUNNING on rg31802, 10799s
+[09-10 17:11:43] staging models to /localscratch/amirrz.20853610.0/models ...
+[09-10 17:17:11] staged: 134G	/localscratch/amirrz.20853610.0/models/ckpt 16G	/localscratch/amirrz.20853610.0/models/qwen 
+[09-10 17:17:11] step -> h3_probe/results/overnight/logs/opt_gen_tyre.log (gpus=2, timeout=5400s, alloc=20853610)
+[09-10 18:30:29] step <- h3_probe/results/overnight/logs/opt_gen_tyre.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/gen_tyre best {'iter': 9, 'yes_lin': 0.015959645431450235, 'yes_any': 0.015959645431450235, 'perc': 0.054774682968854904} auto_verdict no_gain
+[09-10 18:30:32] OPT DONE gen_tyre: baseline any=0.009 -> best iter 9, final any=0.017, fd=0.032
+[09-10 18:30:32] task done (ok): OPT|gen_tyre|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-10 18:30:32] step -> h3_probe/results/overnight/logs/opt_gen_lightbulb2.log (gpus=2, timeout=5400s, alloc=20853610)
+[09-10 19:36:42] step <- h3_probe/results/overnight/logs/opt_gen_lightbulb2.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/gen_lightbulb2 best {'iter': 6, 'yes_lin': 0.005660377384432147, 'yes_any': 0.005660377384432147, 'perc': 0.0066855973564088345} auto_verdict no_gain
+[09-10 19:36:45] OPT DONE gen_lightbulb2: baseline any=0.005 -> best iter 6, final any=0.006, fd=0.006
+[09-10 19:36:45] task done (ok): OPT|gen_lightbulb2|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-10 19:36:45] allocation 20853610 has only 2097s left (< 5700s) -> releasing
+[09-10 19:36:45] requesting allocation (2xH100, 3h) ...
+[09-10 19:36:53] allocation 20877246 RUNNING on rg31802, 10800s
+[09-10 19:36:53] staging models to /localscratch/amirrz.20877246.0/models ...
+[09-10 19:42:14] staged: 134G	/localscratch/amirrz.20877246.0/models/ckpt 16G	/localscratch/amirrz.20877246.0/models/qwen 
+[09-10 19:42:14] step -> h3_probe/results/overnight/logs/opt_real_michael_cry.log (gpus=2, timeout=5400s, alloc=20877246)
+[09-10 20:45:04] step <- h3_probe/results/overnight/logs/opt_real_michael_cry.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/real_michael_cry best {'iter': 4, 'yes_lin': 0.906616347069766, 'yes_any': 0.906616347069766, 'perc': 0.1080889031291008} auto_verdict improved
+[09-10 20:45:07] OPT DONE real_michael_cry: baseline any=0.402 -> best iter 4, final any=0.903, fd=0.046
+[09-10 20:45:07] task done (ok): OPT|real_michael_cry|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-10 20:45:07] step -> h3_probe/results/overnight/logs/opt_real_michael_hiccup.log (gpus=2, timeout=5400s, alloc=20877246)
+[09-10 21:45:18] step <- h3_probe/results/overnight/logs/opt_real_michael_hiccup.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/real_michael_hiccup best {'iter': 12, 'yes_lin': 0.19811139655435953, 'yes_any': 0.19811139655435953, 'perc': 0.1759171485900879} auto_verdict no_gain
+[09-10 21:45:20] OPT DONE real_michael_hiccup: baseline any=0.012 -> best iter 12, final any=0.216, fd=0.081
+[09-10 21:45:20] task done (ok): OPT|real_michael_hiccup|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-10 21:45:20] allocation 20877246 has only 3093s left (< 5700s) -> releasing
+[09-10 21:45:20] requesting allocation (2xH100, 3h) ...
+[09-10 21:45:23] allocation 20889373 RUNNING on rg32003, 10800s
+[09-10 21:45:23] staging models to /localscratch/amirrz.20889373.0/models ...
+[09-10 21:50:53] staged: 134G	/localscratch/amirrz.20889373.0/models/ckpt 16G	/localscratch/amirrz.20889373.0/models/qwen 
+[09-10 21:50:53] step -> h3_probe/results/overnight/logs/opt_real_tony_shout.log (gpus=2, timeout=5400s, alloc=20889373)
+[09-10 22:55:49] step <- h3_probe/results/overnight/logs/opt_real_tony_shout.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/real_tony_shout best {'iter': 10, 'yes_lin': 0.8656509226312072, 'yes_any': 0.8656509226312072, 'perc': 0.040986739099025726} auto_verdict strong_win
+[09-10 22:55:51] OPT DONE real_tony_shout: baseline any=0.243 -> best iter 10, final any=0.866, fd=0.017
+[09-10 22:55:51] task done (ok): OPT|real_tony_shout|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-10 22:55:52] step -> h3_probe/results/overnight/logs/opt_real_leo_couch.log (gpus=2, timeout=5400s, alloc=20889373)
+[09-10 23:52:12] step <- h3_probe/results/overnight/logs/opt_real_leo_couch.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/real_leo_couch best {'iter': 4, 'yes_lin': 0.041392305256486066, 'yes_any': 0.041392305256486066, 'perc': 0.09766801446676254} auto_verdict no_gain
+[09-10 23:52:14] OPT DONE real_leo_couch: baseline any=0.043 -> best iter 1, final any=0.043, fd=0.000
+[09-10 23:52:14] task done (ok): OPT|real_leo_couch|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-10 23:52:14] allocation 20889373 has only 3189s left (< 5700s) -> releasing
+[09-10 23:52:14] requesting allocation (2xH100, 3h) ...
+[09-10 23:52:15] allocation 20897392 RUNNING on rg31902, 10800s
+[09-10 23:52:15] staging models to /localscratch/amirrz.20897392.0/models ...
+[09-10 23:57:35] staged: 134G	/localscratch/amirrz.20897392.0/models/ckpt 16G	/localscratch/amirrz.20897392.0/models/qwen 
+[09-10 23:57:35] step -> h3_probe/results/overnight/logs/opt_real_casablanca.log (gpus=2, timeout=5400s, alloc=20897392)
+[09-11 00:55:49] step <- h3_probe/results/overnight/logs/opt_real_casablanca.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/real_casablanca best {'iter': 1, 'yes_lin': 0.9525693073834695, 'yes_any': 0.9525693073834695, 'perc': 8.387364505324513e-05} auto_verdict no_gain
+[09-11 00:55:52] OPT DONE real_casablanca: baseline any=0.952 -> best iter 1, final any=0.952, fd=0.000
+[09-11 00:55:52] task done (ok): OPT|real_casablanca|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-11 00:55:52] step -> h3_probe/results/overnight/logs/opt_real_casablanca_hat.log (gpus=2, timeout=5400s, alloc=20897392)
+[09-11 01:52:57] step <- h3_probe/results/overnight/logs/opt_real_casablanca_hat.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/real_casablanca_hat best {'iter': 1, 'yes_lin': 0.0055473080786691015, 'yes_any': 0.0055473080786691015, 'perc': 0.0002801997761707753} auto_verdict no_gain
+[09-11 01:53:00] OPT DONE real_casablanca_hat: baseline any=0.005 -> best iter 1, final any=0.005, fd=0.000
+[09-11 01:53:00] task done (ok): OPT|real_casablanca_hat|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-11 01:53:00] allocation 20897392 has only 3555s left (< 5700s) -> releasing
+[09-11 01:53:00] requesting allocation (2xH100, 3h) ...
+[09-11 01:53:02] allocation 20906405 RUNNING on rg32501, 10800s
+[09-11 01:53:02] staging models to /localscratch/amirrz.20906405.0/models ...
+[09-11 01:58:24] staged: 134G	/localscratch/amirrz.20906405.0/models/ckpt 15G	/localscratch/amirrz.20906405.0/models/qwen 
+[09-11 01:58:24] step -> h3_probe/results/overnight/logs/opt_real_steamboat_wheel.log (gpus=2, timeout=5400s, alloc=20906405)
+[09-11 02:56:55] step <- h3_probe/results/overnight/logs/opt_real_steamboat_wheel.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/real_steamboat_wheel best {'iter': 1, 'yes_lin': 0.5547114334780673, 'yes_any': 0.5547114334780673, 'perc': 0.0} auto_verdict no_gain
+[09-11 02:56:59] OPT DONE real_steamboat_wheel: baseline any=0.555 -> best iter 1, final any=0.555, fd=0.000
+[09-11 02:56:59] task done (ok): OPT|real_steamboat_wheel|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-11 02:56:59] step -> h3_probe/results/overnight/logs/opt_real_leo_clap.log (gpus=2, timeout=5400s, alloc=20906405)
+[09-11 03:53:38] step <- h3_probe/results/overnight/logs/opt_real_leo_clap.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/real_leo_clap best {'iter': 1, 'yes_lin': 0.23210068031149922, 'yes_any': 0.23210068031149922, 'perc': 0.00024167953233700246} auto_verdict no_gain
+[09-11 03:53:41] OPT DONE real_leo_clap: baseline any=0.250 -> best iter 1, final any=0.250, fd=0.000
+[09-11 03:53:41] task done (ok): OPT|real_leo_clap|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-11 03:53:41] allocation 20906405 has only 3561s left (< 5700s) -> releasing
+[09-11 03:53:41] requesting allocation (2xH100, 3h) ...
+[09-11 03:53:48] allocation 20909787 RUNNING on rg32501, 10800s
+[09-11 03:53:48] staging models to /localscratch/amirrz.20909787.0/models ...
+[09-11 03:59:10] staged: 134G	/localscratch/amirrz.20909787.0/models/ckpt 16G	/localscratch/amirrz.20909787.0/models/qwen 
+[09-11 03:59:10] step -> h3_probe/results/overnight/logs/opt_real_michael_kiss.log (gpus=2, timeout=5400s, alloc=20909787)
+[09-11 05:01:12] step <- h3_probe/results/overnight/logs/opt_real_michael_kiss.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/real_michael_kiss best {'iter': 5, 'yes_lin': 0.10809870204670256, 'yes_any': 0.10809870204670256, 'perc': 0.22209462523460388} auto_verdict no_gain
+[09-11 05:01:14] OPT DONE real_michael_kiss: baseline any=0.019 -> best iter 5, final any=0.129, fd=0.082
+[09-11 05:01:14] task done (ok): OPT|real_michael_kiss|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
+[09-11 05:01:14] step -> h3_probe/results/overnight/logs/opt_real_leo_kneeslap.log (gpus=2, timeout=5400s, alloc=20909787)
+[09-11 05:58:02] step <- h3_probe/results/overnight/logs/opt_real_leo_kneeslap.log rc=0
+packaged /home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/results/user_study_candidates/real_leo_kneeslap best {'iter': 6, 'yes_lin': 0.9971543759305241, 'yes_any': 0.9971543759305241, 'perc': 0.06333653628826141} auto_verdict no_gain
+[09-11 05:58:05] OPT DONE real_leo_kneeslap: baseline any=0.950 -> best iter 1, final any=0.950, fd=0.000
+[09-11 05:58:05] task done (ok): OPT|real_leo_kneeslap|any|/home/amirrz/my_codes/Sound_Sparks_Motion/h3_probe/scenarios/candidates_bank.json
