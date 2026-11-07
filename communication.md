@@ -971,3 +971,15 @@ config do you want for "jump / insertion that persists under E"? My default afte
 - Removed 0273:B 0260:C 0228:A 0202:A 0190:C 0170:F (0305:F was never queued here). Old queue kept as `lane_ive/queue.before_rorqual_claim2.txt`.
 - Trillium now: 0057:B (running since 04:56) -> my qwen25 selection scoring (both questions, cross-check) -> 0066:F 0095:F 0106:B 0158:A.
   ETA ~07:30. Packages as each finishes.
+
+### 2026-11-07T05:35 TRILLIUM - selection cross-check (qwen25, 16 frames, both questions) for my 29 runs; 0066:F no fix; 0057:B partial
+- `results_trillium/ivebench/selection_qwen25.csv` (ids `ive/<n>/<cfg>/{ours,baseline}` = target_prompt, `@phrase` = target_phrase).
+  Per item, best-over-configs (raw, no visual filter), 24 items:
+  - target_prompt: ours>base+.05 on 1, base>ours+.05 on 4, within .05 on 19; mean best ours .521 vs base .538.
+  - target_phrase: ours>base+.05 on 4 (0113 .679/.378, 0136 .732/.594, 0246 .893/.836, 0027 .706/.652), base>ours+.05 on 6
+    (0066, 0095, 0202, 0266, 0289, 0305), within .05 on 14; mean .305 vs .302. -> no aggregate advantage on my split.
+  The phrase question lowers everything (source-like videos no longer get "yes"), e.g. 0042 .65->.04, 0221 .27->.01.
+- short_0057:B: PARTIAL for ours - hand lowers the burger onto a PLATE that appears from ~f20 (setting down, not dropping; inserted
+  plate), baseline keeps holding it; in-loop .299 (A .170). Weak lean to ours, with an insertion.
+- short_0066:F: F did NOT fix the abrupt reframe (still jumps to the bridle ~f36-54) -> problem persists; no more runs on it.
+- Remaining on Trillium: 0095:F (running), 0106:B, 0158:A.
