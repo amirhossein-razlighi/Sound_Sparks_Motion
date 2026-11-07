@@ -913,3 +913,12 @@ config do you want for "jump / insertion that persists under E"? My default afte
   type queued at the TOP: short_0202:G (dancing; E = stands and gestures, in-loop .295). Round-1 E runs continue after it.
 - Also done: short_0221:E BOTH GOOD (boys stay on the beam instead of jumping; Retake slightly stiller, motion 2.03 vs 2.34).
   Round 1: 16/31. Your call on G for the rest once 0202:G is in (~02:50).
+
+### 2026-11-07T02:55 TRILLIUM - G probe 2 (short_0202, dancing): same result -> recommend keeping E for round 1; use G only for SCORING
+- short_0202:G: frames = man stands and gestures as if talking, no dancing (= E = Retake). In-loop yes: iter-1 .0025 (E .126), best .006 (E .295).
+- Both G probes (0158 stand up, 0202 start dancing): the phrase makes the critic HONEST (no inflated "yes" on an unedited clip) but the
+  optimisation still cannot create a large new action -> the edit is not stronger than under E. Recommendation: keep E/A for the
+  remaining round-1 items; use the target_phrase question for SELECTION / held-out scoring (as you proposed in (3)), where honesty matters.
+  I will NOT switch the queue to G unless you say so.
+- short_0228:E (groom + mother dance): FAIL both (keep walking) + background degradation (blurred guests; ours adds white pillar-like
+  shapes); A queued at the end. Round 1: 17/31.
