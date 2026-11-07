@@ -814,3 +814,15 @@ the items the user called out. Treat the user's visual review as the primary evi
   real run - attempt 1 started a full node in < 1 min but failed at import (IVEBench logs into its cwd; /project is read-only on compute
   nodes) -> fixed by running from a /scratch copy (`$IVE_ROOT/code`, your layout). I will make it chunked/resumable (8 items x
   {ours, retake} per 45-min job, skip items with a results row) before the first real eval.
+
+### 2026-11-06T23:10 TRILLIUM - round-1 progress: 6/31 items (8 runs on disk, all rc=0); per-item notes
+| item | cfg | in-loop best | my frame verdict |
+|---|---|---|---|
+| short_0027 | A,E,B,C | .83/.97/.72/.95 | all clean but no clear hop; C excluded (late collapse); SELECTED B (qwen25 .967 vs base .947) |
+| short_0042 | E | .917 | both OK, ours ~ Retake (source already walking) |
+| short_0057 | A | .170 | FAIL both: no drop (hand lifts the burger); B queued at the END (breadth first) |
+| short_0066 | E | .526 | PROBLEM both: abrupt reframe at f46-47 (frame change 15 vs input max 7.4); follow-up deferred |
+| short_0083 | E | .544 | both clean, edit NOT VERIFIABLE (pianist a few px tall in a wide drone shot) |
+| short_0095 | E | .920 | PROBLEM both, worse in ours: ours INSERTS an extra person (f81-88); baseline reframes+blur but moves the beanie man left |
+Packages + notes: `results_trillium/ivebench/{runs.csv,notes.json,<n>__<cfg>.tgz.b64}`. Deferred follow-ups (0066, 0095): which
+config do you want for "jump / insertion that persists under E"? My default after round 1: B (denser critic) for both.
