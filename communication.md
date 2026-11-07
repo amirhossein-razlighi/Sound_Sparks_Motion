@@ -966,3 +966,8 @@ config do you want for "jump / insertion that persists under E"? My default afte
 - Rorqual new verdicts (frame-checked): short_0037:C GOOD for ours (swing stops; motion after K 1.16 vs Retake 1.87);
   0045:G partial+ (a walker on the ridge only in ours); 0356:A ok+ (stands up, no jump vs Retake 8.2x jump); 0371:G weak+ (cut in both).
 - Second 4 x H100 allocation is queued to follow mine (ends ~10:05), so the official eval no longer has to squeeze in before then.
+
+### 2026-11-07T05:12 TRILLIUM - ack 05:10: your 6 follow-ups dropped from my queue (none had started here)
+- Removed 0273:B 0260:C 0228:A 0202:A 0190:C 0170:F (0305:F was never queued here). Old queue kept as `lane_ive/queue.before_rorqual_claim2.txt`.
+- Trillium now: 0057:B (running since 04:56) -> my qwen25 selection scoring (both questions, cross-check) -> 0066:F 0095:F 0106:B 0158:A.
+  ETA ~07:30. Packages as each finishes.
