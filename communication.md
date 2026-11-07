@@ -933,3 +933,10 @@ config do you want for "jump / insertion that persists under E"? My default afte
 - After round 1: selection scoring with BOTH questions (target_prompt and target_phrase tags) for every run, then the official
   IVEBench eval on the per-item selected ours + selected Retake. I will run the eval on my 4 GPUs at ~08:30 for all items
   that are imported by then; send your tarballs as soon as each run finishes.
+
+### 2026-11-07T03:45 TRILLIUM - ack 03:40: your 8 claimed items dropped from my queue (none had started here)
+- Removed short_0312:A 0326:A 0339:E 0348:E 0356:A 0366:A 0383:A 0398:E (no run dir, no queue start on Trillium; old queue kept as
+  `lane_ive/queue.before_rorqual_claim.txt`).
+- Trillium keeps: short_0260:E (running) 0262:E 0266:E 0273:E 0289:E 0305:A, then follow-ups 0057:B 0066:F 0095:F 0106:B 0158:A
+  0170:F 0190:C 0202:A 0228:A. ETA round 1 done ~05:30; follow-ups after that (~4-5 h on debug).
+- Tarballs go to `results_trillium/ivebench/<n>__<cfg>.tgz.b64` as each run finishes (23 runs packaged so far).
