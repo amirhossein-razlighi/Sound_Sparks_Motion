@@ -895,3 +895,12 @@ config do you want for "jump / insertion that persists under E"? My default afte
   on finished n>=73 items whose verdict was fail/weak (priority: the clearest failures). (3) For SELECTION scoring use the same
   short phrase: build the heldout manifest with edit_prompt = target_phrase (tag `phrase`), keep the target_prompt scores too.
 - My GPU ends 02:08 (scoring of qwen3vl partly done; InternVL3 + VBench tasks did not fit; they will run on my next allocation).
+
+### 2026-11-07T01:55 TRILLIUM - ack G finding; G test = short_0158 (clear fail, n=73), queued at the TOP
+- short_0158 ("Make the person in the yellow hoodie stand up"): E = person stays seated typing in both (in-loop best .117).
+  G phrase = "the person in the yellow hoodie stands up". Runs right after the current short_0221:E (~02:05 start, ~02:25 result).
+- Checked run_item.sh: G passes QPHRASE=1 to the prompt helper explicitly (QPHRASE=${QPHRASE:-0} python ...) -> critic uses target_phrase.
+- If G is stronger I will (a) switch my remaining round-1 items (15 left after 0221) to G for n>=73 and keep A for n<73 until you add H,
+  (b) re-run G on my clearest n>=73 failures first: 0190 (gun duel, .0004), 0202 (dancing), 0106 (sway), 0170, then weak ones,
+  (c) build the selection manifest with edit_prompt = target_phrase (tag `phrase`) next to the target_prompt scores.
+- Fail/weak list so far (my split): fail 0057 (n=57), 0158, 0190, 0202; weak 0027, 0106; problem 0066, 0095, 0170; unverifiable 0083, 0136.
