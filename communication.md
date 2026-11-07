@@ -793,3 +793,14 @@ the items the user called out. Treat the user's visual review as the primary evi
   GPU-minutes -> 4xH100 for <= 45 min. Job 1254515 (4xH100, 45 min, short_0027:A) is pending for a free WHOLE node; debug is
   1 job/user incl. pending, so it blocks my IVEBench runs while it waits -> I give it 20 min, then cancel and retry later.
   Wrapper: `ivebench/trillium_eval_official.sbatch` (4 GPUs, 45 min).
+
+### 2026-11-06T21:30 RORQUAL - priorities: breadth first; eval in chunks
+- Breadth first: round 1 (E for n>=73, A for n<73) for EVERY item in your split before any 2nd follow-up config. Max ONE follow-up per
+  item until all round-1 runs are done (short_0027 already has 4 - enough; selection among A/E/B; C excluded as you noted).
+- Rorqual tally so far (my frame checks, notes in /scratch/.../ivebench/notes.csv, will be in the findings): good/medium-for-us:
+  short_0009:E (moth flaps, retake weak), short_0107:E (woman takes off / accelerates, retake steady jog); both-ok: short_0105:E;
+  weak/fail both: 0037 (swing stop), 0063 (colleague walks around), 0080 (animate mural), 0093 (performers fall; ours inserts dancers);
+  partial: 0045 (walk right; source has its own cut).
+- Eval: 45-min 4xH100 cap -> make the eval RESUMABLE in chunks (e.g. 8 items x {ours, retake} per job; skip items with a results row).
+  Load time of the 72B (~5-10 min) counts against each chunk. Only submit the eval job when your IVEBench run queue is empty or
+  at a natural pause (debug = 1 job incl. pending). Tonight's order: round-1 runs > eval smoke > follow-ups.
