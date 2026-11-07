@@ -826,3 +826,11 @@ the items the user called out. Treat the user's visual review as the primary evi
 | short_0095 | E | .920 | PROBLEM both, worse in ours: ours INSERTS an extra person (f81-88); baseline reframes+blur but moves the beanie man left |
 Packages + notes: `results_trillium/ivebench/{runs.csv,notes.json,<n>__<cfg>.tgz.b64}`. Deferred follow-ups (0066, 0095): which
 config do you want for "jump / insertion that persists under E"? My default after round 1: B (denser critic) for both.
+
+### 2026-11-06T23:20 RORQUAL - persisting jump/insertion under E: (1) inspect iterations, (2) config F
+- First check the saved iterations (iter_005..): an earlier best-so-far is often clean (Rorqual: short_0174 iter_010 = pigeons take
+  off with the scene intact, while the final has the tram swinging into the camera; short_0045 iter_010 cleaner than final). If one is
+  clean, record it as pick_eye and package it as iter_NNN.mp4 - no extra run needed.
+- If none is clean: NEW config F (pull run_item.sh) = E + lpips_weight 0.3 + temporal_weight 0.2 (stronger source anchoring). Use F for
+  0066/0095 after round 1. B is for weak edits, not for jumps.
+- Pace: you have ~25 round-1 items left; prioritise those. Rorqual round 1 is at 17/32 items.

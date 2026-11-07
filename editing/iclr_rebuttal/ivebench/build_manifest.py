@@ -9,7 +9,9 @@ R = Path(a.root); items = {Path(x["src_video_name"]).stem: x for x in json.load(
 rows = []
 for name, it in items.items():
     for cfg_dir in sorted((R / "runs" / name).glob("*")):
-        for kind, f in (("ours", "best_optimized_video_both.mp4"), ("retake", "baseline_video.mp4")):
+        pairs = [("ours", "best_optimized_video_both.mp4"), ("retake", "baseline_video.mp4")] + \
+                [(f"ours-{p.stem}", p.name) for p in sorted(cfg_dir.glob("iter_*.mp4"))]
+        for kind, f in pairs:
             if (cfg_dir / f).exists():
                 rows.append(dict(id=f"ive/{name}/{cfg_dir.name}/{kind}", group="ivebench", scenario=name, method=f"{kind}_{cfg_dir.name}",
                                  video=str(cfg_dir / f), edit_prompt=it["target_prompt"].strip(), critic_from=""))

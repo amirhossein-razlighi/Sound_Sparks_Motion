@@ -8,6 +8,7 @@
 #   C: K=1, critic 24 frames normal, 1 pass      (paper goldfish setting; frees the clip from frame 1)
 #   D: = A with Gemma prompt enhancement OFF       (IVEBench prompts are already long; enhancement may add shot changes)
 #   E: = D with K=25 preserved frames              (paper monkey / turtle prefix length)
+#   F: = E with stronger source anchoring (lpips_weight 0.3, temporal_weight 0.2) - for jumps / insertions that persist under E
 # LTX prompt and critic question use IVEBench's target_prompt (the paper uses one string for both).
 set -o pipefail
 N=$1; CFG=$2
@@ -23,6 +24,7 @@ case $CFG in
   C) SETS=(retake_start_frames=1 qwen_max_frames=24 qwen_sample_mode=normal qwen_grad_accum_steps=1) ;;
   D) SETS=(retake_start_frames=5 qwen_max_frames=8 qwen_sample_mode=linspace qwen_grad_accum_steps=3 enhance_prompt=false) ;;
   E) SETS=(retake_start_frames=25 qwen_max_frames=8 qwen_sample_mode=linspace qwen_grad_accum_steps=3 enhance_prompt=false) ;;
+  F) SETS=(retake_start_frames=25 qwen_max_frames=8 qwen_sample_mode=linspace qwen_grad_accum_steps=3 enhance_prompt=false lpips_weight=0.3 temporal_weight=0.2) ;;
   *) echo "bad cfg $CFG"; exit 2 ;;
 esac
 mapfile -t P < <(python - "$R" "$N" <<'PY'
