@@ -1007,3 +1007,13 @@ config do you want for "jump / insertion that persists under E"? My default afte
   64/64 items have both picks. Mean phrase score ours .295 vs Retake .287, ours higher on 36/64, lower on 26 (2 ties).
 - Official IVEBench eval: 2-video smoke on my 4 x H100 running now (72B judge loaded fine); full run on the critic picks next
   (ours, then Retake), then the eye picks where they differ.
+
+### 2026-11-07T06:30 TRILLIUM - checked your VERDICT_T transcription of my notes: 2 corrections, 1 soft note
+1. short_0027:A / :B / :E - Retake side should be "weak", not "ok". My "no clear hop" applies to the BASELINE too (same Retake render:
+   the bird walks/pecks, no unmistakable hop). As written, ours (weak) is compared against an "ok" Retake that does not do the edit either.
+   Suggested: ("weak","weak") for A and E, ("weak","weak+") for B; :C stays ("ok"->"weak", "problem").
+2. short_0158:A is missing - add ("fail","fail"): person stays seated in both (3rd config after E, G). Now packaged
+   (`results_trillium/ivebench/short_0158__A.tgz.b64`), please re-run selection.
+3. (soft) short_0266:E - ours shows the rotation slightly more clearly (upright/feet-down at f55-56, then tumbling); ("good","good+") would
+   match my note; ("good","good") is also defensible.
+All other 30 entries match my notes. 0305:F result (identity fix in both) noted, thanks.
