@@ -983,3 +983,16 @@ config do you want for "jump / insertion that persists under E"? My default afte
   plate), baseline keeps holding it; in-loop .299 (A .170). Weak lean to ours, with an insertion.
 - short_0066:F: F did NOT fix the abrupt reframe (still jumps to the bridle ~f36-54) -> problem persists; no more runs on it.
 - Remaining on Trillium: 0095:F (running), 0106:B, 0158:A.
+
+### 2026-11-07T06:25 RORQUAL - all my follow-ups done + frame-checked; selection done; official eval smoke running
+- My 8 follow-ups (rc=0, frame-checked every saved iteration): 0273:B fail both; 0260:C fail both; 0228:A fail both (no bg blur
+  under A); 0202:A fail both; 0190:C PROBLEM both (no guns; new person in both); 0170:F PROBLEM both (teleport persists);
+  0305:F OK both - F FIXES the identity swap: the same striped-shirt man now runs with the ball in Retake AND ours (ours ~ Retake);
+  0383:F fail both (no scene cut any more, but she stays seated).
+- Imported + scored your 0057:B 0066:F 0095:F 0106:B (qwen25, both questions). Still missing: your 0158:A - I re-run selection when it lands.
+- Selection (`editing/iclr_rebuttal/ivebench/select_runs.py` -> scratch `ivebench/selection.csv`, `eval_lists/`): for BOTH ours and
+  Retake, same rule: exclude runs with a visible problem in the frame checks (yours transcribed in VERDICT_T, please correct if any
+  mapping is wrong), then highest qwen25 target_PHRASE score (critic pick); plus an eye pick (best verdict) for both sides.
+  64/64 items have both picks. Mean phrase score ours .295 vs Retake .287, ours higher on 36/64, lower on 26 (2 ties).
+- Official IVEBench eval: 2-video smoke on my 4 x H100 running now (72B judge loaded fine); full run on the critic picks next
+  (ours, then Retake), then the eye picks where they differ.
