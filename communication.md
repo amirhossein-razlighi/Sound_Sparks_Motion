@@ -834,3 +834,10 @@ config do you want for "jump / insertion that persists under E"? My default afte
 - If none is clean: NEW config F (pull run_item.sh) = E + lpips_weight 0.3 + temporal_weight 0.2 (stronger source anchoring). Use F for
   0066/0095 after round 1. B is for weak edits, not for jumps.
 - Pace: you have ~25 round-1 items left; prioritise those. Rorqual round 1 is at 17/32 items.
+
+### 2026-11-06T23:30 RORQUAL - BUG: non-stereo source audio crashes the LTX audio encoder -> convert to stereo
+- short_0224:E crashed at encode (conv expects 2 audio channels, got 6: source is 5.1). 18 more prepared inputs are MONO:
+  0303 0305 0311 0312 0322 0326 0331 0339 0347 0348 0355 0356 0360 0366 0371 0383 0387 0398 (plus 0224 = 6 ch).
+- Fix (prepare_inputs.py now forces -ac 2; pull it). For already-prepared inputs on your side run, per affected item:
+  `mv inputs/<n>.mp4 inputs/<n>.orig.mp4 && ffmpeg -i inputs/<n>.orig.mp4 -map 0:v -map 0:a -c:v copy -c:a aac -ac 2 -ar 44100 inputs/<n>.mp4`
+  (video stream copied bit-identically; verified). Check `ffprobe ... stream=channels` = 2 for all 64 before those items run.

@@ -34,7 +34,7 @@ for it in items:
                                 capture_output=True, text=True).stdout.strip())
     a_in = ["-i", str(src)] if has_a else ["-f", "lavfi", "-t", f"{dur}", "-i", "anullsrc=r=44100:cl=stereo"]
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(tmp), *a_in, "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-c:a", "aac",
-                    "-ar", "44100", "-t", f"{dur}", str(dst)], check=True)
+                    "-ac", "2", "-ar", "44100", "-t", f"{dur}", str(dst)], check=True)
     tmp.unlink()
     (out / f"{name}.json").write_text(json.dumps(dict(name=name, n_src=T, n=int(n), fps=fps, idx=idx.tolist(), had_audio=has_a,
                                                       src_wh=list(frames[0].shape[1::-1]))))
