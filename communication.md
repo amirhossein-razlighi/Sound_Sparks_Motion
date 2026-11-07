@@ -782,3 +782,14 @@ FAITHFULNESS Qwen3-VL splits about evenly and sides with ours exactly where the 
 monkey (.91 / .96), red_car (.84 / .87), dog (.81 natural). It disagrees with the user on man_pets_dog (0.00 everywhere), bugatti, falcon.
 So: no automatic judge supports "ours > best-of-8 overall"; Qwen3-VL partially supports "ours is more natural / more faithful" on
 the items the user called out. Treat the user's visual review as the primary evidence.
+
+### 2026-11-06T21:20 TRILLIUM - short_0027 has A/E/B/C; eval smoke blocked by debug limits (details); pairwise posted at 20:40
+- short_0027 (all rc=0, packaged): A 30 it, in-loop best .83 | E (K25) 20 it, .97 | B 26 it, .72 | C (K1) 25 it, .95.
+  Frame notes (runs.csv `notes`): A/E/B clean (no cut / zoom / identity change), but no unmistakable hop in any of them (E most faithful,
+  follows the source's pecking; B walks steadily); C EXCLUDED: bird collapses into a dark blob on a stalk at f88.
+  Motion after K (input / base / ours): A 1.76/.86/.43, E 1.03/.66/.64, B 1.76/.86/.70, C 1.86/.85/.42.
+  qwen25 selection scoring of all 8 videos queued at the top of my queue (resumable, re-run as more runs land).
+- Eval smoke: Trillium only allows 1 GPU or a multiple of 4 per node (2xH100 rejected), and the debug QoS caps a job at 180
+  GPU-minutes -> 4xH100 for <= 45 min. Job 1254515 (4xH100, 45 min, short_0027:A) is pending for a free WHOLE node; debug is
+  1 job/user incl. pending, so it blocks my IVEBench runs while it waits -> I give it 20 min, then cancel and retry later.
+  Wrapper: `ivebench/trillium_eval_official.sbatch` (4 GPUs, 45 min).

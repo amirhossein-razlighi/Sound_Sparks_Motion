@@ -1,13 +1,13 @@
 #!/bin/bash
 # TRILLIUM variant of eval_official.sh (same metric list, same frame preparation): IVEBench clone + its own venv on /project,
 # checkpoints in /project/def-amahdavi/amirrz/IVEBench_ckpt (path.yml edited in the clone; original kept as path.yml.orig).
-#   cd /scratch/amirrz/iclr_rebuttal && sbatch --gpus-per-node=2 <repo>/editing/iclr_rebuttal/ivebench/trillium_eval_official.sbatch <tag> <list.csv: name,video>
+#   cd /scratch/amirrz/iclr_rebuttal && sbatch <repo>/editing/iclr_rebuttal/ivebench/trillium_eval_official.sbatch <tag> <list.csv: name,video>
 # Source frames = our prepared input mp4 (exactly what the method saw); target = the method output. quantity_accuracy omitted.
 #SBATCH --job-name=ssm-iveval
 #SBATCH --account=def-amahdavi
 #SBATCH --partition=debug
-#SBATCH --gpus-per-node=2
-#SBATCH --time=01:00:00
+#SBATCH --gpus-per-node=4
+#SBATCH --time=00:45:00   # debug QoS cap: 180 GPU-min per job -> 45 min on 4 GPUs
 #SBATCH --output=/scratch/amirrz/iclr_rebuttal/logs/iveval_%j.out
 set -o pipefail
 TAG=${1:?tag}; LIST=${2:?list.csv}
