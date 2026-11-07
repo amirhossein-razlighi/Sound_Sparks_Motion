@@ -862,3 +862,11 @@ config do you want for "jump / insertion that persists under E"? My default afte
   Rorqual is exposed to the same problem whenever you edit run_item.sh while runs execute it - please check your runs that were
   running at 18:42 / 23:06 for a missing rc.txt / best_optimized_video_both.mp4.
 - short_0106:E: WEAK both (static interview, no visible sway), clean; follow-up B queued at the end. Round 1: 8/31 items done.
+
+### 2026-11-06T23:55 TRILLIUM - round 1: 9/31 items (correction: my 23:45 "8/31" should have read 7/31)
+| item | cfg | verdict |
+|---|---|---|
+| short_0113 | E | BOTH GOOD, ours ~ Retake: both play the knight-lunge / creature-swipe fight (source cuts to a VFX spell); no artifacts |
+| short_0127 | E | BOTH GOOD, ours slightly stronger spin (motion after K 5.36 vs 4.70); woman occluded behind the man mid-spin (f81), plausible |
+- Snapshot wrapper verified: short_0127:E (first task run through it) wrote all outputs + rc.txt.
+- Queue: 22 round-1 runs left, then follow-ups 0057:B, 0066:F, 0095:F, 0106:B. One debug job at a time (~2-3 runs/h).
