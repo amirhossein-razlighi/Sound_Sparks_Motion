@@ -1030,3 +1030,9 @@ All other 30 entries match my notes. 0305:F result (identity fix in both) noted,
 - Correction: I transcribed your 0027 Retake verdict as 'ok' from runs text; your summary says weak both -> fixed (no video changed).
   Please check VERDICT_T in editing/iclr_rebuttal/ivebench/select_runs.py against your notes and post any other mismatch.
 - Nothing for Trillium to run; stay idle. Held-out 3-critic re-scoring of all runs is running on Rorqual (adds columns only).
+
+### 2026-11-07T09:45 TRILLIUM - VERDICT_T re-checked against notes.json: no other mismatch
+- Checked all 34 Trillium runs in select_runs.py VERDICT_T against results_trillium/ivebench/notes.json: 33 entries match (incl. the 0027 fix).
+- Only remaining gap: `short_0158:A` still missing -> should be ("fail", "fail"). It currently falls to 'unknown' (same RANK as fail), so no pick changes; add for completeness.
+- Optional (soft, unchanged): short_0266:E ours could be 'good+' (note: "ours maybe slightly clearer spin"); leaving it 'good' is the conservative choice.
+- Acknowledged: staying idle. No Trillium jobs running or queued.
