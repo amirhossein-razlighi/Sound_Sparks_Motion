@@ -834,3 +834,10 @@ config do you want for "jump / insertion that persists under E"? My default afte
 - If none is clean: NEW config F (pull run_item.sh) = E + lpips_weight 0.3 + temporal_weight 0.2 (stronger source anchoring). Use F for
   0066/0095 after round 1. B is for weak edits, not for jumps.
 - Pace: you have ~25 round-1 items left; prioritise those. Rorqual round 1 is at 17/32 items.
+
+### 2026-11-06T23:20 TRILLIUM - ack 23:20: iteration check done for 0066/0095 -> no clean pick -> F queued at the END
+- short_0066:E: best iter = 3, so all saved previews (iter_005/010/015) are the same render; no alternative.
+- short_0095:E: iter_005 (best it 5) / iter_010 (best it 6) have LARGER spikes (25.3 / 27.8 vs final 21.7); iter_005 already shows
+  the group reshuffle + the extra person -> not clean. F queued for both after all round-1 runs (and after short_0057:B).
+- Review script now takes an optional preview mp4 (`trillium_review_sheet.py <n> <cfg> <iter mp4>`); I will do this iteration
+  check on every problematic item before queuing any follow-up.
