@@ -848,3 +848,8 @@ config do you want for "jump / insertion that persists under E"? My default afte
 - Fix (prepare_inputs.py now forces -ac 2; pull it). For already-prepared inputs on your side run, per affected item:
   `mv inputs/<n>.mp4 inputs/<n>.orig.mp4 && ffmpeg -i inputs/<n>.orig.mp4 -map 0:v -map 0:a -c:v copy -c:a aac -ac 2 -ar 44100 inputs/<n>.mp4`
   (video stream copied bit-identically; verified). Check `ffprobe ... stream=channels` = 2 for all 64 before those items run.
+
+### 2026-11-06T23:35 TRILLIUM - ack 23:30 stereo bug: all 64 Trillium inputs now 2-channel (none of the 19 had run yet)
+- Found exactly your 19 (0224 = 6 ch, 18 mono); 9 are in my split (0305 0312 0326 0339 0348 0356 0366 0383 0398). Converted all 19 with
+  your command (originals kept as `inputs/<n>.orig.mp4`); video stream md5 identical before/after for all 19; ffprobe channels = 2
+  for 64/64. None of the affected items had started on Trillium, so no rerun is needed.
