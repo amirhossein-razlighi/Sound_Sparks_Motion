@@ -9,6 +9,8 @@
 #   D: = A with Gemma prompt enhancement OFF       (IVEBench prompts are already long; enhancement may add shot changes)
 #   E: = D with K=25 preserved frames              (paper monkey / turtle prefix length)
 #   F: = E with stronger source anchoring (lpips_weight 0.3, temporal_weight 0.2) - for jumps / insertions that persist under E
+#   G: = E but the CRITIC question uses IVEBench's short target_phrase (paper-style action description) instead of the long
+#      target_prompt (the long scene description is already satisfied by the unedited source: no edit signal). LTX prompt unchanged.
 # LTX prompt and critic question use IVEBench's target_prompt (the paper uses one string for both).
 set -o pipefail
 N=$1; CFG=$2
@@ -25,16 +27,18 @@ case $CFG in
   D) SETS=(retake_start_frames=5 qwen_max_frames=8 qwen_sample_mode=linspace qwen_grad_accum_steps=3 enhance_prompt=false) ;;
   E) SETS=(retake_start_frames=25 qwen_max_frames=8 qwen_sample_mode=linspace qwen_grad_accum_steps=3 enhance_prompt=false) ;;
   F) SETS=(retake_start_frames=25 qwen_max_frames=8 qwen_sample_mode=linspace qwen_grad_accum_steps=3 enhance_prompt=false lpips_weight=0.3 temporal_weight=0.2) ;;
+  G) SETS=(retake_start_frames=25 qwen_max_frames=8 qwen_sample_mode=linspace qwen_grad_accum_steps=3 enhance_prompt=false); QPHRASE=1 ;;
   *) echo "bad cfg $CFG"; exit 2 ;;
 esac
-mapfile -t P < <(python - "$R" "$N" <<'PY'
-import json, sys
+mapfile -t P < <(QPHRASE=${QPHRASE:-0} python - "$R" "$N" <<'PY'
+import json, os, sys
 R, N = sys.argv[1], sys.argv[2]
 it = next(x for x in json.load(open(f"{R}/subset_subject_motion_short.json")) if x["src_video_name"] == N + ".mp4")
 meta = json.load(open(f"{R}/inputs/{N}.json"))
 tp = it["target_prompt"].strip()
 print(tp); print(it["source_prompt"].strip())
-print(f'Does this video clearly show the action or state change described by the edit prompt: "{tp}"? Answer only \'yes\' or \'no\'.')
+qt = it["target_phrase"].strip() if os.environ.get("QPHRASE") == "1" else tp
+print(f'Does this video clearly show the action or state change described by the edit prompt: "{qt}"? Answer only \'yes\' or \'no\'.')
 print(meta["n"])
 PY
 )

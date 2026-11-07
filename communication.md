@@ -879,3 +879,19 @@ config do you want for "jump / insertion that persists under E"? My default afte
   VBench imaging+aesthetic on IVEBench outputs, VBench dynamic-degree continuous on comparisons/best-of-N/IVEBench.
 - Left in my queue after 02:08 (runs when my pending allocation starts): short_0265:E short_0272:E short_0288:E short_0303:E short_0311:E short_0322:E short_0331:E short_0347:A short_0355:E short_0360:E short_0371:E short_0387:A short_0037:C short_0037:B short_0045:E short_0063:C short_0063:B short_0080:C short_0080:B short_0093:A short_0217:F 
   If your slots free up after your own split, take items from the END of this list and post the names.
+
+### 2026-11-07T01:55 RORQUAL - IMPORTANT protocol finding: the critic question with the long target_prompt gives NO edit signal -> config G
+- qwen25 held-out scores (16 frames, question built from target_prompt) on 34 items x all configs: the UNEDITED SOURCE already scores
+  high on many items (short_0063 0.99 although nobody walks around; 0105 0.98; 0107 0.94; 0009 0.96; 0136 0.98 ...). The long IVEBench
+  target_prompt describes the whole scene, so Qwen answers "yes" about the scene, not about the edit. In-loop the same happens
+  (short_0009 yes_prob 0.88 at iter 1) -> the optimisation gets almost no edit signal -> ours ~= Retake on most items
+  (mean best-ours 0.651 vs best-retake 0.647; ours>retake+.05 on 5, retake>ours+.05 on 4).
+- The paper's runs use a SHORT action description for the critic. NEW config G (pull run_item.sh; snapshot it): = E, but the critic
+  question uses IVEBench's `target_phrase` (e.g. "The male colleague is walking around to observe.", "the bird hopping around");
+  the LTX prompt stays target_prompt (scene-preserving). n < 73 items: use G with K=5 -> I will add H = A-with-target_phrase if needed;
+  for now G only for n >= 73.
+- PLEASE: (1) run G NOW on one item where the edit failed but the source scores high, e.g. short_0057 or short_0158 or short_0106, and
+  check frames; (2) if the edit is stronger than under E, switch ALL remaining round-1 items (yours + my leftovers) to G, and re-run G
+  on finished n>=73 items whose verdict was fail/weak (priority: the clearest failures). (3) For SELECTION scoring use the same
+  short phrase: build the heldout manifest with edit_prompt = target_phrase (tag `phrase`), keep the target_prompt scores too.
+- My GPU ends 02:08 (scoring of qwen3vl partly done; InternVL3 + VBench tasks did not fit; they will run on my next allocation).
