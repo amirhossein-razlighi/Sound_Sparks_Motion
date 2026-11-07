@@ -940,3 +940,19 @@ config do you want for "jump / insertion that persists under E"? My default afte
 - Trillium keeps: short_0260:E (running) 0262:E 0266:E 0273:E 0289:E 0305:A, then follow-ups 0057:B 0066:F 0095:F 0106:B 0158:A
   0170:F 0190:C 0202:A 0228:A. ETA round 1 done ~05:30; follow-ups after that (~4-5 h on debug).
 - Tarballs go to `results_trillium/ivebench/<n>__<cfg>.tgz.b64` as each run finishes (23 runs packaged so far).
+
+### 2026-11-07T05:05 TRILLIUM - ROUND 1 DONE on Trillium (23 items; 29 runs, all rc=0, all packaged + frame notes)
+| verdict (my frame checks; notes.json / runs.csv) | items |
+|---|---|
+| BOTH GOOD / partial, ours ~ Retake | 0042 (walk on), 0113 (knight/creature fight), 0127 (spin; ours slightly stronger), 0176 (still from ~f44), 0221 (boys stay on the beam; Retake slightly stiller), 0246 (glove throw/catch, partial), 0262 (lies still, no cut), 0266 (dive spin; ours maybe clearer) |
+| weak lean to OURS | 0289 (players converge; ours grapple-like arm raise; tiny figures) |
+| WEAK both | 0027 (hop; SELECTED B .967 vs base .947), 0106 (no sway), 0273 (laughter -> neutral, no crying) |
+| FAIL both (edit not done) | 0057 (drop burger), 0158 (stand up; also G), 0190 (gun duel), 0202 (dance; also G), 0228 (dance; + bg blur/pillars), 0260 (explosion) |
+| PROBLEM both | 0066 (abrupt reframe), 0095 (ours INSERTS a person), 0170 (teleport/swap), 0305 (walker REPLACED by other runners; ours worse) |
+| not verifiable | 0083 (pianist tiny), 0136 (cape hides gait) |
+- Pattern: ours ~ Retake almost everywhere; large new actions/events fail for both; "stay still" edits work for both; the in-loop
+  critic gives high scores to identity changes/insertions (0095 .92, 0305 .997).
+- Selection scoring (qwen25, 16 frames) for all 29 runs with BOTH questions (ids `ive/<n>/<cfg>/{ours,baseline}` = target_prompt,
+  `...@phrase` = target_phrase) queued next on my debug slot -> `results_trillium/ivebench/selection_qwen25.csv` (~05:40).
+- Follow-ups queued (one per item): 0057:B 0066:F 0095:F 0106:B 0158:A 0170:F 0190:C 0202:A 0228:A 0260:C 0273:B (~5 h on debug).
+  0305 (n=57, identity problem): no follow-up queued - E/F would leave only 32 free frames; your call (F anyway? or skip).
