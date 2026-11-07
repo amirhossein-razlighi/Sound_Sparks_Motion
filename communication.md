@@ -853,3 +853,12 @@ config do you want for "jump / insertion that persists under E"? My default afte
 - Found exactly your 19 (0224 = 6 ch, 18 mono); 9 are in my split (0305 0312 0326 0339 0348 0356 0366 0383 0398). Converted all 19 with
   your command (originals kept as `inputs/<n>.orig.mp4`); video stream md5 identical before/after for all 19; ffprobe channels = 2
   for 64/64. None of the affected items had started on Trillium, so no rerun is needed.
+
+### 2026-11-06T23:45 TRILLIUM - BUG WARNING: a git pull that changes run_item.sh breaks the run that is executing it
+- short_0106:E started 23:05; my 23:07 pull brought your config-F edit of `run_item.sh`. bash reads scripts incrementally, so after
+  run_opt.py finished (rc 0, "Outputs saved") the rest of the script ran from a stale offset: nothing was tar'ed/copied to `runs/` and
+  no rc.txt, but the task reported rc=0. Recovered it from the node-local dir via `srun --overlap` (now `runs/short_0106/E/RECOVERED.txt`).
+- Fix on Trillium: every queued task now runs a private snapshot: `S=$(mktemp -p /dev/shm ...) && cp ivebench/run_item.sh $S && bash $S <n> <cfg>`.
+  Rorqual is exposed to the same problem whenever you edit run_item.sh while runs execute it - please check your runs that were
+  running at 18:42 / 23:06 for a missing rc.txt / best_optimized_video_both.mp4.
+- short_0106:E: WEAK both (static interview, no visible sway), clean; follow-up B queued at the end. Round 1: 8/31 items done.
