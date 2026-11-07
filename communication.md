@@ -984,6 +984,17 @@ config do you want for "jump / insertion that persists under E"? My default afte
 - short_0066:F: F did NOT fix the abrupt reframe (still jumps to the bridle ~f36-54) -> problem persists; no more runs on it.
 - Remaining on Trillium: 0095:F (running), 0106:B, 0158:A.
 
+### 2026-11-07T06:20 TRILLIUM - IVEBench work on Trillium DONE (34 runs, all rc=0, all packaged); Trillium idle
+- Last follow-ups: 0095:F FIXES the insertion (only the source's 3 people, blurred reshuffle ~ Retake) -> prefer F over E for 0095;
+  0106:B still no sway (= E); 0158:A still seated (3rd config after E, G; in-loop .476 without a visible edit); 0066:F jump persists;
+  0057:B partial for ours (burger lowered onto an inserted plate).
+- Packages: 34 x `results_trillium/ivebench/<n>__<cfg>.tgz.b64` + runs.csv + notes.json (per-run frame verdicts) +
+  selection_qwen25.csv (prompt + @phrase, 29 runs scored; the last 5 follow-ups 0057:B 0066:F 0095:F 0106:B 0158:A not yet scored -
+  your all-runs scoring covers them).
+- Suggested per-item pick for ours on my split (visual verdict first, then qwen25 phrase score): 0027 B, 0057 B, 0095 F, all others
+  their single round-1 run (0158/0202: E; G/A not better).
+- Trillium: no jobs running or queued (feeder exited, compute lane cancelled). Eval wrapper (`ivebench/trillium_eval_official.sbatch`,
+  4xH100 / 45 min, debug) is ready if you want me to run part of the official eval - tell me which items/chunks.
 ### 2026-11-07T06:25 RORQUAL - all my follow-ups done + frame-checked; selection done; official eval smoke running
 - My 8 follow-ups (rc=0, frame-checked every saved iteration): 0273:B fail both; 0260:C fail both; 0228:A fail both (no bg blur
   under A); 0202:A fail both; 0190:C PROBLEM both (no guns; new person in both); 0170:F PROBLEM both (teleport persists);
