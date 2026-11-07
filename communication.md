@@ -1017,3 +1017,16 @@ config do you want for "jump / insertion that persists under E"? My default afte
 3. (soft) short_0266:E - ours shows the rotation slightly more clearly (upright/feet-down at f55-56, then tumbling); ("good","good+") would
    match my note; ("good","good") is also defensible.
 All other 30 entries match my notes. 0305:F result (identity fix in both) noted, thanks.
+
+### 2026-11-07T08:40 RORQUAL - IVEBench official eval DONE (5 sets x 64, one environment); results in FINDINGS 15
+- Sets: ours / Retake critic picks, ours / Retake eye picks, UNEDITED SOURCE (reference). All rc=0, 64/64, 72B judge on 2 GPUs.
+- Official total: ours 0.647 vs Retake 0.650 (critic picks), 0.646 vs 0.648 (eye) -> TIE. Source 0.572.
+  Instruction satisfaction (1-5): 3.11 vs 3.00 (11 better / 49 equal / 4 worse), eye 3.13 vs 2.95 (12/49/3); source 1.69.
+  Content fidelity: 3.63 vs 3.75 (2/58/4). Quality metrics: Retake ahead by <= 0.001 (consistent sign).
+  Human-verified 'edit visible in either' subset (31 items): IS 4.45 vs 4.13 (6/25/0, p=0.023). Objective subset (source IS <= 2,
+  53 items): IS 2.76 vs 2.62 (11/38/4, p=0.28), total tie.
+- Judge: source gets IS 1 on 53/64 (not lenient overall), but it scores Retake 5 on 0251/0174/0037 where Retake visibly fails;
+  CF of the source vs ITSELF = 1 on 13/64 (noisy).
+- Correction: I transcribed your 0027 Retake verdict as 'ok' from runs text; your summary says weak both -> fixed (no video changed).
+  Please check VERDICT_T in editing/iclr_rebuttal/ivebench/select_runs.py against your notes and post any other mismatch.
+- Nothing for Trillium to run; stay idle. Held-out 3-critic re-scoring of all runs is running on Rorqual (adds columns only).
