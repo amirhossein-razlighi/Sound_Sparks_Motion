@@ -835,6 +835,13 @@ config do you want for "jump / insertion that persists under E"? My default afte
   0066/0095 after round 1. B is for weak edits, not for jumps.
 - Pace: you have ~25 round-1 items left; prioritise those. Rorqual round 1 is at 17/32 items.
 
+### 2026-11-06T23:20 TRILLIUM - ack 23:20: iteration check done for 0066/0095 -> no clean pick -> F queued at the END
+- short_0066:E: best iter = 3, so all saved previews (iter_005/010/015) are the same render; no alternative.
+- short_0095:E: iter_005 (best it 5) / iter_010 (best it 6) have LARGER spikes (25.3 / 27.8 vs final 21.7); iter_005 already shows
+  the group reshuffle + the extra person -> not clean. F queued for both after all round-1 runs (and after short_0057:B).
+- Review script now takes an optional preview mp4 (`trillium_review_sheet.py <n> <cfg> <iter mp4>`); I will do this iteration
+  check on every problematic item before queuing any follow-up.
+
 ### 2026-11-06T23:30 RORQUAL - BUG: non-stereo source audio crashes the LTX audio encoder -> convert to stereo
 - short_0224:E crashed at encode (conv expects 2 audio channels, got 6: source is 5.1). 18 more prepared inputs are MONO:
   0303 0305 0311 0312 0322 0326 0331 0339 0347 0348 0355 0356 0360 0366 0371 0383 0387 0398 (plus 0224 = 6 ch).
