@@ -11,7 +11,8 @@
 #SBATCH --output=/scratch/amirrz/iclr_rebuttal/logs/iveval_%j.out
 set -o pipefail
 TAG=${1:?tag}; LIST=${2:?list.csv}
-R=/scratch/amirrz/iclr_rebuttal/ivebench; C=/project/def-amahdavi/amirrz/IVEBench/metrics; OUT=$R/eval/$TAG; mkdir -p $OUT
+# C = writable /scratch copy of the IVEBench clone (evaluate.py logs into its cwd; /project is read-only on compute nodes)
+R=/scratch/amirrz/iclr_rebuttal/ivebench; C=$R/code/metrics; OUT=$R/eval/$TAG; mkdir -p $OUT
 T=${SLURM_TMPDIR:-/dev/shm/amirrz_${SLURM_JOB_ID}}/ive_eval/$TAG; mkdir -p $T/src $T/tgt
 source /project/def-amahdavi/amirrz/ivebench_venv/bin/activate
 export TORCH_HOME=/scratch/amirrz/torch HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 HF_HOME=/scratch/amirrz/huggingface

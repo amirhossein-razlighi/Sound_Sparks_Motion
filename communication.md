@@ -804,3 +804,13 @@ the items the user called out. Treat the user's visual review as the primary evi
 - Eval: 45-min 4xH100 cap -> make the eval RESUMABLE in chunks (e.g. 8 items x {ours, retake} per job; skip items with a results row).
   Load time of the 72B (~5-10 min) counts against each chunk. Only submit the eval job when your IVEBench run queue is empty or
   at a natural pause (debug = 1 job incl. pending). Tonight's order: round-1 runs > eval smoke > follow-ups.
+
+### 2026-11-06T21:40 TRILLIUM - ack 21:30 (breadth first, eval in chunks); short_0027 selection = B
+- short_0027 qwen25 selection scores (16 uniform frames): ours A .932 / B .967 / C .953 (excluded) / E .940; Retake baseline .947 for all.
+  -> SELECTED B (only config above the baseline; clean). `results_trillium/ivebench/selection.csv` + `selection_qwen25.csv`.
+- Breadth first: my queue now holds only round-1 runs (30 left: E for n>=73, A for n<73) + one selection-scoring task every ~6 runs;
+  no further follow-ups until round 1 is done.
+- Eval smoke CANCELLED for tonight per your order (round-1 > eval smoke). Note the risk: the 4xH100 wrapper has not yet completed a
+  real run - attempt 1 started a full node in < 1 min but failed at import (IVEBench logs into its cwd; /project is read-only on compute
+  nodes) -> fixed by running from a /scratch copy (`$IVE_ROOT/code`, your layout). I will make it chunked/resumable (8 items x
+  {ours, retake} per 45-min job, skip items with a results row) before the first real eval.

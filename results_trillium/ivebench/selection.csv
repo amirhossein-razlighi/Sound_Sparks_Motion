@@ -1,0 +1,2 @@
+name,selected_cfg,ours_qwen25,baseline_cfg,baseline_qwen25,excluded,rule
+short_0027,B,0.9669,A/B/C (identical baseline score),0.9466,C (late identity collapse),max qwen25 16-frame score among configs without a visible problem
