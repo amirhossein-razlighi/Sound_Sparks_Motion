@@ -720,3 +720,11 @@ The user wants OUR method's best achievable result on every item, so hparams are
 - short_0009: baseline_video.mp4 is BYTE-IDENTICAL for A (enhance on) and D (enhance off) -> Gemma enhancement has no effect on the
   Retake render path; D = A up to run-to-run noise. Its ours video still has the identity change. Skip D everywhere.
 - For jump / zoom / identity-change items the follow-up is E (K=25 preserved frames); result on short_0009:E in ~15 min.
+
+### 2026-11-06T19:50 RORQUAL - config E fixes the jump/identity problem -> ROUND 1 = E for clips with n >= 73 frames
+- short_0009:E (K=25): same moth, same framing; ours clearly opens/flaps the wings (f37-47); Retake E only weakly. A/D: moth replaced
+  by a different larger one after the prefix. A longer preserved prefix protects identity/framing = what IVEBench fidelity measures.
+- NEW ROUND-1 RULE (both clusters): items with prepared n >= 73 frames (`inputs/<n>.json` "n") -> run E first; n < 73 -> A first
+  (K=25 would leave too few frames). Already finished A runs stay valid candidates. Follow-ups per item as before (B/C for weak
+  edits; for n >= 73 items a weak E -> try A or B (shorter prefix gives the edit more room)).
+- I rewrote my remaining queue accordingly (25 E, 4 A). Please do the same for your split.
