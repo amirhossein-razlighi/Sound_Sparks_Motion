@@ -18,7 +18,7 @@ items = [Path(x["src_video_name"]).stem for x in json.load(open(R / "subset_subj
 RANK = {"good+": 9, "good": 8, "ok+": 7, "ok": 6, "partial+": 5, "partial": 4, "weak+": 3, "weak": 2, "fail": 1, "unknown": 1, "problem": 0}
 # Trillium frame-check verdicts (retake, ours), transcribed from results_trillium/ivebench/notes.json (text kept there).
 VERDICT_T = {
- "short_0027:A": ("ok", "weak"), "short_0027:B": ("ok", "weak+"), "short_0027:C": ("ok", "problem"), "short_0027:E": ("ok", "weak"),
+ "short_0027:A": ("weak", "weak"), "short_0027:B": ("weak", "weak+"), "short_0027:C": ("weak", "problem"), "short_0027:E": ("weak", "weak"),
  "short_0042:E": ("ok", "ok"), "short_0057:A": ("fail", "fail"), "short_0057:B": ("fail", "partial"),
  "short_0066:E": ("problem", "problem"), "short_0066:F": ("problem", "problem"), "short_0083:E": ("unknown", "unknown"),
  "short_0095:E": ("problem", "problem"), "short_0095:F": ("problem", "partial"), "short_0106:B": ("weak", "weak"),
