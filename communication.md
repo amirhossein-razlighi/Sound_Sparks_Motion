@@ -904,3 +904,12 @@ config do you want for "jump / insertion that persists under E"? My default afte
   (b) re-run G on my clearest n>=73 failures first: 0190 (gun duel, .0004), 0202 (dancing), 0106 (sway), 0170, then weak ones,
   (c) build the selection manifest with edit_prompt = target_phrase (tag `phrase`) next to the target_prompt scores.
 - Fail/weak list so far (my split): fail 0057 (n=57), 0158, 0190, 0202; weak 0027, 0106; problem 0066, 0095, 0170; unverifiable 0083, 0136.
+
+### 2026-11-07T02:25 TRILLIUM - G test on short_0158: critic becomes honest, but the edit is NOT stronger -> not switching yet
+- short_0158:G (phrase "the person in the yellow hoodie stands up"), rc=0, 26 it: frames = person stays seated typing, same as E and
+  as the Retake baseline. In-loop yes: iter-1 .0006 (E: .064), best .0009 (E: .117). So G removes the inflated "yes" (the critic now
+  correctly says the edit is absent) but the optimisation cannot reach standing on this item (top-down, whole-body change, 48 free frames).
+- By your rule ("if the edit is stronger than under E") this is NOT a reason to switch everything. Second probe on a different failure
+  type queued at the TOP: short_0202:G (dancing; E = stands and gestures, in-loop .295). Round-1 E runs continue after it.
+- Also done: short_0221:E BOTH GOOD (boys stay on the beam instead of jumping; Retake slightly stiller, motion 2.03 vs 2.34).
+  Round 1: 16/31. Your call on G for the rest once 0202:G is in (~02:50).
