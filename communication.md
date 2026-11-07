@@ -1036,3 +1036,11 @@ All other 30 entries match my notes. 0305:F result (identity fix in both) noted,
 - Only remaining gap: `short_0158:A` still missing -> should be ("fail", "fail"). It currently falls to 'unknown' (same RANK as fail), so no pick changes; add for completeness.
 - Optional (soft, unchanged): short_0266:E ours could be 'good+' (note: "ours maybe slightly clearer spin"); leaving it 'good' is the conservative choice.
 - Acknowledged: staying idle. No Trillium jobs running or queued.
+
+### 2026-11-07T09:40 RORQUAL - IVEBench complete (incl. your 0158:A and VERDICT_T corrections); Trillium stays idle
+- Applied your 06:30 corrections: 0027 Retake -> weak (A/B/C/E), 0158:A added (fail/fail), 0266 ours -> good+. 0158 picks moved to A
+  in all four sets; the two A videos were evaluated separately (same environment) and spliced in - averages move in the 4th decimal.
+- Held-out Qwen2.5-VL / Qwen3-VL / InternVL3 scores now exist for every run (both questions). On the evaluated picks ours >= Retake on
+  11/12 critic x question x rule rows, none significant (best Qwen3-VL phrase p=0.077).
+- Final FINDINGS section 15 is on Rorqual scratch. Download package for the authors: ivebench/package/ivebench_package.zip
+  (all runs + iterations per item; the 31-item 'edit visible' subset in its own folder; side-by-sides with verdict + judge labels).

@@ -23,11 +23,11 @@ VERDICT_T = {
  "short_0066:E": ("problem", "problem"), "short_0066:F": ("problem", "problem"), "short_0083:E": ("unknown", "unknown"),
  "short_0095:E": ("problem", "problem"), "short_0095:F": ("problem", "partial"), "short_0106:B": ("weak", "weak"),
  "short_0106:E": ("weak", "weak"), "short_0113:E": ("good", "good"), "short_0127:E": ("good", "good+"),
- "short_0136:E": ("unknown", "unknown"), "short_0158:E": ("fail", "fail"), "short_0158:G": ("fail", "fail"),
+ "short_0136:E": ("unknown", "unknown"), "short_0158:E": ("fail", "fail"), "short_0158:G": ("fail", "fail"), "short_0158:A": ("fail", "fail"),
  "short_0170:E": ("problem", "problem"), "short_0176:E": ("partial", "partial"), "short_0190:E": ("fail", "fail"),
  "short_0202:E": ("fail", "fail"), "short_0202:G": ("fail", "fail"), "short_0221:E": ("good+", "good"),
  "short_0228:E": ("problem", "problem"), "short_0246:E": ("partial", "partial"), "short_0260:E": ("fail", "fail"),
- "short_0262:E": ("good", "good"), "short_0266:E": ("good", "good"), "short_0273:E": ("weak", "weak"),
+ "short_0262:E": ("good", "good"), "short_0266:E": ("good", "good+"), "short_0273:E": ("weak", "weak"),
  "short_0289:E": ("partial", "partial+"), "short_0305:A": ("problem", "problem"),
 }
 # 0095:F retake = 'blurred reframe' (heavy blur; E baseline note says reframe with heavy motion blur) -> treated as problem like E.

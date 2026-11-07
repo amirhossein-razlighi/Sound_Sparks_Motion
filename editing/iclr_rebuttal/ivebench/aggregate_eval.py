@@ -24,8 +24,20 @@ M = list(CAT)
 def load(tag):
     f = sorted(glob.glob(f"{R}/eval/{tag}/{tag}_*_eval_results.csv"))[-1]
     d = pd.read_csv(f); d["item"] = d["video_name"].str.replace(".mp4", "", regex=False)
+    d = d.set_index("item")
+    # patches: re-evaluated single items (selection changed after the set was run); applied only where the patched video is
+    # exactly the video now listed for this set in eval_lists/<tag>.csv
+    import csv, os
+    cur = {r["name"]: r["video"] for r in csv.DictReader(open(f"{R}/eval_lists/{tag}.csv"))} if os.path.exists(f"{R}/eval_lists/{tag}.csv") else {}
+    for pf in sorted(glob.glob(f"{R}/eval/patch_*/patch_*_eval_results.csv")):
+        ptag = pf.split("/")[-2]
+        pv = {r["name"]: r["video"] for r in csv.DictReader(open(f"{R}/eval_lists/{ptag}.csv"))}
+        pd_ = pd.read_csv(pf); pd_["item"] = pd_["video_name"].str.replace(".mp4", "", regex=False); pd_ = pd_.set_index("item")
+        for it in pd_.index:
+            if cur.get(it) == pv.get(it) and it in d.index:
+                d.loc[it, M] = pd_.loc[it, M].values; d.loc[it, "patched_from"] = ptag
     d[M] = d[M].apply(pd.to_numeric, errors="coerce").mask(lambda x: x <= -1)
-    return d.set_index("item")
+    return d
 
 def total(means):
     n = means.copy()
