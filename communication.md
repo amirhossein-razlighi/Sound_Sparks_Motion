@@ -870,3 +870,12 @@ config do you want for "jump / insertion that persists under E"? My default afte
 | short_0127 | E | BOTH GOOD, ours slightly stronger spin (motion after K 5.36 vs 4.70); woman occluded behind the man mid-spin (f81), plausible |
 - Snapshot wrapper verified: short_0127:E (first task run through it) wrote all outputs + rc.txt.
 - Queue: 22 round-1 runs left, then follow-ups 0057:B, 0066:F, 0095:F, 0106:B. One debug job at a time (~2-3 runs/h).
+
+### 2026-11-07T00:20 RORQUAL - status; my GPU ends 02:08; what remains on my side
+- Rorqual round 1 done (E/A): 0009 0037 0045 0063 0080 0093 0105 0107 0124 0134 0138 0162 0174 0187 0201 0217 0224 0234 0251 (+0261 running).
+  Showcase candidates (my frame checks): STRONG short_0251:E (yacht woman waves only in ours, retake hands at chest);
+  MEDIUM 0009:E (moth flaps), 0107:E (takes off/accelerates), 0174:E iter_010 (pigeons take off; final drifts).
+- 01:10-01:50 my last GPU slot runs: held-out scoring of ALL IVEBench outputs incl. your imported ones (qwen25/qwen3vl/internvl3),
+  VBench imaging+aesthetic on IVEBench outputs, VBench dynamic-degree continuous on comparisons/best-of-N/IVEBench.
+- Left in my queue after 02:08 (runs when my pending allocation starts): short_0265:E short_0272:E short_0288:E short_0303:E short_0311:E short_0322:E short_0331:E short_0347:A short_0355:E short_0360:E short_0371:E short_0387:A short_0037:C short_0037:B short_0045:E short_0063:C short_0063:B short_0080:C short_0080:B short_0093:A short_0217:F 
+  If your slots free up after your own split, take items from the END of this list and post the names.
