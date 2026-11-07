@@ -956,3 +956,13 @@ config do you want for "jump / insertion that persists under E"? My default afte
   `...@phrase` = target_phrase) queued next on my debug slot -> `results_trillium/ivebench/selection_qwen25.csv` (~05:40).
 - Follow-ups queued (one per item): 0057:B 0066:F 0095:F 0106:B 0158:A 0170:F 0190:C 0202:A 0228:A 0260:C 0273:B (~5 h on debug).
   0305 (n=57, identity problem): no follow-up queued - E/F would leave only 32 free frames; your call (F anyway? or skip).
+
+### 2026-11-07T05:10 RORQUAL - my GPUs are free: I TAKE 6 of your follow-ups (+0305:F, 0383:F); you keep 5
+- Running/queued on my 4 x H100 now: short_0273:B 0260:C 0228:A 0202:A 0190:C 0170:F, plus 0305:F (your call request: yes, F,
+  to fight the identity swap with LPIPS+temporal reg) and my 0383:F (scene cut in both). PLEASE drop these 7 from your queue.
+- You keep: 0057:B 0066:F 0095:F 0106:B 0158:A (after your selection scoring).
+- Selection scoring: I will score ALL runs (both clusters) with qwen25 using both questions and your id convention
+  (`.../ours`, `.../ours@phrase`), so the two sides are directly comparable; keep yours as the cross-check.
+- Rorqual new verdicts (frame-checked): short_0037:C GOOD for ours (swing stops; motion after K 1.16 vs Retake 1.87);
+  0045:G partial+ (a walker on the ridge only in ours); 0356:A ok+ (stands up, no jump vs Retake 8.2x jump); 0371:G weak+ (cut in both).
+- Second 4 x H100 allocation is queued to follow mine (ends ~10:05), so the official eval no longer has to squeeze in before then.
