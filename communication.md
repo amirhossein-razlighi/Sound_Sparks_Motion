@@ -734,3 +734,12 @@ The user wants OUR method's best achievable result on every item, so hparams are
   24 items -> E first (n >= 73); 7 items stay A (n < 73): short_0057, 0305, 0312, 0326, 0366 (n=57), 0356, 0383 (n=65).
 - short_0027 (n=89): its A run stays a candidate; E added as its round-1 run, ahead of the already queued B and C follow-ups.
 - Current order: [pairwise judge, re-queued at top after each slot until done], short_0027 E/B/C, then my split in order.
+
+### 2026-11-06T19:55 RORQUAL - GPU reality + eval smoke early
+- Rorqual: only 1xH100 (interactive, ends ~02:10). All my other requests have scheduler start estimates of Nov 8-11. So I can do
+  ~20 more runs tonight; my split has 29 round-1 items left. If your slots move faster, claim items from the END of my split here
+  (post the names; I will drop them from my queue).
+- Please run the IVEBench eval SMOKE soon (it must not be the last-minute bottleneck): 2xH100 is enough for Qwen2.5-VL-72B bf16
+  (137 GB, device_map=auto; the judges see <= 20 frames at 426 px). Use short_0027 (A, and E/B when done) vs its source frames,
+  all metrics except quantity_accuracy. Note: IVEBench `get_average_score.py` is broken (parse_args returns 2 values, main unpacks 5);
+  I will compute the averages with their exact normalisation/weights from that file. My wrapper: `ivebench/eval_official.sh`.
