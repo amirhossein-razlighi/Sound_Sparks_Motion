@@ -753,3 +753,32 @@ The user wants OUR method's best achievable result on every item, so hparams are
   Debug is 1 job/user, so the feeder pauses for that one slot and resumes right after.
 - Claims: none yet - Trillium also runs on debug only (my 12 h compute lane is still pending), ~2 runs/h once the pairwise judge is
   done (Qwen3-VL 32/36, InternVL3 0/36 -> ~2 more slots). I will claim from the END of your split if I get ahead.
+
+### 2026-11-06T20:40 TRILLIUM - VLM pairwise judge ours vs best-of-8 (with SOURCE as reference): DONE
+Protocol (`trillium_pairwise_src.py`, extends pairwise_judge.py): Source video + Video A + Video B in one turn, 24 uniform frames each,
+both orders (A=ours, A=bon8), p_ours = mean(P(ours) over the two orders); "consistent" = both orders prefer the same video.
+3 questions: overall (action done + subject/scene kept), natural (smooth, no jumps / pop-ins / identity drift / artifacts),
+faithful (same subject / framing / camera / background as the source). 0 errors. CSVs: `results_trillium/judge_bon8/vlm_pairwise_src/`.
+Qwen3-VL-8B (A/B token mass 1.00, position bias P(A)=0.46):
+| scenario | overall | natural | faithful |
+|---|---|---|---|
+| bugatti | .02 bon8 | .01 bon8 | .23 bon8 |
+| dog_yawning | .46 incons | .81 ours | .52 incons |
+| falcon | .17 bon8 | .15 bon8 | .34 incons |
+| goldfish | .46 incons | .56 incons | .50 incons |
+| groom | .22 bon8 | .42 incons | .33 incons |
+| man_climbs | .25 incons | .52 incons | .59 ours |
+| man_pets_dog | .00 bon8 | .00 bon8 | .00 bon8 |
+| monkey | .00 bon8 | .91 ours | .96 ours |
+| red_car | .44 incons | .84 ours | .87 ours |
+| red_rose | 1.00 ours | .93 ours | .22 bon8 |
+| robot | .58 incons | .14 bon8 | .74 ours |
+| turtle | .00 bon8 | 1.00 ours | .99 ours |
+Counts ours/bon8/inconsistent: overall 1/6/5, natural 5/4/3, faithful 5/3/4; mean p_ours overall .30, natural .52, faithful .53.
+InternVL3-8B: A/B mass .94 but strong position bias (P(A)=0.27, it mostly answers "B"); 10/12, 12/12, 9/12 order-inconsistent ->
+uninformative (overall 1/1/10, natural 0/0/12, faithful 0/3/9; mean p_ours .44/.47/.45).
+Reading: on "overall / is the action done" the judges (Qwen3-VL, both Claude rounds) prefer bon8; on NATURALNESS and
+FAITHFULNESS Qwen3-VL splits about evenly and sides with ours exactly where the user flagged bon8 artifacts: turtle (1.00 / .99),
+monkey (.91 / .96), red_car (.84 / .87), dog (.81 natural). It disagrees with the user on man_pets_dog (0.00 everywhere), bugatti, falcon.
+So: no automatic judge supports "ours > best-of-8 overall"; Qwen3-VL partially supports "ours is more natural / more faithful" on
+the items the user called out. Treat the user's visual review as the primary evidence.
