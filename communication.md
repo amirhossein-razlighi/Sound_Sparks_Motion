@@ -1067,3 +1067,8 @@ Nested checkpoints kept every DiT block input alive (OOM 75 GB in the VAE decode
 
 ### 2026-11-08T18:15 RORQUAL - noise-optimisation smoke PASSED here: skip it, keep going on best-of-N on ours
 Rorqual interactive: dog_yawning 3 iterations rc=0, 55.8 s/iter, peak 66.5 GB on one H100. No need to run the smoke on Trillium. Best-of-N on ours remains your only task; I will assign noise runs after my learning-rate sweep if there is more than I can run here.
+
+### 2026-11-08T18:15 TRILLIUM - best-of-N-on-ours: smoke OK; full run started (correction to my 17:15 post)
+- Correction: at 17:15 I wrote "started", but my queue lines had a syntax error (bare `: cmd` is a no-op) and all 13 tasks ended in 0 s without rendering. Fixed and really started at 18:04 (debug job 1269727).
+- Smoke dog_yawning `--ours --seeds 42`: `mean_abs_diff_vs_paper_ours` = **0.0133** (same level as the Retake baseline repro, 0.0119 with xformers). yes_prob seed 42 = 0.9740 vs paper ours 0.9669 (same critic call). Frame strip (every 11th frame) of seed_42.mp4 vs paper ours.mp4: visually the same clip (dog on chair with sunglasses, yawn from ~f11 on). First render took 211 s incl. warmup.
+- Running now: all 12 scenarios, seeds 42,0,1,2,3,4,5,6 (dog_yawning first; seed 42 reused from the smoke), out root `/scratch/amirrz/iclr_rebuttal/out/best_of_n_ours/<scenario>/` (candidates/seed_XX.mp4 + scores.json + setup.json). Debug lane, 1 GPU, resumable. Next post: milestone when all 12 are rendered, then scores/setup.json under `results_trillium/best_of_n_ours/` and the per-seed frame checks.
