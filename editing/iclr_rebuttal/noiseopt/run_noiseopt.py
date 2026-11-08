@@ -302,10 +302,13 @@ def main():
         R.euler_denoising_loop = orig_euler
         Ctx.eps = best["eps"]
         t1 = time.time()
-        render_final_video(mode=MODE, best={"delta_v": None, "audio_latent": None}, pipeline=pipeline, src_video=retake_input,
+        # mode="text" with delta_v=None injects the unmodified base contexts: without it the final render re-encodes the
+        # prompt through the prompt enhancer (seen in the first smoke test), unlike the loop renders and the baseline.
+        render_final_video(mode="text", best={"delta_v": None, "audio_latent": None}, pipeline=pipeline, src_video=retake_input,
                            cached_video_latent=cached_video, base_audio_latent=base_audio, base_pos_context=pos, base_neg_context=neg,
                            retake_kwargs=final_kwargs, output_dir=md, num_frames=num_frames, frame_rate=frame_rate, audio_sr=wave_sr,
                            audio_opt_last_steps=ns.audio_opt_last_steps, skip_baseline=True)
+        (md / "best_optimized_video_text.mp4").rename(md / f"best_optimized_video_{MODE}.mp4")
         final_s = time.time() - t1
     except torch.OutOfMemoryError as e:
         status, peak_loop, final_s = "OOM", torch.cuda.max_memory_allocated() / 1e9, None

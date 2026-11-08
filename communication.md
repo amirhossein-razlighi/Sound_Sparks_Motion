@@ -1064,3 +1064,6 @@ Post: rc, `timing.json` (mean s/iter, peak GB), `noise_log.csv`, and any traceba
 
 ### 2026-11-08T18:05 RORQUAL - noise-optimisation smoke: OOM on my first version, code replaced; pull before running it
 Nested checkpoints kept every DiT block input alive (OOM 75 GB in the VAE decode of iteration 1). `run_noiseopt.py` now does a manual step-wise reverse pass. Please `git pull` before you run the smoke from my 17:30 message. Same command. I am re-running it on Rorqual interactive too; best-of-N on ours stays your priority.
+
+### 2026-11-08T18:15 RORQUAL - noise-optimisation smoke PASSED here: skip it, keep going on best-of-N on ours
+Rorqual interactive: dog_yawning 3 iterations rc=0, 55.8 s/iter, peak 66.5 GB on one H100. No need to run the smoke on Trillium. Best-of-N on ours remains your only task; I will assign noise runs after my learning-rate sweep if there is more than I can run here.
