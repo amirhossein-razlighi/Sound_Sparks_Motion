@@ -10,6 +10,11 @@ baseline; we log its pixel difference to the paper file as a sanity check.
 
 Also scores the paper's ours.mp4 and baseline_ltx2.mp4 with the same critic.
 
+--ours (added 2026-11-08, default off = behaviour above unchanged): best-of-N ON TOP OF OURS. The paper run's learned
+latents (mode_both/best_audio_latent_both.pt + best_text_delta_both.pt) replace the source audio latent and are added
+to the prompt's video text encoding (exactly as render_final_video does); everything else identical. Seed 42 is
+compared with the paper's ours.mp4 (sanity). Default out root best_of_n_ours/.
+
 Outputs (results/iclr_rebuttal/best_of_n/<scenario>/):
   candidates/seed_XX.mp4, scores.json (incremental, resumable), setup.json
 """
@@ -39,8 +44,11 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--scenario", required=True)
     ap.add_argument("--seeds", default=",".join(map(str, DEFAULT_SEEDS)))
-    ap.add_argument("--out-root", default=str(OUT_ROOT / "best_of_n"))
+    ap.add_argument("--out-root", default=None)
+    ap.add_argument("--ours", action="store_true", help="render the paper run's learned latents (best-of-N on ours)")
     a = ap.parse_args()
+    if a.out_root is None:
+        a.out_root = str(OUT_ROOT / ("best_of_n_ours" if a.ours else "best_of_n"))
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)-7s %(message)s", datefmt="%H:%M:%S")
 
     from motion_opt.core import build_cached_source_latents, build_guiders_for_mode, compute_target_shape, _parse_loras
@@ -79,6 +87,18 @@ def main():
         num_frames=num_frames, audio_sr=ns.audio_sr, device=device)
     pos_ctx, neg_ctx = pre_encode_base_contexts(pipeline=pipeline, pos_prompt=ns.edit_prompt,
                                                 neg_prompt=ns.negative_prompt, device=device)
+    if a.ours:  # learned latents of the paper run (same objects render_final_video uses)
+        from common import paper_run_dir
+        md = paper_run_dir(a.scenario) / "mode_both"
+        lat_a = torch.load(md / "best_audio_latent_both.pt", map_location="cpu")
+        lat_t = torch.load(md / "best_text_delta_both.pt", map_location="cpu")
+        assert tuple(lat_a.shape) == tuple(base_audio_latent.shape), (lat_a.shape, base_audio_latent.shape)
+        assert tuple(lat_t.shape) == tuple(pos_ctx.video_encoding.shape), (lat_t.shape, pos_ctx.video_encoding.shape)
+        base_audio_latent = lat_a.to(device=base_audio_latent.device, dtype=base_audio_latent.dtype)
+        pos_ctx = type(pos_ctx)(video_encoding=pos_ctx.video_encoding + lat_t.to(device=pos_ctx.video_encoding.device,
+                                                                                  dtype=pos_ctx.video_encoding.dtype),
+                                audio_encoding=pos_ctx.audio_encoding, attention_mask=pos_ctx.attention_mask)
+        log.info("[ours] loaded learned latents from %s", md)
     critic = LoopCritic(ns, device)
 
     retake_kwargs = build_retake_kwargs(args=ns, frame_rate=frame_rate, duration=duration,
@@ -96,8 +116,10 @@ def main():
         "critic": critic_spec(ns), "shape": [height, width, num_frames, frame_rate],
         "retake_start_frames": ns.retake_start_frames, "num_inference_steps": final_kwargs["num_inference_steps"],
         "src_video": ns.src_video, "edit_prompt": ns.edit_prompt, "gpu": torch.cuda.get_device_name(0),
-        "note": "prompt-only Retake, full-quality final guidance (same as paper baseline_video.mp4); "
+        "note": ("OURS learned latents (paper run mode_both), " if a.ours else "prompt-only Retake, ") +
+                "full-quality final guidance (same as paper baseline_video.mp4 / final render); "
                 "critic = exact loop call of the paper run (critic.py)",
+        "ours": bool(a.ours),
     }, indent=2, default=str))
 
     def save():
@@ -132,11 +154,13 @@ def main():
         r = critic.score_video(mp4)
         _sync(); t2 = time.time()
         r.update(render_s=t1 - t0, score_s=t2 - t1, peak_mem_gb=torch.cuda.max_memory_allocated() / 1e9)
-        if s == ns.seed:  # sanity: seed 42 vs the paper baseline video
+        if s == ns.seed:  # sanity: seed 42 vs the paper baseline video (or the paper ours video with --ours)
+            ref = paper_ours_video(a.scenario) if a.ours else paper_baseline_video(a.scenario)
             a_ = load_video_chw(mp4, device)
-            b_ = load_video_chw(paper_baseline_video(a.scenario), device)
+            b_ = load_video_chw(ref, device)
             n = min(len(a_), len(b_))
-            r["mean_abs_diff_vs_paper_baseline"] = float((a_[:n] - b_[:n]).abs().mean().item())
+            r["mean_abs_diff_vs_paper_ours" if a.ours else "mean_abs_diff_vs_paper_baseline"] = \
+                float((a_[:n] - b_[:n]).abs().mean().item())
             del a_, b_
         scores["seeds"][key] = r
         save()

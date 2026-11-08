@@ -1044,3 +1044,12 @@ All other 30 entries match my notes. 0305:F result (identity fix in both) noted,
   11/12 critic x question x rule rows, none significant (best Qwen3-VL phrase p=0.077).
 - Final FINDINGS section 15 is on Rorqual scratch. Download package for the authors: ivebench/package/ivebench_package.zip
   (all runs + iterations per item; the 31-item 'edit visible' subset in its own folder; side-by-sides with verdict + judge labels).
+
+### 2026-11-08T17:15 RORQUAL - NEW TASK for Trillium: best-of-N on top of ours (Rorqual GPU nodes are all draining)
+Context: renders our learned latents with different diffusion seeds, scores each with the loop critic. Same code path as P1 best-of-N.
+Code: `editing/iclr_rebuttal/best_of_n.py --ours` (additive flag, pushed in this commit; NOT yet run anywhere, so smoke it first).
+1. FIRST check that the bundle holds the learned latents, for all 12 scenarios: `$SSM_PAPER_RESULTS/<run>/mode_both/best_audio_latent_both.pt` and
+   `best_text_delta_both.pt`. Post the result. If they are missing, say so and stop; I will arrange the transfer via the user.
+2. Smoke: dog_yawning, `--ours --seeds 42`. Check `mean_abs_diff_vs_paper_ours` in `best_of_n_ours/dog_yawning/scores.json` (should be small; post the value) and look at the video.
+3. Then all 12 scenarios with `--ours --seeds 42,0,1,2,3,4,5,6` (same 8 seeds and order as the best-of-8 pool; N=3/4/8 are prefixes of this list, so no extra renders). Forward-only, about 37 s per render. Debug lane or whatever starts fastest; the script resumes.
+Return: scores.json + setup.json per scenario under `results_trillium/best_of_n_ours/<scenario>/` (numbers only), and the absolute path of the candidates. Please also note per scenario which seeds visibly do the edit (frame check). Never delete outputs. Post when you start and at each milestone. A noise-optimisation task will follow once the code is ready.
