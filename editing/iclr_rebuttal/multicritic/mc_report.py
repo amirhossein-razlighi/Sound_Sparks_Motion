@@ -121,34 +121,8 @@ def md(df):
 
 
 # ---------------- curves ----------------
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-panels = [("inloop_qwen_p_pass0", "Qwen2.5-VL in-loop, full-clip pass\n(the paper's critic; both arms optimise it)"),
-          ("heldout_internvl3", "InternVL3, 16-frame protocol\n(in the loop for B only)"),
-          ("heldout_qwen3vl", "Qwen3-VL, 16-frame protocol\n(held out for both arms)")]
-fig, ax = plt.subplots(len(scen), 3, figsize=(13, 2.7 * len(scen)), squeeze=False, sharex=True, sharey=True)
-for r_, s in enumerate(scen):
-    for c, (k, t) in enumerate(panels):
-        x = ax[r_, c]
-        for a in RUNS[s]:
-            d = IT[(IT.scenario == s) & (IT.arm == a)]
-            if len(d) and d[k].notna().any():
-                x.plot(d.iter, d[k], color=COL[a[0]], lw=2 if "_r" not in a else 1.3, ls=LS.get(a[1:], "-"), label=lab(a))
-                if best.get((s, a)):
-                    x.plot([best[(s, a)]], [d.set_index("iter")[k].get(best[(s, a)], np.nan)], "o", ms=8, mfc="white",
-                           mec=COL[a[0]], mew=2)
-        x.set_ylim(-0.02, 1.02); x.grid(alpha=0.25, lw=0.5)
-        for sp in ("top", "right"):
-            x.spines[sp].set_visible(False)
-        if r_ == 0:
-            x.set_title(t, fontsize=9.5)
-        if c == 0:
-            x.set_ylabel(f"{s}\nP(yes)", fontsize=9)
-            x.legend(fontsize=7, loc="best", frameon=False)
-        if r_ == len(scen) - 1:
-            x.set_xlabel("iteration (rendered iterate; circle = selected best iteration)", fontsize=8.5)
-fig.tight_layout(); fig.savefig(REP / "curves.png", dpi=130); plt.close(fig)
+# plotted by mc_curves.py (matplotlib lives in a different venv); it reads report/per_iteration.csv
+(REP / "curves.README").write_text("curves.png is made by mc_curves.py from per_iteration.csv\n")
 
 
 # ---------------- sheets: every 5th iterate, 4 frames per run ----------------

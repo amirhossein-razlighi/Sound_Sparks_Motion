@@ -26,7 +26,7 @@ ev "up host=$(hostname) job=${SLURM_JOB_ID:-} step=${SLURM_STEP_ID:-} gpus=${G[*
 idle=0
 while [[ ! -e $ROOT/STOP ]]; do
   t=""
-  [[ -e $ROOT/calibration/PASS ]] && t=$(pop $ROOT/q2.txt)
+  [[ -z $ONLY_Q1 && -e $ROOT/calibration/PASS ]] && t=$(pop $ROOT/q2.txt)
   if [[ -n $t ]]; then
     idle=0; ev "START [$t] gpus ${G[*]}"; bash $H/mc_run.sh $t; ev "END [$t] rc=$?"; continue
   fi
