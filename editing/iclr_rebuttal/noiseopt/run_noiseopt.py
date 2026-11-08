@@ -8,8 +8,8 @@ at their base values. Additive: main code and packages/ are untouched; two names
   eps     video noise, initialised from the seed's own draw (so iteration 1 is the seed's prompt-only Retake path)
   loss    Qwen NLL only (same passes as the paper config; no LPIPS / temporal / L2, as the LoRA control)
   update  Adam on eps, then the Retake-region part of eps is rescaled to norm sqrt(n) (stays on the Gaussian shell)
-  grad    through ALL denoising steps. Each step is wrapped in a non-reentrant checkpoint, so only the step inputs are
-          kept during forward and one step's activations during backward (DiT block checkpointing stays on inside).
+  grad    through ALL denoising steps by a manual step-wise reverse pass: forward without gradients storing each step's
+          latents, then one step at a time backward (DiT block checkpointing on), so one step's graph is alive at a time.
 
 Best iterate = lowest Qwen NLL, and the eps that was actually scored is the one kept (cloned BEFORE the update; the main
 loop keeps the state one update later, see FINDINGS section 12).
@@ -35,7 +35,6 @@ from dataclasses import replace
 from pathlib import Path
 
 import torch
-from torch.utils.checkpoint import checkpoint
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # editing/iclr_rebuttal
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "multicritic"))
@@ -51,6 +50,7 @@ class Ctx:
     create: bool = False                 # create eps from the seeded draw at the next video noising
     seed_noise: torch.Tensor | None = None
     mask: torch.Tensor | None = None
+    trace: dict | None = None
 
 
 def make_noiser(generator):
@@ -81,7 +81,10 @@ def make_noiser(generator):
 
 
 def full_grad_euler(sigmas, video_state, audio_state, stepper, denoise_fn):
-    """Euler loop with gradients through every step, one checkpoint per step (the states' other fields never change)."""
+    """Euler loop for the optimisation renders: forward WITHOUT gradients, storing only each step's latents.
+
+    Returns a detached, grad-requiring final video latent; adjoint() then pushes the gradient back one step at a time.
+    (Nested torch checkpoints do not work here: every inner DiT-block checkpoint keeps its inputs alive, 75 GB at step 30.)"""
     import ltx_pipelines.utils.samplers as sm
     v0, a0 = video_state, audio_state
 
@@ -92,13 +95,35 @@ def full_grad_euler(sigmas, video_state, audio_state, stepper, denoise_fn):
         da = sm.post_process_latent(da, as_.denoise_mask, as_.clean_latent)
         return stepper.step(v_lat, dv, sigmas, i), stepper.step(a_lat, da, sigmas, i)
 
-    v, a = v0.latent, a0.latent
-    for i in range(max(int(sigmas.shape[0]) - 1, 0)):
-        if torch.is_grad_enabled():
-            v, a = checkpoint(one, v, a, i, use_reentrant=False)
-        else:
-            v, a = one(v, a, i)
-    return replace(v0, latent=v), replace(a0, latent=a)
+    vs, avs = [v0.latent.detach()], [a0.latent.detach()]
+    with torch.no_grad():
+        for i in range(max(int(sigmas.shape[0]) - 1, 0)):
+            nv, na = one(vs[-1], avs[-1], i)
+            vs.append(nv.detach()); avs.append(na.detach())
+    v_final = vs[-1].clone().requires_grad_(True)
+    Ctx.trace = {"one": one, "v": vs[:-1], "a": avs[:-1], "v_final": v_final, "v_start": v0.latent}
+    return replace(v0, latent=v_final), replace(a0, latent=avs[-1])
+
+
+def adjoint():
+    """Backward through the denoising steps from the final-latent gradient to eps. Audio's final gradient is zero (the
+    audio decode is detached), but the audio latents still carry gradient between steps through the joint model."""
+    t = Ctx.trace
+    gv, ga = t["v_final"].grad, None
+    assert gv is not None, "no gradient on the final latent"
+    for i in reversed(range(len(t["v"]))):
+        vi = t["v"][i].clone().requires_grad_(True)
+        ai = t["a"][i].clone().requires_grad_(True)
+        nv, na = t["one"](vi, ai, i)
+        outs, grads = [nv], [gv]
+        if ga is not None:
+            outs.append(na); grads.append(ga)
+        torch.autograd.backward(outs, grads)
+        gv = vi.grad.detach()
+        ga = ai.grad.detach() if ai.grad is not None else None
+        del vi, ai, nv, na, outs, grads
+    t["v_start"].backward(gradient=gv)
+    Ctx.trace = None
 
 
 def region(x, mask):
@@ -227,6 +252,9 @@ def main():
                 (l / accum).backward()
                 total = total + l.detach()
             frames.backward(gradient=leaf.grad)
+            del frames
+            torch.cuda.empty_cache()
+            adjoint()
             nll = float(total) / accum
             eps = Ctx.eps
             if eps.grad is None or float(eps.grad.norm()) == 0.0:
@@ -247,7 +275,7 @@ def main():
             cos = float(torch.nn.functional.cosine_similarity(eps.detach()[r], Ctx.seed_noise[r], dim=0))
             if a.iter_every > 0 and (it == 1 or it % a.iter_every == 0):
                 try:
-                    save_mp4(frames, out / "iter_frames" / f"iter_{it:03d}.mp4", a.fps)
+                    save_mp4(leaf, out / "iter_frames" / f"iter_{it:03d}.mp4", a.fps)
                 except Exception as e:  # logging must never kill the run
                     log.warning("iter video failed: %s", e)
             opt.step()
@@ -261,7 +289,7 @@ def main():
             lf.flush()
             log.info("iter %d/%d nll=%.4f P=%.4f grad=%.3f rms=%.4f cos=%.4f %.1fs peak=%.1fGB%s", it, ns.iterations, nll, math.exp(-nll),
                      grad_norm, rms, cos, dt, peak, " *" if is_best else "")
-            del frames, leaf, total
+            del leaf, total
             gc.collect(); torch.cuda.empty_cache()
             if ns.early_stopping > 0 and it - best["iter"] >= ns.early_stopping:
                 log.info("early stop at %d (best %d)", it, best["iter"])
