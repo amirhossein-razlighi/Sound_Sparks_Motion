@@ -56,3 +56,22 @@ with open(ROOT / "metrics.csv", "w", newline="") as fh:
     w = csv.DictWriter(fh, fieldnames=["id", "scenario", "method", "n_frames", "dino_first", "dino_aligned", "motion", "mad_vs_input", "mad_vs_retake"])
     w.writeheader(); w.writerows(out)
 print("wrote", ROOT / "metrics.csv", len(out))
+
+# ---- render gap: in-loop differentiable render (what the critics score) vs the normal render of the same latents ----
+# iteration 1 uses the initial latents, so iter_001 (in-loop) vs baseline_video.mp4 (prompt-only Retake render, same
+# seed) isolates the render-path difference; also the paper's prompt-only Retake for reference.
+import re as _re
+gap = []
+for sdir in sorted(d for d in ROOT.iterdir() if d.is_dir()):
+    for r in sorted(sdir.glob("[AB]_*")):
+        it1, base = r / "multicritic" / "iter_frames" / "iter_001.mp4", r / "baseline_video.mp4"
+        if ".old" in r.name or not (it1.exists() and base.exists()):
+            continue
+        a, b = small(frames(it1)), small(frames(base)); n = min(len(a), len(b))
+        d = np.abs(a[:n] - b[:n]).mean(axis=(1, 2, 3))
+        gap.append(dict(scenario=sdir.name, run=r.name, mad_mean=float(d.mean()), mad_first_frame=float(d[0]),
+                        mad_last_frame=float(d[-1]), mad_max_frame=float(d.max())))
+        print(gap[-1], flush=True)
+if gap:
+    with open(ROOT / "render_gap.csv", "w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=list(gap[0])); w.writeheader(); w.writerows(gap)

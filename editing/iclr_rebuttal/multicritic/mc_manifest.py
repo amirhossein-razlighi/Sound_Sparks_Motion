@@ -16,21 +16,48 @@ from common import SCENARIOS, COMPARISONS, load_paper_args, paper_run_dir  # noq
 
 ROOT = Path("/scratch/amirrz/iclr_rebuttal/multicritic")
 ARMS = {"A": "A_qwen25_only", "B": "B_qwen25+internvl3"}
+
+
+def arm_key(name):
+    """A_qwen25_only -> A ; B_qwen25+internvl3_r2 -> B_r2"""
+    import re
+    m = re.search(r"_r(\d+)$", name)
+    return name[0] + (f"_r{m.group(1)}" if m else "")
+
+
+def arm_dirs(sdir):
+    return sorted(d for d in sdir.glob("[AB]_*") if d.is_dir() and ".old" not in d.name)
+
+
+IR = Path("/scratch/amirrz/iclr_rebuttal/ivebench")
+IVE = {Path(x["src_video_name"]).stem: x for x in __import__("json").load(open(IR / "subset_subject_motion_short.json"))}
 rows = []
-for s in sys.argv[1].split(",") if len(sys.argv) > 1 else ["red_car_door_opens", "man_pets_dog", "dog_yawning", "robot_waving"]:
+dirs = sys.argv[1].split(",") if len(sys.argv) > 1 else sorted(d.name for d in ROOT.iterdir() if d.is_dir() and (d.name in SCENARIOS or d.name.startswith("ive_")))
+for s in dirs:
     if not (ROOT / s).exists():
         continue
-    ns = load_paper_args(s, {"output_dir": "/tmp/unused"})
-    p = ns.edit_prompt if hasattr(ns, "edit_prompt") else ns.prompt
-    add = lambda m, v, g="final": rows.append(dict(id=f"mc/{s}/{m}", group=g, scenario=s, method=m, video=str(v), edit_prompt=p))
-    add("input", paper_run_dir(s) / "retake_input_prepared.mp4")
-    add("paper_ours", COMPARISONS / SCENARIOS[s][1] / "ours.mp4")
-    for a, d in ARMS.items():
-        r = ROOT / s / d
+    if s.startswith("ive_"):   # ive_<item>_<cfg>, e.g. ive_short_0251_E
+        item, cfg = s[4:].rsplit("_", 1)
+        p = IVE[item]["target_prompt"].strip() if cfg != "G" else IVE[item]["target_phrase"].strip()
+        phrase = IVE[item]["target_phrase"].strip()
+        src, ref = IR / "inputs" / f"{item}.mp4", IR / "runs" / item / cfg / "best_optimized_video_both.mp4"
+    else:
+        ns = load_paper_args(s, {"output_dir": "/tmp/unused"})
+        p, phrase = ns.edit_prompt, None
+        src, ref = paper_run_dir(s) / "retake_input_prepared.mp4", COMPARISONS / SCENARIOS[s][1] / "ours.mp4"
+
+    def add(m, v, g="final", s=s, p=p, phrase=phrase):
+        rows.append(dict(id=f"mc/{s}/{m}", group=g, scenario=s, method=m, video=str(v), edit_prompt=p))
+        if phrase and g == "final":   # IVEBench: also the short target phrase (the long prompt is satisfied by the source)
+            rows.append(dict(id=f"mc/{s}/{m}@phrase", group="final_phrase", scenario=s, method=m, video=str(v), edit_prompt=phrase))
+    add("input", src)
+    add("paper_ours", ref)
+    for r in arm_dirs(ROOT / s):
+        a = arm_key(r.name)
         if not (r / "mode_both" / "best_optimized_video_both.mp4").exists():
             continue
-        if a == "A" or not any(x["method"] == "retake" and x["scenario"] == s for x in rows):
-            add("retake" if a == "A" else "retake_B", r / "baseline_video.mp4")
+        has_rt = any(x["method"] == "retake" and x["scenario"] == s for x in rows)
+        add("retake" if not has_rt else f"retake_{a}", r / "baseline_video.mp4")
         add(f"{a}_final", r / "mode_both" / "best_optimized_video_both.mp4")
         for v in sorted((r / "mode_both" / "visualizations").glob("iter_*/best_optimized_video_both.mp4")):
             add(f"{a}_prev_{v.parent.name}", v, "preview")
