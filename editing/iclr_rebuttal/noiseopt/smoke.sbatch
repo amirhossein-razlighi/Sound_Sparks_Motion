@@ -1,7 +1,6 @@
 #!/bin/bash
 # Noise-optimisation smoke test: 3 iterations of dog_yawning; measures s/iter and peak memory of full-chain backprop.
 #SBATCH --job-name=ssm-noise-smoke
-#SBATCH --partition=gpubase_interac
 #SBATCH --gres=gpu:h100:1
 #SBATCH --cpus-per-task=6
 #SBATCH --mem=80G
