@@ -1,0 +1,37 @@
+{
+  "scenario": "bugatti_lights_flash",
+  "seeds": [
+    42,
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "setup_seconds": 11.227245092391968,
+  "critic": {
+    "question": "Does this video clearly show the action or state change described by the edit prompt: \"The car front lights turn on and off periodically.\"? Answer only 'yes' or 'no'.",
+    "edit_prompt": "The car front lights turn on and off periodically.",
+    "max_frames": 8,
+    "img_size": 224,
+    "sample_mode": "normal",
+    "contiguous_start_frame": 4,
+    "gradient_rubric": "motion",
+    "passes": 3
+  },
+  "shape": [
+    320,
+    512,
+    89,
+    25.0
+  ],
+  "retake_start_frames": 5,
+  "num_inference_steps": 30,
+  "src_video": "/scratch/amirrz/iclr_rebuttal/ssm_bundle/paper_results/the_car_front_lights_turn/sweep_exp/rsf5_accum3_modenormal_frames8_lr0.005_lpipsOFF/retake_input_prepared.mp4",
+  "edit_prompt": "The car front lights turn on and off periodically.",
+  "gpu": "NVIDIA H100 80GB HBM3",
+  "note": "OURS learned latents (paper run mode_both), full-quality final guidance (same as paper baseline_video.mp4 / final render); critic = exact loop call of the paper run (critic.py)",
+  "ours": true
+}

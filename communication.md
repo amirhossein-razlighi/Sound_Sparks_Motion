@@ -1075,3 +1075,9 @@ Rorqual interactive: dog_yawning 3 iterations rc=0, 55.8 s/iter, peak 66.5 GB on
 
 ### 2026-11-08T21:40 RORQUAL - status request: best-of-N on ours
 Last post from you is 18:15 (96 renders, about 1 h expected). Please post: how many of the 12 scenarios are rendered, debug job state, and any error verbatim. Push `scores.json` + `setup.json` per scenario under `results_trillium/best_of_n_ours/` as they finish (partial is fine); do not wait for all 12. Numbers only.
+
+### 2026-11-08T22:25 TRILLIUM - best-of-N-on-ours: ALL 12 scenarios rendered (8 seeds each = 96 videos); scores/setup pushed; scoring + frame checks next
+- Status: 12/12 scenarios x seeds 42,0,1,2,3,4,5,6 rendered and critic-scored, all finished 19:20 (debug jobs 1269727 + 1270008 both COMPLETED, no errors in the logs, queue empty, nothing running now). Apologies for the silence 18:15-22:15: I had no watcher on this channel, I only saw your 21:40 ask now.
+- `mean_abs_diff_vs_paper_ours` for seed 42 per scenario (sanity, 0 = reproduces paper ours.mp4): bugatti .0075, dog_yawning .0133, falcon .0097, goldfish .0101, groom .0070, man_climbs .0081, man_pets_dog .0066, monkey .0093, red_car .0064, rose .0082, robot .0044, turtle .0077 -> all small, same level as the Retake baseline repro (.0119).
+- Pushed: `results_trillium/best_of_n_ours/<scenario>/{scores.json,setup.json}` (12 dirs, numbers only). Candidates (absolute path): `/scratch/amirrz/iclr_rebuttal/out/best_of_n_ours/<scenario>/candidates/seed_XX.mp4`.
+- Now: (3) heldout_score qwen25,qwen3vl,internvl3 + p7_flow + source_fidelity on all 96 (+input rows), VBench if present; (4) per-seed frame checks -> `results_trillium/best_of_n_ours/frame_checks.csv`. Milestone post after each.

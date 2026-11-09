@@ -1,0 +1,37 @@
+{
+  "scenario": "falcon_bird_opening_wings",
+  "seeds": [
+    42,
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "setup_seconds": 10.903807640075684,
+  "critic": {
+    "question": "Does this video clearly show the action or state change described by the edit prompt: \"A bird openning its wings.\"? Answer only 'yes' or 'no'.",
+    "edit_prompt": "A bird openning its wings.",
+    "max_frames": 30,
+    "img_size": 224,
+    "sample_mode": "linspace",
+    "contiguous_start_frame": 4,
+    "gradient_rubric": "motion",
+    "passes": 1
+  },
+  "shape": [
+    320,
+    512,
+    89,
+    25.0
+  ],
+  "retake_start_frames": 5,
+  "num_inference_steps": 30,
+  "src_video": "/scratch/amirrz/iclr_rebuttal/ssm_bundle/paper_results/a_bird_openning_its_wings./linspace_w_lpips/both/retake_input_prepared.mp4",
+  "edit_prompt": "A bird openning its wings.",
+  "gpu": "NVIDIA H100 80GB HBM3",
+  "note": "OURS learned latents (paper run mode_both), full-quality final guidance (same as paper baseline_video.mp4 / final render); critic = exact loop call of the paper run (critic.py)",
+  "ours": true
+}
