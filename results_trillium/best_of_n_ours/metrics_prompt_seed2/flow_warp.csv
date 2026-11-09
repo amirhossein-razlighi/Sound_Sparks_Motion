@@ -1,0 +1,5 @@
+id,group,scenario,method,video,flow_mag,warp_err,occl_frac,n_frames,res,error
+promptonly/man_climbs_rocks/input,reference,man_climbs_rocks,input,/scratch/amirrz/iclr_rebuttal/ssm_bundle/paper_results/the_man_climbs_up_the/sweep_exp/rsf5_accum3_modelinspace_frames24_lr0.005_lpips0.1_temp0.05/retake_input_prepared.mp4,0.08877058327198029,0.004388589411973953,0.012780414894223213,89,512x320,
+promptonly/man_climbs_rocks/s02,best_of_n,man_climbs_rocks,prompt_s02,/scratch/amirrz/iclr_rebuttal/out/best_of_n/man_climbs_rocks/candidates/seed_02.mp4,0.11155816167593002,0.004795047454535961,0.015510627999901772,89,512x320,
+promptonly/red_car_door_opens/input,reference,red_car_door_opens,input,/scratch/amirrz/iclr_rebuttal/ssm_bundle/paper_results/a_red_car_door_opens./multi_grad/qwen_frames_8/linspace_wo_lpips/retake_input_prepared.mp4,0.1325557380914688,0.0032695233821868896,0.0,89,512x320,
+promptonly/red_car_door_opens/s02,best_of_n,red_car_door_opens,prompt_s02,/scratch/amirrz/iclr_rebuttal/out/best_of_n/red_car_door_opens/candidates/seed_02.mp4,0.5936635732650757,0.005693601910024881,0.016800064593553543,89,512x320,

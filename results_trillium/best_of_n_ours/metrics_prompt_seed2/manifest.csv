@@ -1,0 +1,5 @@
+id,group,scenario,method,video,edit_prompt
+promptonly/man_climbs_rocks/input,reference,man_climbs_rocks,input,/scratch/amirrz/iclr_rebuttal/ssm_bundle/paper_results/the_man_climbs_up_the/sweep_exp/rsf5_accum3_modelinspace_frames24_lr0.005_lpips0.1_temp0.05/retake_input_prepared.mp4,The man climbs up the rocks and looks at the horizon from the top.
+promptonly/man_climbs_rocks/s02,best_of_n,man_climbs_rocks,prompt_s02,/scratch/amirrz/iclr_rebuttal/out/best_of_n/man_climbs_rocks/candidates/seed_02.mp4,The man climbs up the rocks and looks at the horizon from the top.
+promptonly/red_car_door_opens/input,reference,red_car_door_opens,input,/scratch/amirrz/iclr_rebuttal/ssm_bundle/paper_results/a_red_car_door_opens./multi_grad/qwen_frames_8/linspace_wo_lpips/retake_input_prepared.mp4,A red car door opens.
+promptonly/red_car_door_opens/s02,best_of_n,red_car_door_opens,prompt_s02,/scratch/amirrz/iclr_rebuttal/out/best_of_n/red_car_door_opens/candidates/seed_02.mp4,A red car door opens.

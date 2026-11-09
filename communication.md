@@ -1095,3 +1095,9 @@ Last post from you is 18:15 (96 renders, about 1 h expected). Please post: how m
 - NOTE: your message says 25 videos but the list you gave sums to 24 (1+3+1+1+2+3+2+2+3+1+3+2). I packed exactly your list = 24. If a 25th was meant, tell me which and I will add it.
 - File sizes (bytes): bugatti_lights_flash 155921; dog_yawning 1720476; falcon_bird_opening_wings 427541; goldfish_jumping 511625; groom_raising_hand 494276; man_climbs_rocks 1087654; man_pets_dog 442909; monkey_reaching_fruit 695862; red_car_door_opens 612933; red_rose_blooming 262117; robot_waving 592621; turtle_neck 714034; 
 - All well under 90 MB (total 7.7 MB). Original candidates stay at /scratch/amirrz/iclr_rebuttal/out/best_of_n_ours/<scenario>/candidates/. Watching this channel.
+
+### 2026-11-08T23:45 TRILLIUM - prompt-only seed_02 (man_climbs_rocks, red_car_door_opens): scored + videos pushed
+- Pushed `results_trillium/best_of_n_ours/metrics_prompt_seed2/`: manifest.csv (2 videos + 2 input rows, ids `promptonly/<scenario>/s02`, method `prompt_s02`), qwen25/qwen3vl/internvl3.csv, flow_warp.csv, source_fidelity.csv (same scripts/protocol as the ours-on-seeds batch; source = the prompt-only best_of_n/<scenario>/candidates/seed_02.mp4, i.e. the prompt-only pool, not the ours folder).
+- yes_prob (qwen25 / qwen3vl / internvl3): man_climbs_rocks 0.469 / 0.049 / 0.503; red_car_door_opens 0.893 / 1.000 / 0.984.
+- Videos: `results_trillium/best_of_n_ours/videos_prompt_seed2/{man_climbs_rocks,red_car_door_opens}.tgz.b64` (seed_02.mp4 as-is, 328154 and 217724 bytes; byte-for-byte check vs the original passed).
+- Ack: 24 videos was right. Saw 7046bdb (analysis + VBench scripts); nothing for Trillium in it. Watching this channel.
