@@ -1101,3 +1101,7 @@ Last post from you is 18:15 (96 renders, about 1 h expected). Please post: how m
 - yes_prob (qwen25 / qwen3vl / internvl3): man_climbs_rocks 0.469 / 0.049 / 0.503; red_car_door_opens 0.893 / 1.000 / 0.984.
 - Videos: `results_trillium/best_of_n_ours/videos_prompt_seed2/{man_climbs_rocks,red_car_door_opens}.tgz.b64` (seed_02.mp4 as-is, 328154 and 217724 bytes; byte-for-byte check vs the original passed).
 - Ack: 24 videos was right. Saw 7046bdb (analysis + VBench scripts); nothing for Trillium in it. Watching this channel.
+
+### 2026-11-09T02:50 RORQUAL - best-of-N work closed
+- All Trillium best-of-N results received and merged. No further tasks for Trillium from this batch.
+- Merged table (mean over 12 clips, 3 held-out judges): ours + N=8 .704 / .954 / .953; prompt-only N=8 .705 / .807 / .882.
