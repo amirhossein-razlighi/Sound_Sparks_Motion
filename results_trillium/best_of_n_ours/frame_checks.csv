@@ -1,0 +1,97 @@
+scenario,seed,edit_visible,note
+bugatti_lights_flash,42,partial,"headlights dim/flicker faintly mid-clip, hard to see at sheet scale"
+bugatti_lights_flash,0,partial,one bright flash at ~f30 then lights stay on; not periodic
+bugatti_lights_flash,1,partial,lights dim a little around f30-45; weak
+bugatti_lights_flash,2,no,lights on throughout
+bugatti_lights_flash,3,no,lights on throughout
+bugatti_lights_flash,4,no,lights on throughout
+bugatti_lights_flash,5,no,lights on throughout
+bugatti_lights_flash,6,no,lights on throughout
+dog_yawning,42,yes,"clear yawn, same as paper ours"
+dog_yawning,0,yes,yawn but camera zooms in until the face fills the frame (artifact)
+dog_yawning,1,yes,"yawn, small"
+dog_yawning,2,partial,"mouth slightly open, subtle"
+dog_yawning,3,no,"dog turns head away and looks right (like source), no yawn"
+dog_yawning,4,yes,clear yawn
+dog_yawning,5,yes,yawn then turns head sideways
+dog_yawning,6,yes,clear yawn
+falcon_bird_opening_wings,42,yes,wings open and bird flies out of frame; last frames empty
+falcon_bird_opening_wings,0,yes,"wings open but ghosting/duplicated wings, blurry"
+falcon_bird_opening_wings,1,yes,"wings spread wide, plausible"
+falcon_bird_opening_wings,2,yes,"wings open, takes off then back; bird size/shape changes, blurry"
+falcon_bird_opening_wings,3,yes,"wings spread wide, fairly clean"
+falcon_bird_opening_wings,4,yes,"wings spread, plausible"
+falcon_bird_opening_wings,5,partial,"turns, flaps late, very blurry"
+falcon_bird_opening_wings,6,yes,"wings open, pinkish blur"
+goldfish_jumping,42,yes,fish jumps out through the surface with splash
+goldfish_jumping,0,partial,"fish rises to the surface, no clear exit"
+goldfish_jumping,1,yes,"fish jumps, big splash at the surface"
+goldfish_jumping,2,no,fish keep swimming inside
+goldfish_jumping,3,partial,"fish at surface with splash, duplicated/smeared fish"
+goldfish_jumping,4,partial,"fish near the surface, partly out at top"
+goldfish_jumping,5,partial,fish rises and leaves the top edge late
+goldfish_jumping,6,partial,"splash at surface, fish at top"
+groom_raising_hand,42,yes,hand raised cleanly
+groom_raising_hand,0,yes,hand raised
+groom_raising_hand,1,yes,hand raised
+groom_raising_hand,2,yes,"arm goes above the frame, very long arm (distortion)"
+groom_raising_hand,3,yes,late; man shifts/changes pose before raising hand
+groom_raising_hand,4,yes,hand raised
+groom_raising_hand,5,yes,"hand raised close to the camera, large"
+groom_raising_hand,6,yes,"hand raised, spread fingers"
+man_climbs_rocks,42,yes,"man steps up onto rocks, late in clip"
+man_climbs_rocks,0,partial,"walks toward rocks, small steps up"
+man_climbs_rocks,1,no,"walks, no climbing"
+man_climbs_rocks,2,partial,"steps onto rock, stands higher"
+man_climbs_rocks,3,yes,clearly climbs the large rock on the left
+man_climbs_rocks,4,partial,"walks and bends, no clear climb"
+man_climbs_rocks,5,yes,climbs up onto rock by the end
+man_climbs_rocks,6,no,"walks, no climbing"
+man_pets_dog,42,partial,"a different, much larger white dog runs in from the left and the man turns to it; dog identity differs from source"
+man_pets_dog,0,no,"camera shifts/zooms, no petting"
+man_pets_dog,1,no,no petting
+man_pets_dog,2,no,no petting
+man_pets_dog,3,no,"scene darkens, man holds a bottle"
+man_pets_dog,4,no,no petting
+man_pets_dog,5,no,no petting
+man_pets_dog,6,partial,man reaches an arm down toward the dog
+monkey_reaching_fruit,42,partial,"monkey leans and reaches with an arm, no fruit visible"
+monkey_reaching_fruit,0,partial,"reaches an arm down, no fruit"
+monkey_reaching_fruit,1,partial,"reaches left, no fruit"
+monkey_reaching_fruit,2,no,only turns head
+monkey_reaching_fruit,3,partial,"reaches left arm, no fruit"
+monkey_reaching_fruit,4,yes,holds a yellow fruit in the hand and raises it; fruit appears abruptly in the hand
+monkey_reaching_fruit,5,partial,"reaches arm out, no fruit"
+monkey_reaching_fruit,6,partial,"both hands together in front, unclear what is held"
+red_car_door_opens,42,partial,"car zooms in, one door opens only in the last frames"
+red_car_door_opens,0,no,"car only zooms in slightly, doors stay closed"
+red_car_door_opens,1,yes,right door opens gradually
+red_car_door_opens,2,yes,door opens with a zoom; a person appears and steps out (inserted)
+red_car_door_opens,3,no,"abrupt zoom into the windshield/interior, door not opened"
+red_car_door_opens,4,yes,both doors open; several people appear (inserted)
+red_car_door_opens,5,no,"camera rises to top-down view, doors closed"
+red_car_door_opens,6,yes,doors open on both sides
+red_rose_blooming,42,partial,bud opens slightly and tilts at the end
+red_rose_blooming,0,no,bud stays closed
+red_rose_blooming,1,no,bud stays closed (background shifts at the top)
+red_rose_blooming,2,no,bud stays closed
+red_rose_blooming,3,no,bud stays closed
+red_rose_blooming,4,no,bud stays closed
+red_rose_blooming,5,no,bud stays closed
+red_rose_blooming,6,no,bud stays closed
+robot_waving,42,yes,"arm raised, hand visible; wave motion not checkable on stills"
+robot_waving,0,yes,"arm raised, hand open, small bracelet-like artifact on the wrist"
+robot_waving,1,yes,arm raised to the side
+robot_waving,2,yes,"arm raised, hand changes angle across frames"
+robot_waving,3,yes,"arm raised high, hand changes angle"
+robot_waving,4,yes,"arm raised, hand changes angle"
+robot_waving,5,yes,"arm raised, hand changes angle"
+robot_waving,6,yes,"arm raised, hand changes angle"
+turtle_neck,42,partial,head pops up only in the last frame
+turtle_neck,0,partial,"head pokes out under the shell, short"
+turtle_neck,1,yes,neck extends forward as a thin pale stalk (looks unnatural)
+turtle_neck,2,no,no neck extension
+turtle_neck,3,no,head withdraws/hidden
+turtle_neck,4,yes,"neck extends far as a thin white tube, head dangling (artifact)"
+turtle_neck,5,no,head not extended; legs shift
+turtle_neck,6,no,head stays tucked
